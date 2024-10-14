@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PlusIcon, Hand, Sparkles, Square, StickyNote, Image, Type, Link, Layers, ToggleLeft, ZoomIn, ZoomOut, Download, MousePointer } from 'lucide-react';
+import { PlusIcon, Hand, Sparkles, Square, StickyNote, Type, Link, Layers, ToggleLeft, ZoomIn, ZoomOut, Download, MousePointer } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -13,6 +13,8 @@ const MindMapView = ({ project, focusedDocument }) => {
   const [showAIInput, setShowAIInput] = useState(false);
   const [nodes, setNodes] = useState([]);
   const [draggedNode, setDraggedNode] = useState(null);
+  const [draggedConnector, setDraggedConnector] = useState(null);
+  const canvasRef = useRef(null);
 
   const handleAIClick = () => {
     setShowAIInput(!showAIInput);
@@ -39,6 +41,9 @@ const MindMapView = ({ project, focusedDocument }) => {
       type,
       x: Math.random() * (window.innerWidth - 100),
       y: Math.random() * (window.innerHeight - 200),
+      text: type === 'text' ? 'New Text' : '',
+      connectorStart: type === 'connector' ? { x: 0, y: 0 } : null,
+      connectorEnd: type === 'connector' ? { x: 100, y: 100 } : null,
     };
     setNodes([...nodes, newNode]);
   };
@@ -63,11 +68,90 @@ const MindMapView = ({ project, focusedDocument }) => {
     setDraggedNode(null);
   };
 
+  const handleConnectorDragStart = (e, nodeId, end) => {
+    setDraggedConnector({ nodeId, end });
+  };
+
+  const handleConnectorDrag = (e) => {
+    if (draggedConnector) {
+      const { nodeId, end } = draggedConnector;
+      const updatedNodes = nodes.map(node => {
+        if (node.id === nodeId) {
+          return {
+            ...node,
+            [end]: { x: e.clientX - canvasRef.current.offsetLeft, y: e.clientY - canvasRef.current.offsetTop }
+          };
+        }
+        return node;
+      });
+      setNodes(updatedNodes);
+    }
+  };
+
+  const handleConnectorDragEnd = () => {
+    setDraggedConnector(null);
+  };
+
+  const renderNode = (node) => {
+    switch (node.type) {
+      case 'blank':
+        return <div className="w-20 h-20 bg-white rounded-md shadow-md flex items-center justify-center">Node</div>;
+      case 'postit':
+        return (
+          <div className="w-32 h-32 bg-yellow-200 rounded-md shadow-md flex items-center justify-center relative">
+            <div className="absolute top-0 left-0 w-4 h-4 bg-yellow-300 rounded-tl-md hover:bg-yellow-400"></div>
+            <div className="absolute top-0 right-0 w-4 h-4 bg-yellow-300 rounded-tr-md hover:bg-yellow-400"></div>
+            <div className="absolute bottom-0 left-0 w-4 h-4 bg-yellow-300 rounded-bl-md hover:bg-yellow-400"></div>
+            <div className="absolute bottom-0 right-0 w-4 h-4 bg-yellow-300 rounded-br-md hover:bg-yellow-400"></div>
+            <p className="text-center p-2">{node.text || 'Post-it'}</p>
+          </div>
+        );
+      case 'text':
+        return <div className="p-2 bg-white rounded shadow-md">{node.text}</div>;
+      case 'connector':
+        return (
+          <svg className="absolute" style={{ left: 0, top: 0, width: '100%', height: '100%' }}>
+            <line
+              x1={node.connectorStart.x}
+              y1={node.connectorStart.y}
+              x2={node.connectorEnd.x}
+              y2={node.connectorEnd.y}
+              stroke="black"
+              strokeWidth="2"
+            />
+            <circle
+              cx={node.connectorStart.x}
+              cy={node.connectorStart.y}
+              r="5"
+              fill="red"
+              onMouseDown={(e) => handleConnectorDragStart(e, node.id, 'connectorStart')}
+            />
+            <circle
+              cx={node.connectorEnd.x}
+              cy={node.connectorEnd.y}
+              r="5"
+              fill="blue"
+              onMouseDown={(e) => handleConnectorDragStart(e, node.id, 'connectorEnd')}
+            />
+          </svg>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div 
       className="bg-[#594BFF] min-h-[calc(100vh-120px)] relative flex items-center justify-center"
-      onMouseMove={handleDrag}
-      onMouseUp={handleDragEnd}
+      onMouseMove={(e) => {
+        handleDrag(e);
+        handleConnectorDrag(e);
+      }}
+      onMouseUp={() => {
+        handleDragEnd();
+        handleConnectorDragEnd();
+      }}
+      ref={canvasRef}
     >
       <div 
         className="absolute inset-0" 
@@ -86,9 +170,7 @@ const MindMapView = ({ project, focusedDocument }) => {
             style={{ left: `${node.x}px`, top: `${node.y}px` }}
             onMouseDown={(e) => handleDragStart(e, node.id)}
           >
-            {node.type === 'blank' && <div className="w-20 h-20 bg-white rounded-md shadow-md flex items-center justify-center">Blank</div>}
-            {node.type === 'postit' && <div className="w-20 h-20 bg-yellow-200 rounded-md shadow-md flex items-center justify-center">Post-it</div>}
-            {node.type === 'document' && <div className="w-20 h-20 bg-blue-200 rounded-md shadow-md flex items-center justify-center">Document</div>}
+            {renderNode(node)}
           </div>
         ))}
       </div>
@@ -113,9 +195,8 @@ const MindMapView = ({ project, focusedDocument }) => {
         <ToolButton icon={<Sparkles className="h-4 w-4" />} label="AI Node" onClick={handleAIClick} />
         <ToolButton icon={<Square className="h-4 w-4" />} label="Blank Node" onClick={() => handleAddNode('blank')} />
         <ToolButton icon={<StickyNote className="h-4 w-4" />} label="Post-it Node" onClick={() => handleAddNode('postit')} />
-        <ToolButton icon={<Image className="h-4 w-4" />} label="Document/Image Node" onClick={() => handleAddNode('document')} />
-        <ToolButton icon={<Type className="h-4 w-4" />} label="Text Tool" />
-        <ToolButton icon={<Link className="h-4 w-4" />} label="Connector Node" />
+        <ToolButton icon={<Type className="h-4 w-4" />} label="Text Node" onClick={() => handleAddNode('text')} />
+        <ToolButton icon={<Link className="h-4 w-4" />} label="Connector Node" onClick={() => handleAddNode('connector')} />
         <ToolButton icon={<Layers className="h-4 w-4" />} label="Grouped Section Node" />
         <TooltipProvider>
           <Tooltip>
