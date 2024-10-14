@@ -39,19 +39,21 @@ const HomePage = () => {
           <img src={user.avatar} alt={user.name} className="w-24 h-24 rounded-full mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-gray-800">{user.name}</h1>
         </div>
-        <div className="space-y-12">
+        <div className="flex flex-col space-y-8">
           {investigations.map(investigation => (
-            <div key={investigation.id} className="flex flex-col space-y-4">
-              <div className="w-full">
+            <div key={investigation.id} className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+              <div className="w-full md:w-1/2">
                 <InvestigationCard investigation={investigation} />
               </div>
-              <div className="overflow-x-auto pb-4">
-                <div className="flex space-x-4">
-                  {investigation.reports.map(report => (
-                    <div key={report.id} className="w-64 flex-shrink-0">
-                      <ReportCard report={report} />
-                    </div>
-                  ))}
+              <div className="w-full md:w-1/2">
+                <div className="overflow-x-auto pb-4">
+                  <div className="flex space-x-4">
+                    {investigation.reports.map(report => (
+                      <div key={report.id} className="w-64 flex-shrink-0">
+                        <ReportCard report={report} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>

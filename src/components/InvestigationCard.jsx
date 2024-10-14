@@ -3,16 +3,16 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 const InvestigationCard = ({ investigation }) => {
   return (
-    <Card className="mb-4 overflow-hidden relative">
+    <Card className="h-full mb-4 overflow-hidden relative">
       <div className="absolute inset-0 bg-purple-600 rounded-3xl transform -skew-y-6 scale-110 z-0"></div>
-      <div className="relative z-10">
+      <div className="relative z-10 h-full flex flex-col">
         <CardHeader className="pb-2">
           <div className="text-xs uppercase text-purple-300 font-semibold tracking-wide">Investigation</div>
           <h3 className="text-xl font-bold text-white mt-1">{investigation.title}</h3>
         </CardHeader>
-        <CardContent>
-          <div className="bg-white rounded-2xl p-4 shadow-inner">
-            <p className="text-sm text-gray-600 line-clamp-4">{investigation.description}</p>
+        <CardContent className="flex-grow">
+          <div className="bg-white rounded-2xl p-4 shadow-inner h-full">
+            <p className="text-sm text-gray-600">{investigation.description}</p>
           </div>
         </CardContent>
       </div>
