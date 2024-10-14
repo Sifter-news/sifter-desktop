@@ -64,14 +64,14 @@ const HomePage = () => {
           <img src={user.avatar} alt={user.name} className="w-24 h-24 rounded-full mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-gray-800">{user.name}</h1>
         </div>
-        <div className="bg-gray-100 rounded-t-4xl p-8">
+        <div className="bg-gray-100 rounded-t-[128px] p-8 overflow-hidden shadow-inner">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold">Investigations</h2>
             <Button className="rounded-full w-14 h-14 p-0 flex items-center justify-center">
               <PlusIcon className="h-6 w-6" />
             </Button>
           </div>
-          <div className="flex flex-col space-y-8">
+          <div className="flex flex-col space-y-8 max-h-[calc(100vh-300px)] overflow-y-auto pr-4 scrollbar-hide">
             {investigations.map(investigation => (
               <div key={investigation.id} className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
                 <div className="w-full lg:w-[548px] flex-shrink-0">
