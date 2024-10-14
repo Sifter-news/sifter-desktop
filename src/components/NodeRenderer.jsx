@@ -1,6 +1,6 @@
 import React from 'react';
 
-const NodeRenderer = ({ node, onDragStart, onConnectorDragStart }) => {
+const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom }) => {
   const renderNode = () => {
     switch (node.type) {
       case 'blank':
@@ -52,7 +52,12 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart }) => {
   return (
     <div
       className="absolute cursor-move"
-      style={{ left: `${node.x}px`, top: `${node.y}px` }}
+      style={{ 
+        left: `${node.x * zoom}px`, 
+        top: `${node.y * zoom}px`,
+        transform: `scale(${zoom})`,
+        transformOrigin: 'top left'
+      }}
       onMouseDown={(e) => onDragStart(e, node.id)}
     >
       {renderNode()}

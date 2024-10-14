@@ -9,13 +9,27 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { saveProjectState, loadProjectState } from '../utils/projectUtils';
+import { useZoomPan } from '../utils/canvasUtils';
+import ToolButton from './ToolbarButton';
+import NodeRenderer from './NodeRenderer';
 
 const MindMapView = ({ project }) => {
   const [showAIInput, setShowAIInput] = useState(false);
   const [nodes, setNodes] = useState([]);
   const [draggedNode, setDraggedNode] = useState(null);
   const [draggedConnector, setDraggedConnector] = useState(null);
+  const [activeTool, setActiveTool] = useState('select');
   const canvasRef = useRef(null);
+
+  const {
+    zoom,
+    position,
+    isPanning,
+    handleZoom,
+    handlePanStart,
+    handlePanMove,
+    handlePanEnd,
+  } = useZoomPan();
 
   useEffect(() => {
     const savedNodes = loadProjectState(project.id);
@@ -32,21 +46,6 @@ const MindMapView = ({ project }) => {
     setShowAIInput(!showAIInput);
   };
 
-  const ToolButton = ({ icon, label, onClick }) => (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button size="icon" variant="ghost" className="rounded-full" onClick={onClick}>
-            {icon}
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{label}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  );
-
   const handleAddNode = (type) => {
     const newNode = {
       id: Date.now(),
@@ -61,14 +60,16 @@ const MindMapView = ({ project }) => {
   };
 
   const handleDragStart = (e, nodeId) => {
-    setDraggedNode(nodeId);
+    if (activeTool === 'select') {
+      setDraggedNode(nodeId);
+    }
   };
 
   const handleDrag = (e) => {
-    if (draggedNode !== null) {
+    if (draggedNode !== null && activeTool === 'select') {
       const updatedNodes = nodes.map(node => {
         if (node.id === draggedNode) {
-          return { ...node, x: e.clientX, y: e.clientY };
+          return { ...node, x: e.clientX / zoom - position.x, y: e.clientY / zoom - position.y };
         }
         return node;
       });
@@ -81,17 +82,22 @@ const MindMapView = ({ project }) => {
   };
 
   const handleConnectorDragStart = (e, nodeId, end) => {
-    setDraggedConnector({ nodeId, end });
+    if (activeTool === 'select') {
+      setDraggedConnector({ nodeId, end });
+    }
   };
 
   const handleConnectorDrag = (e) => {
-    if (draggedConnector) {
+    if (draggedConnector && activeTool === 'select') {
       const { nodeId, end } = draggedConnector;
       const updatedNodes = nodes.map(node => {
         if (node.id === nodeId) {
           return {
             ...node,
-            [end]: { x: e.clientX - canvasRef.current.offsetLeft, y: e.clientY - canvasRef.current.offsetTop }
+            [end]: { 
+              x: (e.clientX - canvasRef.current.offsetLeft) / zoom - position.x, 
+              y: (e.clientY - canvasRef.current.offsetTop) / zoom - position.y 
+            }
           };
         }
         return node;
@@ -104,65 +110,34 @@ const MindMapView = ({ project }) => {
     setDraggedConnector(null);
   };
 
-  const renderNode = (node) => {
-    switch (node.type) {
-      case 'blank':
-        return <div className="w-20 h-20 bg-white rounded-md shadow-md flex items-center justify-center">Node</div>;
-      case 'postit':
-        return (
-          <div className="w-32 h-32 bg-yellow-200 rounded-md shadow-md flex items-center justify-center relative">
-            <div className="absolute top-0 left-0 w-4 h-4 bg-yellow-300 rounded-tl-md hover:bg-yellow-400"></div>
-            <div className="absolute top-0 right-0 w-4 h-4 bg-yellow-300 rounded-tr-md hover:bg-yellow-400"></div>
-            <div className="absolute bottom-0 left-0 w-4 h-4 bg-yellow-300 rounded-bl-md hover:bg-yellow-400"></div>
-            <div className="absolute bottom-0 right-0 w-4 h-4 bg-yellow-300 rounded-br-md hover:bg-yellow-400"></div>
-            <p className="text-center p-2">{node.text || 'Post-it'}</p>
-          </div>
-        );
-      case 'text':
-        return <div className="p-2 bg-white rounded shadow-md">{node.text}</div>;
-      case 'connector':
-        return (
-          <svg className="absolute" style={{ left: 0, top: 0, width: '100%', height: '100%' }}>
-            <line
-              x1={node.connectorStart.x}
-              y1={node.connectorStart.y}
-              x2={node.connectorEnd.x}
-              y2={node.connectorEnd.y}
-              stroke="black"
-              strokeWidth="2"
-            />
-            <circle
-              cx={node.connectorStart.x}
-              cy={node.connectorStart.y}
-              r="5"
-              fill="red"
-              onMouseDown={(e) => handleConnectorDragStart(e, node.id, 'connectorStart')}
-            />
-            <circle
-              cx={node.connectorEnd.x}
-              cy={node.connectorEnd.y}
-              r="5"
-              fill="blue"
-              onMouseDown={(e) => handleConnectorDragStart(e, node.id, 'connectorEnd')}
-            />
-          </svg>
-        );
-      default:
-        return null;
+  const handleCanvasMouseDown = (e) => {
+    if (activeTool === 'pan') {
+      handlePanStart();
+    }
+  };
+
+  const handleCanvasMouseMove = (e) => {
+    handleDrag(e);
+    handleConnectorDrag(e);
+    if (activeTool === 'pan') {
+      handlePanMove(e);
+    }
+  };
+
+  const handleCanvasMouseUp = () => {
+    handleDragEnd();
+    handleConnectorDragEnd();
+    if (activeTool === 'pan') {
+      handlePanEnd();
     }
   };
 
   return (
     <div 
-      className="bg-[#594BFF] min-h-[calc(100vh-120px)] relative flex items-center justify-center"
-      onMouseMove={(e) => {
-        handleDrag(e);
-        handleConnectorDrag(e);
-      }}
-      onMouseUp={() => {
-        handleDragEnd();
-        handleConnectorDragEnd();
-      }}
+      className="bg-[#594BFF] min-h-[calc(100vh-120px)] relative flex items-center justify-center overflow-hidden"
+      onMouseDown={handleCanvasMouseDown}
+      onMouseMove={handleCanvasMouseMove}
+      onMouseUp={handleCanvasMouseUp}
       ref={canvasRef}
     >
       <div 
@@ -173,17 +148,17 @@ const MindMapView = ({ project }) => {
             linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
           `,
           backgroundSize: '48px 48px',
+          transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
         }}
       >
         {nodes.map(node => (
-          <div
+          <NodeRenderer
             key={node.id}
-            className="absolute cursor-move"
-            style={{ left: `${node.x}px`, top: `${node.y}px` }}
-            onMouseDown={(e) => handleDragStart(e, node.id)}
-          >
-            {renderNode(node)}
-          </div>
+            node={node}
+            onDragStart={handleDragStart}
+            onConnectorDragStart={handleConnectorDragStart}
+            zoom={zoom}
+          />
         ))}
       </div>
       {showAIInput && (
@@ -201,9 +176,12 @@ const MindMapView = ({ project }) => {
           </Button>
         </div>
       )}
-      <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-white rounded-full shadow-lg p-2 flex items-center space-x-2">
-        <ToolButton icon={<MousePointer className="h-4 w-4" />} label="Select" />
-        <ToolButton icon={<Hand className="h-4 w-4" />} label="Pan" />
+      <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-lg p-2 flex items-center space-x-2">
+        <ToolButton 
+          icon={activeTool === 'select' ? <MousePointer className="h-4 w-4" /> : <Hand className="h-4 w-4" />} 
+          label={activeTool === 'select' ? "Select" : "Pan"} 
+          onClick={() => setActiveTool(activeTool === 'select' ? 'pan' : 'select')}
+        />
         <ToolButton icon={<Sparkles className="h-4 w-4" />} label="AI Node" onClick={handleAIClick} />
         <ToolButton icon={<Square className="h-4 w-4" />} label="Blank Node" onClick={() => handleAddNode('blank')} />
         <ToolButton icon={<StickyNote className="h-4 w-4" />} label="Post-it Node" onClick={() => handleAddNode('postit')} />
@@ -225,9 +203,9 @@ const MindMapView = ({ project }) => {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <ToolButton icon={<ZoomIn className="h-4 w-4" />} label="Zoom In" />
-        <span className="text-sm font-medium">100%</span>
-        <ToolButton icon={<ZoomOut className="h-4 w-4" />} label="Zoom Out" />
+        <ToolButton icon={<ZoomIn className="h-4 w-4" />} label="Zoom In" onClick={() => handleZoom(0.1)} />
+        <span className="text-sm font-medium">{Math.round(zoom * 100)}%</span>
+        <ToolButton icon={<ZoomOut className="h-4 w-4" />} label="Zoom Out" onClick={() => handleZoom(-0.1)} />
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
