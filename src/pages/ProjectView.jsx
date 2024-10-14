@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import ProjectEditModal from '../components/ProjectEditModal';
+import ArticleModal from '../components/ArticleModal';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PlusIcon } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const ProjectView = () => {
   const { id } = useParams();
@@ -21,6 +24,7 @@ const ProjectView = () => {
   });
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isNewArticleModalOpen, setIsNewArticleModalOpen] = useState(false);
 
   const handleProjectClick = () => {
     setIsEditModalOpen(true);
@@ -29,6 +33,17 @@ const ProjectView = () => {
   const handleProjectUpdate = (updatedProject) => {
     setProject(updatedProject);
     setIsEditModalOpen(false);
+  };
+
+  const handleNewArticle = () => {
+    setIsNewArticleModalOpen(true);
+  };
+
+  // Sample previously published article
+  const previousArticle = {
+    title: 'Sample Article',
+    description: 'This is a brief description of the sample article.',
+    image: '/placeholder.svg',
   };
 
   return (
@@ -75,6 +90,35 @@ const ProjectView = () => {
         project={project}
         onUpdate={handleProjectUpdate}
       />
+      <ArticleModal
+        isOpen={isNewArticleModalOpen}
+        onClose={() => setIsNewArticleModalOpen(false)}
+        article={{ title: '', content: '' }}
+        onUpdate={() => {}}
+      />
+      <div className="fixed bottom-4 right-4 flex flex-col items-end space-y-2">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Avatar className="w-12 h-12 cursor-pointer">
+                <AvatarImage src={previousArticle.image} alt={previousArticle.title} />
+                <AvatarFallback>PA</AvatarFallback>
+              </Avatar>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="font-bold">{previousArticle.title}</p>
+              <p>{previousArticle.description}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <Button
+          size="icon"
+          className="rounded-full w-14 h-14 bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
+          onClick={handleNewArticle}
+        >
+          <PlusIcon className="h-6 w-6" />
+        </Button>
+      </div>
     </div>
   );
 };
