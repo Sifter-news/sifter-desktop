@@ -55,7 +55,7 @@ const TextView = ({ project, focusedDocument, setFocusedDocument }) => {
       <div className="flex-grow flex justify-center items-start p-8">
         <div className="w-full max-w-[768px]">
           {selectedDocument ? (
-            <div className="bg-white shadow-lg rounded-lg p-6 relative">
+            <div className="bg-white bg-opacity-80 shadow-lg rounded-lg p-6 relative inline-block">
               <h2 className="text-2xl font-bold mb-4">{selectedDocument.title}</h2>
               <p className="text-gray-600">{selectedDocument.content}</p>
               <div className="absolute top-2 right-2">
