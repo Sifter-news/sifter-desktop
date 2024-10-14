@@ -11,6 +11,8 @@ import {
 
 const MindMapView = ({ project, focusedDocument }) => {
   const [showAIInput, setShowAIInput] = useState(false);
+  const [nodes, setNodes] = useState([]);
+  const [draggedNode, setDraggedNode] = useState(null);
 
   const handleAIClick = () => {
     setShowAIInput(!showAIInput);
@@ -31,8 +33,42 @@ const MindMapView = ({ project, focusedDocument }) => {
     </TooltipProvider>
   );
 
+  const handleAddNode = (type) => {
+    const newNode = {
+      id: Date.now(),
+      type,
+      x: Math.random() * (window.innerWidth - 100),
+      y: Math.random() * (window.innerHeight - 200),
+    };
+    setNodes([...nodes, newNode]);
+  };
+
+  const handleDragStart = (e, nodeId) => {
+    setDraggedNode(nodeId);
+  };
+
+  const handleDrag = (e) => {
+    if (draggedNode !== null) {
+      const updatedNodes = nodes.map(node => {
+        if (node.id === draggedNode) {
+          return { ...node, x: e.clientX, y: e.clientY };
+        }
+        return node;
+      });
+      setNodes(updatedNodes);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDraggedNode(null);
+  };
+
   return (
-    <div className="bg-[#594BFF] min-h-[calc(100vh-120px)] relative flex items-center justify-center">
+    <div 
+      className="bg-[#594BFF] min-h-[calc(100vh-120px)] relative flex items-center justify-center"
+      onMouseMove={handleDrag}
+      onMouseUp={handleDragEnd}
+    >
       <div 
         className="absolute inset-0" 
         style={{
@@ -42,7 +78,20 @@ const MindMapView = ({ project, focusedDocument }) => {
           `,
           backgroundSize: '48px 48px',
         }}
-      ></div>
+      >
+        {nodes.map(node => (
+          <div
+            key={node.id}
+            className="absolute cursor-move"
+            style={{ left: `${node.x}px`, top: `${node.y}px` }}
+            onMouseDown={(e) => handleDragStart(e, node.id)}
+          >
+            {node.type === 'blank' && <div className="w-20 h-20 bg-white rounded-md shadow-md flex items-center justify-center">Blank</div>}
+            {node.type === 'postit' && <div className="w-20 h-20 bg-yellow-200 rounded-md shadow-md flex items-center justify-center">Post-it</div>}
+            {node.type === 'document' && <div className="w-20 h-20 bg-blue-200 rounded-md shadow-md flex items-center justify-center">Document</div>}
+          </div>
+        ))}
+      </div>
       {showAIInput && (
         <div className="bg-white rounded-full shadow-lg p-2 flex items-center space-x-2 max-w-xl w-full">
           <Button size="icon" className="rounded-full flex-shrink-0">
@@ -62,9 +111,9 @@ const MindMapView = ({ project, focusedDocument }) => {
         <ToolButton icon={<MousePointer className="h-4 w-4" />} label="Select" />
         <ToolButton icon={<Hand className="h-4 w-4" />} label="Pan" />
         <ToolButton icon={<Sparkles className="h-4 w-4" />} label="AI Node" onClick={handleAIClick} />
-        <ToolButton icon={<Square className="h-4 w-4" />} label="Blank Node" />
-        <ToolButton icon={<StickyNote className="h-4 w-4" />} label="Post-it Node" />
-        <ToolButton icon={<Image className="h-4 w-4" />} label="Document/Image Node" />
+        <ToolButton icon={<Square className="h-4 w-4" />} label="Blank Node" onClick={() => handleAddNode('blank')} />
+        <ToolButton icon={<StickyNote className="h-4 w-4" />} label="Post-it Node" onClick={() => handleAddNode('postit')} />
+        <ToolButton icon={<Image className="h-4 w-4" />} label="Document/Image Node" onClick={() => handleAddNode('document')} />
         <ToolButton icon={<Type className="h-4 w-4" />} label="Text Tool" />
         <ToolButton icon={<Link className="h-4 w-4" />} label="Connector Node" />
         <ToolButton icon={<Layers className="h-4 w-4" />} label="Grouped Section Node" />
