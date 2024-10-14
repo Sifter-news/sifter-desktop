@@ -64,7 +64,7 @@ const HomePage = () => {
           <img src={user.avatar} alt={user.name} className="w-24 h-24 rounded-full mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-gray-800">{user.name}</h1>
         </div>
-        <div className="bg-gray-100 rounded-t-[128px] p-8 overflow-hidden shadow-inner">
+        <div className="bg-gray-100 rounded-t-[64px] p-8 overflow-hidden shadow-inner">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold">Investigations</h2>
             <Button className="rounded-full w-14 h-14 p-0 flex items-center justify-center">
