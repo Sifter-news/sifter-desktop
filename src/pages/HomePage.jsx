@@ -4,6 +4,7 @@ import InvestigationCard from '../components/InvestigationCard';
 import ReportCard from '../components/ReportCard';
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const HomePage = () => {
   const user = {
@@ -59,8 +60,20 @@ const HomePage = () => {
       <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-2 flex justify-between items-center">
           <div className="flex items-center space-x-4">
-            <span className="text-xl font-bold">Sifter Beta.v2</span>
-            <span className="text-lg text-purple-600">Dashboard Name</span>
+            <div className="flex items-center space-x-2">
+              <Avatar className="h-10 w-10">
+                <AvatarImage src="/placeholder.svg" alt="Sifter Logo" />
+                <AvatarFallback>SL</AvatarFallback>
+              </Avatar>
+              <span className="text-xl font-bold">Sifter Beta.v2</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Avatar className="h-10 w-10">
+                <AvatarImage src="/placeholder.svg" alt="Dashboard Icon" />
+                <AvatarFallback>DI</AvatarFallback>
+              </Avatar>
+              <span className="text-lg text-purple-600">Dashboard Name</span>
+            </div>
           </div>
           <UserProfile user={user} />
         </div>
