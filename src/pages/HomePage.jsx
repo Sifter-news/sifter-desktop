@@ -3,7 +3,7 @@ import UserProfile from '../components/UserProfile';
 import InvestigationCard from '../components/InvestigationCard';
 import ReportCard from '../components/ReportCard';
 import { Button } from "@/components/ui/button";
-import { PlusIcon } from 'lucide-react';
+import { PlusIcon, SearchIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const HomePage = () => {
@@ -65,15 +65,15 @@ const HomePage = () => {
                 <AvatarImage src="/placeholder.svg" alt="Sifter Logo" />
                 <AvatarFallback>SL</AvatarFallback>
               </Avatar>
-              <span className="text-xl font-bold">Sifter Beta.v2</span>
+              <span className="text-xl font-bold">Sifter</span>
             </div>
-            <div className="flex items-center space-x-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="/placeholder.svg" alt="Dashboard Icon" />
-                <AvatarFallback>DI</AvatarFallback>
-              </Avatar>
-              <span className="text-lg text-purple-600">Dashboard Name</span>
-            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src="/placeholder.svg" alt="Dashboard Icon" />
+              <AvatarFallback>DI</AvatarFallback>
+            </Avatar>
+            <span className="text-lg text-purple-600">Dashboard Name</span>
           </div>
           <UserProfile user={user} />
         </div>
@@ -81,7 +81,12 @@ const HomePage = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="bg-gray-100 rounded-[64px] pt-8 px-8 overflow-hidden shadow-inner">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">Investigations</h2>
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
+                <SearchIcon className="h-4 w-4 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold">Investigations</h2>
+            </div>
             <Button className="rounded-full w-14 h-14 p-0 flex items-center justify-center">
               <PlusIcon className="h-6 w-6" />
             </Button>
