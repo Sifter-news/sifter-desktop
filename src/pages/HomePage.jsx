@@ -41,11 +41,11 @@ const HomePage = () => {
         </div>
         <div className="flex flex-col space-y-8">
           {investigations.map(investigation => (
-            <div key={investigation.id} className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-              <div className="w-full md:w-1/2">
+            <div key={investigation.id} className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
+              <div className="w-full lg:w-[548px] flex-shrink-0">
                 <InvestigationCard investigation={investigation} />
               </div>
-              <div className="w-full md:w-1/2">
+              <div className="w-full lg:flex-grow">
                 <div className="overflow-x-auto pb-4">
                   <div className="flex space-x-4">
                     {investigation.reports.map(report => (
