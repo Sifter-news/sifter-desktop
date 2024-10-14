@@ -51,9 +51,9 @@ const HomePage = () => {
                   <h3 className="text-xl font-semibold mb-4">Articles</h3>
                   <div className="overflow-x-auto pb-4">
                     <div className="flex space-x-4">
-                      {investigation.reports.map(report => (
+                      {investigation.reports.map((report, index) => (
                         <div key={report.id} className="w-64 flex-shrink-0">
-                          <ReportCard report={report} />
+                          <ReportCard report={report} index={index} />
                         </div>
                       ))}
                     </div>
