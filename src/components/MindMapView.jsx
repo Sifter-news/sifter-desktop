@@ -51,7 +51,7 @@ const MindMapView = ({ project }) => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)] w-screen">
+    <div className="flex flex-col h-[calc(100vh-64px)] w-screen overflow-hidden">
       <Canvas
         ref={canvasRef}
         nodes={nodes}
