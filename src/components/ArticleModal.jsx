@@ -8,7 +8,7 @@ const ArticleModal = ({ isOpen, onClose, article, onUpdate }) => {
   const [content, setContent] = useState(article.content);
 
   const handleSave = () => {
-    onUpdate({ ...article, title, content });
+    onUpdate({ title, content, image: '/placeholder.svg' });
     onClose();
   };
 
@@ -16,7 +16,7 @@ const ArticleModal = ({ isOpen, onClose, article, onUpdate }) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[50vw] h-[50vh] fixed left-[calc(50%-25vw)] top-[calc(50%-25vh)] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Article</DialogTitle>
+          <DialogTitle>{article.id ? 'Edit Article' : 'New Article'}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <Input
