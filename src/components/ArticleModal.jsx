@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,8 +7,13 @@ const ArticleModal = ({ isOpen, onClose, article, onUpdate }) => {
   const [title, setTitle] = useState(article.title);
   const [content, setContent] = useState(article.content);
 
+  useEffect(() => {
+    setTitle(article.title);
+    setContent(article.content);
+  }, [article]);
+
   const handleSave = () => {
-    onUpdate({ title, content, image: '/placeholder.svg' });
+    onUpdate({ ...article, title, content, image: '/placeholder.svg' });
     onClose();
   };
 

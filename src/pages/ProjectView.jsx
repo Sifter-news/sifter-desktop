@@ -5,10 +5,9 @@ import ProjectEditModal from '../components/ProjectEditModal';
 import ArticleModal from '../components/ArticleModal';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PlusIcon, Trash2Icon } from 'lucide-react';
+import { PlusIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 const ProjectView = () => {
   const { id } = useParams();
@@ -28,7 +27,7 @@ const ProjectView = () => {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isNewArticleModalOpen, setIsNewArticleModalOpen] = useState(false);
-  const [newArticle, setNewArticle] = useState(null);
+  const [editingArticle, setEditingArticle] = useState(null);
 
   const handleProjectClick = () => {
     setIsEditModalOpen(true);
@@ -40,20 +39,29 @@ const ProjectView = () => {
   };
 
   const handleNewArticle = () => {
+    setEditingArticle(null);
     setIsNewArticleModalOpen(true);
   };
 
   const handleSaveArticle = (article) => {
-    // Simulating saving to database
-    const updatedReports = [...project.reports, { ...article, id: Date.now() }];
-    setProject({ ...project, reports: updatedReports });
-    setNewArticle(article);
+    if (editingArticle) {
+      // Update existing article
+      const updatedReports = project.reports.map(report =>
+        report.id === editingArticle.id ? { ...article, id: report.id } : report
+      );
+      setProject({ ...project, reports: updatedReports });
+    } else {
+      // Add new article
+      const updatedReports = [...project.reports, { ...article, id: Date.now() }];
+      setProject({ ...project, reports: updatedReports });
+    }
     setIsNewArticleModalOpen(false);
+    setEditingArticle(null);
   };
 
-  const handleDeleteArticle = (articleId) => {
-    const updatedReports = project.reports.filter(report => report.id !== articleId);
-    setProject({ ...project, reports: updatedReports });
+  const handleEditArticle = (article) => {
+    setEditingArticle(article);
+    setIsNewArticleModalOpen(true);
   };
 
   return (
@@ -103,46 +111,28 @@ const ProjectView = () => {
       <ArticleModal
         isOpen={isNewArticleModalOpen}
         onClose={() => setIsNewArticleModalOpen(false)}
-        article={{ title: '', content: '' }}
+        article={editingArticle || { title: '', content: '' }}
         onUpdate={handleSaveArticle}
       />
       <div className="fixed bottom-4 right-4 flex flex-col items-end space-y-2">
-        {[newArticle, ...project.reports].slice(0, 4).reverse().map((report, index) => (
-          report && (
-            <TooltipProvider key={report.id}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Avatar className={`w-12 h-12 cursor-pointer ${index > 0 ? '-mb-6' : ''}`}>
-                        <AvatarImage src={report.image || '/placeholder.svg'} alt={report.title} />
-                        <AvatarFallback>{report.title.substring(0, 2).toUpperCase()}</AvatarFallback>
-                      </Avatar>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Article</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to delete this article? This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDeleteArticle(report.id)}>
-                          <Trash2Icon className="mr-2 h-4 w-4" />
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="font-bold">{report.title}</p>
-                  <p>{report.content.substring(0, 100)}...</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )
+        {project.reports.slice(0, 4).reverse().map((report, index) => (
+          <TooltipProvider key={report.id}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Avatar 
+                  className={`w-12 h-12 cursor-pointer ${index > 0 ? '-mb-6' : ''}`}
+                  onClick={() => handleEditArticle(report)}
+                >
+                  <AvatarImage src={report.image || '/placeholder.svg'} alt={report.title} />
+                  <AvatarFallback>{report.title.substring(0, 2).toUpperCase()}</AvatarFallback>
+                </Avatar>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="font-bold">{report.title}</p>
+                <p>{report.content.substring(0, 100)}...</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         ))}
         <Button
           size="icon"
