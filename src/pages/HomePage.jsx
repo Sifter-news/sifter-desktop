@@ -10,7 +10,7 @@ const HomePage = () => {
   };
 
   const investigations = [
-    { id: 1, title: 'Vitamins', description: 'World War II was a global conflict that lasted from 1939 to 1945. It was a complex and multifaceted war that involved nearly all of the world\'s countries...' },
+    { id: 1, title: 'Vitamins', description: 'World War II was a global conflict that lasted from 1939 to 1945. It was a complex and multifaceted war that involved nearly all of the world\'s countries, including all of the great powers, and resulted in the deaths of millions of people.' },
     { id: 2, title: 'Project-1', description: 'World War II was a global conflict that lasted from 1939 to 1945. It was a complex and multifaceted war that involved nearly all of the world\'s countries...' },
   ];
 
@@ -31,10 +31,12 @@ const HomePage = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
-            <h2 className="text-2xl font-semibold mb-4">Investigations</h2>
-            {investigations.map(investigation => (
-              <InvestigationCard key={investigation.id} investigation={investigation} />
-            ))}
+            <h2 className="text-2xl font-semibold mb-6">Investigations</h2>
+            <div className="space-y-6">
+              {investigations.map(investigation => (
+                <InvestigationCard key={investigation.id} investigation={investigation} />
+              ))}
+            </div>
           </div>
           <div>
             <h2 className="text-2xl font-semibold mb-4">Reports</h2>
