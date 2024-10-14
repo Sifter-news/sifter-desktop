@@ -47,8 +47,8 @@ const NewProjectPage = () => {
           }}
         ></div>
         <div className="bg-white rounded-full shadow-lg p-2 flex items-center space-x-2 max-w-xl w-full">
-          <Button size="icon" className="rounded-full flex-shrink-0">
-            <PlusIcon className="h-6 w-6" />
+          <Button size="icon" className="rounded-full flex-shrink-0 bg-[#594BFF1A] hover:bg-[#594BFF33]">
+            <PlusIcon className="h-6 w-6 text-[#594BFF]" />
           </Button>
           <Input 
             type="text" 
