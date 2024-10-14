@@ -57,7 +57,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-white">
       <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="container mx-auto px-4 py-2 flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <span className="text-xl font-bold">Sifter Beta.v2</span>
             <span className="text-lg text-purple-600">Dashboard Name</span>
