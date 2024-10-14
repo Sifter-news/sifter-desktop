@@ -78,9 +78,9 @@ const HomePage = () => {
                   <InvestigationCard investigation={investigation} />
                 </div>
                 <div className="w-full lg:w-[548px] flex-shrink-0">
-                  <div className="bg-white bg-opacity-30 rounded-lg p-4 h-[323px]">
-                    <div className="overflow-x-auto h-full">
-                      <div className="flex space-x-4 h-full">
+                  <div className="bg-white bg-opacity-30 rounded-lg p-4 h-[323px] relative overflow-hidden">
+                    <div className="overflow-x-auto h-full scrollbar-hide">
+                      <div className="flex space-x-4 h-full pb-4">
                         {investigation.reports.map(report => (
                           <div key={report.id} className="w-64 flex-shrink-0">
                             <ReportCard report={report} />
@@ -88,6 +88,10 @@ const HomePage = () => {
                         ))}
                       </div>
                     </div>
+                    <div className="absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-white to-transparent pointer-events-none"></div>
+                    <div className="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+                    <div className="absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-white to-transparent pointer-events-none"></div>
+                    <div className="absolute inset-y-0 right-0 w-4 bg-gradient-to-l from-white to-transparent pointer-events-none"></div>
                   </div>
                 </div>
               </div>
