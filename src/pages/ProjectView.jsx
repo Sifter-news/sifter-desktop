@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import UserProfile from '../components/UserProfile';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -32,9 +32,6 @@ const ProjectView = () => {
               </Avatar>
               <span className="text-xl font-bold">Sifter</span>
             </div>
-            <Link to="/" className="text-gray-400 hover:text-gray-600 transition-colors">
-              Dashboard
-            </Link>
           </div>
           <div className="flex items-center space-x-2">
             <Avatar className="h-8 w-8">
