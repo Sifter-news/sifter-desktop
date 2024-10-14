@@ -46,16 +46,16 @@ const NewProjectPage = () => {
             backgroundSize: '48px 48px',
           }}
         ></div>
-        <div className="bg-white rounded-full shadow-lg p-2 flex items-center space-x-2 max-w-xl w-full">
-          <Button size="icon" className="rounded-full flex-shrink-0">
+        <div className="bg-[#594BFF] rounded-full shadow-lg p-2 flex items-center space-x-2 max-w-xl w-full">
+          <Button size="icon" className="rounded-full flex-shrink-0 bg-[#594BFF] text-white hover:bg-[#4B25F3]">
             <PlusIcon className="h-6 w-6" />
           </Button>
           <Input 
             type="text" 
             placeholder="Ask anything" 
-            className="flex-grow text-lg border-none focus:ring-0 rounded-full"
+            className="flex-grow text-lg border-none focus:ring-0 rounded-full bg-[#594BFF] text-white placeholder-white"
           />
-          <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-6">
+          <Button className="bg-[#594BFF] hover:bg-[#4B25F3] text-white rounded-full px-6">
             Ask
           </Button>
         </div>
