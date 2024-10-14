@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MoreVertical, Trash, Share, FolderInput } from 'lucide-react';
+import { MoreVertical, Trash, Share, FolderInput, FolderPlus, FilePlus, Users } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -40,18 +40,73 @@ const TextView = ({ project }) => {
     // Implement move functionality here
   };
 
+  const handleCreateGroup = () => {
+    console.log('Create group');
+    // Implement create group functionality here
+  };
+
+  const handleAddFolder = () => {
+    console.log('Add folder');
+    // Implement add folder functionality here
+  };
+
+  const handleCreateDocument = () => {
+    console.log('Create document');
+    // Implement create document functionality here
+  };
+
   return (
     <div className="flex min-h-[calc(100vh-120px)]">
       <div className="w-1/4 bg-gray-100 p-4 overflow-y-auto flex flex-col items-center">
-        <h3 className="font-bold mb-4">Navigator</h3>
-        <ul className="space-y-2 text-center">
+        <div className="w-full flex justify-between items-center mb-4">
+          <h3 className="font-bold">Navigator</h3>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-200">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={handleAddFolder}>
+                <FolderPlus className="mr-2 h-4 w-4" />
+                <span>Add Folder</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleCreateDocument}>
+                <FilePlus className="mr-2 h-4 w-4" />
+                <span>Create Document</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <ul className="space-y-2 w-full">
           {documents.map((doc) => (
             <li
               key={doc.id}
-              className="cursor-pointer hover:bg-gray-200 p-2 rounded"
+              className="cursor-pointer hover:bg-gray-200 p-2 rounded flex justify-between items-center"
               onClick={() => handleDocumentClick(doc)}
             >
-              📄 {doc.title}
+              <span>📄 {doc.title}</span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-300" onClick={(e) => e.stopPropagation()}>
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={handleCreateGroup}>
+                    <Users className="mr-2 h-4 w-4" />
+                    <span>Create Group</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleDelete}>
+                    <Trash className="mr-2 h-4 w-4" />
+                    <span>Delete</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleMove}>
+                    <FolderInput className="mr-2 h-4 w-4" />
+                    <span>Move to</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </li>
           ))}
         </ul>
