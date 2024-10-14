@@ -88,20 +88,18 @@ const HomePage = () => {
         </div>
       </header>
       <div className="container mx-auto px-4 py-8 pb-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsContent value="mind">
-            <MindMapView investigations={investigations} />
-          </TabsContent>
-          <TabsContent value="text">
-            <TextView investigations={investigations} />
-          </TabsContent>
-          <TabsContent value="time">
-            <TimeView investigations={investigations} />
-          </TabsContent>
-          <TabsContent value="map">
-            <MapView investigations={investigations} />
-          </TabsContent>
-        </Tabs>
+        <TabsContent value="mind" className="mt-0">
+          <MindMapView investigations={investigations} />
+        </TabsContent>
+        <TabsContent value="text" className="mt-0">
+          <TextView investigations={investigations} />
+        </TabsContent>
+        <TabsContent value="time" className="mt-0">
+          <TimeView investigations={investigations} />
+        </TabsContent>
+        <TabsContent value="map" className="mt-0">
+          <MapView investigations={investigations} />
+        </TabsContent>
       </div>
     </div>
   );
