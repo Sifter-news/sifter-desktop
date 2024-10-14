@@ -7,7 +7,7 @@ import { PlusIcon } from 'lucide-react';
 
 const HomePage = () => {
   const user = {
-    name: 'John Doe',
+    name: 'User-Name',
     avatar: '/placeholder.svg',
   };
 
@@ -56,14 +56,16 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-end mb-8">
+      <header className="bg-white shadow-sm">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <span className="text-xl font-bold">Sifter Beta.v2</span>
+            <span className="text-lg text-purple-600">Dashboard Name</span>
+          </div>
           <UserProfile user={user} />
         </div>
-        <div className="text-center mb-12">
-          <img src={user.avatar} alt={user.name} className="w-24 h-24 rounded-full mx-auto mb-4" />
-          <h1 className="text-3xl font-bold text-gray-800">{user.name}</h1>
-        </div>
+      </header>
+      <div className="container mx-auto px-4 py-8">
         <div className="bg-gray-100 rounded-t-[64px] p-8 overflow-hidden shadow-inner">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold">Investigations</h2>
