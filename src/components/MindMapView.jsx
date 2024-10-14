@@ -1,4 +1,7 @@
 import React from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { PlusIcon } from 'lucide-react';
 
 const MindMapView = ({ project }) => {
   return (
