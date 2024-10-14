@@ -9,6 +9,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { saveProjectState, loadProjectState } from '../utils/projectUtils';
+import NodeRenderer from './NodeRenderer';
+import ToolbarButton from './ToolbarButton';
 
 const MindMapView = ({ project }) => {
   const [showAIInput, setShowAIInput] = useState(false);
@@ -31,21 +33,6 @@ const MindMapView = ({ project }) => {
   const handleAIClick = () => {
     setShowAIInput(!showAIInput);
   };
-
-  const ToolButton = ({ icon, label, onClick }) => (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button size="icon" variant="ghost" className="rounded-full" onClick={onClick}>
-            {icon}
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{label}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  );
 
   const handleAddNode = (type) => {
     const newNode = {
@@ -104,90 +91,76 @@ const MindMapView = ({ project }) => {
     setDraggedConnector(null);
   };
 
-  const renderNode = (node) => {
-    switch (node.type) {
-      case 'blank':
-        return <div className="w-20 h-20 bg-white rounded-md shadow-md flex items-center justify-center">Node</div>;
-      case 'postit':
-        return (
-          <div className="w-32 h-32 bg-yellow-200 rounded-md shadow-md flex items-center justify-center relative">
-            <div className="absolute top-0 left-0 w-4 h-4 bg-yellow-300 rounded-tl-md hover:bg-yellow-400"></div>
-            <div className="absolute top-0 right-0 w-4 h-4 bg-yellow-300 rounded-tr-md hover:bg-yellow-400"></div>
-            <div className="absolute bottom-0 left-0 w-4 h-4 bg-yellow-300 rounded-bl-md hover:bg-yellow-400"></div>
-            <div className="absolute bottom-0 right-0 w-4 h-4 bg-yellow-300 rounded-br-md hover:bg-yellow-400"></div>
-            <p className="text-center p-2">{node.text || 'Post-it'}</p>
-          </div>
-        );
-      case 'text':
-        return <div className="p-2 bg-white rounded shadow-md">{node.text}</div>;
-      case 'connector':
-        return (
-          <svg className="absolute" style={{ left: 0, top: 0, width: '100%', height: '100%' }}>
-            <line
-              x1={node.connectorStart.x}
-              y1={node.connectorStart.y}
-              x2={node.connectorEnd.x}
-              y2={node.connectorEnd.y}
-              stroke="black"
-              strokeWidth="2"
-            />
-            <circle
-              cx={node.connectorStart.x}
-              cy={node.connectorStart.y}
-              r="5"
-              fill="red"
-              onMouseDown={(e) => handleConnectorDragStart(e, node.id, 'connectorStart')}
-            />
-            <circle
-              cx={node.connectorEnd.x}
-              cy={node.connectorEnd.y}
-              r="5"
-              fill="blue"
-              onMouseDown={(e) => handleConnectorDragStart(e, node.id, 'connectorEnd')}
-            />
-          </svg>
-        );
-      default:
-        return null;
-    }
-  };
-
   return (
-    <div 
-      className="bg-[#594BFF] min-h-[calc(100vh-120px)] relative flex items-center justify-center"
-      onMouseMove={(e) => {
-        handleDrag(e);
-        handleConnectorDrag(e);
-      }}
-      onMouseUp={() => {
-        handleDragEnd();
-        handleConnectorDragEnd();
-      }}
-      ref={canvasRef}
-    >
-      <div 
-        className="absolute inset-0" 
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '48px 48px',
-        }}
-      >
-        {nodes.map(node => (
-          <div
-            key={node.id}
-            className="absolute cursor-move"
-            style={{ left: `${node.x}px`, top: `${node.y}px` }}
-            onMouseDown={(e) => handleDragStart(e, node.id)}
-          >
-            {renderNode(node)}
-          </div>
-        ))}
+    <div className="relative h-screen overflow-hidden">
+      {/* Tabs at the top */}
+      <div className="absolute top-0 left-0 right-0 z-10 bg-white shadow-md">
+        <div className="flex space-x-2 p-2">
+          <Button variant="ghost">Mind</Button>
+          <Button variant="ghost">Text</Button>
+          <Button variant="ghost">Time</Button>
+          <Button variant="ghost">Map</Button>
+        </div>
       </div>
+
+      {/* Canvas */}
+      <div 
+        className="absolute inset-0 mt-12 bg-[#594BFF]"
+        onMouseMove={(e) => {
+          handleDrag(e);
+          handleConnectorDrag(e);
+        }}
+        onMouseUp={() => {
+          handleDragEnd();
+          handleConnectorDragEnd();
+        }}
+        ref={canvasRef}
+      >
+        <div 
+          className="absolute inset-0" 
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '48px 48px',
+          }}
+        >
+          {nodes.map(node => (
+            <NodeRenderer
+              key={node.id}
+              node={node}
+              onDragStart={handleDragStart}
+              onConnectorDragStart={handleConnectorDragStart}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Floating toolbar at the bottom */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
+        <div className="flex items-center space-x-2 bg-white bg-opacity-50 backdrop-blur-md rounded-full shadow-lg p-2">
+          <ToolbarButton icon={<MousePointer className="h-4 w-4" />} label="Select" />
+          <ToolbarButton icon={<Hand className="h-4 w-4" />} label="Pan" />
+          <ToolbarButton icon={<Sparkles className="h-4 w-4" />} label="AI Node" onClick={handleAIClick} />
+          <ToolbarButton icon={<Square className="h-4 w-4" />} label="Blank Node" onClick={() => handleAddNode('blank')} />
+          <ToolbarButton icon={<StickyNote className="h-4 w-4" />} label="Post-it Node" onClick={() => handleAddNode('postit')} />
+          <ToolbarButton icon={<Type className="h-4 w-4" />} label="Text Node" onClick={() => handleAddNode('text')} />
+          <ToolbarButton icon={<Link className="h-4 w-4" />} label="Connector Node" onClick={() => handleAddNode('connector')} />
+          <ToolbarButton icon={<Layers className="h-4 w-4" />} label="Grouped Section Node" />
+          <ToolbarButton icon={<ToggleLeft className="h-4 w-4" />} label="Toggle 2D/3D View" />
+          <ToolbarButton icon={<ZoomIn className="h-4 w-4" />} label="Zoom In" />
+          <span className="text-sm font-medium">100%</span>
+          <ToolbarButton icon={<ZoomOut className="h-4 w-4" />} label="Zoom Out" />
+          <Button variant="ghost" className="rounded-full px-4">
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+        </div>
+      </div>
+
       {showAIInput && (
-        <div className="bg-white rounded-full shadow-lg p-2 flex items-center space-x-2 max-w-xl w-full">
+        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-white rounded-full shadow-lg p-2 flex items-center space-x-2 max-w-xl w-full">
           <Button size="icon" className="rounded-full flex-shrink-0">
             <PlusIcon className="h-6 w-6" />
           </Button>
@@ -201,47 +174,6 @@ const MindMapView = ({ project }) => {
           </Button>
         </div>
       )}
-      <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-white rounded-full shadow-lg p-2 flex items-center space-x-2">
-        <ToolButton icon={<MousePointer className="h-4 w-4" />} label="Select" />
-        <ToolButton icon={<Hand className="h-4 w-4" />} label="Pan" />
-        <ToolButton icon={<Sparkles className="h-4 w-4" />} label="AI Node" onClick={handleAIClick} />
-        <ToolButton icon={<Square className="h-4 w-4" />} label="Blank Node" onClick={() => handleAddNode('blank')} />
-        <ToolButton icon={<StickyNote className="h-4 w-4" />} label="Post-it Node" onClick={() => handleAddNode('postit')} />
-        <ToolButton icon={<Type className="h-4 w-4" />} label="Text Node" onClick={() => handleAddNode('text')} />
-        <ToolButton icon={<Link className="h-4 w-4" />} label="Connector Node" onClick={() => handleAddNode('connector')} />
-        <ToolButton icon={<Layers className="h-4 w-4" />} label="Grouped Section Node" />
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center space-x-1">
-                <Button size="icon" variant="ghost" className="rounded-full">
-                  <ToggleLeft className="h-4 w-4" />
-                </Button>
-                <span className="text-sm font-medium">2D</span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Toggle 2D/3D View</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <ToolButton icon={<ZoomIn className="h-4 w-4" />} label="Zoom In" />
-        <span className="text-sm font-medium">100%</span>
-        <ToolButton icon={<ZoomOut className="h-4 w-4" />} label="Zoom Out" />
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" className="rounded-full px-4">
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Export Mind Map</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
     </div>
   );
 };
