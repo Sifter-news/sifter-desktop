@@ -9,7 +9,8 @@ const Canvas = forwardRef(({
   activeTool, 
   handlePanStart, 
   handlePanMove, 
-  handlePanEnd 
+  handlePanEnd,
+  onNodeUpdate
 }, ref) => {
   const handleDragStart = (e, nodeId) => {
     if (activeTool === 'select') {
@@ -80,6 +81,7 @@ const Canvas = forwardRef(({
             node={node}
             onDragStart={handleDragStart}
             zoom={zoom}
+            onNodeUpdate={onNodeUpdate}
           />
         ))}
       </div>
