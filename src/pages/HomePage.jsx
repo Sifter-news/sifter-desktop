@@ -6,7 +6,6 @@ import ReportCard from '../components/ReportCard';
 import { Button } from "@/components/ui/button";
 import { PlusIcon, FileSearchIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const HomePage = () => {
   const user = {
@@ -71,16 +70,6 @@ const HomePage = () => {
               <span className="text-xl font-bold">Sifter</span>
             </div>
           </div>
-          <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-4">
-            <Tabs defaultValue="mind" className="w-[400px]">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="mind">Mind</TabsTrigger>
-                <TabsTrigger value="text">Text</TabsTrigger>
-                <TabsTrigger value="time">Time</TabsTrigger>
-                <TabsTrigger value="map">Map</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
           <div className="flex items-center space-x-2">
             <Avatar className="h-8 w-8">
               <AvatarImage src="/placeholder.svg" alt="Dashboard Icon" />
@@ -110,7 +99,9 @@ const HomePage = () => {
             {investigations.map(investigation => (
               <div key={investigation.id} className="flex flex-col lg:flex-row">
                 <div className="w-full lg:w-[548px] flex-shrink-0">
-                  <InvestigationCard investigation={investigation} />
+                  <Link to={`/project/${investigation.id}`}>
+                    <InvestigationCard investigation={investigation} />
+                  </Link>
                 </div>
                 <div className="w-full lg:w-[548px] flex-shrink-0">
                   <div className="bg-white bg-opacity-30 rounded-r-lg p-4 h-[323px] relative overflow-hidden">
@@ -123,10 +114,6 @@ const HomePage = () => {
                         ))}
                       </div>
                     </div>
-                    <div className="absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-white to-transparent pointer-events-none"></div>
-                    <div className="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
-                    <div className="absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-white to-transparent pointer-events-none"></div>
-                    <div className="absolute inset-y-0 right-0 w-4 bg-gradient-to-l from-white to-transparent pointer-events-none"></div>
                   </div>
                 </div>
               </div>
