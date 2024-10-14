@@ -28,10 +28,10 @@ const HomePage = () => {
       title: 'Startup Investment Due Diligence', 
       description: 'A comprehensive investigation into the key aspects of evaluating a potential startup investment, covering financial, legal, and market analysis.',
       reports: [
-        { id: 4, title: 'Financial Analysis', content: 'This report delves into the startup\'s financial health, including revenue models, burn rate, and projections. It also examines the company\'s funding history and capitalization table...' },
-        { id: 5, title: 'Market Opportunity', content: 'An in-depth look at the target market size, growth potential, and competitive landscape. This analysis also covers the startup\'s unique value proposition and go-to-market strategy...' },
-        { id: 6, title: 'Team Assessment', content: 'Evaluating the founding team\'s experience, skills, and track record. This report also examines the company culture and ability to attract and retain top talent...' },
-        { id: 7, title: 'Legal and Regulatory Review', content: 'A comprehensive review of the startup\'s legal structure, intellectual property rights, and any potential regulatory challenges or compliance issues...' },
+        { id: 4, title: 'Financial Analysis', content: 'This report delves into the startup\'s financial health, including revenue models, burn rate, and projections. It also examines the company\'s funding history and capitalization table...', image: '/placeholder.svg' },
+        { id: 5, title: 'Market Opportunity', content: 'An in-depth look at the target market size, growth potential, and competitive landscape. This analysis also covers the startup\'s unique value proposition and go-to-market strategy...', image: '/placeholder.svg' },
+        { id: 6, title: 'Team Assessment', content: 'Evaluating the founding team\'s experience, skills, and track record. This report also examines the company culture and ability to attract and retain top talent...', image: '/placeholder.svg' },
+        { id: 7, title: 'Legal and Regulatory Review', content: 'A comprehensive review of the startup\'s legal structure, intellectual property rights, and any potential regulatory challenges or compliance issues...', image: '/placeholder.svg' },
       ]
     },
     { 
