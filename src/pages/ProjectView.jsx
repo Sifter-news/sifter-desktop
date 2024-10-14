@@ -72,7 +72,7 @@ const ProjectView = () => {
     <div className="min-h-screen bg-white flex flex-col">
       <Header user={user} projectName={project.title} onProjectClick={handleProjectClick} />
       <Tabs defaultValue="mind" className="w-full flex flex-col flex-grow">
-        <TabsList className="w-full justify-center fixed top-16 bg-white bg-opacity-20 backdrop-blur-md z-10">
+        <TabsList className="w-full justify-center fixed top-16 bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex">
           <TabsTrigger value="mind">Mind</TabsTrigger>
           <TabsTrigger value="text">Text</TabsTrigger>
           <TabsTrigger value="time">Time</TabsTrigger>
