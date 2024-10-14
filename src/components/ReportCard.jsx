@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 const ReportCard = ({ report }) => {
   return (
     <Card className="h-full flex flex-col overflow-hidden">
-      <div className="w-full h-[120px] bg-gray-200 relative overflow-hidden">
+      <div className="w-full h-[96px] bg-gray-200 relative overflow-hidden">
         <img 
           src={report.image || '/placeholder.svg'} 
           alt={report.title} 
