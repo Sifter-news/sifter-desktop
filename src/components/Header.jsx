@@ -13,7 +13,7 @@ const Header = ({ user, projectName, onProjectClick }) => {
               <AvatarImage src="/placeholder.svg" alt="Sifter Logo" />
               <AvatarFallback>SL</AvatarFallback>
             </Avatar>
-            <span className="text-xl font-bold">Sifter</span>
+            <span className="text-sm font-normal">Sifter</span>
           </div>
         </div>
         <div className="flex-grow flex justify-center items-center">
@@ -23,14 +23,14 @@ const Header = ({ user, projectName, onProjectClick }) => {
               <AvatarFallback>DI</AvatarFallback>
             </Avatar>
             {projectName ? (
-              <span className="text-lg text-[#4B25F3] cursor-pointer" onClick={onProjectClick}>{projectName}</span>
+              <span className="text-sm font-normal text-[#4B25F3] cursor-pointer" onClick={onProjectClick}>{projectName}</span>
             ) : (
-              <span className="text-lg text-[#4B25F3]">Dashboard Name</span>
+              <span className="text-sm font-normal text-[#4B25F3]">Dashboard Name</span>
             )}
           </div>
         </div>
         <div className="flex items-center space-x-4 min-w-[200px] justify-end">
-          <Link to="/" className="text-gray-400 hover:text-gray-600 transition-colors">
+          <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
             Dashboard
           </Link>
           <UserProfile user={user} />
