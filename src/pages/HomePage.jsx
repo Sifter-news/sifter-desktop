@@ -78,7 +78,9 @@ const HomePage = () => {
             {investigations.map(investigation => (
               <div key={investigation.id} className="flex flex-col lg:flex-row">
                 <div className="w-full lg:w-[548px] flex-shrink-0">
-                  <InvestigationCard investigation={investigation} />
+                  <Link to={`/project/${investigation.id}`} state={{ project: investigation }}>
+                    <InvestigationCard investigation={investigation} />
+                  </Link>
                 </div>
                 <div className="w-full lg:w-[548px] flex-shrink-0">
                   <div className="bg-white bg-opacity-30 rounded-r-lg p-4 h-[323px] relative overflow-hidden">

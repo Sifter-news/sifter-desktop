@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import ProjectEditModal from '../components/ProjectEditModal';
 import ArticleModal from '../components/ArticleModal';
@@ -11,16 +11,18 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 const ProjectView = () => {
   const { id } = useParams();
+  const location = useLocation();
   const user = {
     name: 'User-Name',
     avatar: '/placeholder.svg',
     email: 'user@example.com',
   };
 
-  const [project, setProject] = useState({
+  const [project, setProject] = useState(location.state?.project || {
     id,
     title: `Project ${id}`,
     description: 'This is a sample project description.',
+    reports: []
   });
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -37,13 +39,6 @@ const ProjectView = () => {
 
   const handleNewArticle = () => {
     setIsNewArticleModalOpen(true);
-  };
-
-  // Sample previously published article
-  const previousArticle = {
-    title: 'Sample Article',
-    description: 'This is a brief description of the sample article.',
-    image: '/placeholder.svg',
   };
 
   return (
@@ -97,20 +92,22 @@ const ProjectView = () => {
         onUpdate={() => {}}
       />
       <div className="fixed bottom-4 right-4 flex flex-col items-end space-y-2">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Avatar className="w-12 h-12 cursor-pointer">
-                <AvatarImage src={previousArticle.image} alt={previousArticle.title} />
-                <AvatarFallback>PA</AvatarFallback>
-              </Avatar>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="font-bold">{previousArticle.title}</p>
-              <p>{previousArticle.description}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        {project.reports.slice(0, 3).reverse().map((report, index) => (
+          <TooltipProvider key={report.id}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Avatar className={`w-12 h-12 cursor-pointer ${index > 0 ? '-mb-6' : ''}`}>
+                  <AvatarImage src={report.image} alt={report.title} />
+                  <AvatarFallback>{report.title.substring(0, 2).toUpperCase()}</AvatarFallback>
+                </Avatar>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="font-bold">{report.title}</p>
+                <p>{report.content.substring(0, 100)}...</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ))}
         <Button
           size="icon"
           className="rounded-full w-14 h-14 bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
