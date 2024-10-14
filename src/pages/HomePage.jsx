@@ -79,7 +79,7 @@ const HomePage = () => {
         </div>
       </header>
       <div className="container mx-auto px-4 py-8">
-        <div className="bg-gray-100 rounded-[64px] p-8 overflow-hidden shadow-inner">
+        <div className="bg-gray-100 rounded-[64px] pt-8 px-8 overflow-hidden shadow-inner">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold">Investigations</h2>
             <Button className="rounded-full w-14 h-14 p-0 flex items-center justify-center">
