@@ -6,7 +6,6 @@ import ReportCard from '../components/ReportCard';
 import { Button } from "@/components/ui/button";
 import { PlusIcon, FileSearchIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const HomePage = () => {
   const user = {
@@ -60,7 +59,7 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <header className="bg-white shadow-sm relative">
+      <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-2 flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
@@ -70,16 +69,6 @@ const HomePage = () => {
               </Avatar>
               <span className="text-xl font-bold">Sifter</span>
             </div>
-          </div>
-          <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-4">
-            <Tabs defaultValue="mind" className="w-[400px]">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="mind">Mind</TabsTrigger>
-                <TabsTrigger value="text">Text</TabsTrigger>
-                <TabsTrigger value="time">Time</TabsTrigger>
-                <TabsTrigger value="map">Map</TabsTrigger>
-              </TabsList>
-            </Tabs>
           </div>
           <div className="flex items-center space-x-2">
             <Avatar className="h-8 w-8">
