@@ -71,28 +71,28 @@ const ProjectView = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header user={user} projectName={project.title} onProjectClick={handleProjectClick} />
-      <div className="w-full flex justify-center">
-        <Tabs defaultValue="mind" className="w-full max-w-3xl">
-          <TabsList className="w-full justify-center">
-            <TabsTrigger value="mind">Mind</TabsTrigger>
-            <TabsTrigger value="text">Text</TabsTrigger>
-            <TabsTrigger value="time">Time</TabsTrigger>
-            <TabsTrigger value="map">Map</TabsTrigger>
-          </TabsList>
-          <TabsContent value="mind">
+      <Tabs defaultValue="mind" className="w-full flex flex-col flex-grow">
+        <TabsList className="w-full justify-center fixed top-16 bg-white z-10">
+          <TabsTrigger value="mind">Mind</TabsTrigger>
+          <TabsTrigger value="text">Text</TabsTrigger>
+          <TabsTrigger value="time">Time</TabsTrigger>
+          <TabsTrigger value="map">Map</TabsTrigger>
+        </TabsList>
+        <div className="flex-grow mt-12"> {/* Add top margin to account for fixed tabs */}
+          <TabsContent value="mind" className="h-full">
             <MindMapView project={project} focusedDocument={focusedDocument} />
           </TabsContent>
-          <TabsContent value="text">
+          <TabsContent value="text" className="h-full">
             <TextView project={project} focusedDocument={focusedDocument} setFocusedDocument={setFocusedDocument} />
           </TabsContent>
-          <TabsContent value="time">
+          <TabsContent value="time" className="h-full">
             <TimeView project={project} focusedDocument={focusedDocument} />
           </TabsContent>
-          <TabsContent value="map">
+          <TabsContent value="map" className="h-full">
             <MapView project={project} focusedDocument={focusedDocument} />
           </TabsContent>
-        </Tabs>
-      </div>
+        </div>
+      </Tabs>
       <ProjectEditModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
