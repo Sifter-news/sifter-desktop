@@ -17,7 +17,6 @@ const ProjectView = () => {
   };
 
   // Fetch the specific investigation based on the id
-  // This is a placeholder. In a real application, you would fetch this data from an API or state management system
   const investigation = {
     id: id,
     title: `Investigation ${id}`,
