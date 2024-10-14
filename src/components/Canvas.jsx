@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useCallback } from 'react';
 import NodeRenderer from './NodeRenderer';
 
 const Canvas = forwardRef(({ 
@@ -20,13 +20,17 @@ const Canvas = forwardRef(({
     }
   };
 
+  const snapToGrid = useCallback((value) => {
+    return Math.round(value / 24) * 24;
+  }, []);
+
   const handleDrag = (e) => {
     if (activeTool === 'select') {
       setNodes(prevNodes => prevNodes.map(node => 
         node.isDragging ? { 
           ...node, 
-          x: (e.clientX - ref.current.offsetLeft) / zoom - position.x, 
-          y: (e.clientY - ref.current.offsetTop) / zoom - position.y 
+          x: snapToGrid((e.clientX - ref.current.offsetLeft) / zoom - position.x), 
+          y: snapToGrid((e.clientY - ref.current.offsetTop) / zoom - position.y)
         } : node
       ));
     }
@@ -68,10 +72,12 @@ const Canvas = forwardRef(({
         className="absolute inset-0" 
         style={{
           backgroundImage: `
+            radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px),
             linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
             linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
           `,
-          backgroundSize: '48px 48px',
+          backgroundSize: '24px 24px, 24px 24px, 24px 24px',
+          backgroundPosition: '0 0, 12px 12px, 12px 12px',
           transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
         }}
       >
