@@ -3,12 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 const ReportCard = ({ report }) => {
   return (
-    <Card className="mb-4">
-      <CardHeader>
-        <CardTitle>{report.title}</CardTitle>
+    <Card className="h-full flex flex-col">
+      <CardHeader className="flex-grow">
+        <CardTitle className="text-lg">{report.title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <CardDescription>{report.content}</CardDescription>
+        <CardDescription className="line-clamp-4">{report.content}</CardDescription>
       </CardContent>
     </Card>
   );
