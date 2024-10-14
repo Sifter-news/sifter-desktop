@@ -1,17 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PlusIcon, Hand, Sparkles, Square, StickyNote, Type, Link, Layers, ToggleLeft, ZoomIn, ZoomOut, Download, MousePointer } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { PlusIcon } from 'lucide-react';
 import { saveProjectState, loadProjectState } from '../utils/projectUtils';
 import { useZoomPan } from '../utils/canvasUtils';
-import ToolButton from './ToolbarButton';
-import NodeRenderer from './NodeRenderer';
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
 
@@ -59,7 +51,7 @@ const MindMapView = ({ project }) => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)]">
+    <div className="flex flex-col h-[calc(100vh-64px)] w-screen">
       <Canvas
         ref={canvasRef}
         nodes={nodes}

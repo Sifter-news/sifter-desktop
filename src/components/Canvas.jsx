@@ -57,7 +57,7 @@ const Canvas = forwardRef(({
 
   return (
     <div 
-      className="flex-grow bg-[#594BFF] overflow-hidden"
+      className="w-screen h-full bg-[#594BFF] overflow-hidden"
       onMouseDown={handleCanvasMouseDown}
       onMouseMove={handleCanvasMouseMove}
       onMouseUp={handleCanvasMouseUp}
