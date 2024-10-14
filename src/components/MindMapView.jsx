@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PlusIcon, Hand, Sparkles, Square, StickyNote, Type, Link, Layers, ToggleLeft, ZoomIn, ZoomOut, Download, MousePointer } from 'lucide-react';
@@ -8,13 +8,25 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { saveProjectState, loadProjectState } from '../utils/projectUtils';
 
-const MindMapView = ({ project, focusedDocument }) => {
+const MindMapView = ({ project }) => {
   const [showAIInput, setShowAIInput] = useState(false);
   const [nodes, setNodes] = useState([]);
   const [draggedNode, setDraggedNode] = useState(null);
   const [draggedConnector, setDraggedConnector] = useState(null);
   const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const savedNodes = loadProjectState(project.id);
+    if (savedNodes.length > 0) {
+      setNodes(savedNodes);
+    }
+  }, [project.id]);
+
+  useEffect(() => {
+    saveProjectState(project.id, nodes);
+  }, [project.id, nodes]);
 
   const handleAIClick = () => {
     setShowAIInput(!showAIInput);

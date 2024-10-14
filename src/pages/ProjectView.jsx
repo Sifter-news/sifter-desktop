@@ -69,7 +69,6 @@ const ProjectView = () => {
     setIsNewArticleModalOpen(true);
   };
 
-
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header user={user} projectName={project.title} onProjectClick={handleProjectClick} />
