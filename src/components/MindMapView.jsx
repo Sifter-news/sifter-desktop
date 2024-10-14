@@ -43,7 +43,8 @@ const MindMapView = ({ project }) => {
       type,
       x: Math.random() * (window.innerWidth - 100),
       y: Math.random() * (window.innerHeight - 200),
-      text: type === 'text' ? 'New Text' : '',
+      text: type === 'text' ? 'New Text' : 'Post-it content',
+      source: type === 'postit' ? 'Studies In Intelligence Vol. 01' : '',
       connectorStart: type === 'connector' ? { x: 0, y: 0 } : null,
       connectorEnd: type === 'connector' ? { x: 100, y: 100 } : null,
     };

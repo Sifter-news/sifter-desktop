@@ -7,12 +7,10 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom }) => {
         return <div className="w-20 h-20 bg-white rounded-md shadow-md flex items-center justify-center">Node</div>;
       case 'postit':
         return (
-          <div className="w-32 h-32 bg-yellow-200 rounded-md shadow-md flex items-center justify-center relative">
-            <div className="absolute top-0 left-0 w-4 h-4 bg-yellow-300 rounded-tl-md hover:bg-yellow-400"></div>
-            <div className="absolute top-0 right-0 w-4 h-4 bg-yellow-300 rounded-tr-md hover:bg-yellow-400"></div>
-            <div className="absolute bottom-0 left-0 w-4 h-4 bg-yellow-300 rounded-bl-md hover:bg-yellow-400"></div>
-            <div className="absolute bottom-0 right-0 w-4 h-4 bg-yellow-300 rounded-br-md hover:bg-yellow-400"></div>
-            <p className="text-center p-2">{node.text || 'Post-it'}</p>
+          <div className="w-64 h-64 bg-[#FFFFA5] rounded-md shadow-md flex flex-col p-4 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-2 bg-[#FFF98F] rounded-t-md"></div>
+            <h3 className="text-lg font-semibold mb-2 text-gray-800">Source: {node.source || 'Untitled'}</h3>
+            <p className="text-sm text-gray-700 overflow-y-auto flex-grow">{node.text || 'Post-it content'}</p>
           </div>
         );
       case 'text':
