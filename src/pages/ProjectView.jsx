@@ -2,11 +2,9 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import UserProfile from '../components/UserProfile';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import MindMapView from '../components/MindMapView';
-import TextView from '../components/TextView';
-import TimeView from '../components/TimeView';
-import MapView from '../components/MapView';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { PlusIcon } from 'lucide-react';
 
 const ProjectView = () => {
   const { id } = useParams();
@@ -16,20 +14,15 @@ const ProjectView = () => {
     email: 'user@example.com',
   };
 
-  // Fetch the specific investigation based on the id
-  const investigation = {
-    id: id,
-    title: `Investigation ${id}`,
-    description: 'This is a sample investigation.',
-    reports: [
-      { id: 1, title: 'Report 1', content: 'Sample content for Report 1' },
-      { id: 2, title: 'Report 2', content: 'Sample content for Report 2' },
-    ]
+  // In a real application, you would fetch the project data based on the id
+  const project = {
+    title: `Project ${id}`,
+    description: 'This is a sample project description.',
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="bg-white shadow-sm relative">
+    <div className="min-h-screen bg-white flex flex-col">
+      <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-2 flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
@@ -45,33 +38,46 @@ const ProjectView = () => {
               <AvatarImage src="/placeholder.svg" alt="Project Icon" />
               <AvatarFallback>PI</AvatarFallback>
             </Avatar>
-            <span className="text-lg text-[#4B25F3]">{investigation.title}</span>
+            <span className="text-lg text-[#4B25F3]">{project.title}</span>
           </div>
           <UserProfile user={user} />
         </div>
       </header>
-      <div className="container mx-auto px-4 py-8 pb-6">
-        <Tabs defaultValue="mind" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="mind">Mind</TabsTrigger>
-            <TabsTrigger value="text">Text</TabsTrigger>
-            <TabsTrigger value="time">Time</TabsTrigger>
-            <TabsTrigger value="map">Map</TabsTrigger>
-          </TabsList>
-          <TabsContent value="mind">
-            <MindMapView investigations={[investigation]} />
-          </TabsContent>
-          <TabsContent value="text">
-            <TextView investigations={[investigation]} />
-          </TabsContent>
-          <TabsContent value="time">
-            <TimeView investigations={[investigation]} />
-          </TabsContent>
-          <TabsContent value="map">
-            <MapView investigations={[investigation]} />
-          </TabsContent>
-        </Tabs>
-      </div>
+      <main className="flex-grow bg-[#594BFF] relative flex items-center justify-center">
+        <div 
+          className="absolute inset-0" 
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '48px 48px',
+          }}
+        ></div>
+        <div className="bg-white rounded-full shadow-lg p-2 flex items-center space-x-2 max-w-xl w-full">
+          <Button size="icon" className="rounded-full flex-shrink-0">
+            <PlusIcon className="h-6 w-6" />
+          </Button>
+          <Input 
+            type="text" 
+            placeholder="Ask anything about this project" 
+            className="flex-grow text-lg border-none focus:ring-0 rounded-full"
+          />
+          <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-6">
+            Ask
+          </Button>
+        </div>
+      </main>
+      <footer className="bg-white shadow-lg">
+        <div className="container mx-auto px-4 py-2">
+          <div className="flex justify-center space-x-4">
+            {/* Add toolbar buttons here */}
+            <Button variant="ghost">Tool 1</Button>
+            <Button variant="ghost">Tool 2</Button>
+            <Button variant="ghost">Tool 3</Button>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
