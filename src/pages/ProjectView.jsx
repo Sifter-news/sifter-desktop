@@ -4,7 +4,6 @@ import Header from '../components/Header';
 import ProjectEditModal from '../components/ProjectEditModal';
 import ArticleModal from '../components/ArticleModal';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { PlusIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -33,6 +32,9 @@ const ProjectView = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isNewArticleModalOpen, setIsNewArticleModalOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState(null);
+
+
+  const [focusedDocument, setFocusedDocument] = useState(null);
 
   const handleProjectClick = () => {
     setIsEditModalOpen(true);
@@ -67,6 +69,7 @@ const ProjectView = () => {
     setIsNewArticleModalOpen(true);
   };
 
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header user={user} projectName={project.title} onProjectClick={handleProjectClick} />
@@ -78,16 +81,16 @@ const ProjectView = () => {
           <TabsTrigger value="map">Map</TabsTrigger>
         </TabsList>
         <TabsContent value="mind">
-          <MindMapView project={project} />
+          <MindMapView project={project} focusedDocument={focusedDocument} />
         </TabsContent>
         <TabsContent value="text">
-          <TextView project={project} />
+          <TextView project={project} focusedDocument={focusedDocument} setFocusedDocument={setFocusedDocument} />
         </TabsContent>
         <TabsContent value="time">
-          <TimeView project={project} />
+          <TimeView project={project} focusedDocument={focusedDocument} />
         </TabsContent>
         <TabsContent value="map">
-          <MapView project={project} />
+          <MapView project={project} focusedDocument={focusedDocument} />
         </TabsContent>
       </Tabs>
       <ProjectEditModal

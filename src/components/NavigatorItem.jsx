@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const NavigatorItem = ({ item, index, onDocumentClick, dragOverFolder, setDragOverFolder, setDragTimer }) => {
+const NavigatorItem = ({ item, index, onDocumentClick, dragOverFolder, setDragOverFolder, setDragTimer, isFocused }) => {
   const handleDragEnter = () => {
     if (item.type === 'folder') {
       setDragOverFolder(item.id);
@@ -31,7 +31,9 @@ const NavigatorItem = ({ item, index, onDocumentClick, dragOverFolder, setDragOv
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`cursor-pointer hover:bg-gray-200 p-2 rounded flex justify-between items-center ${dragOverFolder === item.id ? 'bg-blue-100' : ''}`}
+          className={`cursor-pointer hover:bg-gray-200 p-2 rounded flex justify-between items-center ${
+            dragOverFolder === item.id ? 'bg-blue-100' : ''
+          } ${isFocused ? 'bg-blue-200' : ''}`}
           onClick={() => item.type === 'document' && onDocumentClick(item)}
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}

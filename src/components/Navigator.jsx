@@ -10,7 +10,7 @@ import {
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import NavigatorItem from './NavigatorItem';
 
-const Navigator = ({ items, setItems, onDocumentClick }) => {
+const Navigator = ({ items, setItems, onDocumentClick, focusedDocument }) => {
   const [dragOverFolder, setDragOverFolder] = useState(null);
   const [dragTimer, setDragTimer] = useState(null);
 
@@ -101,6 +101,7 @@ const Navigator = ({ items, setItems, onDocumentClick }) => {
               dragOverFolder={dragOverFolder}
               setDragOverFolder={setDragOverFolder}
               setDragTimer={setDragTimer}
+              isFocused={focusedDocument && focusedDocument.id === item.id}
             />
           ))}
           {provided.placeholder}

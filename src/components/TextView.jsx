@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import Navigator from './Navigator';
 
-const TextView = ({ project }) => {
+const TextView = ({ project, focusedDocument, setFocusedDocument }) => {
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [items, setItems] = useState([
     { id: '1', type: 'document', title: 'Document 1', content: 'This is the content of Document 1.', children: [] },
@@ -12,8 +12,19 @@ const TextView = ({ project }) => {
     { id: '4', type: 'document', title: 'Document 3', content: 'This is the content of Document 3.', children: [] },
   ]);
 
+  useEffect(() => {
+    if (focusedDocument) {
+      setSelectedDocument(focusedDocument);
+    } else if (items.length > 0) {
+      const firstDocument = items.find(item => item.type === 'document') || items[0];
+      setSelectedDocument(firstDocument);
+      setFocusedDocument(firstDocument);
+    }
+  }, [focusedDocument, items, setFocusedDocument]);
+
   const handleDocumentClick = (doc) => {
     setSelectedDocument(doc);
+    setFocusedDocument(doc);
   };
 
   const handleDelete = () => {
@@ -34,7 +45,12 @@ const TextView = ({ project }) => {
   return (
     <div className="flex min-h-[calc(100vh-120px)]">
       <div className="w-1/4 bg-gray-100 p-4 overflow-y-auto">
-        <Navigator items={items} setItems={setItems} onDocumentClick={handleDocumentClick} />
+        <Navigator 
+          items={items} 
+          setItems={setItems} 
+          onDocumentClick={handleDocumentClick}
+          focusedDocument={selectedDocument}
+        />
       </div>
       <div className="w-3/4 p-8 flex justify-center items-start">
         {selectedDocument ? (
