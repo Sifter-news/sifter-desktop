@@ -4,9 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UserIcon } from 'lucide-react';
+import { UserIcon, LogOutIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ProfileDialog = ({ user }) => {
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    // Here you would typically handle the sign-out logic
+    // For now, we'll just navigate to the login page
+    navigate('/login');
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -45,7 +54,11 @@ const ProfileDialog = ({ user }) => {
             <Input id="password" type="password" defaultValue="********" className="col-span-3" />
           </div>
         </div>
-        <div className="flex justify-end">
+        <div className="flex justify-between">
+          <Button variant="outline" onClick={handleSignOut}>
+            <LogOutIcon className="mr-2 h-4 w-4" />
+            Sign Out
+          </Button>
           <Button type="submit">Save changes</Button>
         </div>
       </DialogContent>
