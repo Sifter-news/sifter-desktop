@@ -12,6 +12,7 @@ const ReportCard = ({ report }) => {
         />
       </div>
       <CardHeader className="flex-grow">
+        <div className="text-xs uppercase text-purple-600 font-semibold tracking-wide mb-2">Report</div>
         <CardTitle className="text-lg">{report.title}</CardTitle>
       </CardHeader>
       <CardContent>
