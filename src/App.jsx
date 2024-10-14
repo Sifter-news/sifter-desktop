@@ -6,22 +6,25 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import NewProjectPage from "./pages/NewProjectPage";
 import ProjectView from "./pages/ProjectView";
+import { DarkModeProvider } from "./contexts/DarkModeContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/new-project" element={<NewProjectPage />} />
-          <Route path="/project/:id" element={<ProjectView />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <DarkModeProvider>
+      <TooltipProvider>
+        <Toaster />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/new-project" element={<NewProjectPage />} />
+            <Route path="/project/:id" element={<ProjectView />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </DarkModeProvider>
   </QueryClientProvider>
 );
 
