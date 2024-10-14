@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const contentRef = useRef(null);
+  const titleRef = useRef(null);
 
   useEffect(() => {
     if (isEditing && contentRef.current) {
@@ -17,7 +18,10 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpd
   const handleBlur = () => {
     setIsEditing(false);
     if (onNodeUpdate) {
-      onNodeUpdate(node.id, { text: contentRef.current.innerText });
+      onNodeUpdate(node.id, { 
+        text: contentRef.current.innerText,
+        source: titleRef.current.innerText
+      });
     }
   };
 
@@ -32,7 +36,15 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpd
             onClick={handleClick}
           >
             <div className="absolute top-0 left-0 w-full h-2 bg-[#FFF98F] rounded-t-md"></div>
-            <h3 className="text-lg font-semibold mb-2 text-gray-800">Source: {node.source || 'Untitled'}</h3>
+            <h3 
+              ref={titleRef}
+              contentEditable={isEditing}
+              onBlur={handleBlur}
+              className="text-lg font-semibold mb-2 text-gray-800 outline-none"
+              suppressContentEditableWarning={true}
+            >
+              Source: {node.source || 'Untitled'}
+            </h3>
             <div
               ref={contentRef}
               contentEditable={isEditing}
