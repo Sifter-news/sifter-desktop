@@ -48,8 +48,7 @@ const HomePage = () => {
                   <InvestigationCard investigation={investigation} />
                 </div>
                 <div className="w-full lg:w-[548px] flex-shrink-0">
-                  <h3 className="text-xl font-semibold mb-4">Articles</h3>
-                  <div className="bg-white bg-opacity-30 rounded-lg p-4 h-[323px]"> {/* Updated height to match InvestigationCard */}
+                  <div className="bg-white bg-opacity-30 rounded-lg p-4 h-[323px]">
                     <div className="overflow-x-auto h-full">
                       <div className="flex space-x-4 h-full">
                         {investigation.reports.map(report => (
