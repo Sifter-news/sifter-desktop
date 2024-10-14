@@ -10,13 +10,23 @@ const HomePage = () => {
   };
 
   const investigations = [
-    { id: 1, title: 'Vitamins', description: 'World War II was a global conflict that lasted from 1939 to 1945. It was a complex and multifaceted war that involved nearly all of the world\'s countries, including all of the great powers, and resulted in the deaths of millions of people.' },
-    { id: 2, title: 'Project-1', description: 'World War II was a global conflict that lasted from 1939 to 1945. It was a complex and multifaceted war that involved nearly all of the world\'s countries...' },
-  ];
-
-  const reports = [
-    { id: 1, title: 'Article-1', content: 'World War II was a global conflict that lasted from 1939 to 1945. It was a complex and multifaceted war that involved nearly all of the world\'s countries...' },
-    { id: 2, title: 'Article-2', content: 'World War II was a global conflict that lasted from 1939 to 1945. It was a complex and multifaceted war that involved nearly all of the world\'s countries...' },
+    { 
+      id: 1, 
+      title: 'Vitamins', 
+      description: 'World War II was a global conflict that lasted from 1939 to 1945. It was a complex and multifaceted war that involved nearly all of the world\'s countries, including all of the great powers, and resulted in the deaths of millions of people.',
+      reports: [
+        { id: 1, title: 'Article-1', content: 'World War II was a global conflict that lasted from 1939 to 1945. It was a complex and multifaceted war that involved nearly all of the world\'s countries...' },
+        { id: 2, title: 'Article-2', content: 'World War II was a global conflict that lasted from 1939 to 1945. It was a complex and multifaceted war that involved nearly all of the world\'s countries...' },
+      ]
+    },
+    { 
+      id: 2, 
+      title: 'Project-1', 
+      description: 'World War II was a global conflict that lasted from 1939 to 1945. It was a complex and multifaceted war that involved nearly all of the world\'s countries...',
+      reports: [
+        { id: 3, title: 'Article-3', content: 'World War II was a global conflict that lasted from 1939 to 1945. It was a complex and multifaceted war that involved nearly all of the world\'s countries...' },
+      ]
+    },
   ];
 
   return (
@@ -29,21 +39,19 @@ const HomePage = () => {
           <img src={user.avatar} alt={user.name} className="w-24 h-24 rounded-full mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-gray-800">{user.name}</h1>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div>
-            <h2 className="text-2xl font-semibold mb-6">Investigations</h2>
-            <div className="space-y-6">
-              {investigations.map(investigation => (
-                <InvestigationCard key={investigation.id} investigation={investigation} />
-              ))}
+        <div className="space-y-8">
+          {investigations.map(investigation => (
+            <div key={investigation.id} className="flex flex-col md:flex-row gap-8">
+              <div className="md:w-1/2">
+                <InvestigationCard investigation={investigation} />
+              </div>
+              <div className="md:w-1/2 space-y-4">
+                {investigation.reports.map(report => (
+                  <ReportCard key={report.id} report={report} />
+                ))}
+              </div>
             </div>
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold mb-4">Reports</h2>
-            {reports.map(report => (
-              <ReportCard key={report.id} report={report} />
-            ))}
-          </div>
+          ))}
         </div>
       </div>
     </div>
