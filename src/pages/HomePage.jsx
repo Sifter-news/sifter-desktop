@@ -39,7 +39,7 @@ const HomePage = () => {
           <img src={user.avatar} alt={user.name} className="w-24 h-24 rounded-full mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-gray-800">{user.name}</h1>
         </div>
-        <div className="bg-gray-100 rounded-t-3xl p-8">
+        <div className="bg-gray-100 rounded-t-[32px] p-8">
           <h2 className="text-2xl font-bold mb-6">Investigations</h2>
           <div className="flex flex-col space-y-8">
             {investigations.map(investigation => (
