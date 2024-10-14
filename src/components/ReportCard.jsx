@@ -11,11 +11,11 @@ const ReportCard = ({ report }) => {
           className="w-full h-full object-cover"
         />
       </div>
-      <CardHeader className="flex-grow">
-        <div className="text-xs uppercase text-purple-600 font-semibold tracking-wide mb-2">Report</div>
-        <CardTitle className="text-lg">{report.title}</CardTitle>
+      <CardHeader className="flex-grow py-3">
+        <div className="text-xs uppercase text-purple-600 font-semibold tracking-wide mb-1">Report</div>
+        <CardTitle className="text-lg mb-1">{report.title}</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="py-2">
         <CardDescription className="line-clamp-4">{report.content}</CardDescription>
       </CardContent>
     </Card>
