@@ -1,10 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import UserProfile from '../components/UserProfile';
-import InvestigationCard from '../components/InvestigationCard';
-import ReportCard from '../components/ReportCard';
-import { Button } from "@/components/ui/button";
-import { PlusIcon, FileSearchIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MindMapView from '../components/MindMapView';
