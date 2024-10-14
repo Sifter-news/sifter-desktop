@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const InvestigationCard = ({ investigation }) => {
   return (
-    <Card className="w-[548px] h-[323px] p-6 bg-[#594BFF] shadow-lg relative overflow-hidden">
+    <Card className="w-[548px] h-[323px] p-6 bg-[#594BFF] shadow-lg relative overflow-hidden rounded-[48px]">
       <div 
         className="absolute inset-0" 
         style={{
