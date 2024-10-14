@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import UserProfile from '../components/UserProfile';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Header from '../components/Header';
+import ProjectEditModal from '../components/ProjectEditModal';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PlusIcon } from 'lucide-react';
@@ -14,35 +14,26 @@ const ProjectView = () => {
     email: 'user@example.com',
   };
 
-  // In a real application, you would fetch the project data based on the id
-  const project = {
+  const [project, setProject] = useState({
+    id,
     title: `Project ${id}`,
     description: 'This is a sample project description.',
+  });
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const handleProjectClick = () => {
+    setIsEditModalOpen(true);
+  };
+
+  const handleProjectUpdate = (updatedProject) => {
+    setProject(updatedProject);
+    setIsEditModalOpen(false);
   };
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-2 flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="/placeholder.svg" alt="Sifter Logo" />
-                <AvatarFallback>SL</AvatarFallback>
-              </Avatar>
-              <span className="text-xl font-bold">Sifter</span>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src="/placeholder.svg" alt="Project Icon" />
-              <AvatarFallback>PI</AvatarFallback>
-            </Avatar>
-            <span className="text-lg text-[#4B25F3]">{project.title}</span>
-          </div>
-          <UserProfile user={user} />
-        </div>
-      </header>
+      <Header user={user} projectName={project.title} onProjectClick={handleProjectClick} />
       <main className="flex-grow bg-[#594BFF] relative flex items-center justify-center">
         <div 
           className="absolute inset-0" 
@@ -78,6 +69,12 @@ const ProjectView = () => {
           </div>
         </div>
       </footer>
+      <ProjectEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        project={project}
+        onUpdate={handleProjectUpdate}
+      />
     </div>
   );
 };

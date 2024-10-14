@@ -1,11 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import UserProfile from '../components/UserProfile';
+import Header from '../components/Header';
 import InvestigationCard from '../components/InvestigationCard';
 import ReportCard from '../components/ReportCard';
 import { Button } from "@/components/ui/button";
 import { PlusIcon, FileSearchIcon } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const HomePage = () => {
   const user = {
@@ -59,32 +58,7 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-2 flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="/placeholder.svg" alt="Sifter Logo" />
-                <AvatarFallback>SL</AvatarFallback>
-              </Avatar>
-              <span className="text-xl font-bold">Sifter</span>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src="/placeholder.svg" alt="Dashboard Icon" />
-              <AvatarFallback>DI</AvatarFallback>
-            </Avatar>
-            <span className="text-lg text-[#4B25F3]">Dashboard Name</span>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Link to="/" className="text-gray-400 hover:text-gray-600 transition-colors">
-              Dashboard
-            </Link>
-            <UserProfile user={user} />
-          </div>
-        </div>
-      </header>
+      <Header user={user} />
       <div className="container mx-auto px-4 py-8 pb-6">
         <div className="bg-gray-100 rounded-[64px] pt-8 px-8 pb-6 overflow-hidden shadow-inner">
           <div className="flex justify-between items-center mb-6">
