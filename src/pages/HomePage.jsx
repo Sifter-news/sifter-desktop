@@ -2,6 +2,8 @@ import React from 'react';
 import UserProfile from '../components/UserProfile';
 import InvestigationCard from '../components/InvestigationCard';
 import ReportCard from '../components/ReportCard';
+import { Button } from "@/components/ui/button";
+import { PlusIcon } from 'lucide-react';
 
 const HomePage = () => {
   const user = {
@@ -40,7 +42,12 @@ const HomePage = () => {
           <h1 className="text-3xl font-bold text-gray-800">{user.name}</h1>
         </div>
         <div className="bg-gray-100 rounded-t-4xl p-8">
-          <h2 className="text-2xl font-bold mb-6">Investigations</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Investigations</h2>
+            <Button className="rounded-full w-14 h-14 p-0 flex items-center justify-center">
+              <PlusIcon className="h-6 w-6" />
+            </Button>
+          </div>
           <div className="flex flex-col space-y-8">
             {investigations.map(investigation => (
               <div key={investigation.id} className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
