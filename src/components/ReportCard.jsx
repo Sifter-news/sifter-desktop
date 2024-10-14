@@ -3,7 +3,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 const ReportCard = ({ report }) => {
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col overflow-hidden">
+      <div className="w-full h-[30%] bg-gray-200 relative overflow-hidden">
+        <img 
+          src={report.image || '/placeholder.svg'} 
+          alt={report.title} 
+          className="w-full h-full object-cover"
+        />
+      </div>
       <CardHeader className="flex-grow">
         <CardTitle className="text-lg">{report.title}</CardTitle>
       </CardHeader>

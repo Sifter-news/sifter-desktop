@@ -17,9 +17,9 @@ const HomePage = () => {
       title: 'Human Survival Needs', 
       description: 'An investigation into the essential elements required for human survival, including physiological needs, safety, and psychological well-being.',
       reports: [
-        { id: 1, title: 'Basic Physiological Needs', content: 'Humans require air, water, food, shelter, and sleep to survive. This article explores the minimum requirements for each of these essential needs...' },
-        { id: 2, title: 'Safety and Security', content: 'Beyond basic physiological needs, humans require safety and security for long-term survival. This includes physical safety, financial security, and health...' },
-        { id: 3, title: 'Psychological Well-being', content: 'Mental health is crucial for human survival. This report examines the importance of social connections, purpose, and self-actualization in maintaining psychological well-being...' },
+        { id: 1, title: 'Basic Physiological Needs', content: 'Humans require air, water, food, shelter, and sleep to survive. This article explores the minimum requirements for each of these essential needs...', image: '/placeholder.svg' },
+        { id: 2, title: 'Safety and Security', content: 'Beyond basic physiological needs, humans require safety and security for long-term survival. This includes physical safety, financial security, and health...', image: '/placeholder.svg' },
+        { id: 3, title: 'Psychological Well-being', content: 'Mental health is crucial for human survival. This report examines the importance of social connections, purpose, and self-actualization in maintaining psychological well-being...', image: '/placeholder.svg' },
       ]
     },
     { 
