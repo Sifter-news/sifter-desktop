@@ -61,14 +61,14 @@ const HomePage = () => {
         <div className="container mx-auto px-4 py-2 flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <Avatar className="h-10 w-10">
+              <Avatar className="h-8 w-8">
                 <AvatarImage src="/placeholder.svg" alt="Sifter Logo" />
                 <AvatarFallback>SL</AvatarFallback>
               </Avatar>
               <span className="text-xl font-bold">Sifter Beta.v2</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Avatar className="h-10 w-10">
+              <Avatar className="h-8 w-8">
                 <AvatarImage src="/placeholder.svg" alt="Dashboard Icon" />
                 <AvatarFallback>DI</AvatarFallback>
               </Avatar>
