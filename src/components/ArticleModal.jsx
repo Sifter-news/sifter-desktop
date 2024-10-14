@@ -14,7 +14,7 @@ const ArticleModal = ({ isOpen, onClose, article, onUpdate }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-1/2 h-screen fixed left-12 top-0 overflow-y-auto">
+      <DialogContent className="w-4/5 max-w-2xl h-4/5 max-h-[600px] fixed inset-0 m-auto overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Article</DialogTitle>
         </DialogHeader>
