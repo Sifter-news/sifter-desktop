@@ -78,7 +78,7 @@ const HomePage = () => {
           <UserProfile user={user} />
         </div>
       </header>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 pb-6"> {/* Changed pb-8 to pb-6 */}
         <div className="bg-gray-100 rounded-[64px] pt-8 px-8 overflow-hidden shadow-inner">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center space-x-3">
