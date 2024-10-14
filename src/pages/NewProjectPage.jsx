@@ -55,7 +55,7 @@ const NewProjectPage = () => {
             placeholder="Ask anything" 
             className="flex-grow text-lg border-none focus:ring-0 rounded-full"
           />
-          <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-6">
+          <Button className="bg-[#594BFF] hover:bg-[#4B3FD9] text-white rounded-full px-6">
             Ask
           </Button>
         </div>
