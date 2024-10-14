@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import UserProfile from '../components/UserProfile';
 import InvestigationCard from '../components/InvestigationCard';
 import ReportCard from '../components/ReportCard';
@@ -88,9 +89,11 @@ const HomePage = () => {
               </div>
               <h2 className="text-2xl font-bold">Investigations</h2>
             </div>
-            <Button className="rounded-full w-14 h-14 p-0 flex items-center justify-center">
-              <PlusIcon className="h-6 w-6" />
-            </Button>
+            <Link to="/new-project">
+              <Button className="rounded-full w-14 h-14 p-0 flex items-center justify-center">
+                <PlusIcon className="h-6 w-6" />
+              </Button>
+            </Link>
           </div>
           <div className="flex flex-col space-y-8 max-h-[calc(100vh-300px)] overflow-y-auto pr-4 scrollbar-hide">
             {investigations.map(investigation => (
