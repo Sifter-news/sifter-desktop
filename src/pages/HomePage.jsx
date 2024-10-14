@@ -75,12 +75,12 @@ const HomePage = () => {
           </div>
           <div className="flex flex-col space-y-8 max-h-[calc(100vh-300px)] overflow-y-auto pr-4 scrollbar-hide">
             {investigations.map(investigation => (
-              <div key={investigation.id} className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
+              <div key={investigation.id} className="flex flex-col lg:flex-row">
                 <div className="w-full lg:w-[548px] flex-shrink-0">
                   <InvestigationCard investigation={investigation} />
                 </div>
                 <div className="w-full lg:w-[548px] flex-shrink-0">
-                  <div className="bg-white bg-opacity-30 rounded-lg p-4 h-[323px] relative overflow-hidden">
+                  <div className="bg-white bg-opacity-30 rounded-r-lg p-4 h-[323px] relative overflow-hidden">
                     <div className="overflow-x-auto h-full scrollbar-hide">
                       <div className="flex space-x-4 h-full pb-4">
                         {investigation.reports.map(report => (
