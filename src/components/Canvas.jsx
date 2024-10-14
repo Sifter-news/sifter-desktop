@@ -1,6 +1,5 @@
 import React, { forwardRef } from 'react';
 import NodeRenderer from './NodeRenderer';
-import { useDarkMode } from '../contexts/DarkModeContext';
 
 const Canvas = forwardRef(({ 
   nodes, 
@@ -12,8 +11,6 @@ const Canvas = forwardRef(({
   handlePanMove, 
   handlePanEnd 
 }, ref) => {
-  const { isDarkMode } = useDarkMode();
-
   const handleDragStart = (e, nodeId) => {
     if (activeTool === 'select') {
       setNodes(prevNodes => prevNodes.map(node => 
@@ -60,7 +57,7 @@ const Canvas = forwardRef(({
 
   return (
     <div 
-      className={`w-screen h-full ${isDarkMode ? 'bg-gray-800' : 'bg-[#594BFF]'} overflow-hidden`}
+      className="w-screen h-full bg-[#594BFF] overflow-hidden"
       onMouseDown={handleCanvasMouseDown}
       onMouseMove={handleCanvasMouseMove}
       onMouseUp={handleCanvasMouseUp}
@@ -70,8 +67,8 @@ const Canvas = forwardRef(({
         className="absolute inset-0" 
         style={{
           backgroundImage: `
-            linear-gradient(to right, ${isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)'} 1px, transparent 1px),
-            linear-gradient(to bottom, ${isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)'} 1px, transparent 1px)
+            linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
           `,
           backgroundSize: '48px 48px',
           transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
