@@ -1,11 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { PlusIcon, FileSearchIcon } from 'lucide-react';
 import InvestigationCard from './InvestigationCard';
 import ReportCard from './ReportCard';
 
-const MindMapView = ({ investigations }) => {
+const MindMapView = ({ investigations: initialInvestigations }) => {
+  const [investigations, setInvestigations] = useState(initialInvestigations);
+
+  const handleUpdateArticle = (updatedArticle, investigationId) => {
+    setInvestigations(prevInvestigations =>
+      prevInvestigations.map(investigation => {
+        if (investigation.id === investigationId) {
+          return {
+            ...investigation,
+            reports: investigation.reports.map(report =>
+              report.id === updatedArticle.id ? updatedArticle : report
+            )
+          };
+        }
+        return investigation;
+      })
+    );
+  };
+
   return (
     <div className="bg-gray-100 rounded-[64px] pt-8 px-8 pb-6 overflow-hidden shadow-inner">
       <div className="flex justify-between items-center mb-6">
@@ -33,7 +51,10 @@ const MindMapView = ({ investigations }) => {
                   <div className="flex space-x-4 h-full pb-4">
                     {investigation.reports.map(report => (
                       <div key={report.id} className="w-64 flex-shrink-0">
-                        <ReportCard report={report} />
+                        <ReportCard
+                          report={report}
+                          onUpdate={(updatedArticle) => handleUpdateArticle(updatedArticle, investigation.id)}
+                        />
                       </div>
                     ))}
                   </div>
