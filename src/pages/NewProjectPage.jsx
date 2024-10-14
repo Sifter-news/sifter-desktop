@@ -53,7 +53,7 @@ const NewProjectPage = () => {
           <Input 
             type="text" 
             placeholder="Ask anything" 
-            className="flex-grow text-lg border-none focus:ring-0 rounded-full bg-white text-[#594BFF] placeholder-[#594BFF] opacity-90"
+            className="flex-grow text-lg border-none focus:ring-0 rounded-full bg-[#594BFF] text-white placeholder-white"
           />
           <Button className="bg-[#594BFF] hover:bg-[#4B25F3] text-white rounded-full px-6">
             Ask
