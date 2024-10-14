@@ -52,22 +52,24 @@ const TextView = ({ project, focusedDocument, setFocusedDocument }) => {
           focusedDocument={selectedDocument}
         />
       </div>
-      <div className="w-3/4 p-8 flex justify-center items-start">
-        {selectedDocument ? (
-          <div className="bg-white shadow-lg rounded-lg p-6 max-w-2xl w-full relative">
-            <h2 className="text-2xl font-bold mb-4">{selectedDocument.title}</h2>
-            <p className="text-gray-600">{selectedDocument.content}</p>
-            <div className="absolute top-2 right-2">
-              <Button variant="ghost" size="sm" onClick={handleDelete}>Delete</Button>
-              <Button variant="ghost" size="sm" onClick={handleShare}>Share</Button>
-              <Button variant="ghost" size="sm" onClick={handleMove}>Move</Button>
+      <div className="flex-grow flex justify-center items-start p-8">
+        <div className="w-full max-w-[768px]">
+          {selectedDocument ? (
+            <div className="bg-white shadow-lg rounded-lg p-6 relative">
+              <h2 className="text-2xl font-bold mb-4">{selectedDocument.title}</h2>
+              <p className="text-gray-600">{selectedDocument.content}</p>
+              <div className="absolute top-2 right-2">
+                <Button variant="ghost" size="sm" onClick={handleDelete}>Delete</Button>
+                <Button variant="ghost" size="sm" onClick={handleShare}>Share</Button>
+                <Button variant="ghost" size="sm" onClick={handleMove}>Move</Button>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="text-center text-gray-500">
-            Select a document from the navigator to view its content.
-          </div>
-        )}
+          ) : (
+            <div className="text-center text-gray-500">
+              Select a document from the navigator to view its content.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
