@@ -30,7 +30,7 @@ const HomePage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-end mb-8">
           <UserProfile user={user} />
@@ -39,25 +39,29 @@ const HomePage = () => {
           <img src={user.avatar} alt={user.name} className="w-24 h-24 rounded-full mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-gray-800">{user.name}</h1>
         </div>
-        <div className="flex flex-col space-y-8">
-          {investigations.map(investigation => (
-            <div key={investigation.id} className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
-              <div className="w-full lg:w-[548px] flex-shrink-0">
-                <InvestigationCard investigation={investigation} />
-              </div>
-              <div className="w-full lg:w-[548px] flex-shrink-0">
-                <div className="overflow-x-auto pb-4">
-                  <div className="flex space-x-4">
-                    {investigation.reports.map(report => (
-                      <div key={report.id} className="w-64 flex-shrink-0">
-                        <ReportCard report={report} />
-                      </div>
-                    ))}
+        <div className="bg-gray-100 rounded-t-3xl p-8">
+          <h2 className="text-2xl font-bold mb-6">Investigations</h2>
+          <div className="flex flex-col space-y-8">
+            {investigations.map(investigation => (
+              <div key={investigation.id} className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
+                <div className="w-full lg:w-[548px] flex-shrink-0">
+                  <InvestigationCard investigation={investigation} />
+                </div>
+                <div className="w-full lg:w-[548px] flex-shrink-0">
+                  <h3 className="text-xl font-semibold mb-4">Articles</h3>
+                  <div className="overflow-x-auto pb-4">
+                    <div className="flex space-x-4">
+                      {investigation.reports.map(report => (
+                        <div key={report.id} className="w-64 flex-shrink-0">
+                          <ReportCard report={report} />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>
