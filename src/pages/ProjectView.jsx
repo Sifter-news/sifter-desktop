@@ -129,7 +129,6 @@ const ProjectView = () => {
               </TooltipTrigger>
               <TooltipContent>
                 <p className="font-bold">{report.title}</p>
-                <p>{report.content.substring(0, 100)}...</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
