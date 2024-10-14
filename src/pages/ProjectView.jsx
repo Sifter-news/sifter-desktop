@@ -33,7 +33,6 @@ const ProjectView = () => {
   const [isNewArticleModalOpen, setIsNewArticleModalOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState(null);
 
-
   const [focusedDocument, setFocusedDocument] = useState(null);
 
   const handleProjectClick = () => {
@@ -72,26 +71,28 @@ const ProjectView = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header user={user} projectName={project.title} onProjectClick={handleProjectClick} />
-      <Tabs defaultValue="mind" className="w-full">
-        <TabsList className="w-full justify-start">
-          <TabsTrigger value="mind">Mind</TabsTrigger>
-          <TabsTrigger value="text">Text</TabsTrigger>
-          <TabsTrigger value="time">Time</TabsTrigger>
-          <TabsTrigger value="map">Map</TabsTrigger>
-        </TabsList>
-        <TabsContent value="mind">
-          <MindMapView project={project} focusedDocument={focusedDocument} />
-        </TabsContent>
-        <TabsContent value="text">
-          <TextView project={project} focusedDocument={focusedDocument} setFocusedDocument={setFocusedDocument} />
-        </TabsContent>
-        <TabsContent value="time">
-          <TimeView project={project} focusedDocument={focusedDocument} />
-        </TabsContent>
-        <TabsContent value="map">
-          <MapView project={project} focusedDocument={focusedDocument} />
-        </TabsContent>
-      </Tabs>
+      <div className="w-full flex justify-center">
+        <Tabs defaultValue="mind" className="w-full max-w-3xl">
+          <TabsList className="w-full justify-center">
+            <TabsTrigger value="mind">Mind</TabsTrigger>
+            <TabsTrigger value="text">Text</TabsTrigger>
+            <TabsTrigger value="time">Time</TabsTrigger>
+            <TabsTrigger value="map">Map</TabsTrigger>
+          </TabsList>
+          <TabsContent value="mind">
+            <MindMapView project={project} focusedDocument={focusedDocument} />
+          </TabsContent>
+          <TabsContent value="text">
+            <TextView project={project} focusedDocument={focusedDocument} setFocusedDocument={setFocusedDocument} />
+          </TabsContent>
+          <TabsContent value="time">
+            <TimeView project={project} focusedDocument={focusedDocument} />
+          </TabsContent>
+          <TabsContent value="map">
+            <MapView project={project} focusedDocument={focusedDocument} />
+          </TabsContent>
+        </Tabs>
+      </div>
       <ProjectEditModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
