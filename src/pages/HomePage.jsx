@@ -10,6 +10,7 @@ const HomePage = () => {
   const user = {
     name: 'User-Name',
     avatar: '/placeholder.svg',
+    email: 'user@example.com',
   };
 
   const investigations = [
