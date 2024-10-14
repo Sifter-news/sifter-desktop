@@ -5,7 +5,7 @@ import UserProfile from './UserProfile';
 
 const Header = ({ user, projectName, onProjectClick }) => {
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
       <div className="container mx-auto px-4 py-2 flex justify-between items-center">
         <div className="flex items-center space-x-4 min-w-[200px]">
           <div className="flex items-center space-x-2">
