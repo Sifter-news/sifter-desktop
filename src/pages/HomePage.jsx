@@ -77,7 +77,12 @@ const HomePage = () => {
             </Avatar>
             <span className="text-lg text-[#4B25F3]">Dashboard Name</span>
           </div>
-          <UserProfile user={user} />
+          <div className="flex items-center space-x-4">
+            <Link to="/" className="text-gray-400 hover:text-gray-600 transition-colors">
+              Dashboard
+            </Link>
+            <UserProfile user={user} />
+          </div>
         </div>
       </header>
       <div className="container mx-auto px-4 py-8 pb-6">
