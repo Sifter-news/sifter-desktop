@@ -10,16 +10,15 @@ import {
 
 const TextView = ({ project }) => {
   const [selectedDocument, setSelectedDocument] = useState(null);
-
-  const documents = [
-    { id: 1, title: 'Document 1', content: 'This is the content of Document 1.' },
-    { id: 2, title: 'Document 2', content: 'This is the content of Document 2.' },
-    { id: 3, title: 'Document 3', content: 'This is the content of Document 3.' },
-    { id: 4, title: 'Document 4', content: 'This is the content of Document 4.' },
-    { id: 5, title: 'Document 5', content: 'This is the content of Document 5.' },
-    { id: 6, title: 'Document 6', content: 'This is the content of Document 6.' },
-    { id: 7, title: 'Document 7', content: 'This is the content of Document 7.' },
-  ];
+  const [items, setItems] = useState([
+    { id: 1, type: 'document', title: 'Document 1', content: 'This is the content of Document 1.' },
+    { id: 2, type: 'document', title: 'Document 2', content: 'This is the content of Document 2.' },
+    { id: 3, type: 'document', title: 'Document 3', content: 'This is the content of Document 3.' },
+    { id: 4, type: 'document', title: 'Document 4', content: 'This is the content of Document 4.' },
+    { id: 5, type: 'document', title: 'Document 5', content: 'This is the content of Document 5.' },
+    { id: 6, type: 'document', title: 'Document 6', content: 'This is the content of Document 6.' },
+    { id: 7, type: 'document', title: 'Document 7', content: 'This is the content of Document 7.' },
+  ]);
 
   const handleDocumentClick = (doc) => {
     setSelectedDocument(doc);
@@ -46,13 +45,23 @@ const TextView = ({ project }) => {
   };
 
   const handleAddFolder = () => {
-    console.log('Add folder');
-    // Implement add folder functionality here
+    const newFolder = {
+      id: Date.now(),
+      type: 'folder',
+      title: `New Folder ${items.filter(item => item.type === 'folder').length + 1}`,
+      items: []
+    };
+    setItems([...items, newFolder]);
   };
 
   const handleCreateDocument = () => {
-    console.log('Create document');
-    // Implement create document functionality here
+    const newDocument = {
+      id: Date.now(),
+      type: 'document',
+      title: `New Document ${items.filter(item => item.type === 'document').length + 1}`,
+      content: 'This is a new document.'
+    };
+    setItems([...items, newDocument]);
   };
 
   return (
@@ -79,13 +88,13 @@ const TextView = ({ project }) => {
           </DropdownMenu>
         </div>
         <ul className="space-y-2 w-full">
-          {documents.map((doc) => (
+          {items.map((item) => (
             <li
-              key={doc.id}
+              key={item.id}
               className="cursor-pointer hover:bg-gray-200 p-2 rounded flex justify-between items-center"
-              onClick={() => handleDocumentClick(doc)}
+              onClick={() => item.type === 'document' && handleDocumentClick(item)}
             >
-              <span>📄 {doc.title}</span>
+              <span>{item.type === 'folder' ? '📁' : '📄'} {item.title}</span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-300" onClick={(e) => e.stopPropagation()}>
