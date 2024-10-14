@@ -14,7 +14,7 @@ const InvestigationCard = ({ investigation }) => {
           backgroundSize: '48px 48px',
         }}
       ></div>
-      <div className="absolute left-6 top-6 bottom-6 w-[256px] bg-white rounded-lg overflow-hidden">
+      <div className="absolute left-6 top-6 bottom-6 right-6 bg-white rounded-r-lg overflow-hidden">
         <div className="absolute top-4 right-4 w-8 h-8 bg-white rounded-full shadow-md"></div>
         <CardContent className="p-6 h-full flex flex-col relative z-10">
           <div className="text-xs uppercase text-purple-600 font-semibold tracking-wide mb-2">Investigation</div>
