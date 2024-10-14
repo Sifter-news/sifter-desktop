@@ -49,7 +49,7 @@ const HomePage = () => {
                 </div>
                 <div className="w-full lg:w-[548px] flex-shrink-0">
                   <h3 className="text-xl font-semibold mb-4">Articles</h3>
-                  <div className="overflow-x-auto pb-4">
+                  <div className="overflow-x-auto pb-4 bg-white bg-opacity-30 rounded-lg p-4"> {/* Added background and padding */}
                     <div className="flex space-x-4">
                       {investigation.reports.map(report => (
                         <div key={report.id} className="w-64 flex-shrink-0">
