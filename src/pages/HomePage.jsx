@@ -98,7 +98,7 @@ const HomePage = () => {
                   <InvestigationCard investigation={investigation} />
                 </div>
                 <div className="w-full lg:w-[548px] flex-shrink-0">
-                  <div className="bg-white bg-opacity-30 rounded-r-lg p-6 h-[323px] relative overflow-hidden">
+                  <div className="bg-white bg-opacity-30 rounded-r-lg p-4 h-[323px] relative overflow-hidden">
                     <div className="overflow-x-auto h-full scrollbar-hide">
                       <div className="flex space-x-4 h-full pb-4">
                         {investigation.reports.map(report => (
