@@ -78,8 +78,8 @@ const HomePage = () => {
           <UserProfile user={user} />
         </div>
       </header>
-      <div className="container mx-auto px-4 py-8 pb-6"> {/* Changed pb-8 to pb-6 */}
-        <div className="bg-gray-100 rounded-[64px] pt-8 px-8 overflow-hidden shadow-inner">
+      <div className="container mx-auto px-4 py-8 pb-6">
+        <div className="bg-gray-100 rounded-[64px] pt-8 px-8 pb-6 overflow-hidden shadow-inner">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
