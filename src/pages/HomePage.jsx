@@ -45,7 +45,7 @@ const HomePage = () => {
               <div className="w-full lg:w-[548px] flex-shrink-0">
                 <InvestigationCard investigation={investigation} />
               </div>
-              <div className="w-full lg:flex-grow">
+              <div className="w-full lg:w-[548px] flex-shrink-0">
                 <div className="overflow-x-auto pb-4">
                   <div className="flex space-x-4">
                     {investigation.reports.map(report => (
