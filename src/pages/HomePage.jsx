@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import UserProfile from '../components/UserProfile';
 import InvestigationCard from '../components/InvestigationCard';
@@ -6,8 +6,14 @@ import ReportCard from '../components/ReportCard';
 import { Button } from "@/components/ui/button";
 import { PlusIcon, FileSearchIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import MindMapView from '../components/MindMapView';
+import TextView from '../components/TextView';
+import TimeView from '../components/TimeView';
+import MapView from '../components/MapView';
 
 const HomePage = () => {
+  const [activeTab, setActiveTab] = useState("mind");
   const user = {
     name: 'User-Name',
     avatar: '/placeholder.svg',
@@ -59,7 +65,7 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <header className="bg-white shadow-sm relative">
+      <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-2 flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
@@ -70,56 +76,30 @@ const HomePage = () => {
               <span className="text-xl font-bold">Sifter</span>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src="/placeholder.svg" alt="Dashboard Icon" />
-              <AvatarFallback>DI</AvatarFallback>
-            </Avatar>
-            <span className="text-lg text-[#4B25F3]">Dashboard Name</span>
-          </div>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="relative -mb-px">
+            <TabsList>
+              <TabsTrigger value="mind">Mind</TabsTrigger>
+              <TabsTrigger value="text">Text</TabsTrigger>
+              <TabsTrigger value="time">Time</TabsTrigger>
+              <TabsTrigger value="map">Map</TabsTrigger>
+            </TabsList>
+          </Tabs>
           <UserProfile user={user} />
         </div>
       </header>
       <div className="container mx-auto px-4 py-8 pb-6">
-        <div className="bg-gray-100 rounded-[64px] pt-8 px-8 pb-6 overflow-hidden shadow-inner">
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                <FileSearchIcon className="h-4 w-4 text-gray-600" />
-              </div>
-              <h2 className="text-2xl font-bold">Investigations</h2>
-            </div>
-            <Link to="/new-project">
-              <Button className="rounded-full w-14 h-14 p-0 flex items-center justify-center">
-                <PlusIcon className="h-6 w-6" />
-              </Button>
-            </Link>
-          </div>
-          <div className="flex flex-col space-y-8 max-h-[calc(100vh-300px)] overflow-y-auto pr-4 scrollbar-hide">
-            {investigations.map(investigation => (
-              <div key={investigation.id} className="flex flex-col lg:flex-row">
-                <div className="w-full lg:w-[548px] flex-shrink-0">
-                  <Link to={`/project/${investigation.id}`}>
-                    <InvestigationCard investigation={investigation} />
-                  </Link>
-                </div>
-                <div className="w-full lg:w-[548px] flex-shrink-0">
-                  <div className="bg-white bg-opacity-30 rounded-r-lg p-4 h-[323px] relative overflow-hidden">
-                    <div className="overflow-x-auto h-full scrollbar-hide">
-                      <div className="flex space-x-4 h-full pb-4">
-                        {investigation.reports.map(report => (
-                          <div key={report.id} className="w-64 flex-shrink-0">
-                            <ReportCard report={report} />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <TabsContent value="mind" className="mt-0">
+          <MindMapView investigations={investigations} />
+        </TabsContent>
+        <TabsContent value="text" className="mt-0">
+          <TextView investigations={investigations} />
+        </TabsContent>
+        <TabsContent value="time" className="mt-0">
+          <TimeView investigations={investigations} />
+        </TabsContent>
+        <TabsContent value="map" className="mt-0">
+          <MapView investigations={investigations} />
+        </TabsContent>
       </div>
     </div>
   );
