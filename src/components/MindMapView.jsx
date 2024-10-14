@@ -6,12 +6,14 @@ import { saveProjectState, loadProjectState } from '../utils/projectUtils';
 import { useZoomPan } from '../utils/canvasUtils';
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
+import { useDarkMode } from '../contexts/DarkModeContext';
 
 const MindMapView = ({ project }) => {
   const [showAIInput, setShowAIInput] = useState(false);
   const [nodes, setNodes] = useState([]);
   const [activeTool, setActiveTool] = useState('select');
   const canvasRef = useRef(null);
+  const { isDarkMode } = useDarkMode();
 
   const {
     zoom,
@@ -51,7 +53,7 @@ const MindMapView = ({ project }) => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)] w-screen overflow-hidden">
+    <div className={`flex flex-col h-[calc(100vh-64px)] w-screen overflow-hidden ${isDarkMode ? 'dark bg-gray-900' : ''}`}>
       <Canvas
         ref={canvasRef}
         nodes={nodes}
@@ -64,16 +66,16 @@ const MindMapView = ({ project }) => {
         handlePanEnd={handlePanEnd}
       />
       {showAIInput && (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-full shadow-lg p-2 flex items-center space-x-2 max-w-xl w-full">
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-full shadow-lg p-2 flex items-center space-x-2 max-w-xl w-full">
           <Button size="icon" className="rounded-full flex-shrink-0">
             <PlusIcon className="h-6 w-6" />
           </Button>
           <Input 
             type="text" 
             placeholder="Ask anything about this project" 
-            className="flex-grow text-lg border-none focus:ring-0 rounded-full"
+            className="flex-grow text-lg border-none focus:ring-0 rounded-full dark:bg-gray-700 dark:text-white"
           />
-          <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-6">
+          <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-6 dark:bg-blue-600 dark:hover:bg-blue-700">
             Ask
           </Button>
         </div>

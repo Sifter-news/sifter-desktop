@@ -12,10 +12,12 @@ import MindMapView from '../components/MindMapView';
 import TextView from '../components/TextView';
 import TimeView from '../components/TimeView';
 import MapView from '../components/MapView';
+import { useDarkMode } from '../contexts/DarkModeContext';
 
 const ProjectView = () => {
   const { id } = useParams();
   const location = useLocation();
+  const { isDarkMode } = useDarkMode();
   const user = {
     name: 'User-Name',
     avatar: '/placeholder.svg',
@@ -69,10 +71,10 @@ const ProjectView = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className={`min-h-screen flex flex-col ${isDarkMode ? 'dark bg-gray-900 text-white' : 'bg-white'}`}>
       <Header user={user} projectName={project.title} onProjectClick={handleProjectClick} />
       <Tabs defaultValue="mind" className="w-full flex flex-col flex-grow">
-        <TabsList className="max-w-[280px] mx-auto justify-center fixed top-16 left-0 right-0 bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex">
+        <TabsList className="max-w-[280px] mx-auto justify-center fixed top-16 left-0 right-0 bg-white dark:bg-gray-800 bg-opacity-80 dark:bg-opacity-80 backdrop-blur-md z-10 inline-flex">
           <TabsTrigger value="mind">Mind</TabsTrigger>
           <TabsTrigger value="text">Text</TabsTrigger>
           <TabsTrigger value="time">Time</TabsTrigger>
@@ -126,7 +128,7 @@ const ProjectView = () => {
         ))}
         <Button
           size="icon"
-          className="rounded-full w-14 h-14 bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
+          className="rounded-full w-14 h-14 bg-blue-500 hover:bg-blue-600 text-white shadow-lg dark:bg-blue-600 dark:hover:bg-blue-700"
           onClick={handleNewArticle}
         >
           <PlusIcon className="h-6 w-6" />

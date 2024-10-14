@@ -1,59 +1,66 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Hand, Sparkles, Square, StickyNote, Type, Link, Layers, ToggleLeft, ZoomIn, ZoomOut, Download, MousePointer } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import ToolButton from './ToolbarButton';
+import { Slider } from "@/components/ui/slider";
+import { MousePointer2, Hand, PlusCircle, TextCursor, StickyNote, GitCommit, Bot } from 'lucide-react';
+import ToolbarButton from './ToolbarButton';
+import { useDarkMode } from '../contexts/DarkModeContext';
 
 const Toolbar = ({ activeTool, setActiveTool, handleAIClick, handleAddNode, handleZoom, zoom }) => {
+  const { isDarkMode } = useDarkMode();
+
   return (
-    <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-lg p-2 flex items-center space-x-2">
-      <ToolButton 
-        icon={activeTool === 'select' ? <MousePointer className="h-4 w-4" /> : <Hand className="h-4 w-4" />} 
-        label={activeTool === 'select' ? "Select" : "Pan"} 
-        onClick={() => setActiveTool(activeTool === 'select' ? 'pan' : 'select')}
-      />
-      <ToolButton icon={<Sparkles className="h-4 w-4" />} label="AI Node" onClick={handleAIClick} />
-      <ToolButton icon={<Square className="h-4 w-4" />} label="Blank Node" onClick={() => handleAddNode('blank')} />
-      <ToolButton icon={<StickyNote className="h-4 w-4" />} label="Post-it Node" onClick={() => handleAddNode('postit')} />
-      <ToolButton icon={<Type className="h-4 w-4" />} label="Text Node" onClick={() => handleAddNode('text')} />
-      <ToolButton icon={<Link className="h-4 w-4" />} label="Connector Node" onClick={() => handleAddNode('connector')} />
-      <ToolButton icon={<Layers className="h-4 w-4" />} label="Grouped Section Node" />
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="flex items-center space-x-1">
-              <Button size="icon" variant="ghost" className="rounded-full">
-                <ToggleLeft className="h-4 w-4" />
-              </Button>
-              <span className="text-sm font-medium">2D</span>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Toggle 2D/3D View</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      <ToolButton icon={<ZoomIn className="h-4 w-4" />} label="Zoom In" onClick={() => handleZoom(0.1)} />
-      <span className="text-sm font-medium">{Math.round(zoom * 100)}%</span>
-      <ToolButton icon={<ZoomOut className="h-4 w-4" />} label="Zoom Out" onClick={() => handleZoom(-0.1)} />
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" className="rounded-full px-4">
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Export Mind Map</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+    <div className={`fixed bottom-0 left-0 right-0 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
+      <div className="container mx-auto px-4 py-2">
+        <div className="flex justify-center space-x-4">
+          <ToolbarButton
+            icon={<MousePointer2 className={activeTool === 'select' ? 'text-blue-500' : ''} />}
+            label="Select"
+            onClick={() => setActiveTool('select')}
+          />
+          <ToolbarButton
+            icon={<Hand className={activeTool === 'pan' ? 'text-blue-500' : ''} />}
+            label="Pan"
+            onClick={() => setActiveTool('pan')}
+          />
+          <ToolbarButton
+            icon={<PlusCircle />}
+            label="Add Blank"
+            onClick={() => handleAddNode('blank')}
+          />
+          <ToolbarButton
+            icon={<TextCursor />}
+            label="Add Text"
+            onClick={() => handleAddNode('text')}
+          />
+          <ToolbarButton
+            icon={<StickyNote />}
+            label="Add Post-it"
+            onClick={() => handleAddNode('postit')}
+          />
+          <ToolbarButton
+            icon={<GitCommit />}
+            label="Add Connector"
+            onClick={() => handleAddNode('connector')}
+          />
+          <ToolbarButton
+            icon={<Bot />}
+            label="AI Assistant"
+            onClick={handleAIClick}
+          />
+          <div className="flex items-center space-x-2">
+            <Button size="icon" variant="outline" onClick={() => handleZoom(zoom - 0.1)}>-</Button>
+            <Slider
+              value={[zoom]}
+              onValueChange={([value]) => handleZoom(value)}
+              min={0.1}
+              max={2}
+              step={0.1}
+              className="w-32"
+            />
+            <Button size="icon" variant="outline" onClick={() => handleZoom(zoom + 0.1)}>+</Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
