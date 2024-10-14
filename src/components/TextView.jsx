@@ -1,17 +1,30 @@
 import React from 'react';
 
-const TextView = ({ investigations }) => {
+const TextView = ({ project }) => {
   return (
-    <div className="bg-gray-100 rounded-[64px] pt-8 px-8 pb-6 overflow-hidden shadow-inner">
-      <h2 className="text-2xl font-bold mb-6">Text View</h2>
-      <ul className="space-y-4">
-        {investigations.map(investigation => (
-          <li key={investigation.id}>
-            <h3 className="text-xl font-semibold">{investigation.title}</h3>
-            <p>{investigation.description}</p>
-          </li>
-        ))}
-      </ul>
+    <div className="flex min-h-[calc(100vh-120px)]">
+      <div className="w-1/4 bg-gray-100 p-4 overflow-y-auto">
+        <h3 className="font-bold mb-4">Navigator</h3>
+        <ul className="space-y-2">
+          <li>📁 Folder 1</li>
+          <li className="ml-4">📄 Document 1</li>
+          <li className="ml-4">📄 Document 2</li>
+          <li>📁 Folder 2</li>
+          <li className="ml-4">📄 Document 3</li>
+          <li>📄 Document 4</li>
+          <li>📁 Folder 3</li>
+          <li className="ml-4">📄 Document 5</li>
+          <li className="ml-4">📄 Document 6</li>
+          <li>📄 Document 7</li>
+        </ul>
+      </div>
+      <div className="w-3/4 p-8 flex justify-center items-start">
+        <div className="bg-white shadow-lg rounded-lg p-6 max-w-2xl w-full">
+          <h2 className="text-2xl font-bold mb-4">{project.title}</h2>
+          <p className="text-gray-600">{project.description}</p>
+          {/* Add more content here as needed */}
+        </div>
+      </div>
     </div>
   );
 };

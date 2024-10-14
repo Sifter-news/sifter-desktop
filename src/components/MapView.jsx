@@ -1,12 +1,26 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
-const MapView = ({ investigations }) => {
+mapboxgl.accessToken = 'YOUR_MAPBOX_ACCESS_TOKEN_HERE';
+
+const MapView = ({ project }) => {
+  const mapContainer = useRef(null);
+  const map = useRef(null);
+
+  useEffect(() => {
+    if (map.current) return; // initialize map only once
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: [-74.5, 40], // starting position [lng, lat]
+      zoom: 9 // starting zoom
+    });
+  });
+
   return (
-    <div className="bg-gray-100 rounded-[64px] pt-8 px-8 pb-6 overflow-hidden shadow-inner">
-      <h2 className="text-2xl font-bold mb-6">Map View</h2>
-      <div className="bg-white h-[500px] rounded-lg flex items-center justify-center">
-        <p className="text-gray-500">Map placeholder - Investigations would be plotted here</p>
-      </div>
+    <div className="min-h-[calc(100vh-120px)]">
+      <div ref={mapContainer} className="h-full" />
     </div>
   );
 };

@@ -8,6 +8,11 @@ import { Input } from "@/components/ui/input";
 import { PlusIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import MindMapView from '../components/MindMapView';
+import TextView from '../components/TextView';
+import TimeView from '../components/TimeView';
+import MapView from '../components/MapView';
 
 const ProjectView = () => {
   const { id } = useParams();
@@ -45,13 +50,11 @@ const ProjectView = () => {
 
   const handleSaveArticle = (article) => {
     if (editingArticle) {
-      // Update existing article
       const updatedReports = project.reports.map(report =>
         report.id === editingArticle.id ? { ...article, id: report.id } : report
       );
       setProject({ ...project, reports: updatedReports });
     } else {
-      // Add new article
       const updatedReports = [...project.reports, { ...article, id: Date.now() }];
       setProject({ ...project, reports: updatedReports });
     }
@@ -67,41 +70,26 @@ const ProjectView = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header user={user} projectName={project.title} onProjectClick={handleProjectClick} />
-      <main className="flex-grow bg-[#594BFF] relative flex items-center justify-center">
-        <div 
-          className="absolute inset-0" 
-          style={{
-            backgroundImage: `
-              linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
-            `,
-            backgroundSize: '48px 48px',
-          }}
-        ></div>
-        <div className="bg-white rounded-full shadow-lg p-2 flex items-center space-x-2 max-w-xl w-full">
-          <Button size="icon" className="rounded-full flex-shrink-0">
-            <PlusIcon className="h-6 w-6" />
-          </Button>
-          <Input 
-            type="text" 
-            placeholder="Ask anything about this project" 
-            className="flex-grow text-lg border-none focus:ring-0 rounded-full"
-          />
-          <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-6">
-            Ask
-          </Button>
-        </div>
-      </main>
-      <footer className="bg-white shadow-lg">
-        <div className="container mx-auto px-4 py-2">
-          <div className="flex justify-center space-x-4">
-            {/* Add toolbar buttons here */}
-            <Button variant="ghost">Tool 1</Button>
-            <Button variant="ghost">Tool 2</Button>
-            <Button variant="ghost">Tool 3</Button>
-          </div>
-        </div>
-      </footer>
+      <Tabs defaultValue="mind" className="w-full">
+        <TabsList className="w-full justify-start">
+          <TabsTrigger value="mind">Mind</TabsTrigger>
+          <TabsTrigger value="text">Text</TabsTrigger>
+          <TabsTrigger value="time">Time</TabsTrigger>
+          <TabsTrigger value="map">Map</TabsTrigger>
+        </TabsList>
+        <TabsContent value="mind">
+          <MindMapView project={project} />
+        </TabsContent>
+        <TabsContent value="text">
+          <TextView project={project} />
+        </TabsContent>
+        <TabsContent value="time">
+          <TimeView project={project} />
+        </TabsContent>
+        <TabsContent value="map">
+          <MapView project={project} />
+        </TabsContent>
+      </Tabs>
       <ProjectEditModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
