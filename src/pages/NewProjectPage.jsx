@@ -35,7 +35,7 @@ const NewProjectPage = () => {
           <UserProfile user={user} />
         </div>
       </header>
-      <main className="flex-grow bg-[#594BFF] relative">
+      <main className="flex-grow bg-[#594BFF] relative flex items-center justify-center">
         <div 
           className="absolute inset-0" 
           style={{
@@ -46,17 +46,18 @@ const NewProjectPage = () => {
             backgroundSize: '48px 48px',
           }}
         ></div>
-        <div className="container mx-auto px-4 py-8 h-full flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-lg p-6 flex items-center space-x-2 max-w-xl w-full">
-            <Input 
-              type="text" 
-              placeholder="Ask anything" 
-              className="flex-grow text-lg"
-            />
-            <Button size="icon" className="rounded-full">
-              <PlusIcon className="h-6 w-6" />
-            </Button>
-          </div>
+        <div className="bg-white rounded-full shadow-lg p-2 flex items-center space-x-2 max-w-xl w-full">
+          <Button size="icon" className="rounded-full flex-shrink-0">
+            <PlusIcon className="h-6 w-6" />
+          </Button>
+          <Input 
+            type="text" 
+            placeholder="Ask anything" 
+            className="flex-grow text-lg border-none focus:ring-0 rounded-full"
+          />
+          <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-6">
+            Ask
+          </Button>
         </div>
       </main>
       <footer className="bg-white shadow-lg">
