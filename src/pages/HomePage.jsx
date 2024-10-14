@@ -65,15 +65,15 @@ const HomePage = () => {
                 <AvatarImage src="/placeholder.svg" alt="Sifter Logo" />
                 <AvatarFallback>SL</AvatarFallback>
               </Avatar>
-              <span className="text-xl font-bold">Sifter</span>
+              <span className="text-xl font-bold">Sifter Beta.v2</span>
             </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src="/placeholder.svg" alt="Dashboard Icon" />
-              <AvatarFallback>DI</AvatarFallback>
-            </Avatar>
-            <span className="text-lg text-purple-600">Dashboard Name</span>
+            <div className="flex items-center space-x-2">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src="/placeholder.svg" alt="Dashboard Icon" />
+                <AvatarFallback>DI</AvatarFallback>
+              </Avatar>
+              <span className="text-lg text-purple-600">Dashboard Name</span>
+            </div>
           </div>
           <UserProfile user={user} />
         </div>
