@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Hand, Sparkles, Square, StickyNote, Type, Link, Layers, ToggleLeft, ZoomIn, ZoomOut, Download, MousePointer } from 'lucide-react';
+import { Hand, Sparkles, Square, StickyNote, Type, Link, Layers, ToggleLeft, ZoomIn, ZoomOut, Download, MousePointer, Plus } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -19,7 +19,7 @@ const Toolbar = ({ activeTool, setActiveTool, handleAIClick, handleAddNode, hand
       />
       <ToolButton icon={<Sparkles className="h-4 w-4" />} label="AI Node" onClick={handleAIClick} />
       <div className="bg-gray-100 p-1 rounded-md flex items-center space-x-1">
-        <ToolButton icon={<PlusIcon className="h-4 w-4" />} label="Add" onClick={() => {}} />
+        <ToolButton icon={<Plus className="h-4 w-4" />} label="Add" onClick={() => {}} />
         <ToolButton icon={<Square className="h-4 w-4" />} label="Blank Node" onClick={() => handleAddNode('blank')} />
         <ToolButton icon={<StickyNote className="h-4 w-4" />} label="Post-it Node" onClick={() => handleAddNode('postit')} />
         <ToolButton icon={<Type className="h-4 w-4" />} label="Text Node" onClick={() => handleAddNode('text')} />
