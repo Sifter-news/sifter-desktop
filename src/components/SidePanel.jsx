@@ -19,7 +19,7 @@ const SidePanel = ({ isOpen, onClose, initialQuestion }) => {
   };
 
   return (
-    <div className={`fixed top-0 left-0 h-full w-80 bg-white shadow-lg transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out flex flex-col`}>
+    <div className={`fixed top-0 left-0 h-full w-[480px] bg-white shadow-lg transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out flex flex-col`}>
       <div className="flex justify-between items-center p-4 border-b">
         <h2 className="text-lg font-semibold">AI Conversation</h2>
         <Button variant="ghost" onClick={onClose}>Close</Button>
@@ -42,6 +42,7 @@ const SidePanel = ({ isOpen, onClose, initialQuestion }) => {
             className="flex-grow text-lg border-none focus:ring-0 rounded-full"
             value={newQuestion}
             onChange={(e) => setNewQuestion(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleAsk()}
           />
           <Button 
             className="bg-[#594BFF] hover:bg-[#4B3FD9] text-white rounded-full px-6"
