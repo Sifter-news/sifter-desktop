@@ -6,12 +6,15 @@ import { saveProjectState, loadProjectState } from '../utils/projectUtils';
 import { useZoomPan } from '../utils/canvasUtils';
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
+import SidePanel from './SidePanel';
 
 const MindMapView = ({ project }) => {
   const [showAIInput, setShowAIInput] = useState(false);
   const [nodes, setNodes] = useState([]);
   const [activeTool, setActiveTool] = useState('select');
   const [focusedNodeId, setFocusedNodeId] = useState(null);
+  const [sidePanelOpen, setSidePanelOpen] = useState(false);
+  const [aiInputText, setAIInputText] = useState('');
   const canvasRef = useRef(null);
 
   const {
@@ -71,6 +74,10 @@ const MindMapView = ({ project }) => {
     setFocusedNodeId(null);
   };
 
+  const handleAIAsk = () => {
+    setSidePanelOpen(true);
+  };
+
   return (
     <div className="flex flex-col h-[calc(100vh-64px)] w-screen overflow-hidden">
       <Canvas
@@ -97,8 +104,13 @@ const MindMapView = ({ project }) => {
             type="text" 
             placeholder="Ask anything about this project" 
             className="flex-grow text-lg border-none focus:ring-0 rounded-full"
+            value={aiInputText}
+            onChange={(e) => setAIInputText(e.target.value)}
           />
-          <Button className="bg-[#594BFF] hover:bg-[#4B3FD9] text-white rounded-full px-6">
+          <Button 
+            className="bg-[#594BFF] hover:bg-[#4B3FD9] text-white rounded-full px-6"
+            onClick={handleAIAsk}
+          >
             Ask
           </Button>
         </div>
@@ -110,6 +122,11 @@ const MindMapView = ({ project }) => {
         handleAddNode={handleAddNode}
         handleZoom={handleZoom}
         zoom={zoom}
+      />
+      <SidePanel 
+        isOpen={sidePanelOpen} 
+        onClose={() => setSidePanelOpen(false)} 
+        initialQuestion={aiInputText}
       />
     </div>
   );
