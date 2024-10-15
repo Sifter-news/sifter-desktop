@@ -70,8 +70,8 @@ const ProjectView = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header user={user} projectName={project.title} onProjectClick={handleProjectClick} />
-      <Tabs defaultValue="mind" className="flex flex-col flex-grow">
-        <TabsList className="max-w-[280px] mx-auto justify-center bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex">
+      <Tabs defaultValue="mind" className="w-full flex flex-col flex-grow">
+        <TabsList className="max-w-[280px] mx-auto justify-center fixed top-16 left-0 right-0 bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex">
           <TabsTrigger value="mind" className="flex items-center">
             <Brain className="w-4 h-4 mr-2" />
             Mind
@@ -89,7 +89,7 @@ const ProjectView = () => {
             Map
           </TabsTrigger>
         </TabsList>
-        <div className="flex-grow overflow-hidden">
+        <div className="flex-grow mt-12">
           <TabsContent value="mind" className="h-full">
             <MindMapView project={project} focusedDocument={focusedDocument} />
           </TabsContent>
