@@ -80,6 +80,14 @@ const MindMapView = ({ project }) => {
         node.id === nodeId ? { ...node, ...updates } : node
       )
     );
+    if (updates.text && nodes.find(node => node.id === nodeId)?.type === 'ai') {
+      setSidePanelOpen(true);
+      setMessages([...messages, { type: 'user', content: updates.text }]);
+      // Simulate AI response (replace with actual API call in production)
+      setTimeout(() => {
+        setMessages(prevMessages => [...prevMessages, { type: 'ai', content: `Here's a response to "${updates.text}"` }]);
+      }, 1000);
+    }
   };
 
   const handleNodeFocus = (nodeId) => {
@@ -98,7 +106,7 @@ const MindMapView = ({ project }) => {
         onClose={() => setSidePanelOpen(false)} 
         messages={messages}
         setMessages={setMessages}
-        initialQuestion={nodes[nodes.length - 1]?.text || ''}
+        initialQuestion={nodes.find(node => node.type === 'ai')?.text || ''}
       />
       <div className="flex-grow relative">
         <Canvas

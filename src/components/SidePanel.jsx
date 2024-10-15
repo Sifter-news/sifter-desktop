@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PlusIcon } from 'lucide-react';
+import { PlusIcon, SendIcon } from 'lucide-react';
 
 const SidePanel = ({ isOpen, onClose, messages, setMessages, initialQuestion }) => {
   const [newQuestion, setNewQuestion] = useState('');
@@ -23,39 +23,40 @@ const SidePanel = ({ isOpen, onClose, messages, setMessages, initialQuestion }) 
   };
 
   return (
-    <div className={`fixed top-0 left-0 h-full w-[480px] bg-white shadow-lg transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out flex flex-col`}>
+    <div className={`fixed top-0 right-0 h-full w-[400px] bg-white shadow-lg transform ${isOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out flex flex-col`}>
       <div className="flex justify-between items-center p-4 border-b">
         <h2 className="text-lg font-semibold">AI Conversation</h2>
         <Button variant="ghost" onClick={onClose}>Close</Button>
       </div>
-      <div className="flex-grow overflow-y-auto p-4 space-y-4">
+      <div className="flex-grow overflow-y-auto p-4 space-y-4 bg-gray-50">
         {messages.map((message, index) => (
           <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`p-3 rounded-lg max-w-[80%] ${message.type === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}>
+            <div className={`p-3 rounded-lg max-w-[80%] ${
+              message.type === 'user' 
+                ? 'bg-blue-500 text-white' 
+                : 'bg-white text-gray-800 border border-gray-200'
+            }`}>
               {message.content}
             </div>
           </div>
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <div className="p-4 border-t">
-        <div className="bg-white rounded-full shadow-lg p-2 flex items-center space-x-2 max-w-xl w-full">
-          <Button size="icon" className="rounded-full flex-shrink-0 bg-[#594BFF1A] hover:bg-[#594BFF33]">
-            <PlusIcon className="h-6 w-6 text-[#594BFF]" />
-          </Button>
+      <div className="p-4 border-t bg-white">
+        <div className="flex items-center space-x-2">
           <Input 
             type="text" 
-            placeholder="Ask a follow-up question" 
-            className="flex-grow text-lg border-none focus:ring-0 rounded-full"
+            placeholder="Type your message..." 
+            className="flex-grow"
             value={newQuestion}
             onChange={(e) => setNewQuestion(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleAsk()}
           />
           <Button 
-            className="bg-[#594BFF] hover:bg-[#4B3FD9] text-white rounded-full px-6"
+            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2"
             onClick={handleAsk}
           >
-            Ask
+            <SendIcon className="h-5 w-5" />
           </Button>
         </div>
       </div>
