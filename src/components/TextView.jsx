@@ -1,76 +1,82 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import Navigator from './Navigator';
-import { Node } from '../types/nodeTypes';
 
-const TextView = ({ project, nodes, setNodes }) => {
-  const [selectedNode, setSelectedNode] = useState(null);
+const TextView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => {
+  const [selectedDocument, setSelectedDocument] = useState(null);
 
   useEffect(() => {
-    if (nodes.length > 0) {
-      setSelectedNode(nodes[0]);
+    if (nodes.length > 0 && !selectedDocument) {
+      setSelectedDocument(nodes[0]);
     }
-  }, [nodes]);
+  }, [nodes, selectedDocument]);
 
-  const handleNodeClick = (node) => {
-    setSelectedNode(node);
+  const handleDocumentClick = (doc) => {
+    setSelectedDocument(doc);
   };
 
   const handleContentChange = (e) => {
-    const updatedNode = { ...selectedNode, description: e.target.value };
-    setSelectedNode(updatedNode);
-    setNodes(prevNodes => prevNodes.map(node => 
-      node.id === updatedNode.id ? updatedNode : node
-    ));
+    const updatedDocument = { ...selectedDocument, content: e.target.value };
+    setSelectedDocument(updatedDocument);
+    onUpdateNode(updatedDocument);
   };
 
   const handleDelete = () => {
-    if (selectedNode) {
-      setNodes(prevNodes => prevNodes.filter(node => node.id !== selectedNode.id));
-      setSelectedNode(null);
+    if (selectedDocument) {
+      onDeleteNode(selectedDocument.id);
+      setSelectedDocument(null);
     }
   };
 
-  const handleAddNode = (type: 'node' | 'group') => {
-    const newNode: Node = {
-      id: Date.now().toString(),
-      type,
-      title: type === 'group' ? 'New Group' : 'New Node',
-      description: '',
-      timestamp: Date.now(),
-      children: type === 'group' ? [] : undefined,
+  const handleShare = () => {
+    console.log('Share document');
+    // Implement share functionality here
+  };
+
+  const handleMove = () => {
+    console.log('Move document');
+    // Implement move functionality here
+  };
+
+  const handleAddDocument = () => {
+    const newDocument = {
+      id: Date.now(),
+      type: 'document',
+      title: `New Document ${nodes.filter(node => node.type === 'document').length + 1}`,
+      content: '',
     };
-    setNodes([...nodes, newNode]);
+    onAddNode(newDocument);
   };
 
   return (
     <div className="flex h-full">
       <div className="w-1/4 bg-gray-100 p-4 overflow-y-auto">
         <Navigator 
-          nodes={nodes} 
-          setNodes={setNodes} 
-          onNodeClick={handleNodeClick}
-          selectedNode={selectedNode}
+          items={nodes} 
+          setItems={onUpdateNode} 
+          onDocumentClick={handleDocumentClick}
+          focusedDocument={selectedDocument}
         />
+        <Button onClick={handleAddDocument} className="mt-4 w-full">Add Document</Button>
       </div>
       <div className="flex-grow flex flex-col p-8 overflow-hidden">
-        {selectedNode ? (
+        {selectedDocument ? (
           <div className="bg-white bg-opacity-80 shadow-lg rounded-lg p-6 relative flex flex-col h-full">
-            <h2 className="text-2xl font-bold mb-4">{selectedNode.title}</h2>
+            <h2 className="text-2xl font-bold mb-4">{selectedDocument.title}</h2>
             <textarea
-              value={selectedNode.description}
+              value={selectedDocument.content}
               onChange={handleContentChange}
               className="flex-grow w-full p-2 border rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <div className="absolute top-2 right-2">
               <Button variant="ghost" size="sm" onClick={handleDelete}>Delete</Button>
-              <Button variant="ghost" size="sm" onClick={() => handleAddNode('node')}>Add Node</Button>
-              <Button variant="ghost" size="sm" onClick={() => handleAddNode('group')}>Add Group</Button>
+              <Button variant="ghost" size="sm" onClick={handleShare}>Share</Button>
+              <Button variant="ghost" size="sm" onClick={handleMove}>Move</Button>
             </div>
           </div>
         ) : (
           <div className="text-center text-gray-500">
-            Select a node from the navigator to view its content.
+            Select a document from the navigator to view its content.
           </div>
         )}
       </div>

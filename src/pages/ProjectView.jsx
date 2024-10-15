@@ -12,7 +12,6 @@ import MindMapView from '../components/MindMapView';
 import TextView from '../components/TextView';
 import TimeView from '../components/TimeView';
 import MapView from '../components/MapView';
-import { loadProjectState, saveProjectState } from '../utils/projectUtils';
 
 const ProjectView = () => {
   const { id } = useParams();
@@ -27,23 +26,27 @@ const ProjectView = () => {
     id,
     title: `Project ${id}`,
     description: 'This is a sample project description.',
+    reports: []
   });
 
-  const [nodes, setNodes] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isNewArticleModalOpen, setIsNewArticleModalOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState(null);
+  const [focusedDocument, setFocusedDocument] = useState(null);
+  const [nodes, setNodes] = useState([]);
 
   useEffect(() => {
-    const savedNodes = loadProjectState(project.id);
-    if (savedNodes.length > 0) {
-      setNodes(savedNodes);
+    // Load nodes from localStorage or API
+    const savedNodes = localStorage.getItem(`project_${id}_nodes`);
+    if (savedNodes) {
+      setNodes(JSON.parse(savedNodes));
     }
-  }, [project.id]);
+  }, [id]);
 
   useEffect(() => {
-    saveProjectState(project.id, nodes);
-  }, [project.id, nodes]);
+    // Save nodes to localStorage whenever they change
+    localStorage.setItem(`project_${id}_nodes`, JSON.stringify(nodes));
+  }, [id, nodes]);
 
   const handleProjectClick = () => {
     setIsEditModalOpen(true);
@@ -61,18 +64,13 @@ const ProjectView = () => {
 
   const handleSaveArticle = (article) => {
     if (editingArticle) {
-      setNodes(prevNodes => prevNodes.map(node => 
-        node.id === editingArticle.id ? { ...node, ...article } : node
-      ));
+      const updatedReports = project.reports.map(report =>
+        report.id === editingArticle.id ? { ...article, id: report.id } : report
+      );
+      setProject({ ...project, reports: updatedReports });
     } else {
-      const newNode = {
-        id: Date.now().toString(),
-        type: 'node',
-        title: article.title,
-        description: article.content,
-        timestamp: Date.now(),
-      };
-      setNodes([...nodes, newNode]);
+      const updatedReports = [...project.reports, { ...article, id: Date.now() }];
+      setProject({ ...project, reports: updatedReports });
     }
     setIsNewArticleModalOpen(false);
     setEditingArticle(null);
@@ -81,6 +79,20 @@ const ProjectView = () => {
   const handleEditArticle = (article) => {
     setEditingArticle(article);
     setIsNewArticleModalOpen(true);
+  };
+
+  const handleAddNode = (newNode) => {
+    setNodes(prevNodes => [...prevNodes, newNode]);
+  };
+
+  const handleUpdateNode = (updatedNode) => {
+    setNodes(prevNodes => prevNodes.map(node => 
+      node.id === updatedNode.id ? updatedNode : node
+    ));
+  };
+
+  const handleDeleteNode = (nodeId) => {
+    setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
   };
 
   return (
@@ -107,16 +119,40 @@ const ProjectView = () => {
         </TabsList>
         <div className="flex-grow mt-12">
           <TabsContent value="mind" className="h-full">
-            <MindMapView project={project} nodes={nodes} setNodes={setNodes} />
+            <MindMapView 
+              project={project} 
+              nodes={nodes}
+              onAddNode={handleAddNode}
+              onUpdateNode={handleUpdateNode}
+              onDeleteNode={handleDeleteNode}
+            />
           </TabsContent>
           <TabsContent value="text" className="h-full">
-            <TextView project={project} nodes={nodes} setNodes={setNodes} />
+            <TextView 
+              project={project} 
+              nodes={nodes}
+              onAddNode={handleAddNode}
+              onUpdateNode={handleUpdateNode}
+              onDeleteNode={handleDeleteNode}
+            />
           </TabsContent>
           <TabsContent value="time" className="h-full">
-            <TimeView nodes={nodes} />
+            <TimeView 
+              project={project} 
+              nodes={nodes}
+              onAddNode={handleAddNode}
+              onUpdateNode={handleUpdateNode}
+              onDeleteNode={handleDeleteNode}
+            />
           </TabsContent>
           <TabsContent value="map" className="h-full">
-            <MapView nodes={nodes} />
+            <MapView 
+              project={project} 
+              nodes={nodes}
+              onAddNode={handleAddNode}
+              onUpdateNode={handleUpdateNode}
+              onDeleteNode={handleDeleteNode}
+            />
           </TabsContent>
         </div>
       </Tabs>
@@ -133,20 +169,20 @@ const ProjectView = () => {
         onUpdate={handleSaveArticle}
       />
       <div className="fixed bottom-4 right-4 flex flex-col items-end space-y-2">
-        {nodes.slice(0, 4).reverse().map((node, index) => (
-          <TooltipProvider key={node.id}>
+        {project.reports.slice(0, 4).reverse().map((report, index) => (
+          <TooltipProvider key={report.id}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Avatar 
                   className={`w-12 h-12 cursor-pointer ${index > 0 ? '-mb-6' : ''}`}
-                  onClick={() => handleEditArticle(node)}
+                  onClick={() => handleEditArticle(report)}
                 >
-                  <AvatarImage src={node.image || '/placeholder.svg'} alt={node.title} />
-                  <AvatarFallback>{node.title.substring(0, 2).toUpperCase()}</AvatarFallback>
+                  <AvatarImage src={report.image || '/placeholder.svg'} alt={report.title} />
+                  <AvatarFallback>{report.title.substring(0, 2).toUpperCase()}</AvatarFallback>
                 </Avatar>
               </TooltipTrigger>
               <TooltipContent>
-                <p className="font-bold">{node.title}</p>
+                <p className="font-bold">{report.title}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
