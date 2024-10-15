@@ -12,19 +12,19 @@ const Canvas = forwardRef(({
   handlePanEnd,
   onNodeUpdate
 }, ref) => {
-  const handleDragStart = (e, nodeId) => {
+  const handleDragStart = useCallback((e, nodeId) => {
     if (activeTool === 'select') {
       setNodes(prevNodes => prevNodes.map(node => 
         node.id === nodeId ? { ...node, isDragging: true } : node
       ));
     }
-  };
+  }, [activeTool, setNodes]);
 
   const snapToGrid = useCallback((value) => {
     return Math.round(value / 24) * 24;
   }, []);
 
-  const handleDrag = (e) => {
+  const handleDrag = useCallback((e) => {
     if (activeTool === 'select') {
       setNodes(prevNodes => prevNodes.map(node => 
         node.isDragging ? { 
@@ -34,31 +34,31 @@ const Canvas = forwardRef(({
         } : node
       ));
     }
-  };
+  }, [activeTool, zoom, position.x, position.y, setNodes, snapToGrid, ref]);
 
-  const handleDragEnd = () => {
+  const handleDragEnd = useCallback(() => {
     setNodes(prevNodes => prevNodes.map(node => ({ ...node, isDragging: false })));
-  };
+  }, [setNodes]);
 
-  const handleCanvasMouseDown = (e) => {
+  const handleCanvasMouseDown = useCallback((e) => {
     if (activeTool === 'pan') {
       handlePanStart();
     }
-  };
+  }, [activeTool, handlePanStart]);
 
-  const handleCanvasMouseMove = (e) => {
+  const handleCanvasMouseMove = useCallback((e) => {
     handleDrag(e);
     if (activeTool === 'pan') {
       handlePanMove(e);
     }
-  };
+  }, [activeTool, handleDrag, handlePanMove]);
 
-  const handleCanvasMouseUp = () => {
+  const handleCanvasMouseUp = useCallback(() => {
     handleDragEnd();
     if (activeTool === 'pan') {
       handlePanEnd();
     }
-  };
+  }, [activeTool, handleDragEnd, handlePanEnd]);
 
   return (
     <div 
