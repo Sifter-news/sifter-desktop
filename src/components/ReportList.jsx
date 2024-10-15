@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 const ReportList = ({ reports, onAddReport, onEditReport }) => {
   return (
-    <div className="fixed bottom-6 left-6 flex flex-col items-start space-y-2 z-10">
+    <div className="fixed bottom-12 right-12 flex flex-col items-end space-y-2 z-10">
       {reports.slice(0, 4).map((report, index) => (
         <TooltipProvider key={report.id}>
           <Tooltip>
