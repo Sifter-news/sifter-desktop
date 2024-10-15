@@ -31,7 +31,7 @@ const ReportList = ({ reports, onAddReport, onEditReport }) => {
           <TooltipTrigger asChild>
             <Button
               size="icon"
-              className="rounded-full w-14 h-14 bg-blue-500 hover:bg-blue-600 text-white shadow-lg mt-2"
+              className="rounded-full w-14 h-14 bg-black hover:bg-gray-800 text-white shadow-lg mt-2"
               onClick={() => onAddReport({ type: 'report', title: 'New Report', content: '' })}
             >
               <PlusIcon className="h-6 w-6" />
