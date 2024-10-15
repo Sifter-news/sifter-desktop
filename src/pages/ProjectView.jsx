@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import ProjectTabs from '../components/ProjectTabs';
 import ProjectModals from '../components/ProjectModals';
 import ReportList from '../components/ReportList';
+import ArticleModal from '../components/ArticleModal';
 import { findAvailablePosition } from '../utils/canvasUtils';
 
 const ProjectView = () => {
@@ -23,6 +24,8 @@ const ProjectView = () => {
   });
 
   const [nodes, setNodes] = useState([]);
+  const [selectedArticle, setSelectedArticle] = useState(null);
+  const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
 
   useEffect(() => {
     // Load nodes from localStorage or API
@@ -57,6 +60,11 @@ const ProjectView = () => {
     setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
   };
 
+  const handleArticleClick = (article) => {
+    setSelectedArticle(article);
+    setIsArticleModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header user={user} projectName={project.title} onProjectClick={() => {}} />
@@ -75,7 +83,16 @@ const ProjectView = () => {
       <ReportList
         reports={project.reports}
         onAddReport={handleAddNode}
-        onEditReport={handleUpdateNode}
+        onEditReport={handleArticleClick}
+      />
+      <ArticleModal
+        isOpen={isArticleModalOpen}
+        onClose={() => setIsArticleModalOpen(false)}
+        article={selectedArticle}
+        onUpdate={(updatedArticle) => {
+          // Handle article update if needed
+          console.log("Article updated:", updatedArticle);
+        }}
       />
     </div>
   );
