@@ -1,41 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 
-const ArticleModal = ({ isOpen, onClose, article, onUpdate }) => {
-  const [title, setTitle] = useState(article.title);
-  const [content, setContent] = useState(article.content);
-
-  useEffect(() => {
-    setTitle(article.title);
-    setContent(article.content);
-  }, [article]);
-
-  const handleSave = () => {
-    onUpdate({ ...article, title, content, image: '/placeholder.svg' });
-    onClose();
-  };
+const ArticleModal = ({ isOpen, onClose, article }) => {
+  if (!article) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[50vw] h-[50vh] fixed left-[calc(50%-25vw)] top-[calc(50%-25vh)] overflow-y-auto">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{article.id ? 'Edit Article' : 'New Article'}</DialogTitle>
+          <DialogTitle>{article.title}</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
-          <Input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Article Title"
-          />
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Article Content"
-            className="w-full h-[calc(100%-120px)] p-2 border rounded"
-          />
-          <Button onClick={handleSave}>Save Changes</Button>
+        <div className="mt-2">
+          <p className="text-sm text-gray-500">{article.content}</p>
         </div>
       </DialogContent>
     </Dialog>

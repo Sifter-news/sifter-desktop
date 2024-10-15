@@ -13,7 +13,7 @@ const ReportList = ({ reports, onAddReport, onEditReport }) => {
             <TooltipTrigger asChild>
               <Avatar 
                 className={`w-12 h-12 cursor-pointer ${index > 0 ? '-mb-6' : ''}`}
-                onClick={() => onEditReport(report.id, report)}
+                onClick={() => onEditReport(report)}
               >
                 <AvatarImage src={report.image || '/placeholder.svg'} alt={report.title} />
                 <AvatarFallback>{report.title.substring(0, 2).toUpperCase()}</AvatarFallback>

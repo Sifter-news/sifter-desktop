@@ -7,6 +7,8 @@ import { useZoomPan, findAvailablePosition } from '../utils/canvasUtils';
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
 import AISidePanel from './AISidePanel';
+import ReportList from './ReportList';
+import ArticleModal from './ArticleModal';
 
 const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode }) => {
   const [showAIInput, setShowAIInput] = useState(true);
@@ -96,6 +98,14 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
     console.log("Sending message to AI:", message);
   };
 
+  const [selectedArticle, setSelectedArticle] = useState(null);
+  const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
+
+  const handleArticleClick = (article) => {
+    setSelectedArticle(article);
+    setIsArticleModalOpen(true);
+  };
+
   return (
     <div className="flex h-[calc(100vh-64px)] w-screen overflow-hidden">
       <div className="flex-grow relative">
@@ -146,12 +156,22 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
           handleZoom={handleZoom}
           zoom={zoom}
         />
+        <ReportList
+          reports={project.reports}
+          onAddReport={handleAddNode}
+          onEditReport={handleArticleClick}
+        />
       </div>
       <AISidePanel
         isOpen={sidePanelOpen}
         onClose={() => setSidePanelOpen(false)}
         initialQuestion={initialAIMessage}
         onSendMessage={handleSendMessage}
+      />
+      <ArticleModal
+        isOpen={isArticleModalOpen}
+        onClose={() => setIsArticleModalOpen(false)}
+        article={selectedArticle}
       />
     </div>
   );
