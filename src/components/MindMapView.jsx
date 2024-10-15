@@ -7,15 +7,16 @@ import { useZoomPan } from '../utils/canvasUtils';
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
 import AISidePanel from './AISidePanel';
-import { findAvailablePosition } from '../utils/nodeUtils';
 
-const MindMapView = ({ project, nodes, setNodes }) => {
+const MindMapView = ({ project }) => {
   const [showAIInput, setShowAIInput] = useState(true);
+  const [nodes, setNodes] = useState([]);
   const [activeTool, setActiveTool] = useState('select');
   const [focusedNodeId, setFocusedNodeId] = useState(null);
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
   const [aiInputText, setAIInputText] = useState('');
   const canvasRef = useRef(null);
+  const aiInputRef = useRef(null);
 
   const {
     zoom,
@@ -59,12 +60,11 @@ const MindMapView = ({ project, nodes, setNodes }) => {
   };
 
   const handleAddNode = (type) => {
-    const newPosition = findAvailablePosition(nodes, { width: 200, height: 200 });
     const newNode = {
       id: Date.now().toString(),
       type,
-      x: newPosition.x,
-      y: newPosition.y,
+      x: Math.random() * (window.innerWidth - 100),
+      y: Math.random() * (window.innerHeight - 200),
       text: '',
       width: 200,
       height: 200,
