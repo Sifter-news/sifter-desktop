@@ -45,6 +45,12 @@ const AISidePanel = ({ isOpen, onClose, initialQuestion, onSendMessage }) => {
       <div className="flex-grow overflow-hidden p-4">
         <div className="bg-gray-100 h-full rounded-2xl p-4 overflow-y-auto">
           <div className="space-y-4">
+            {/* Example chat bubble */}
+            <div className="flex justify-start">
+              <div className="p-3 rounded-lg max-w-[80%] bg-white text-gray-800 border border-gray-300">
+                Example chat bubble
+              </div>
+            </div>
             {messages.map((message, index) => (
               <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`p-3 rounded-lg max-w-[80%] ${
@@ -56,6 +62,14 @@ const AISidePanel = ({ isOpen, onClose, initialQuestion, onSendMessage }) => {
                 </div>
               </div>
             ))}
+            {/* Link to input field text */}
+            {newMessage && (
+              <div className="flex justify-end">
+                <div className="p-3 rounded-lg max-w-[80%] bg-blue-500 text-white">
+                  {newMessage}
+                </div>
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
         </div>
