@@ -32,7 +32,6 @@ const ProjectView = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isNewArticleModalOpen, setIsNewArticleModalOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState(null);
-
   const [focusedDocument, setFocusedDocument] = useState(null);
 
   const handleProjectClick = () => {

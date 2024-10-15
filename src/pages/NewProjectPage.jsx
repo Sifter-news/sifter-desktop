@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import UserProfile from '../components/UserProfile';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,10 +7,26 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PlusIcon } from 'lucide-react';
 
 const NewProjectPage = () => {
+  const navigate = useNavigate();
+  const [projectTitle, setProjectTitle] = useState('');
   const user = {
     name: 'User-Name',
     avatar: '/placeholder.svg',
     email: 'user@example.com',
+  };
+
+  const handleCreateProject = () => {
+    if (projectTitle.trim()) {
+      const newProject = {
+        id: Date.now().toString(),
+        title: projectTitle,
+        description: '',
+        reports: []
+      };
+      // Here you would typically save the new project to your backend
+      // For now, we'll just navigate to the new project view
+      navigate(`/project/${newProject.id}`, { state: { project: newProject } });
+    }
   };
 
   return (
@@ -52,11 +69,16 @@ const NewProjectPage = () => {
           </Button>
           <Input 
             type="text" 
-            placeholder="Ask anything" 
+            placeholder="Enter project title" 
             className="flex-grow text-lg border-none focus:ring-0 rounded-full"
+            value={projectTitle}
+            onChange={(e) => setProjectTitle(e.target.value)}
           />
-          <Button className="bg-[#594BFF] hover:bg-[#4B3FD9] text-white rounded-full px-6">
-            Ask
+          <Button 
+            className="bg-[#594BFF] hover:bg-[#4B3FD9] text-white rounded-full px-6"
+            onClick={handleCreateProject}
+          >
+            Create
           </Button>
         </div>
       </main>
