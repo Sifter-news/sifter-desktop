@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PlusIcon } from 'lucide-react';
 import { saveProjectState, loadProjectState } from '../utils/projectUtils';
@@ -14,6 +13,7 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
   const [focusedNodeId, setFocusedNodeId] = useState(null);
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
   const [aiInputText, setAIInputText] = useState('');
+  const [initialAIMessage, setInitialAIMessage] = useState('');
   const canvasRef = useRef(null);
   const aiInputRef = useRef(null);
 
@@ -55,6 +55,7 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
       onAddNode(newNode);
       setShowAIInput(false);
       setSidePanelOpen(true);
+      setInitialAIMessage(aiInputText);
       setAIInputText('');
     }
   };
@@ -148,7 +149,7 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
       <AISidePanel
         isOpen={sidePanelOpen}
         onClose={() => setSidePanelOpen(false)}
-        initialQuestion={nodes.find(node => node.type === 'ai')?.text || ''}
+        initialQuestion={initialAIMessage}
         onSendMessage={handleSendMessage}
       />
     </div>

@@ -37,7 +37,7 @@ const AISidePanel = ({ isOpen, onClose, initialQuestion, onSendMessage }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-16 right-4 bottom-4 w-[480px] bg-white shadow-lg flex flex-col z-20 rounded-t-[24px] rounded-b-[48px] my-6"> {/* Updated top border radius to 24px */}
+    <div className="fixed top-16 right-4 bottom-4 w-[480px] bg-white shadow-lg flex flex-col z-20 rounded-t-[24px] rounded-b-[48px] my-6">
       <div className="flex justify-between items-center p-4 border-b">
         <h2 className="text-lg font-semibold">AI Conversation</h2>
         <Button variant="ghost" onClick={onClose}>Close</Button>
@@ -56,13 +56,6 @@ const AISidePanel = ({ isOpen, onClose, initialQuestion, onSendMessage }) => {
                 </div>
               </div>
             ))}
-            {newMessage && (
-              <div className="flex justify-end">
-                <div className="p-3 rounded-lg max-w-[80%] bg-blue-500 text-white">
-                  {newMessage}
-                </div>
-              </div>
-            )}
             <div ref={messagesEndRef} />
           </div>
         </div>
