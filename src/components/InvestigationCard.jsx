@@ -16,7 +16,7 @@ const InvestigationCard = ({ investigation }) => {
             backgroundSize: '48px 48px',
           }}
         ></div>
-        <div className="absolute left-6 top-6 bottom-6 w-64 bg-white rounded-[24px] overflow-hidden">
+        <div className="absolute left-1/2 top-6 bottom-6 w-64 -translate-x-1/2 bg-white rounded-[24px] overflow-hidden">
           <div className="absolute top-4 right-4 w-8 h-8 bg-white rounded-full shadow-md"></div>
           <div className="h-[128px] w-full overflow-hidden">
             <img 

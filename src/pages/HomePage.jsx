@@ -65,11 +65,10 @@ const HomePage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-white">
       <Header user={user} />
-      <div className="flex-grow flex flex-col">
-        <div className="h-[72px]"></div> {/* Spacer for navigation bar */}
-        <div className="flex-grow bg-gray-100 rounded-t-[64px] pt-8 px-8 pb-6 overflow-hidden shadow-inner">
+      <div className="container mx-auto px-4 py-8 pb-6">
+        <div className="bg-gray-100 rounded-[64px] pt-8 px-8 pb-6 overflow-hidden shadow-inner">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
@@ -112,7 +111,6 @@ const HomePage = () => {
             ))}
           </div>
         </div>
-        <div className="h-6"></div> {/* 24px white buffer at the bottom */}
       </div>
     </div>
   );
