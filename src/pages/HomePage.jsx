@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import InvestigationCard from '../components/InvestigationCard';
 import ReportCard from '../components/ReportCard';
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { PlusIcon, FileSearchIcon } from 'lucide-react';
 
 const HomePage = () => {
+  const navigate = useNavigate();
   const user = {
     name: 'User-Name',
     avatar: '/placeholder.svg',
@@ -64,6 +65,10 @@ const HomePage = () => {
     },
   ];
 
+  const handleProjectClick = (project) => {
+    navigate(`/project/${project.id}`, { state: { project } });
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Header user={user} />
@@ -85,10 +90,8 @@ const HomePage = () => {
           <div className="flex flex-col space-y-8 max-h-[calc(100vh-300px)] overflow-y-auto pr-4 scrollbar-hide">
             {investigations.map(investigation => (
               <div key={investigation.id} className="flex flex-col lg:flex-row">
-                <div className="w-full lg:w-[548px] flex-shrink-0">
-                  <Link to={`/project/${investigation.id}`} state={{ project: investigation }}>
-                    <InvestigationCard investigation={investigation} />
-                  </Link>
+                <div className="w-full lg:w-[548px] flex-shrink-0" onClick={() => handleProjectClick(investigation)}>
+                  <InvestigationCard investigation={investigation} />
                 </div>
                 <div className="w-full lg:w-[548px] flex-shrink-0">
                   <div className="bg-white bg-opacity-30 rounded-r-lg p-4 h-[323px] relative overflow-hidden">
