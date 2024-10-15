@@ -1,5 +1,6 @@
-import React, { forwardRef, useCallback } from 'react';
+import React, { forwardRef, useCallback, useEffect } from 'react';
 import NodeRenderer from './NodeRenderer';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const Canvas = forwardRef(({ 
   nodes, 
@@ -15,6 +16,9 @@ const Canvas = forwardRef(({
   onNodeFocus,
   onNodeDelete
 }, ref) => {
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = React.useState(false);
+  const [nodeToDelete, setNodeToDelete] = React.useState(null);
+
   const handleDragStart = useCallback((e, nodeId) => {
     if (activeTool === 'select') {
       setNodes(prevNodes => prevNodes.map(node => 
@@ -63,41 +67,84 @@ const Canvas = forwardRef(({
     }
   }, [activeTool, handleDragEnd, handlePanEnd]);
 
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Delete' && focusedNodeId) {
+      const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
+      if (nodeToDelete.type === 'ai') {
+        setNodeToDelete(nodeToDelete);
+        setShowDeleteConfirmation(true);
+      } else {
+        onNodeDelete(focusedNodeId);
+      }
+    }
+  }, [focusedNodeId, nodes, onNodeDelete]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyDown]);
+
+  const handleConfirmDelete = () => {
+    if (nodeToDelete) {
+      onNodeDelete(nodeToDelete.id);
+    }
+    setShowDeleteConfirmation(false);
+    setNodeToDelete(null);
+  };
+
   return (
-    <div 
-      className="w-screen h-full bg-[#594BFF] overflow-hidden"
-      onMouseDown={handleCanvasMouseDown}
-      onMouseMove={handleCanvasMouseMove}
-      onMouseUp={handleCanvasMouseUp}
-      ref={ref}
-    >
+    <>
       <div 
-        className="absolute inset-0" 
-        style={{
-          backgroundImage: `
-            radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px),
-            linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '24px 24px, 24px 24px, 24px 24px',
-          backgroundPosition: '0 0, 12px 12px, 12px 12px',
-          transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
-        }}
+        className="w-screen h-full bg-[#594BFF] overflow-hidden"
+        onMouseDown={handleCanvasMouseDown}
+        onMouseMove={handleCanvasMouseMove}
+        onMouseUp={handleCanvasMouseUp}
+        ref={ref}
       >
-        {nodes.map(node => (
-          <NodeRenderer
-            key={node.id}
-            node={node}
-            onDragStart={handleDragStart}
-            zoom={zoom}
-            onNodeUpdate={onNodeUpdate}
-            onFocus={onNodeFocus}
-            isFocused={focusedNodeId === node.id}
-            onDelete={onNodeDelete}
-          />
-        ))}
+        <div 
+          className="absolute inset-0" 
+          style={{
+            backgroundImage: `
+              radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px),
+              linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '24px 24px, 24px 24px, 24px 24px',
+            backgroundPosition: '0 0, 12px 12px, 12px 12px',
+            transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
+          }}
+        >
+          {nodes.map(node => (
+            <NodeRenderer
+              key={node.id}
+              node={node}
+              onDragStart={handleDragStart}
+              zoom={zoom}
+              onNodeUpdate={onNodeUpdate}
+              onFocus={onNodeFocus}
+              isFocused={focusedNodeId === node.id}
+              onDelete={onNodeDelete}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+      <AlertDialog open={showDeleteConfirmation} onOpenChange={setShowDeleteConfirmation}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to delete this AI node?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the AI node and its associated data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowDeleteConfirmation(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 });
 
