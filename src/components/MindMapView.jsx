@@ -3,14 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PlusIcon } from 'lucide-react';
 import { saveProjectState, loadProjectState } from '../utils/projectUtils';
-import { useZoomPan } from '../utils/canvasUtils';
+import { useZoomPan, findAvailablePosition } from '../utils/canvasUtils';
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
 import AISidePanel from './AISidePanel';
 
-const MindMapView = ({ project }) => {
+const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode }) => {
   const [showAIInput, setShowAIInput] = useState(true);
-  const [nodes, setNodes] = useState([]);
   const [activeTool, setActiveTool] = useState('select');
   const [focusedNodeId, setFocusedNodeId] = useState(null);
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
@@ -35,7 +34,7 @@ const MindMapView = ({ project }) => {
     } else {
       aiInputRef.current?.focus();
     }
-  }, [project.id]);
+  }, [project.id, setNodes]);
 
   useEffect(() => {
     saveProjectState(project.id, nodes);
@@ -43,16 +42,17 @@ const MindMapView = ({ project }) => {
 
   const handleAIAsk = () => {
     if (aiInputText.trim()) {
+      const position = findAvailablePosition(nodes);
       const newNode = {
         id: Date.now().toString(),
         type: 'node',
-        x: window.innerWidth / 2 - 100,
-        y: window.innerHeight / 2 - 100,
+        x: position.x,
+        y: position.y,
         text: aiInputText,
         width: 200,
         height: 200,
       };
-      setNodes([...nodes, newNode]);
+      onAddNode(newNode);
       setShowAIInput(false);
       setSidePanelOpen(true);
       setAIInputText('');
@@ -60,24 +60,21 @@ const MindMapView = ({ project }) => {
   };
 
   const handleAddNode = (type) => {
+    const position = findAvailablePosition(nodes);
     const newNode = {
       id: Date.now().toString(),
       type,
-      x: Math.random() * (window.innerWidth - 100),
-      y: Math.random() * (window.innerHeight - 200),
+      x: position.x,
+      y: position.y,
       text: '',
       width: 200,
       height: 200,
     };
-    setNodes([...nodes, newNode]);
+    onAddNode(newNode);
   };
 
   const handleNodeUpdate = (nodeId, updates) => {
-    setNodes(prevNodes =>
-      prevNodes.map(node =>
-        node.id === nodeId ? { ...node, ...updates } : node
-      )
-    );
+    onUpdateNode(nodeId, updates);
     if (updates.text && nodes.find(node => node.id === nodeId)?.type === 'ai') {
       setSidePanelOpen(true);
     }
@@ -88,7 +85,7 @@ const MindMapView = ({ project }) => {
   };
 
   const handleNodeDelete = (nodeId) => {
-    setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
+    onDeleteNode(nodeId);
     setFocusedNodeId(null);
   };
 

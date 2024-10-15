@@ -1,51 +1,57 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import Navigator from './Navigator';
+import { findAvailablePosition } from '../utils/canvasUtils';
 
 const TextView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => {
-  const [selectedDocument, setSelectedDocument] = useState(null);
+  const [selectedNode, setSelectedNode] = useState(null);
 
   useEffect(() => {
-    if (nodes.length > 0 && !selectedDocument) {
-      setSelectedDocument(nodes[0]);
+    if (nodes.length > 0 && !selectedNode) {
+      setSelectedNode(nodes[0]);
     }
-  }, [nodes, selectedDocument]);
+  }, [nodes, selectedNode]);
 
-  const handleDocumentClick = (doc) => {
-    setSelectedDocument(doc);
+  const handleNodeClick = (node) => {
+    setSelectedNode(node);
   };
 
   const handleContentChange = (e) => {
-    const updatedDocument = { ...selectedDocument, content: e.target.value };
-    setSelectedDocument(updatedDocument);
-    onUpdateNode(updatedDocument);
+    const updatedNode = { ...selectedNode, content: e.target.value };
+    setSelectedNode(updatedNode);
+    onUpdateNode(updatedNode);
   };
 
   const handleDelete = () => {
-    if (selectedDocument) {
-      onDeleteNode(selectedDocument.id);
-      setSelectedDocument(null);
+    if (selectedNode) {
+      onDeleteNode(selectedNode.id);
+      setSelectedNode(null);
     }
   };
 
   const handleShare = () => {
-    console.log('Share document');
+    console.log('Share node');
     // Implement share functionality here
   };
 
   const handleMove = () => {
-    console.log('Move document');
+    console.log('Move node');
     // Implement move functionality here
   };
 
-  const handleAddDocument = () => {
-    const newDocument = {
-      id: Date.now(),
-      type: 'document',
-      title: `New Document ${nodes.filter(node => node.type === 'document').length + 1}`,
+  const handleAddNode = () => {
+    const position = findAvailablePosition(nodes);
+    const newNode = {
+      id: Date.now().toString(),
+      type: 'node',
+      title: `New Node ${nodes.filter(node => node.type === 'node').length + 1}`,
       content: '',
+      x: position.x,
+      y: position.y,
+      width: 200,
+      height: 200,
     };
-    onAddNode(newDocument);
+    onAddNode(newNode);
   };
 
   return (
@@ -54,17 +60,17 @@ const TextView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => 
         <Navigator 
           items={nodes} 
           setItems={onUpdateNode} 
-          onDocumentClick={handleDocumentClick}
-          focusedDocument={selectedDocument}
+          onNodeClick={handleNodeClick}
+          focusedNode={selectedNode}
         />
-        <Button onClick={handleAddDocument} className="mt-4 w-full">Add Document</Button>
+        <Button onClick={handleAddNode} className="mt-4 w-full">Add Node</Button>
       </div>
       <div className="flex-grow flex flex-col p-8 overflow-hidden">
-        {selectedDocument ? (
+        {selectedNode ? (
           <div className="bg-white bg-opacity-80 shadow-lg rounded-lg p-6 relative flex flex-col h-full">
-            <h2 className="text-2xl font-bold mb-4">{selectedDocument.title}</h2>
+            <h2 className="text-2xl font-bold mb-4">{selectedNode.title}</h2>
             <textarea
-              value={selectedDocument.content}
+              value={selectedNode.content}
               onChange={handleContentChange}
               className="flex-grow w-full p-2 border rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -76,7 +82,7 @@ const TextView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => 
           </div>
         ) : (
           <div className="text-center text-gray-500">
-            Select a document from the navigator to view its content.
+            Select a node from the navigator to view its content.
           </div>
         )}
       </div>
