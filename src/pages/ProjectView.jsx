@@ -71,27 +71,25 @@ const ProjectView = () => {
     <div className="min-h-screen bg-white flex flex-col">
       <Header user={user} projectName={project.title} onProjectClick={handleProjectClick} />
       <Tabs defaultValue="mind" className="w-full flex flex-col flex-grow">
-        <div className="bg-white bg-opacity-80 backdrop-blur-md z-10">
-          <TabsList className="max-w-[280px] mx-auto justify-center pt-12 pb-3">
-            <TabsTrigger value="mind" className="flex items-center">
-              <Brain className="w-4 h-4 mr-2" />
-              Mind
-            </TabsTrigger>
-            <TabsTrigger value="text" className="flex items-center">
-              <FileText className="w-4 h-4 mr-2" />
-              Text
-            </TabsTrigger>
-            <TabsTrigger value="time" className="flex items-center">
-              <Clock className="w-4 h-4 mr-2" />
-              Time
-            </TabsTrigger>
-            <TabsTrigger value="map" className="flex items-center">
-              <Map className="w-4 h-4 mr-2" />
-              Map
-            </TabsTrigger>
-          </TabsList>
-        </div>
-        <div className="flex-grow">
+        <TabsList className="max-w-[280px] mx-auto justify-center fixed top-16 left-0 right-0 bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex">
+          <TabsTrigger value="mind" className="flex items-center">
+            <Brain className="w-4 h-4 mr-2" />
+            Mind
+          </TabsTrigger>
+          <TabsTrigger value="text" className="flex items-center">
+            <FileText className="w-4 h-4 mr-2" />
+            Text
+          </TabsTrigger>
+          <TabsTrigger value="time" className="flex items-center">
+            <Clock className="w-4 h-4 mr-2" />
+            Time
+          </TabsTrigger>
+          <TabsTrigger value="map" className="flex items-center">
+            <Map className="w-4 h-4 mr-2" />
+            Map
+          </TabsTrigger>
+        </TabsList>
+        <div className="flex-grow mt-12">
           <TabsContent value="mind" className="h-full">
             <MindMapView project={project} focusedDocument={focusedDocument} />
           </TabsContent>
