@@ -4,7 +4,7 @@ import Header from '../components/Header';
 import ProjectEditModal from '../components/ProjectEditModal';
 import ArticleModal from '../components/ArticleModal';
 import { Button } from "@/components/ui/button";
-import { PlusIcon } from 'lucide-react';
+import { PlusIcon, Brain, FileText, Clock, Map } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -72,10 +72,22 @@ const ProjectView = () => {
       <Header user={user} projectName={project.title} onProjectClick={handleProjectClick} />
       <Tabs defaultValue="mind" className="w-full flex flex-col flex-grow">
         <TabsList className="max-w-[280px] mx-auto justify-center fixed top-16 left-0 right-0 bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex">
-          <TabsTrigger value="mind">Mind</TabsTrigger>
-          <TabsTrigger value="text">Text</TabsTrigger>
-          <TabsTrigger value="time">Time</TabsTrigger>
-          <TabsTrigger value="map">Map</TabsTrigger>
+          <TabsTrigger value="mind" className="flex items-center">
+            <Brain className="w-4 h-4 mr-2" />
+            Mind
+          </TabsTrigger>
+          <TabsTrigger value="text" className="flex items-center">
+            <FileText className="w-4 h-4 mr-2" />
+            Text
+          </TabsTrigger>
+          <TabsTrigger value="time" className="flex items-center">
+            <Clock className="w-4 h-4 mr-2" />
+            Time
+          </TabsTrigger>
+          <TabsTrigger value="map" className="flex items-center">
+            <Map className="w-4 h-4 mr-2" />
+            Map
+          </TabsTrigger>
         </TabsList>
         <div className="flex-grow mt-12">
           <TabsContent value="mind" className="h-full">
