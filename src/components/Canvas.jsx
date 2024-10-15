@@ -10,7 +10,9 @@ const Canvas = forwardRef(({
   handlePanStart, 
   handlePanMove, 
   handlePanEnd,
-  onNodeUpdate
+  onNodeUpdate,
+  focusedNodeId,
+  onNodeFocus
 }, ref) => {
   const handleDragStart = useCallback((e, nodeId) => {
     if (activeTool === 'select') {
@@ -88,6 +90,8 @@ const Canvas = forwardRef(({
             onDragStart={handleDragStart}
             zoom={zoom}
             onNodeUpdate={onNodeUpdate}
+            onFocus={onNodeFocus}
+            isFocused={focusedNodeId === node.id}
           />
         ))}
       </div>

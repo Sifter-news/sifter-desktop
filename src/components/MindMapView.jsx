@@ -11,6 +11,7 @@ const MindMapView = ({ project }) => {
   const [showAIInput, setShowAIInput] = useState(false);
   const [nodes, setNodes] = useState([]);
   const [activeTool, setActiveTool] = useState('select');
+  const [focusedNodeId, setFocusedNodeId] = useState(null);
   const canvasRef = useRef(null);
 
   const {
@@ -47,6 +48,8 @@ const MindMapView = ({ project }) => {
       source: type === 'postit' ? 'Studies In Intelligence Vol. 01' : '',
       connectorStart: type === 'connector' ? { x: 0, y: 0 } : null,
       connectorEnd: type === 'connector' ? { x: 100, y: 100 } : null,
+      width: 200,
+      height: 200,
     };
     setNodes([...nodes, newNode]);
   };
@@ -57,6 +60,10 @@ const MindMapView = ({ project }) => {
         node.id === nodeId ? { ...node, ...updates } : node
       )
     );
+  };
+
+  const handleNodeFocus = (nodeId) => {
+    setFocusedNodeId(nodeId);
   };
 
   return (
@@ -72,6 +79,8 @@ const MindMapView = ({ project }) => {
         handlePanMove={handlePanMove}
         handlePanEnd={handlePanEnd}
         onNodeUpdate={handleNodeUpdate}
+        focusedNodeId={focusedNodeId}
+        onNodeFocus={handleNodeFocus}
       />
       {showAIInput && (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-full shadow-lg p-2 flex items-center space-x-2 max-w-xl w-full">
