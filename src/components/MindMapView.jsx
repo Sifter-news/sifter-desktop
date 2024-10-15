@@ -20,6 +20,9 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
   const canvasRef = useRef(null);
   const aiInputRef = useRef(null);
 
+  const [selectedArticle, setSelectedArticle] = useState(null);
+  const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
+
   const {
     zoom,
     position,
@@ -98,9 +101,6 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
     console.log("Sending message to AI:", message);
   };
 
-  const [selectedArticle, setSelectedArticle] = useState(null);
-  const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
-
   const handleArticleClick = (article) => {
     setSelectedArticle(article);
     setIsArticleModalOpen(true);
@@ -172,6 +172,10 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
         isOpen={isArticleModalOpen}
         onClose={() => setIsArticleModalOpen(false)}
         article={selectedArticle}
+        onUpdate={(updatedArticle) => {
+          // Handle article update if needed
+          console.log("Article updated:", updatedArticle);
+        }}
       />
     </div>
   );

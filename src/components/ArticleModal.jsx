@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-const ArticleModal = ({ isOpen, onClose, article }) => {
+const ArticleModal = ({ isOpen, onClose, article, onUpdate }) => {
   if (!article) return null;
 
   return (
