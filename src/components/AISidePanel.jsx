@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SendIcon } from 'lucide-react';
+import { SendIcon, PlusIcon } from 'lucide-react';
 
 const AISidePanel = ({ isOpen, onClose, initialQuestion, onSendMessage }) => {
   const [messages, setMessages] = useState([]);
@@ -76,16 +76,25 @@ const AISidePanel = ({ isOpen, onClose, initialQuestion, onSendMessage }) => {
       </div>
       <div className="p-4 border-t">
         <div className="flex items-center space-x-2">
-          <Input 
-            type="text" 
-            placeholder="Type your message..." 
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-          />
-          <Button onClick={handleSend}>
-            <SendIcon className="h-5 w-5" />
-          </Button>
+          <div className="bg-white rounded-full shadow-lg p-2 flex items-center space-x-2 flex-grow">
+            <Button size="icon" className="rounded-full flex-shrink-0 bg-[#594BFF1A] hover:bg-[#594BFF33]">
+              <PlusIcon className="h-6 w-6 text-[#594BFF]" />
+            </Button>
+            <Input 
+              type="text" 
+              placeholder="Type your message..." 
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+              className="flex-grow text-lg border-none focus:ring-0 rounded-full"
+            />
+            <Button 
+              className="bg-[#594BFF] hover:bg-[#4B3FD9] text-white rounded-full px-6"
+              onClick={handleSend}
+            >
+              Ask
+            </Button>
+          </div>
         </div>
       </div>
     </div>
