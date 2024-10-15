@@ -37,7 +37,7 @@ const AISidePanel = ({ isOpen, onClose, initialQuestion, onSendMessage }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-0 right-0 h-full w-[480px] bg-white shadow-lg flex flex-col z-20 m-4 rounded-2xl">
+    <div className="fixed top-16 right-4 bottom-4 w-[480px] bg-white shadow-lg flex flex-col z-20 rounded-2xl">
       <div className="flex justify-between items-center p-4 border-b">
         <h2 className="text-lg font-semibold">AI Conversation</h2>
         <Button variant="ghost" onClick={onClose}>Close</Button>
@@ -45,12 +45,6 @@ const AISidePanel = ({ isOpen, onClose, initialQuestion, onSendMessage }) => {
       <div className="flex-grow overflow-hidden p-4">
         <div className="bg-gray-100 h-full rounded-2xl p-4 overflow-y-auto">
           <div className="space-y-4">
-            {/* Example chat bubble */}
-            <div className="flex justify-start">
-              <div className="p-3 rounded-lg max-w-[80%] bg-white text-gray-800 border border-gray-300">
-                Example chat bubble
-              </div>
-            </div>
             {messages.map((message, index) => (
               <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`p-3 rounded-lg max-w-[80%] ${
@@ -62,7 +56,6 @@ const AISidePanel = ({ isOpen, onClose, initialQuestion, onSendMessage }) => {
                 </div>
               </div>
             ))}
-            {/* Link to input field text */}
             {newMessage && (
               <div className="flex justify-end">
                 <div className="p-3 rounded-lg max-w-[80%] bg-blue-500 text-white">
