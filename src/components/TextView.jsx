@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import Navigator from './Navigator';
+import { findAvailablePosition } from '../utils/nodeUtils';
 
 const TextView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => {
   const [selectedDocument, setSelectedDocument] = useState(null);
@@ -39,13 +40,19 @@ const TextView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => 
   };
 
   const handleAddDocument = () => {
+    const newPosition = findAvailablePosition(nodes, { width: 200, height: 200 });
     const newDocument = {
       id: Date.now(),
       type: 'document',
       title: `New Document ${nodes.filter(node => node.type === 'document').length + 1}`,
       content: '',
+      x: newPosition.x,
+      y: newPosition.y,
+      width: 200,
+      height: 200,
     };
     onAddNode(newDocument);
+    setSelectedDocument(newDocument);
   };
 
   return (
@@ -82,6 +89,7 @@ const TextView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => 
       </div>
     </div>
   );
+};
 };
 
 export default TextView;
