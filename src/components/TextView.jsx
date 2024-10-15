@@ -27,6 +27,14 @@ const TextView = ({ project, focusedDocument, setFocusedDocument }) => {
     setFocusedDocument(doc);
   };
 
+  const handleContentChange = (e) => {
+    const updatedDocument = { ...selectedDocument, content: e.target.value };
+    setSelectedDocument(updatedDocument);
+    setItems(prevItems => prevItems.map(item => 
+      item.id === updatedDocument.id ? updatedDocument : item
+    ));
+  };
+
   const handleDelete = () => {
     console.log('Delete document');
     // Implement delete functionality here
@@ -43,7 +51,7 @@ const TextView = ({ project, focusedDocument, setFocusedDocument }) => {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-120px)]">
+    <div className="flex h-full">
       <div className="w-1/4 bg-gray-100 p-4 overflow-y-auto">
         <Navigator 
           items={items} 
@@ -52,24 +60,26 @@ const TextView = ({ project, focusedDocument, setFocusedDocument }) => {
           focusedDocument={selectedDocument}
         />
       </div>
-      <div className="flex-grow flex justify-center items-start p-8">
-        <div className="w-full max-w-[768px]">
-          {selectedDocument ? (
-            <div className="bg-white bg-opacity-80 shadow-lg rounded-lg p-6 relative inline-block">
-              <h2 className="text-2xl font-bold mb-4">{selectedDocument.title}</h2>
-              <p className="text-gray-600">{selectedDocument.content}</p>
-              <div className="absolute top-2 right-2">
-                <Button variant="ghost" size="sm" onClick={handleDelete}>Delete</Button>
-                <Button variant="ghost" size="sm" onClick={handleShare}>Share</Button>
-                <Button variant="ghost" size="sm" onClick={handleMove}>Move</Button>
-              </div>
+      <div className="flex-grow flex flex-col p-8 overflow-hidden">
+        {selectedDocument ? (
+          <div className="bg-white bg-opacity-80 shadow-lg rounded-lg p-6 relative flex flex-col h-full">
+            <h2 className="text-2xl font-bold mb-4">{selectedDocument.title}</h2>
+            <textarea
+              value={selectedDocument.content}
+              onChange={handleContentChange}
+              className="flex-grow w-full p-2 border rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <div className="absolute top-2 right-2">
+              <Button variant="ghost" size="sm" onClick={handleDelete}>Delete</Button>
+              <Button variant="ghost" size="sm" onClick={handleShare}>Share</Button>
+              <Button variant="ghost" size="sm" onClick={handleMove}>Move</Button>
             </div>
-          ) : (
-            <div className="text-center text-gray-500">
-              Select a document from the navigator to view its content.
-            </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="text-center text-gray-500">
+            Select a document from the navigator to view its content.
+          </div>
+        )}
       </div>
     </div>
   );
