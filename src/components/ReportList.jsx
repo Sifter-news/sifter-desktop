@@ -6,13 +6,20 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 const ReportList = ({ reports, onAddReport, onEditReport }) => {
   return (
-    <div className="fixed bottom-6 left-6 flex flex-col items-end space-y-2 z-10">
-      {reports.slice(0, 4).reverse().map((report, index) => (
+    <div className="fixed bottom-6 left-6 flex flex-col-reverse items-start space-y-reverse space-y-2 z-10">
+      <Button
+        size="icon"
+        className="rounded-full w-14 h-14 bg-blue-500 hover:bg-blue-600 text-white shadow-lg mb-2"
+        onClick={() => onAddReport({ type: 'report', title: 'New Report', content: '' })}
+      >
+        <PlusIcon className="h-6 w-6" />
+      </Button>
+      {reports.slice(0, 4).map((report, index) => (
         <TooltipProvider key={report.id}>
           <Tooltip>
             <TooltipTrigger asChild>
               <Avatar 
-                className={`w-12 h-12 cursor-pointer ${index > 0 ? '-mb-6' : ''}`}
+                className="w-12 h-12 cursor-pointer"
                 onClick={() => onEditReport(report)}
               >
                 <AvatarImage src={report.image || '/placeholder.svg'} alt={report.title} />
@@ -25,13 +32,6 @@ const ReportList = ({ reports, onAddReport, onEditReport }) => {
           </Tooltip>
         </TooltipProvider>
       ))}
-      <Button
-        size="icon"
-        className="rounded-full w-14 h-14 bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
-        onClick={() => onAddReport({ type: 'report', title: 'New Report', content: '' })}
-      >
-        <PlusIcon className="h-6 w-6" />
-      </Button>
     </div>
   );
 };
