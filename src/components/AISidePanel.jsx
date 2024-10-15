@@ -42,19 +42,23 @@ const AISidePanel = ({ isOpen, onClose, initialQuestion, onSendMessage }) => {
         <h2 className="text-lg font-semibold">AI Conversation</h2>
         <Button variant="ghost" onClick={onClose}>Close</Button>
       </div>
-      <div className="flex-grow overflow-y-auto p-4 space-y-4">
-        {messages.map((message, index) => (
-          <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`p-3 rounded-lg max-w-[80%] ${
-              message.type === 'user' 
-                ? 'bg-blue-500 text-white' 
-                : 'bg-gray-200 text-gray-800'
-            }`}>
-              {message.content}
-            </div>
+      <div className="flex-grow overflow-hidden p-4">
+        <div className="bg-gray-100 h-full rounded-2xl p-4 overflow-y-auto">
+          <div className="space-y-4">
+            {messages.map((message, index) => (
+              <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`p-3 rounded-lg max-w-[80%] ${
+                  message.type === 'user' 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-white text-gray-800 border border-gray-300'
+                }`}>
+                  {message.content}
+                </div>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
           </div>
-        ))}
-        <div ref={messagesEndRef} />
+        </div>
       </div>
       <div className="p-4 border-t">
         <div className="flex items-center space-x-2">
