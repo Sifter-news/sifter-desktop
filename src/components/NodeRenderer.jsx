@@ -96,7 +96,11 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpd
       className={`cursor-move ${isFocused ? 'ring-2 ring-blue-500' : ''}`}
       onClick={handleClick}
     >
-      {renderNodeContent()}
+      {node.image ? (
+        <img src={node.image} alt={node.text} className="w-full h-full object-cover rounded-md" />
+      ) : (
+        renderNodeContent()
+      )}
       {isFocused && (
         <FocusedNodeTooltip
           node={node}
