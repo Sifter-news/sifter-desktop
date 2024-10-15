@@ -37,7 +37,7 @@ const AISidePanel = ({ isOpen, onClose, initialQuestion, onSendMessage }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-0 right-0 h-full w-[480px] bg-white shadow-lg flex flex-col">
+    <div className="fixed top-0 right-0 h-full w-[480px] bg-white shadow-lg flex flex-col z-20">
       <div className="flex justify-between items-center p-4 border-b">
         <h2 className="text-lg font-semibold">AI Conversation</h2>
         <Button variant="ghost" onClick={onClose}>Close</Button>

@@ -168,7 +168,7 @@ const ProjectView = () => {
         article={editingArticle || { title: '', content: '' }}
         onUpdate={handleSaveArticle}
       />
-      <div className="fixed bottom-4 right-4 flex flex-col items-end space-y-2">
+      <div className="fixed bottom-4 right-4 flex flex-col items-end space-y-2 z-10">
         {project.reports.slice(0, 4).reverse().map((report, index) => (
           <TooltipProvider key={report.id}>
             <Tooltip>
