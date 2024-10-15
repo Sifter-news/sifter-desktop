@@ -94,6 +94,7 @@ const Canvas = forwardRef(({
     setNodeToDelete(null);
   };
 
+
   return (
     <>
       <div 

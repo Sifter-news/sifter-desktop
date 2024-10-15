@@ -6,7 +6,7 @@ import { saveProjectState, loadProjectState } from '../utils/projectUtils';
 import { useZoomPan } from '../utils/canvasUtils';
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
-import SidePanel from './SidePanel';
+import AISidePanel from './AISidePanel';
 
 const MindMapView = ({ project }) => {
   const [showAIInput, setShowAIInput] = useState(true);
@@ -15,7 +15,6 @@ const MindMapView = ({ project }) => {
   const [focusedNodeId, setFocusedNodeId] = useState(null);
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
   const [aiInputText, setAIInputText] = useState('');
-  const [messages, setMessages] = useState([]);
   const canvasRef = useRef(null);
   const aiInputRef = useRef(null);
 
@@ -45,8 +44,8 @@ const MindMapView = ({ project }) => {
   const handleAIAsk = () => {
     if (aiInputText.trim()) {
       const newNode = {
-        id: Date.now(),
-        type: 'ai',
+        id: Date.now().toString(),
+        type: 'node',
         x: window.innerWidth / 2 - 100,
         y: window.innerHeight / 2 - 100,
         text: aiInputText,
@@ -56,14 +55,13 @@ const MindMapView = ({ project }) => {
       setNodes([...nodes, newNode]);
       setShowAIInput(false);
       setSidePanelOpen(true);
-      setMessages([...messages, { type: 'user', content: aiInputText }]);
       setAIInputText('');
     }
   };
 
   const handleAddNode = (type) => {
     const newNode = {
-      id: Date.now(),
+      id: Date.now().toString(),
       type,
       x: Math.random() * (window.innerWidth - 100),
       y: Math.random() * (window.innerHeight - 200),
@@ -82,11 +80,6 @@ const MindMapView = ({ project }) => {
     );
     if (updates.text && nodes.find(node => node.id === nodeId)?.type === 'ai') {
       setSidePanelOpen(true);
-      setMessages([...messages, { type: 'user', content: updates.text }]);
-      // Simulate AI response (replace with actual API call in production)
-      setTimeout(() => {
-        setMessages(prevMessages => [...prevMessages, { type: 'ai', content: `Here's a response to "${updates.text}"` }]);
-      }, 1000);
     }
   };
 
@@ -99,15 +92,13 @@ const MindMapView = ({ project }) => {
     setFocusedNodeId(null);
   };
 
+  const handleSendMessage = (message) => {
+    // Handle sending message to AI (implement API call here)
+    console.log("Sending message to AI:", message);
+  };
+
   return (
     <div className="flex h-[calc(100vh-64px)] w-screen overflow-hidden">
-      <SidePanel 
-        isOpen={sidePanelOpen} 
-        onClose={() => setSidePanelOpen(false)} 
-        messages={messages}
-        setMessages={setMessages}
-        initialQuestion={nodes.find(node => node.type === 'ai')?.text || ''}
-      />
       <div className="flex-grow relative">
         <Canvas
           ref={canvasRef}
@@ -157,6 +148,12 @@ const MindMapView = ({ project }) => {
           zoom={zoom}
         />
       </div>
+      <AISidePanel
+        isOpen={sidePanelOpen}
+        onClose={() => setSidePanelOpen(false)}
+        initialQuestion={nodes.find(node => node.type === 'ai')?.text || ''}
+        onSendMessage={handleSendMessage}
+      />
     </div>
   );
 };
