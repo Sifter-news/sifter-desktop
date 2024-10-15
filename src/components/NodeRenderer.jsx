@@ -1,20 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Rnd } from 'react-rnd';
 import FocusedNodeTooltip from './FocusedNodeTooltip';
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 
-const NodeRenderer = ({ 
-  node, 
-  onDragStart, 
-  onConnectorDragStart, 
-  zoom, 
-  onNodeUpdate, 
-  onFocus, 
-  isFocused, 
-  onDelete,
-  onToggleAINode
-}) => {
+const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpdate, onFocus, isFocused, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const contentRef = useRef(null);
   const titleRef = useRef(null);
@@ -82,18 +70,7 @@ const NodeRenderer = ({
           </div>
         );
       case 'ai':
-        return node.isAIInput ? (
-          <div className="w-full h-full bg-white rounded-md shadow-md flex flex-col p-2">
-            <Input 
-              type="text" 
-              placeholder="Ask anything about this project" 
-              className="flex-grow text-sm border-none focus:ring-0 rounded-full"
-            />
-            <Button className="mt-2 bg-[#594BFF] hover:bg-[#4B3FD9] text-white rounded-full px-4 py-1 text-sm">
-              Ask
-            </Button>
-          </div>
-        ) : (
+        return (
           <div className="w-full h-full bg-blue-100 rounded-md shadow-md flex items-center justify-center p-2">
             <span className="text-blue-600 font-semibold">AI Node</span>
           </div>
@@ -125,7 +102,6 @@ const NodeRenderer = ({
           node={node}
           onUpdate={onNodeUpdate}
           onDelete={onDelete}
-          onToggleAINode={onToggleAINode}
         />
       )}
     </Rnd>

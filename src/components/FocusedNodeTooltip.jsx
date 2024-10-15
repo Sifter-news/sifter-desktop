@@ -3,9 +3,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash, Type, Palette, Sparkles } from 'lucide-react';
+import { Trash, Type, Palette } from 'lucide-react';
 
-const FocusedNodeTooltip = ({ node, onUpdate, onDelete, onToggleAINode }) => {
+const FocusedNodeTooltip = ({ node, onUpdate, onDelete }) => {
   const handleColorChange = (color) => {
     onUpdate(node.id, { color });
   };
@@ -20,10 +20,6 @@ const FocusedNodeTooltip = ({ node, onUpdate, onDelete, onToggleAINode }) => {
 
   const handleDelete = () => {
     onDelete(node.id);
-  };
-
-  const handleToggleAI = () => {
-    onToggleAINode(node.id);
   };
 
   return (
@@ -69,10 +65,6 @@ const FocusedNodeTooltip = ({ node, onUpdate, onDelete, onToggleAINode }) => {
               </SelectContent>
             </Select>
           </div>
-          <Button variant="outline" size="sm" onClick={handleToggleAI}>
-            <Sparkles className="h-4 w-4 mr-2" />
-            {node.isAIInput ? 'Convert to Regular Node' : 'Convert to AI Input'}
-          </Button>
           <Button variant="destructive" size="sm" onClick={handleDelete}>
             <Trash className="h-4 w-4 mr-2" />
             Delete Node
