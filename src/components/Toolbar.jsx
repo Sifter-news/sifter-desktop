@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Hand, Sparkles, Square, StickyNote, Type, Link, Layers, ToggleLeft, ZoomIn, ZoomOut, Download, MousePointer, Plus } from 'lucide-react';
+import { Hand, Sparkles, Square, StickyNote, Type, Link, Layers, ToggleLeft, ZoomIn, ZoomOut, Download, MousePointer } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -11,19 +11,16 @@ import ToolButton from './ToolbarButton';
 
 const Toolbar = ({ activeTool, setActiveTool, handleAIClick, handleAddNode, handleZoom, zoom }) => {
   return (
-    <div className="flex items-center space-x-2">
+    <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-lg p-2 flex items-center space-x-2">
       <ToolButton 
         icon={activeTool === 'select' ? <MousePointer className="h-4 w-4" /> : <Hand className="h-4 w-4" />} 
         label={activeTool === 'select' ? "Select" : "Pan"} 
         onClick={() => setActiveTool(activeTool === 'select' ? 'pan' : 'select')}
       />
       <ToolButton icon={<Sparkles className="h-4 w-4" />} label="AI Node" onClick={handleAIClick} />
-      <div className="bg-gray-100 p-1 rounded-md flex items-center space-x-1">
-        <ToolButton icon={<Plus className="h-4 w-4" />} label="Add" onClick={() => {}} />
-        <ToolButton icon={<Square className="h-4 w-4" />} label="Blank Node" onClick={() => handleAddNode('blank')} />
-        <ToolButton icon={<StickyNote className="h-4 w-4" />} label="Post-it Node" onClick={() => handleAddNode('postit')} />
-        <ToolButton icon={<Type className="h-4 w-4" />} label="Text Node" onClick={() => handleAddNode('text')} />
-      </div>
+      <ToolButton icon={<Square className="h-4 w-4" />} label="Blank Node" onClick={() => handleAddNode('blank')} />
+      <ToolButton icon={<StickyNote className="h-4 w-4" />} label="Post-it Node" onClick={() => handleAddNode('postit')} />
+      <ToolButton icon={<Type className="h-4 w-4" />} label="Text Node" onClick={() => handleAddNode('text')} />
       <ToolButton icon={<Link className="h-4 w-4" />} label="Connector Node" onClick={() => handleAddNode('connector')} />
       <ToolButton icon={<Layers className="h-4 w-4" />} label="Grouped Section Node" />
       <TooltipProvider>

@@ -138,15 +138,34 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
             </div>
           </div>
         )}
+        <Toolbar
+          activeTool={activeTool}
+          setActiveTool={setActiveTool}
+          handleAIClick={() => setShowAIInput(true)}
+          handleAddNode={handleAddNode}
+          handleZoom={handleZoom}
+          zoom={zoom}
+        />
         <div className="absolute bottom-4 right-4 bg-white p-1 rounded-lg shadow-md">
-          <Toolbar
-            activeTool={activeTool}
-            setActiveTool={setActiveTool}
-            handleAIClick={() => setShowAIInput(true)}
-            handleAddNode={handleAddNode}
-            handleZoom={handleZoom}
-            zoom={zoom}
-          />
+          <div className="flex items-center space-x-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="flex items-center space-x-1"
+              onClick={() => handleAddNode('node')}
+            >
+              <PlusIcon className="h-4 w-4" />
+              <span>Add</span>
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="flex items-center space-x-1"
+              onClick={() => handleAddNode('article')}
+            >
+              <span>Article</span>
+            </Button>
+          </div>
         </div>
       </div>
       <AISidePanel
