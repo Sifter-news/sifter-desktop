@@ -12,7 +12,6 @@ import MindMapView from '../components/MindMapView';
 import TextView from '../components/TextView';
 import TimeView from '../components/TimeView';
 import MapView from '../components/MapView';
-import { Node } from '../types/nodeTypes';
 import { loadProjectState, saveProjectState } from '../utils/projectUtils';
 
 const ProjectView = () => {
@@ -30,7 +29,7 @@ const ProjectView = () => {
     description: 'This is a sample project description.',
   });
 
-  const [nodes, setNodes] = useState<Node[]>([]);
+  const [nodes, setNodes] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isNewArticleModalOpen, setIsNewArticleModalOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState(null);
@@ -66,7 +65,7 @@ const ProjectView = () => {
         node.id === editingArticle.id ? { ...node, ...article } : node
       ));
     } else {
-      const newNode: Node = {
+      const newNode = {
         id: Date.now().toString(),
         type: 'node',
         title: article.title,
