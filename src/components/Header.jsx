@@ -6,7 +6,7 @@ import { useDarkMode } from '../contexts/DarkModeContext';
 import { Moon, Sun } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
-const Header = ({ user, projectName, onProjectClick }) => {
+const Header = ({ user, projectName, onProjectClick, onUpdateUser }) => {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   return (
@@ -15,7 +15,7 @@ const Header = ({ user, projectName, onProjectClick }) => {
         <div className="flex items-center space-x-4 min-w-[200px]">
           <div className="flex items-center space-x-2">
             <Avatar className="h-8 w-8">
-              <AvatarImage src="/placeholder.svg" alt="Sifter Logo" />
+              <AvatarImage src="/default-image.png" alt="Sifter Logo" />
               <AvatarFallback>SL</AvatarFallback>
             </Avatar>
             <span className="text-sm font-normal dark:text-white">Sifter</span>
@@ -24,7 +24,7 @@ const Header = ({ user, projectName, onProjectClick }) => {
         <div className="flex-grow flex justify-center items-center">
           <div className="flex items-center space-x-2">
             <Avatar className="h-8 w-8">
-              <AvatarImage src="/placeholder.svg" alt="Dashboard Icon" />
+              <AvatarImage src="/default-image.png" alt="Dashboard Icon" />
               <AvatarFallback>DI</AvatarFallback>
             </Avatar>
             {projectName ? (
@@ -46,7 +46,7 @@ const Header = ({ user, projectName, onProjectClick }) => {
           >
             {isDarkMode ? <Sun className="h-[1.2rem] w-[1.2rem]" /> : <Moon className="h-[1.2rem] w-[1.2rem]" />}
           </Button>
-          <UserProfile user={user} />
+          <UserProfile user={user} onUpdateUser={onUpdateUser} />
         </div>
       </div>
     </header>

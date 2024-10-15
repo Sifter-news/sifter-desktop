@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import ArticleModal from './ArticleModal';
+import { Input } from "@/components/ui/input";
 
 const ReportCard = ({ report, onUpdate }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [image, setImage] = useState(report.image || '/default-image.png');
 
   const handleCardClick = () => {
     setIsModalOpen(true);
@@ -14,7 +16,19 @@ const ReportCard = ({ report, onUpdate }) => {
   };
 
   const handleUpdateArticle = (updatedArticle) => {
-    onUpdate(updatedArticle);
+    onUpdate({ ...updatedArticle, image });
+  };
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result);
+        onUpdate({ ...report, image: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -22,9 +36,16 @@ const ReportCard = ({ report, onUpdate }) => {
       <Card className="h-full flex flex-col overflow-hidden cursor-pointer" onClick={handleCardClick}>
         <div className="w-full h-[96px] bg-gray-200 relative overflow-hidden">
           <img 
-            src={report.image || '/placeholder.svg'} 
+            src={image}
             alt={report.title} 
             className="w-full h-full object-cover"
+          />
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="absolute inset-0 opacity-0 cursor-pointer"
+            onClick={(e) => e.stopPropagation()}
           />
         </div>
         <CardHeader className="flex-grow py-2">
