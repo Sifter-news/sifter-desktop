@@ -37,12 +37,12 @@ const AISidePanel = ({ isOpen, onClose, initialQuestion, onSendMessage }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-16 right-4 bottom-4 w-[480px] bg-white shadow-lg flex flex-col z-20 rounded-2xl">
+    <div className="fixed top-16 right-4 bottom-4 w-[480px] bg-white shadow-lg flex flex-col z-20 rounded-2xl my-6"> {/* Added my-6 for top and bottom margin */}
       <div className="flex justify-between items-center p-4 border-b">
         <h2 className="text-lg font-semibold">AI Conversation</h2>
         <Button variant="ghost" onClick={onClose}>Close</Button>
       </div>
-      <div className="flex-grow overflow-hidden py-6 px-4"> {/* Updated padding here */}
+      <div className="flex-grow overflow-hidden py-6 px-4">
         <div className="bg-gray-100 h-full rounded-2xl p-4 overflow-y-auto">
           <div className="space-y-4">
             {messages.map((message, index) => (
