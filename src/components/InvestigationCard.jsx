@@ -18,10 +18,17 @@ const InvestigationCard = ({ investigation }) => {
         ></div>
         <div className="absolute left-6 top-6 bottom-6 right-6 bg-white rounded-lg overflow-hidden">
           <div className="absolute top-4 right-4 w-8 h-8 bg-white rounded-full shadow-md"></div>
-          <CardContent className="p-6 h-full flex flex-col relative z-10">
+          <div className="h-[200px] w-full overflow-hidden">
+            <img 
+              src={investigation.image || '/placeholder.svg'} 
+              alt={investigation.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <CardContent className="p-6 h-[calc(100%-200px)] flex flex-col relative z-10">
             <div className="text-xs uppercase text-purple-600 font-semibold tracking-wide mb-2">Investigation</div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">{investigation.title}</h3>
-            <p className="text-sm text-gray-600 flex-grow overflow-hidden">{investigation.description}</p>
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">{investigation.title}</h3>
+            <p className="text-sm text-gray-600 flex-grow overflow-hidden line-clamp-2">{investigation.description}</p>
           </CardContent>
         </div>
       </Card>
