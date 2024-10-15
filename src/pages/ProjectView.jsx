@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import ProjectEditModal from '../components/ProjectEditModal';
@@ -33,20 +33,6 @@ const ProjectView = () => {
   const [isNewArticleModalOpen, setIsNewArticleModalOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState(null);
   const [focusedDocument, setFocusedDocument] = useState(null);
-  const [nodes, setNodes] = useState([]);
-
-  useEffect(() => {
-    // Load nodes from localStorage or API
-    const savedNodes = localStorage.getItem(`project_${id}_nodes`);
-    if (savedNodes) {
-      setNodes(JSON.parse(savedNodes));
-    }
-  }, [id]);
-
-  useEffect(() => {
-    // Save nodes to localStorage whenever they change
-    localStorage.setItem(`project_${id}_nodes`, JSON.stringify(nodes));
-  }, [id, nodes]);
 
   const handleProjectClick = () => {
     setIsEditModalOpen(true);
@@ -81,20 +67,6 @@ const ProjectView = () => {
     setIsNewArticleModalOpen(true);
   };
 
-  const handleAddNode = (newNode) => {
-    setNodes(prevNodes => [...prevNodes, newNode]);
-  };
-
-  const handleUpdateNode = (updatedNode) => {
-    setNodes(prevNodes => prevNodes.map(node => 
-      node.id === updatedNode.id ? updatedNode : node
-    ));
-  };
-
-  const handleDeleteNode = (nodeId) => {
-    setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
-  };
-
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header user={user} projectName={project.title} onProjectClick={handleProjectClick} />
@@ -119,40 +91,16 @@ const ProjectView = () => {
         </TabsList>
         <div className="flex-grow mt-12">
           <TabsContent value="mind" className="h-full">
-            <MindMapView 
-              project={project} 
-              nodes={nodes}
-              onAddNode={handleAddNode}
-              onUpdateNode={handleUpdateNode}
-              onDeleteNode={handleDeleteNode}
-            />
+            <MindMapView project={project} focusedDocument={focusedDocument} />
           </TabsContent>
           <TabsContent value="text" className="h-full">
-            <TextView 
-              project={project} 
-              nodes={nodes}
-              onAddNode={handleAddNode}
-              onUpdateNode={handleUpdateNode}
-              onDeleteNode={handleDeleteNode}
-            />
+            <TextView project={project} focusedDocument={focusedDocument} setFocusedDocument={setFocusedDocument} />
           </TabsContent>
           <TabsContent value="time" className="h-full">
-            <TimeView 
-              project={project} 
-              nodes={nodes}
-              onAddNode={handleAddNode}
-              onUpdateNode={handleUpdateNode}
-              onDeleteNode={handleDeleteNode}
-            />
+            <TimeView project={project} focusedDocument={focusedDocument} />
           </TabsContent>
           <TabsContent value="map" className="h-full">
-            <MapView 
-              project={project} 
-              nodes={nodes}
-              onAddNode={handleAddNode}
-              onUpdateNode={handleUpdateNode}
-              onDeleteNode={handleDeleteNode}
-            />
+            <MapView project={project} focusedDocument={focusedDocument} />
           </TabsContent>
         </div>
       </Tabs>

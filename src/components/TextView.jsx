@@ -2,30 +2,42 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import Navigator from './Navigator';
 
-const TextView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => {
+const TextView = ({ project, focusedDocument, setFocusedDocument }) => {
   const [selectedDocument, setSelectedDocument] = useState(null);
+  const [items, setItems] = useState([
+    { id: '1', type: 'document', title: 'Document 1', content: 'This is the content of Document 1.', children: [] },
+    { id: '2', type: 'folder', title: 'Folder 1', children: [
+      { id: '3', type: 'document', title: 'Document 2', content: 'This is the content of Document 2.', children: [] },
+    ]},
+    { id: '4', type: 'document', title: 'Document 3', content: 'This is the content of Document 3.', children: [] },
+  ]);
 
   useEffect(() => {
-    if (nodes.length > 0 && !selectedDocument) {
-      setSelectedDocument(nodes[0]);
+    if (focusedDocument) {
+      setSelectedDocument(focusedDocument);
+    } else if (items.length > 0) {
+      const firstDocument = items.find(item => item.type === 'document') || items[0];
+      setSelectedDocument(firstDocument);
+      setFocusedDocument(firstDocument);
     }
-  }, [nodes, selectedDocument]);
+  }, [focusedDocument, items, setFocusedDocument]);
 
   const handleDocumentClick = (doc) => {
     setSelectedDocument(doc);
+    setFocusedDocument(doc);
   };
 
   const handleContentChange = (e) => {
     const updatedDocument = { ...selectedDocument, content: e.target.value };
     setSelectedDocument(updatedDocument);
-    onUpdateNode(updatedDocument);
+    setItems(prevItems => prevItems.map(item => 
+      item.id === updatedDocument.id ? updatedDocument : item
+    ));
   };
 
   const handleDelete = () => {
-    if (selectedDocument) {
-      onDeleteNode(selectedDocument.id);
-      setSelectedDocument(null);
-    }
+    console.log('Delete document');
+    // Implement delete functionality here
   };
 
   const handleShare = () => {
@@ -38,26 +50,15 @@ const TextView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => 
     // Implement move functionality here
   };
 
-  const handleAddDocument = () => {
-    const newDocument = {
-      id: Date.now(),
-      type: 'document',
-      title: `New Document ${nodes.filter(node => node.type === 'document').length + 1}`,
-      content: '',
-    };
-    onAddNode(newDocument);
-  };
-
   return (
     <div className="flex h-full">
       <div className="w-1/4 bg-gray-100 p-4 overflow-y-auto">
         <Navigator 
-          items={nodes} 
-          setItems={onUpdateNode} 
+          items={items} 
+          setItems={setItems} 
           onDocumentClick={handleDocumentClick}
           focusedDocument={selectedDocument}
         />
-        <Button onClick={handleAddDocument} className="mt-4 w-full">Add Document</Button>
       </div>
       <div className="flex-grow flex flex-col p-8 overflow-hidden">
         {selectedDocument ? (
