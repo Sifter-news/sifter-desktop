@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Rnd } from 'react-rnd';
 import FocusedNodeTooltip from './FocusedNodeTooltip';
 
-const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpdate, onFocus, isFocused }) => {
+const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpdate, onFocus, isFocused, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const contentRef = useRef(null);
   const titleRef = useRef(null);
@@ -23,7 +23,7 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpd
     setIsEditing(false);
     if (onNodeUpdate) {
       onNodeUpdate(node.id, { 
-        text: contentRef.current.innerText,
+        text: contentRef.current ? contentRef.current.innerText : '',
         source: titleRef.current ? titleRef.current.innerText : ''
       });
     }
@@ -44,7 +44,7 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpd
               className="text-lg font-semibold mb-2 text-gray-800 outline-none"
               suppressContentEditableWarning={true}
             >
-              Source: {node.source || 'Untitled'}
+              {node.source || ''}
             </h3>
             <div
               ref={contentRef}
@@ -53,7 +53,7 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpd
               className={`text-sm text-gray-700 overflow-y-auto flex-grow outline-none ${node.textSize || 'text-base'}`}
               suppressContentEditableWarning={true}
             >
-              {node.text || 'Post-it content'}
+              {node.text || ''}
             </div>
           </div>
         );
@@ -66,7 +66,7 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpd
             className="w-full h-full p-2 bg-white rounded shadow-md outline-none"
             suppressContentEditableWarning={true}
           >
-            {node.text}
+            {node.text || ''}
           </div>
         );
       case 'ai':
@@ -101,6 +101,7 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpd
         <FocusedNodeTooltip
           node={node}
           onUpdate={onNodeUpdate}
+          onDelete={onDelete}
         />
       )}
     </Rnd>

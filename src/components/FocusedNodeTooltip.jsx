@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Trash, Type, Palette } from 'lucide-react';
 
-const FocusedNodeTooltip = ({ node, onUpdate }) => {
+const FocusedNodeTooltip = ({ node, onUpdate, onDelete }) => {
   const handleColorChange = (color) => {
     onUpdate(node.id, { color });
   };
@@ -19,8 +19,7 @@ const FocusedNodeTooltip = ({ node, onUpdate }) => {
   };
 
   const handleDelete = () => {
-    // Implement delete functionality
-    console.log('Delete node:', node.id);
+    onDelete(node.id);
   };
 
   return (

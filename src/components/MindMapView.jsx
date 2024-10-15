@@ -44,8 +44,8 @@ const MindMapView = ({ project }) => {
       type,
       x: Math.random() * (window.innerWidth - 100),
       y: Math.random() * (window.innerHeight - 200),
-      text: type === 'text' ? 'New Text' : 'Post-it content',
-      source: type === 'postit' ? 'Studies In Intelligence Vol. 01' : '',
+      text: '',
+      source: '',
       connectorStart: type === 'connector' ? { x: 0, y: 0 } : null,
       connectorEnd: type === 'connector' ? { x: 100, y: 100 } : null,
       width: 200,
@@ -66,6 +66,11 @@ const MindMapView = ({ project }) => {
     setFocusedNodeId(nodeId);
   };
 
+  const handleNodeDelete = (nodeId) => {
+    setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
+    setFocusedNodeId(null);
+  };
+
   return (
     <div className="flex flex-col h-[calc(100vh-64px)] w-screen overflow-hidden">
       <Canvas
@@ -81,6 +86,7 @@ const MindMapView = ({ project }) => {
         onNodeUpdate={handleNodeUpdate}
         focusedNodeId={focusedNodeId}
         onNodeFocus={handleNodeFocus}
+        onNodeDelete={handleNodeDelete}
       />
       {showAIInput && (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-full shadow-lg p-2 flex items-center space-x-2 max-w-xl w-full">

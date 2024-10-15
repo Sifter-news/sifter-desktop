@@ -12,7 +12,8 @@ const Canvas = forwardRef(({
   handlePanEnd,
   onNodeUpdate,
   focusedNodeId,
-  onNodeFocus
+  onNodeFocus,
+  onNodeDelete
 }, ref) => {
   const handleDragStart = useCallback((e, nodeId) => {
     if (activeTool === 'select') {
@@ -92,6 +93,7 @@ const Canvas = forwardRef(({
             onNodeUpdate={onNodeUpdate}
             onFocus={onNodeFocus}
             isFocused={focusedNodeId === node.id}
+            onDelete={onNodeDelete}
           />
         ))}
       </div>
