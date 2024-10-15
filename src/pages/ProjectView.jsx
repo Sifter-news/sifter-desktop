@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import ProjectEditModal from '../components/ProjectEditModal';
@@ -12,6 +12,8 @@ import MindMapView from '../components/MindMapView';
 import TextView from '../components/TextView';
 import TimeView from '../components/TimeView';
 import MapView from '../components/MapView';
+import { Node } from '../types/nodeTypes';
+import { loadProjectState, saveProjectState } from '../utils/projectUtils';
 
 const ProjectView = () => {
   const { id } = useParams();
@@ -26,13 +28,23 @@ const ProjectView = () => {
     id,
     title: `Project ${id}`,
     description: 'This is a sample project description.',
-    reports: []
   });
 
+  const [nodes, setNodes] = useState<Node[]>([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isNewArticleModalOpen, setIsNewArticleModalOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState(null);
-  const [focusedDocument, setFocusedDocument] = useState(null);
+
+  useEffect(() => {
+    const savedNodes = loadProjectState(project.id);
+    if (savedNodes.length > 0) {
+      setNodes(savedNodes);
+    }
+  }, [project.id]);
+
+  useEffect(() => {
+    saveProjectState(project.id, nodes);
+  }, [project.id, nodes]);
 
   const handleProjectClick = () => {
     setIsEditModalOpen(true);
@@ -50,13 +62,18 @@ const ProjectView = () => {
 
   const handleSaveArticle = (article) => {
     if (editingArticle) {
-      const updatedReports = project.reports.map(report =>
-        report.id === editingArticle.id ? { ...article, id: report.id } : report
-      );
-      setProject({ ...project, reports: updatedReports });
+      setNodes(prevNodes => prevNodes.map(node => 
+        node.id === editingArticle.id ? { ...node, ...article } : node
+      ));
     } else {
-      const updatedReports = [...project.reports, { ...article, id: Date.now() }];
-      setProject({ ...project, reports: updatedReports });
+      const newNode: Node = {
+        id: Date.now().toString(),
+        type: 'node',
+        title: article.title,
+        description: article.content,
+        timestamp: Date.now(),
+      };
+      setNodes([...nodes, newNode]);
     }
     setIsNewArticleModalOpen(false);
     setEditingArticle(null);
@@ -91,16 +108,16 @@ const ProjectView = () => {
         </TabsList>
         <div className="flex-grow mt-12">
           <TabsContent value="mind" className="h-full">
-            <MindMapView project={project} focusedDocument={focusedDocument} />
+            <MindMapView project={project} nodes={nodes} setNodes={setNodes} />
           </TabsContent>
           <TabsContent value="text" className="h-full">
-            <TextView project={project} focusedDocument={focusedDocument} setFocusedDocument={setFocusedDocument} />
+            <TextView project={project} nodes={nodes} setNodes={setNodes} />
           </TabsContent>
           <TabsContent value="time" className="h-full">
-            <TimeView project={project} focusedDocument={focusedDocument} />
+            <TimeView nodes={nodes} />
           </TabsContent>
           <TabsContent value="map" className="h-full">
-            <MapView project={project} focusedDocument={focusedDocument} />
+            <MapView nodes={nodes} />
           </TabsContent>
         </div>
       </Tabs>
@@ -117,20 +134,20 @@ const ProjectView = () => {
         onUpdate={handleSaveArticle}
       />
       <div className="fixed bottom-4 right-4 flex flex-col items-end space-y-2">
-        {project.reports.slice(0, 4).reverse().map((report, index) => (
-          <TooltipProvider key={report.id}>
+        {nodes.slice(0, 4).reverse().map((node, index) => (
+          <TooltipProvider key={node.id}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Avatar 
                   className={`w-12 h-12 cursor-pointer ${index > 0 ? '-mb-6' : ''}`}
-                  onClick={() => handleEditArticle(report)}
+                  onClick={() => handleEditArticle(node)}
                 >
-                  <AvatarImage src={report.image || '/placeholder.svg'} alt={report.title} />
-                  <AvatarFallback>{report.title.substring(0, 2).toUpperCase()}</AvatarFallback>
+                  <AvatarImage src={node.image || '/placeholder.svg'} alt={node.title} />
+                  <AvatarFallback>{node.title.substring(0, 2).toUpperCase()}</AvatarFallback>
                 </Avatar>
               </TooltipTrigger>
               <TooltipContent>
-                <p className="font-bold">{report.title}</p>
+                <p className="font-bold">{node.title}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

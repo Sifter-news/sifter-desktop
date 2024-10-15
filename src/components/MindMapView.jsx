@@ -7,10 +7,10 @@ import { useZoomPan } from '../utils/canvasUtils';
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
 import SidePanel from './SidePanel';
+import { Node } from '../types/nodeTypes';
 
-const MindMapView = ({ project }) => {
+const MindMapView = ({ project, nodes, setNodes }) => {
   const [showAIInput, setShowAIInput] = useState(true);
-  const [nodes, setNodes] = useState([]);
   const [activeTool, setActiveTool] = useState('select');
   const [focusedNodeId, setFocusedNodeId] = useState(null);
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
@@ -36,7 +36,7 @@ const MindMapView = ({ project }) => {
     } else {
       aiInputRef.current?.focus();
     }
-  }, [project.id]);
+  }, [project.id, setNodes]);
 
   useEffect(() => {
     saveProjectState(project.id, nodes);
@@ -44,12 +44,14 @@ const MindMapView = ({ project }) => {
 
   const handleAIAsk = () => {
     if (aiInputText.trim()) {
-      const newNode = {
-        id: Date.now(),
-        type: 'ai',
+      const newNode: Node = {
+        id: Date.now().toString(),
+        type: 'node',
+        title: aiInputText,
+        description: '',
+        timestamp: Date.now(),
         x: window.innerWidth / 2 - 100,
         y: window.innerHeight / 2 - 100,
-        text: aiInputText,
         width: 200,
         height: 200,
       };
@@ -61,40 +63,43 @@ const MindMapView = ({ project }) => {
     }
   };
 
-  const handleAddNode = (type) => {
-    const newNode = {
-      id: Date.now(),
+  const handleAddNode = (type: 'node' | 'group') => {
+    const newNode: Node = {
+      id: Date.now().toString(),
       type,
+      title: type === 'group' ? 'New Group' : 'New Node',
+      description: '',
+      timestamp: Date.now(),
       x: Math.random() * (window.innerWidth - 100),
       y: Math.random() * (window.innerHeight - 200),
-      text: '',
       width: 200,
       height: 200,
+      children: type === 'group' ? [] : undefined,
     };
     setNodes([...nodes, newNode]);
   };
 
-  const handleNodeUpdate = (nodeId, updates) => {
+  const handleNodeUpdate = (nodeId: string, updates: Partial<Node>) => {
     setNodes(prevNodes =>
       prevNodes.map(node =>
         node.id === nodeId ? { ...node, ...updates } : node
       )
     );
-    if (updates.text && nodes.find(node => node.id === nodeId)?.type === 'ai') {
+    if (updates.title && nodes.find(node => node.id === nodeId)?.type === 'node') {
       setSidePanelOpen(true);
-      setMessages([...messages, { type: 'user', content: updates.text }]);
+      setMessages([...messages, { type: 'user', content: updates.title }]);
       // Simulate AI response (replace with actual API call in production)
       setTimeout(() => {
-        setMessages(prevMessages => [...prevMessages, { type: 'ai', content: `Here's a response to "${updates.text}"` }]);
+        setMessages(prevMessages => [...prevMessages, { type: 'ai', content: `Here's a response to "${updates.title}"` }]);
       }, 1000);
     }
   };
 
-  const handleNodeFocus = (nodeId) => {
+  const handleNodeFocus = (nodeId: string) => {
     setFocusedNodeId(nodeId);
   };
 
-  const handleNodeDelete = (nodeId) => {
+  const handleNodeDelete = (nodeId: string) => {
     setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
     setFocusedNodeId(null);
   };
@@ -106,7 +111,7 @@ const MindMapView = ({ project }) => {
         onClose={() => setSidePanelOpen(false)} 
         messages={messages}
         setMessages={setMessages}
-        initialQuestion={nodes.find(node => node.type === 'ai')?.text || ''}
+        initialQuestion={nodes.find(node => node.type === 'node')?.title || ''}
       />
       <div className="flex-grow relative">
         <Canvas

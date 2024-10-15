@@ -1,83 +1,76 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import Navigator from './Navigator';
+import { Node } from '../types/nodeTypes';
 
-const TextView = ({ project, focusedDocument, setFocusedDocument }) => {
-  const [selectedDocument, setSelectedDocument] = useState(null);
-  const [items, setItems] = useState([
-    { id: '1', type: 'document', title: 'Document 1', content: 'This is the content of Document 1.', children: [] },
-    { id: '2', type: 'folder', title: 'Folder 1', children: [
-      { id: '3', type: 'document', title: 'Document 2', content: 'This is the content of Document 2.', children: [] },
-    ]},
-    { id: '4', type: 'document', title: 'Document 3', content: 'This is the content of Document 3.', children: [] },
-  ]);
+const TextView = ({ project, nodes, setNodes }) => {
+  const [selectedNode, setSelectedNode] = useState(null);
 
   useEffect(() => {
-    if (focusedDocument) {
-      setSelectedDocument(focusedDocument);
-    } else if (items.length > 0) {
-      const firstDocument = items.find(item => item.type === 'document') || items[0];
-      setSelectedDocument(firstDocument);
-      setFocusedDocument(firstDocument);
+    if (nodes.length > 0) {
+      setSelectedNode(nodes[0]);
     }
-  }, [focusedDocument, items, setFocusedDocument]);
+  }, [nodes]);
 
-  const handleDocumentClick = (doc) => {
-    setSelectedDocument(doc);
-    setFocusedDocument(doc);
+  const handleNodeClick = (node) => {
+    setSelectedNode(node);
   };
 
   const handleContentChange = (e) => {
-    const updatedDocument = { ...selectedDocument, content: e.target.value };
-    setSelectedDocument(updatedDocument);
-    setItems(prevItems => prevItems.map(item => 
-      item.id === updatedDocument.id ? updatedDocument : item
+    const updatedNode = { ...selectedNode, description: e.target.value };
+    setSelectedNode(updatedNode);
+    setNodes(prevNodes => prevNodes.map(node => 
+      node.id === updatedNode.id ? updatedNode : node
     ));
   };
 
   const handleDelete = () => {
-    console.log('Delete document');
-    // Implement delete functionality here
+    if (selectedNode) {
+      setNodes(prevNodes => prevNodes.filter(node => node.id !== selectedNode.id));
+      setSelectedNode(null);
+    }
   };
 
-  const handleShare = () => {
-    console.log('Share document');
-    // Implement share functionality here
-  };
-
-  const handleMove = () => {
-    console.log('Move document');
-    // Implement move functionality here
+  const handleAddNode = (type: 'node' | 'group') => {
+    const newNode: Node = {
+      id: Date.now().toString(),
+      type,
+      title: type === 'group' ? 'New Group' : 'New Node',
+      description: '',
+      timestamp: Date.now(),
+      children: type === 'group' ? [] : undefined,
+    };
+    setNodes([...nodes, newNode]);
   };
 
   return (
     <div className="flex h-full">
       <div className="w-1/4 bg-gray-100 p-4 overflow-y-auto">
         <Navigator 
-          items={items} 
-          setItems={setItems} 
-          onDocumentClick={handleDocumentClick}
-          focusedDocument={selectedDocument}
+          nodes={nodes} 
+          setNodes={setNodes} 
+          onNodeClick={handleNodeClick}
+          selectedNode={selectedNode}
         />
       </div>
       <div className="flex-grow flex flex-col p-8 overflow-hidden">
-        {selectedDocument ? (
+        {selectedNode ? (
           <div className="bg-white bg-opacity-80 shadow-lg rounded-lg p-6 relative flex flex-col h-full">
-            <h2 className="text-2xl font-bold mb-4">{selectedDocument.title}</h2>
+            <h2 className="text-2xl font-bold mb-4">{selectedNode.title}</h2>
             <textarea
-              value={selectedDocument.content}
+              value={selectedNode.description}
               onChange={handleContentChange}
               className="flex-grow w-full p-2 border rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <div className="absolute top-2 right-2">
               <Button variant="ghost" size="sm" onClick={handleDelete}>Delete</Button>
-              <Button variant="ghost" size="sm" onClick={handleShare}>Share</Button>
-              <Button variant="ghost" size="sm" onClick={handleMove}>Move</Button>
+              <Button variant="ghost" size="sm" onClick={() => handleAddNode('node')}>Add Node</Button>
+              <Button variant="ghost" size="sm" onClick={() => handleAddNode('group')}>Add Group</Button>
             </div>
           </div>
         ) : (
           <div className="text-center text-gray-500">
-            Select a document from the navigator to view its content.
+            Select a node from the navigator to view its content.
           </div>
         )}
       </div>
