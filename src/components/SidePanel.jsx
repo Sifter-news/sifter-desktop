@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PlusIcon } from 'lucide-react';
 
-const SidePanel = ({ isOpen, onClose, initialQuestion }) => {
-  const [messages, setMessages] = useState([
-    { type: 'user', content: initialQuestion },
-    { type: 'ai', content: '...' },
-  ]);
+const SidePanel = ({ isOpen, onClose, messages, setMessages, initialQuestion }) => {
   const [newQuestion, setNewQuestion] = useState('');
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const handleAsk = () => {
     if (newQuestion.trim()) {
-      setMessages([...messages, { type: 'user', content: newQuestion }, { type: 'ai', content: '...' }]);
+      setMessages([...messages, { type: 'user', content: newQuestion }]);
       setNewQuestion('');
-      // Here you would typically call an API to get the AI response
+      // Simulate AI response (replace with actual API call in production)
+      setTimeout(() => {
+        setMessages(prevMessages => [...prevMessages, { type: 'ai', content: `Here's a response to "${newQuestion}"` }]);
+      }, 1000);
     }
   };
 
@@ -26,10 +30,13 @@ const SidePanel = ({ isOpen, onClose, initialQuestion }) => {
       </div>
       <div className="flex-grow overflow-y-auto p-4 space-y-4">
         {messages.map((message, index) => (
-          <div key={index} className={`p-2 rounded-lg ${message.type === 'user' ? 'bg-blue-100 ml-auto' : 'bg-gray-100'} max-w-[80%]`}>
-            {message.content}
+          <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div className={`p-3 rounded-lg max-w-[80%] ${message.type === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}>
+              {message.content}
+            </div>
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
       <div className="p-4 border-t">
         <div className="bg-white rounded-full shadow-lg p-2 flex items-center space-x-2 max-w-xl w-full">

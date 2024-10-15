@@ -15,6 +15,7 @@ const MindMapView = ({ project }) => {
   const [focusedNodeId, setFocusedNodeId] = useState(null);
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
   const [aiInputText, setAIInputText] = useState('');
+  const [messages, setMessages] = useState([]);
   const canvasRef = useRef(null);
   const aiInputRef = useRef(null);
 
@@ -55,6 +56,7 @@ const MindMapView = ({ project }) => {
       setNodes([...nodes, newNode]);
       setShowAIInput(false);
       setSidePanelOpen(true);
+      setMessages([...messages, { type: 'user', content: aiInputText }]);
       setAIInputText('');
     }
   };
@@ -94,6 +96,8 @@ const MindMapView = ({ project }) => {
       <SidePanel 
         isOpen={sidePanelOpen} 
         onClose={() => setSidePanelOpen(false)} 
+        messages={messages}
+        setMessages={setMessages}
         initialQuestion={nodes[nodes.length - 1]?.text || ''}
       />
       <div className="flex-grow relative">
