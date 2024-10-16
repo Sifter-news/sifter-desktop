@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PlusIcon } from 'lucide-react';
 import { saveProjectState, loadProjectState } from '../utils/projectUtils';
-import { useZoomPan, findAvailablePosition } from '../utils/canvasUtils';
+import { useZoomPan, findAvailablePosition, snapToGrid } from '../utils/canvasUtils';
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
 import AISidePanel from './AISidePanel';
@@ -75,8 +75,9 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
       x,
       y,
       text: '',
-      width: 200,
-      height: 200,
+      title: '',
+      width: type === 'text' ? 'auto' : 200,
+      height: type === 'text' ? 'auto' : 200,
       color: type === 'postit' ? '#FFFFA5' : '#FFFFFF',
     };
     onAddNode(newNode);
@@ -109,14 +110,17 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
       const x = (e.clientX - canvasRect.left) / zoom - position.x;
       const y = (e.clientY - canvasRect.top) / zoom - position.y;
       
+      const { x: snappedX, y: snappedY } = snapToGrid(x, y);
+      
       const newNode = {
         id: Date.now().toString(),
         type: draggedNodeType,
-        x,
-        y,
+        x: snappedX,
+        y: snappedY,
         text: '',
-        width: 200,
-        height: 200,
+        title: '',
+        width: draggedNodeType === 'text' ? 'auto' : 200,
+        height: draggedNodeType === 'text' ? 'auto' : 200,
         color: draggedNodeType === 'postit' ? '#FFFFA5' : '#FFFFFF',
       };
       

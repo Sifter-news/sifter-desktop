@@ -90,3 +90,10 @@ export const findAvailablePosition = (nodes) => {
     }
   }
 };
+
+export const snapToGrid = (x, y, gridSize = 8) => {
+  return {
+    x: Math.round(x / gridSize) * gridSize,
+    y: Math.round(y / gridSize) * gridSize
+  };
+};

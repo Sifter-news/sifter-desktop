@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Rnd } from 'react-rnd';
 import FocusedNodeTooltip from './FocusedNodeTooltip';
+import { Circle } from 'lucide-react';
 
 const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpdate, onFocus, isFocused, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -24,9 +25,17 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpd
     if (onNodeUpdate) {
       onNodeUpdate(node.id, { 
         text: contentRef.current ? contentRef.current.innerText : '',
-        source: titleRef.current ? titleRef.current.innerText : ''
+        title: titleRef.current ? titleRef.current.innerText : ''
       });
     }
+  };
+
+  const snapToGrid = (x, y) => {
+    const snapSize = 8;
+    return {
+      x: Math.round(x / snapSize) * snapSize,
+      y: Math.round(y / snapSize) * snapSize
+    };
   };
 
   const renderNodeContent = () => {
@@ -42,7 +51,7 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpd
               className="text-lg font-semibold mb-2 text-gray-800 outline-none"
               suppressContentEditableWarning={true}
             >
-              {node.source || ''}
+              {node.title || ''}
             </h3>
             <div
               ref={contentRef}
@@ -55,20 +64,25 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpd
             </div>
           </div>
         );
-      case 'blank':
-        return <div className="w-full h-full bg-white rounded-md shadow-md flex items-center justify-center">Node</div>;
       case 'text':
         return (
-          <div
-            ref={contentRef}
-            contentEditable={isEditing}
-            onBlur={handleBlur}
-            className="w-full h-full p-2 bg-white rounded shadow-md outline-none"
-            suppressContentEditableWarning={true}
-          >
-            {node.text || ''}
+          <div className="flex items-center bg-white bg-opacity-20 backdrop-blur-sm rounded-full p-1 pr-4">
+            <div className="bg-blue-500 rounded-full p-2 mr-2">
+              <Circle className="w-4 h-4 text-white" />
+            </div>
+            <div
+              ref={contentRef}
+              contentEditable={isEditing}
+              onBlur={handleBlur}
+              className="outline-none"
+              suppressContentEditableWarning={true}
+            >
+              {node.text || ''}
+            </div>
           </div>
         );
+      case 'blank':
+        return <div className="w-full h-full bg-white rounded-md shadow-md flex items-center justify-center">Node</div>;
       case 'ai':
         return (
           <div className="w-full h-full bg-blue-100 rounded-md shadow-md flex items-center justify-center p-2">
@@ -85,12 +99,17 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpd
       size={{ width: node.width || 200, height: node.height || 200 }}
       position={{ x: node.x, y: node.y }}
       onDragStart={(e) => onDragStart(e, node.id)}
-      onDragStop={(e, d) => onNodeUpdate(node.id, { x: d.x, y: d.y })}
+      onDragStop={(e, d) => {
+        const { x, y } = snapToGrid(d.x, d.y);
+        onNodeUpdate(node.id, { x, y });
+      }}
       onResize={(e, direction, ref, delta, position) => {
+        const { x, y } = snapToGrid(position.x, position.y);
         onNodeUpdate(node.id, {
           width: ref.style.width,
           height: ref.style.height,
-          ...position,
+          x,
+          y,
         });
       }}
       className={`cursor-move ${isFocused ? 'ring-2 ring-blue-500' : ''}`}
