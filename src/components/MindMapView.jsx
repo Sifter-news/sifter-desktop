@@ -180,6 +180,7 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
           handleAddNode={handleAddNode}
           handleZoom={handleZoom}
           zoom={zoom}
+          nodes={nodes} // Pass nodes data to Toolbar
         />
         <ReportList
           reports={project.reports}
