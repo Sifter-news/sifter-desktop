@@ -4,14 +4,13 @@ import { Input } from "@/components/ui/input";
 import { PlusIcon } from 'lucide-react';
 import { saveProjectState, loadProjectState } from '../utils/projectUtils';
 import { useZoomPan, findAvailablePosition } from '../utils/canvasUtils';
-import { handleSaveArticle, handleDeleteArticle } from '../utils/articleUtils';
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
 import AISidePanel from './AISidePanel';
 import ReportList from './ReportList';
 import ArticleModal from './ArticleModal';
 
-const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode, updateProject }) => {
+const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode }) => {
   const [showAIInput, setShowAIInput] = useState(true);
   const [activeTool, setActiveTool] = useState('select');
   const [focusedNodeId, setFocusedNodeId] = useState(null);
@@ -107,14 +106,24 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
     setIsArticleModalOpen(true);
   };
 
-  const handleSaveArticleWrapper = (article) => {
-    handleSaveArticle(article, project, updateProject);
+  const handleSaveArticle = (article) => {
+    if (article.id) {
+      const updatedReports = project.reports.map(report =>
+        report.id === article.id ? article : report
+      );
+      updateProject({ ...project, reports: updatedReports });
+    } else {
+      const newArticle = { ...article, id: Date.now() };
+      const updatedReports = [...project.reports, newArticle];
+      updateProject({ ...project, reports: updatedReports });
+    }
     setIsArticleModalOpen(false);
     setSelectedArticle(null);
   };
 
-  const handleDeleteArticleWrapper = (articleId) => {
-    handleDeleteArticle(articleId, project, updateProject);
+  const handleDeleteArticle = (articleId) => {
+    const updatedReports = project.reports.filter(report => report.id !== articleId);
+    updateProject({ ...project, reports: updatedReports });
   };
 
   const handleSendMessage = (message) => {
@@ -188,8 +197,8 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
         isOpen={isArticleModalOpen}
         onClose={() => setIsArticleModalOpen(false)}
         article={selectedArticle}
-        onSave={handleSaveArticleWrapper}
-        onDelete={handleDeleteArticleWrapper}
+        onSave={handleSaveArticle}
+        onDelete={handleDeleteArticle}
       />
     </div>
   );
