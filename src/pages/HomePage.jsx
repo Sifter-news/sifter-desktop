@@ -85,7 +85,7 @@ const HomePage = () => {
     <div className="min-h-screen bg-white flex flex-col">
       <Header user={user} onUpdateUser={handleUpdateUser} />
       <div className="flex-grow container mx-auto px-4 py-8 flex flex-col">
-        <div className="bg-gray-100 rounded-[64px] pt-8 px-8 overflow-hidden shadow-inner flex-grow flex flex-col">
+        <div className="bg-gray-100 rounded-[64px] p-8 overflow-hidden shadow-inner flex-grow flex flex-col">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
@@ -99,7 +99,7 @@ const HomePage = () => {
               </Button>
             </Link>
           </div>
-          <div className="flex-grow overflow-y-auto pr-4 scrollbar-hide">
+          <div className="flex-grow overflow-y-auto scrollbar-hide">
             <div className="flex flex-col space-y-6">
               {investigations.map(investigation => (
                 <div key={investigation.id} className="flex flex-col lg:flex-row w-full">
