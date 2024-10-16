@@ -36,7 +36,7 @@ const ReportCard = ({ report, onUpdate }) => {
       <Card className="h-full flex flex-col overflow-hidden cursor-pointer" onClick={handleCardClick}>
         <div className="w-full h-[96px] bg-gray-200 relative overflow-hidden">
           <img 
-            src={image}
+            src="/default-image.png"
             alt={report.title} 
             className="w-full h-full object-cover"
           />

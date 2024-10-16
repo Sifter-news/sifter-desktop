@@ -35,7 +35,7 @@ const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
           <div className="absolute top-4 right-4 w-8 h-8 bg-white rounded-full shadow-md"></div>
           <div className="h-[128px] w-full overflow-hidden relative">
             <img 
-              src={image}
+              src="/default-image.png"
               alt={investigation.title}
               className="w-full h-full object-cover"
             />

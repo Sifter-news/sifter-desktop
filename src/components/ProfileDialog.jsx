@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 
 const ProfileDialog = ({ user, onUpdateUser }) => {
   const navigate = useNavigate();
-  const [avatar, setAvatar] = useState(user.avatar || '/default-image.png');
+  const [avatar, setAvatar] = useState('/default-image.png');
 
   const handleSignOut = () => {
     navigate('/login');
@@ -31,7 +31,7 @@ const ProfileDialog = ({ user, onUpdateUser }) => {
     <Dialog>
       <DialogTrigger asChild>
         <Avatar className="h-8 w-8 cursor-pointer">
-          <AvatarImage src={avatar} alt={user.name} />
+          <AvatarImage src="/default-image.png" alt={user.name} />
           <AvatarFallback><UserIcon className="h-4 w-4" /></AvatarFallback>
         </Avatar>
       </DialogTrigger>
@@ -42,7 +42,7 @@ const ProfileDialog = ({ user, onUpdateUser }) => {
         <div className="grid gap-4 py-4">
           <div className="flex items-center justify-center">
             <Avatar className="h-24 w-24">
-              <AvatarImage src={avatar} alt={user.name} />
+              <AvatarImage src="/default-image.png" alt={user.name} />
               <AvatarFallback><UserIcon className="h-12 w-12" /></AvatarFallback>
             </Avatar>
           </div>
