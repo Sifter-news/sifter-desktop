@@ -51,7 +51,7 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
       const position = findAvailablePosition(nodes);
       const newNode = {
         id: Date.now().toString(),
-        type: 'node',
+        type: 'ai',
         x: position.x,
         y: position.y,
         text: aiInputText,
