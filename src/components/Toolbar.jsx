@@ -38,8 +38,22 @@ const Toolbar = ({ activeTool, setActiveTool, handleAIClick, handleAddNode, hand
           <ToolButton icon={<Eye className="h-4 w-4" />} label="View Distance" onClick={() => {}} />
           <div className="flex items-center space-x-2">
             <div className="flex flex-col items-center space-y-1">
-              <ToolButton icon={<Plus className="h-4 w-4" />} label="Zoom In" onClick={() => handleZoom(0.1)} />
-              <ToolButton icon={<Minus className="h-4 w-4" />} label="Zoom Out" onClick={() => handleZoom(-0.1)} />
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                className="rounded-full h-6 w-6 bg-black bg-opacity-5" 
+                onClick={() => handleZoom(0.1)}
+              >
+                <Plus className="h-3 w-3" />
+              </Button>
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                className="rounded-full h-6 w-6 bg-black bg-opacity-5" 
+                onClick={() => handleZoom(-0.1)}
+              >
+                <Minus className="h-3 w-3" />
+              </Button>
             </div>
             <div className="flex items-center justify-center w-12">
               <span className="text-xs font-medium">{Math.round(zoom * 100)}%</span>
