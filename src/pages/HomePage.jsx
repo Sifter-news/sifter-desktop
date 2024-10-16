@@ -101,7 +101,7 @@ const HomePage = () => {
           </div>
           <div className="flex flex-col space-y-8 max-h-[calc(100vh-300px)] overflow-y-auto pr-4 scrollbar-hide">
             {investigations.map(investigation => (
-              <div key={investigation.id} className="flex flex-col lg:flex-row">
+              <div key={investigation.id} className="flex flex-col lg:flex-row h-[400px]"> {/* Increased height by 25% from 323px to 400px (nearest multiple of 8) */}
                 <div className="w-full lg:w-[548px] flex-shrink-0" onClick={() => handleProjectClick(investigation)}>
                   <InvestigationCard 
                     investigation={investigation} 
@@ -109,7 +109,7 @@ const HomePage = () => {
                   />
                 </div>
                 <div className="w-full lg:w-[548px] flex-shrink-0">
-                  <div className="bg-white bg-opacity-30 rounded-r-lg p-4 h-[323px] relative overflow-hidden">
+                  <div className="bg-white bg-opacity-30 rounded-r-lg p-4 h-full relative overflow-hidden">
                     <div className="overflow-x-auto h-full scrollbar-hide">
                       <div className="flex space-x-4 h-full pb-4">
                         {investigation.reports.map(report => (
