@@ -84,7 +84,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-white">
       <Header user={user} onUpdateUser={handleUpdateUser} />
-      <div className="container mx-auto px-4 py-8 pb-6">
+      <div className="container mx-auto px-4 py-8">
         <div className="bg-gray-100 rounded-[64px] pt-8 px-8 pb-6 overflow-hidden shadow-inner">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center space-x-3">
@@ -101,7 +101,7 @@ const HomePage = () => {
           </div>
           <div className="flex flex-col space-y-8 max-h-[calc(100vh-300px)] overflow-y-auto pr-4 scrollbar-hide">
             {investigations.map(investigation => (
-              <div key={investigation.id} className="flex flex-col lg:flex-row h-[400px]"> {/* Increased height by 25% from 323px to 400px (nearest multiple of 8) */}
+              <div key={investigation.id} className="flex flex-col lg:flex-row h-[400px]">
                 <div className="w-full lg:w-[548px] flex-shrink-0" onClick={() => handleProjectClick(investigation)}>
                   <InvestigationCard 
                     investigation={investigation} 
