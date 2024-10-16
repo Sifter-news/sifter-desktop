@@ -156,11 +156,23 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
           handleZoom={handleZoom}
           zoom={zoom}
         />
-        <ReportList
-          reports={project.reports}
-          onAddReport={handleAddNode}
-          onEditReport={handleArticleClick}
-        />
+        <div className="fixed bottom-24 right-12 flex flex-col items-end space-y-2 z-10">
+          {project.reports.map((report, index) => (
+            <Button
+              key={report.id}
+              className="w-12 h-12 rounded-full bg-white shadow-md"
+              onClick={() => handleArticleClick(report)}
+            >
+              {report.title.substring(0, 2).toUpperCase()}
+            </Button>
+          ))}
+          <Button
+            className="w-12 h-12 rounded-full bg-black text-white shadow-md"
+            onClick={() => handleArticleClick({ id: Date.now(), title: '', content: '' })}
+          >
+            <PlusIcon className="h-6 w-6" />
+          </Button>
+        </div>
       </div>
       <AISidePanel
         isOpen={sidePanelOpen}
