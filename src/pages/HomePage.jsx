@@ -102,14 +102,14 @@ const HomePage = () => {
           <div className="flex-grow overflow-y-auto pr-4 scrollbar-hide">
             <div className="flex flex-col space-y-8">
               {investigations.map(investigation => (
-                <div key={investigation.id} className="flex flex-col lg:flex-row h-[400px]">
-                  <div className="w-full lg:w-[548px] flex-shrink-0" onClick={() => handleProjectClick(investigation)}>
+                <div key={investigation.id} className="flex flex-col lg:flex-row h-full">
+                  <div className="w-full lg:w-[548px] flex-shrink-0 h-full" onClick={() => handleProjectClick(investigation)}>
                     <InvestigationCard 
                       investigation={investigation} 
                       onUpdateInvestigation={handleUpdateInvestigation}
                     />
                   </div>
-                  <div className="w-full lg:w-[548px] flex-shrink-0">
+                  <div className="w-full lg:w-[548px] flex-shrink-0 h-full">
                     <div className="bg-white bg-opacity-30 rounded-r-lg p-4 h-full relative overflow-hidden">
                       <div className="overflow-x-auto h-full scrollbar-hide">
                         <div className="flex space-x-4 h-full pb-4">
