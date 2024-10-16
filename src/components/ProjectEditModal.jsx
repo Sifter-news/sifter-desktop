@@ -4,16 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
-const ProjectEditModal = ({ isOpen, onClose, project, onUpdate }) => {
+const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
   const [projectName, setProjectName] = useState(project.title);
 
   const handleUpdate = () => {
     onUpdate({ ...project, title: projectName });
+    onClose();
   };
 
   const handleDelete = () => {
-    // Here you would typically handle the project deletion
-    // For now, we'll just close the modal
+    onDelete(project.id);
     onClose();
   };
 

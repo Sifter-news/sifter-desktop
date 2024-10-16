@@ -6,6 +6,7 @@ import ReportCard from '../components/ReportCard';
 import { Button } from "@/components/ui/button";
 import { PlusIcon, FileSearchIcon } from 'lucide-react';
 import ReportModal from '../components/ReportModal';
+import ProjectEditModal from '../components/ProjectEditModal';
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -67,9 +68,10 @@ const HomePage = () => {
   ]);
 
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
 
   const handleProjectClick = (project) => {
-    navigate(`/project/${project.id}`, { state: { project } });
+    setEditingProject(project);
   };
 
   const handleUpdateInvestigation = (updatedInvestigation) => {
@@ -77,6 +79,12 @@ const HomePage = () => {
       prevInvestigations.map(inv =>
         inv.id === updatedInvestigation.id ? updatedInvestigation : inv
       )
+    );
+  };
+
+  const handleDeleteInvestigation = (projectId) => {
+    setInvestigations(prevInvestigations =>
+      prevInvestigations.filter(inv => inv.id !== projectId)
     );
   };
 
@@ -171,6 +179,15 @@ const HomePage = () => {
           setIsReportModalOpen(false);
         }}
       />
+      {editingProject && (
+        <ProjectEditModal
+          isOpen={!!editingProject}
+          onClose={() => setEditingProject(null)}
+          project={editingProject}
+          onUpdate={handleUpdateInvestigation}
+          onDelete={handleDeleteInvestigation}
+        />
+      )}
     </div>
   );
 };
