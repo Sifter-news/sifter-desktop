@@ -22,7 +22,7 @@ const Toolbar = ({ activeTool, setActiveTool, handleAIClick, handleAddNode, hand
       <ToolButton icon={<StickyNote className="h-4 w-4" />} label="Post-it Node" onClick={() => handleAddNode('postit')} />
       <ToolButton icon={<Type className="h-4 w-4" />} label="Text Node" onClick={() => handleAddNode('text')} />
       <ToolButton icon={<Link className="h-4 w-4" />} label="Connector Node" onClick={() => handleAddNode('connector')} />
-      <ToolButton icon={<Layers className="h-4 w-4" />} label="Grouped Section Node" onClick={() => handleAddNode('group')} />
+      <ToolButton icon={<Layers className="h-4 w-4" />} label="Grouped Section Node" />
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
