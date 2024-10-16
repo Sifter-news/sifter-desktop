@@ -121,6 +121,11 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
     setSelectedArticle(null);
   };
 
+  const handleSendMessage = (message) => {
+    // Handle sending message to AI (implement API call here)
+    console.log("Sending message to AI:", message);
+  };
+
   return (
     <div className="flex h-[calc(100vh-64px)] w-screen overflow-hidden">
       <div className="flex-grow relative">
