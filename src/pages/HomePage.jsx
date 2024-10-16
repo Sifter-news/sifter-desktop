@@ -100,7 +100,7 @@ const HomePage = () => {
             </Link>
           </div>
           <div className="flex-grow overflow-y-auto pr-4 scrollbar-hide">
-            <div className="flex flex-col space-y-8">
+            <div className="flex flex-col space-y-6">
               {investigations.map(investigation => (
                 <div key={investigation.id} className="flex flex-col lg:flex-row h-full">
                   <div className="w-full lg:w-[548px] flex-shrink-0 h-full" onClick={() => handleProjectClick(investigation)}>
