@@ -7,31 +7,35 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 const ReportList = ({ reports, onAddReport, onEditReport }) => {
   return (
     <div className="fixed bottom-12 right-12 flex flex-col items-end space-y-2 z-10">
-      {reports.slice(0, 4).map((report, index) => (
-        <TooltipProvider key={report.id}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Avatar 
-                className="w-12 h-12 cursor-pointer"
-                onClick={() => onEditReport(report)}
-              >
-                <AvatarImage src={report.image || '/placeholder.svg'} alt={report.title} />
-                <AvatarFallback>{report.title.substring(0, 2).toUpperCase()}</AvatarFallback>
-              </Avatar>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="font-bold">{report.title}</p>
-              <p>Click to Edit Report</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ))}
+      <div className="bg-white bg-opacity-20 backdrop-blur-sm p-4 rounded-lg mb-2">
+        <div className="flex flex-wrap justify-end gap-2 mb-2">
+          {reports.map((report, index) => (
+            <TooltipProvider key={report.id}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Avatar 
+                    className="w-12 h-12 cursor-pointer"
+                    onClick={() => onEditReport(report)}
+                  >
+                    <AvatarImage src={report.image || '/placeholder.svg'} alt={report.title} />
+                    <AvatarFallback>{report.title.substring(0, 2).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="font-bold">{report.title}</p>
+                  <p>Click to Edit Report</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ))}
+        </div>
+      </div>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               size="icon"
-              className="rounded-full w-14 h-14 bg-black hover:bg-gray-800 text-white shadow-lg mt-2"
+              className="rounded-full w-14 h-14 bg-black hover:bg-gray-800 text-white shadow-lg"
               onClick={() => onAddReport({ type: 'report', title: 'New Report', content: '' })}
             >
               <PlusIcon className="h-6 w-6" />
