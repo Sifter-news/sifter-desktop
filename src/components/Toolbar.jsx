@@ -10,8 +10,13 @@ import {
 import ToolButton from './ToolbarButton';
 import ExportDialog from './ExportDialog';
 
-const Toolbar = ({ activeTool, setActiveTool, handleAIClick, handleAddNode, handleZoom, zoom, nodes }) => {
+const Toolbar = ({ activeTool, setActiveTool, handleAIClick, handleAddNode, handleZoom, zoom, nodes, onDragStart }) => {
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
+
+  const handleDragStart = (e, nodeType) => {
+    e.dataTransfer.setData('nodeType', nodeType);
+    onDragStart(nodeType);
+  };
 
   return (
     <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-20 backdrop-blur-sm rounded-full shadow-lg p-2">
@@ -30,10 +35,30 @@ const Toolbar = ({ activeTool, setActiveTool, handleAIClick, handleAddNode, hand
         />
         <div className="w-px h-6 bg-gray-300 mx-2"></div>
         <ToolButton icon={<Sparkles className="h-4 w-4" />} label="AI Node" onClick={handleAIClick} />
-        <ToolButton icon={<Pill className="h-4 w-4" />} label="Blank Node" onClick={() => handleAddNode('blank')} />
-        <ToolButton icon={<StickyNote className="h-4 w-4" />} label="Post-it Node" onClick={() => handleAddNode('postit')} />
-        <ToolButton icon={<Type className="h-4 w-4" />} label="Text Node" onClick={() => handleAddNode('text')} />
-        <ToolButton icon={<Link className="h-4 w-4" />} label="Connector Node" onClick={() => handleAddNode('connector')} />
+        <ToolButton 
+          icon={<Pill className="h-4 w-4" />} 
+          label="Blank Node" 
+          onDragStart={(e) => handleDragStart(e, 'blank')}
+          draggable
+        />
+        <ToolButton 
+          icon={<StickyNote className="h-4 w-4" />} 
+          label="Post-it Node" 
+          onDragStart={(e) => handleDragStart(e, 'postit')}
+          draggable
+        />
+        <ToolButton 
+          icon={<Type className="h-4 w-4" />} 
+          label="Text Node" 
+          onDragStart={(e) => handleDragStart(e, 'text')}
+          draggable
+        />
+        <ToolButton 
+          icon={<Link className="h-4 w-4" />} 
+          label="Connector Node" 
+          onDragStart={(e) => handleDragStart(e, 'connector')}
+          draggable
+        />
         <ToolButton icon={<Users className="h-4 w-4" />} label="Grouped Section Node" onClick={() => handleAddNode('group')} />
         <div className="flex items-center space-x-2">
           <div className="flex items-center space-x-2">

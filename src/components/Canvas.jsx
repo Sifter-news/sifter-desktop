@@ -14,7 +14,9 @@ const Canvas = forwardRef(({
   onNodeUpdate,
   focusedNodeId,
   onNodeFocus,
-  onNodeDelete
+  onNodeDelete,
+  onDragOver,
+  onDrop
 }, ref) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = React.useState(false);
   const [nodeToDelete, setNodeToDelete] = React.useState(null);
@@ -94,7 +96,6 @@ const Canvas = forwardRef(({
     setNodeToDelete(null);
   };
 
-
   return (
     <>
       <div 
@@ -102,6 +103,8 @@ const Canvas = forwardRef(({
         onMouseDown={handleCanvasMouseDown}
         onMouseMove={handleCanvasMouseMove}
         onMouseUp={handleCanvasMouseUp}
+        onDragOver={onDragOver}
+        onDrop={onDrop}
         ref={ref}
       >
         <div 

@@ -17,6 +17,8 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
   const [aiInputText, setAIInputText] = useState('');
   const [initialAIMessage, setInitialAIMessage] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const [draggedNodeType, setDraggedNodeType] = useState(null);
   const canvasRef = useRef(null);
   const aiInputRef = useRef(null);
 
@@ -66,13 +68,12 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
     }
   };
 
-  const handleAddNode = (type) => {
-    const position = findAvailablePosition(nodes);
+  const handleAddNode = (type, x, y) => {
     const newNode = {
       id: Date.now().toString(),
       type,
-      x: position.x,
-      y: position.y,
+      x,
+      y,
       text: '',
       width: 200,
       height: 200,
@@ -131,6 +132,22 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
     console.log("Sending message to AI:", message);
   };
 
+  const handleDragStart = (nodeType) => {
+    setIsDragging(true);
+    setDraggedNodeType(nodeType);
+  };
+
+  const handleDragEnd = (e) => {
+    if (isDragging && draggedNodeType) {
+      const canvasRect = canvasRef.current.getBoundingClientRect();
+      const x = (e.clientX - canvasRect.left) / zoom - position.x;
+      const y = (e.clientY - canvasRect.top) / zoom - position.y;
+      handleAddNode(draggedNodeType, x, y);
+    }
+    setIsDragging(false);
+    setDraggedNodeType(null);
+  };
+
   return (
     <div className="flex h-[calc(100vh-64px)] w-screen overflow-hidden">
       <div className="flex-grow relative">
@@ -148,6 +165,8 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
           focusedNodeId={focusedNodeId}
           onNodeFocus={handleNodeFocus}
           onNodeDelete={handleNodeDelete}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleDragEnd}
         />
         {showAIInput && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -180,7 +199,8 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
           handleAddNode={handleAddNode}
           handleZoom={handleZoom}
           zoom={zoom}
-          nodes={nodes} // Pass nodes data to Toolbar
+          nodes={nodes}
+          onDragStart={handleDragStart}
         />
         <ReportList
           reports={project.reports}
