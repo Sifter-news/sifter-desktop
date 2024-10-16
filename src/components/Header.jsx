@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import UserProfile from './UserProfile';
+import { Button } from "@/components/ui/button";
 
 const Header = ({ user, projectName, onProjectClick, onUpdateUser }) => {
   return (
@@ -33,7 +33,13 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser }) => {
           <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
             Dashboard
           </Link>
-          <UserProfile user={user} onUpdateUser={onUpdateUser} />
+          <Link to="/profile" className="flex items-center space-x-2">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={user.avatar || '/default-image.png'} alt={user.name} />
+              <AvatarFallback>{user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+            </Avatar>
+            <span className="text-sm font-normal">{user.name}</span>
+          </Link>
         </div>
       </div>
     </header>
