@@ -82,10 +82,10 @@ const HomePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       <Header user={user} onUpdateUser={handleUpdateUser} />
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-gray-100 rounded-[64px] pt-8 px-8 pb-6 overflow-hidden shadow-inner">
+      <div className="flex-grow container mx-auto px-4 py-8 flex flex-col">
+        <div className="bg-gray-100 rounded-[64px] pt-8 px-8 overflow-hidden shadow-inner flex-grow flex flex-col">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
@@ -99,45 +99,47 @@ const HomePage = () => {
               </Button>
             </Link>
           </div>
-          <div className="flex flex-col space-y-8 max-h-[calc(100vh-300px)] overflow-y-auto pr-4 scrollbar-hide">
-            {investigations.map(investigation => (
-              <div key={investigation.id} className="flex flex-col lg:flex-row h-[400px]">
-                <div className="w-full lg:w-[548px] flex-shrink-0" onClick={() => handleProjectClick(investigation)}>
-                  <InvestigationCard 
-                    investigation={investigation} 
-                    onUpdateInvestigation={handleUpdateInvestigation}
-                  />
-                </div>
-                <div className="w-full lg:w-[548px] flex-shrink-0">
-                  <div className="bg-white bg-opacity-30 rounded-r-lg p-4 h-full relative overflow-hidden">
-                    <div className="overflow-x-auto h-full scrollbar-hide">
-                      <div className="flex space-x-4 h-full pb-4">
-                        {investigation.reports.map(report => (
-                          <div key={report.id} className="w-64 flex-shrink-0">
-                            <ReportCard 
-                              report={report} 
-                              onUpdate={(updatedReport) => {
-                                const updatedReports = investigation.reports.map(r =>
-                                  r.id === updatedReport.id ? updatedReport : r
-                                );
-                                handleUpdateInvestigation({
-                                  ...investigation,
-                                  reports: updatedReports
-                                });
-                              }}
-                            />
-                          </div>
-                        ))}
+          <div className="flex-grow overflow-y-auto pr-4 scrollbar-hide">
+            <div className="flex flex-col space-y-8">
+              {investigations.map(investigation => (
+                <div key={investigation.id} className="flex flex-col lg:flex-row h-[400px]">
+                  <div className="w-full lg:w-[548px] flex-shrink-0" onClick={() => handleProjectClick(investigation)}>
+                    <InvestigationCard 
+                      investigation={investigation} 
+                      onUpdateInvestigation={handleUpdateInvestigation}
+                    />
+                  </div>
+                  <div className="w-full lg:w-[548px] flex-shrink-0">
+                    <div className="bg-white bg-opacity-30 rounded-r-lg p-4 h-full relative overflow-hidden">
+                      <div className="overflow-x-auto h-full scrollbar-hide">
+                        <div className="flex space-x-4 h-full pb-4">
+                          {investigation.reports.map(report => (
+                            <div key={report.id} className="w-64 flex-shrink-0">
+                              <ReportCard 
+                                report={report} 
+                                onUpdate={(updatedReport) => {
+                                  const updatedReports = investigation.reports.map(r =>
+                                    r.id === updatedReport.id ? updatedReport : r
+                                  );
+                                  handleUpdateInvestigation({
+                                    ...investigation,
+                                    reports: updatedReports
+                                  });
+                                }}
+                              />
+                            </div>
+                          ))}
+                        </div>
                       </div>
+                      <div className="absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-white to-transparent pointer-events-none"></div>
+                      <div className="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+                      <div className="absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-white to-transparent pointer-events-none"></div>
+                      <div className="absolute inset-y-0 right-0 w-4 bg-gradient-to-l from-white to-transparent pointer-events-none"></div>
                     </div>
-                    <div className="absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-white to-transparent pointer-events-none"></div>
-                    <div className="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
-                    <div className="absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-white to-transparent pointer-events-none"></div>
-                    <div className="absolute inset-y-0 right-0 w-4 bg-gradient-to-l from-white to-transparent pointer-events-none"></div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
