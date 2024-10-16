@@ -7,11 +7,16 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const ToolbarButton = ({ icon, label, onClick }) => (
+const ToolbarButton = ({ icon, label, onClick, isActive }) => (
   <TooltipProvider>
     <Tooltip>
       <TooltipTrigger asChild>
-        <Button size="icon" variant="ghost" className="rounded-full" onClick={onClick}>
+        <Button 
+          size="icon" 
+          variant="ghost" 
+          className={`rounded-full ${isActive ? 'bg-blue-500 bg-opacity-50' : ''}`} 
+          onClick={onClick}
+        >
           {icon}
         </Button>
       </TooltipTrigger>
