@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, Hand, MousePointer, Sparkles, Square, StickyNote, Type, Link, Layers, Download, Eye } from 'lucide-react';
+import { Minus, Plus, Hand, MousePointer, Sparkles, Pill, StickyNote, Type, Link, Users, Download } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -28,31 +28,31 @@ const Toolbar = ({ activeTool, setActiveTool, handleAIClick, handleAddNode, hand
           onClick={() => setActiveTool('pan')}
           isActive={activeTool === 'pan'}
         />
+        <div className="w-px h-6 bg-gray-300 mx-2"></div>
         <ToolButton icon={<Sparkles className="h-4 w-4" />} label="AI Node" onClick={handleAIClick} />
-        <ToolButton icon={<Square className="h-4 w-4" />} label="Blank Node" onClick={() => handleAddNode('blank')} />
+        <ToolButton icon={<Pill className="h-4 w-4" />} label="Blank Node" onClick={() => handleAddNode('blank')} />
         <ToolButton icon={<StickyNote className="h-4 w-4" />} label="Post-it Node" onClick={() => handleAddNode('postit')} />
         <ToolButton icon={<Type className="h-4 w-4" />} label="Text Node" onClick={() => handleAddNode('text')} />
         <ToolButton icon={<Link className="h-4 w-4" />} label="Connector Node" onClick={() => handleAddNode('connector')} />
-        <ToolButton icon={<Layers className="h-4 w-4" />} label="Grouped Section Node" onClick={() => handleAddNode('group')} />
+        <ToolButton icon={<Users className="h-4 w-4" />} label="Grouped Section Node" onClick={() => handleAddNode('group')} />
         <div className="flex items-center space-x-2">
-          <ToolButton icon={<Eye className="h-4 w-4" />} label="View Distance" onClick={() => {}} />
           <div className="flex items-center space-x-2">
             <div className="flex flex-col items-center space-y-1">
               <Button 
                 size="icon" 
                 variant="ghost" 
-                className="rounded-full h-6 w-6 bg-black bg-opacity-5" 
+                className="rounded-full h-3 w-3 bg-black bg-opacity-5" 
                 onClick={() => handleZoom(0.1)}
               >
-                <Plus className="h-3 w-3" />
+                <Plus className="h-2 w-2" />
               </Button>
               <Button 
                 size="icon" 
                 variant="ghost" 
-                className="rounded-full h-6 w-6 bg-black bg-opacity-5" 
+                className="rounded-full h-3 w-3 bg-black bg-opacity-5" 
                 onClick={() => handleZoom(-0.1)}
               >
-                <Minus className="h-3 w-3" />
+                <Minus className="h-2 w-2" />
               </Button>
             </div>
             <div className="flex items-center justify-center w-12">
