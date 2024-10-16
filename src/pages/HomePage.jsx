@@ -71,7 +71,8 @@ const HomePage = () => {
   const [editingProject, setEditingProject] = useState(null);
 
   const handleProjectClick = (project) => {
-    setEditingProject(project);
+    const username = 'user'; // Replace this with actual username logic
+    navigate(`/${username}/project/${encodeURIComponent(project.title)}`);
   };
 
   const handleUpdateInvestigation = (updatedInvestigation) => {
@@ -123,7 +124,7 @@ const HomePage = () => {
           </div>
           <div className="flex-grow overflow-y-auto scrollbar-hide">
             <div className="flex flex-col space-y-6">
-              {investigations.map(investigation => (
+              {investigations.map((investigation) => (
                 <div key={investigation.id} className="flex flex-col lg:flex-row w-full">
                   <div className="w-full lg:w-1/2 flex-shrink-0" onClick={() => handleProjectClick(investigation)}>
                     <InvestigationCard 
