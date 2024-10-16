@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Hand, MousePointer, Sparkles, Pill, StickyNote, Type, Link, Users, Download } from 'lucide-react';
 import {
@@ -11,11 +11,21 @@ import ToolButton from './ToolbarButton';
 import ExportDialog from './ExportDialog';
 
 const Toolbar = ({ activeTool, setActiveTool, handleAIClick, handleAddNode, handleZoom, zoom, nodes, onDragStart }) => {
-  const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
+  const [isExportDialogOpen, setIsExportDialogOpen] = React.useState(false);
 
   const handleDragStart = (e, nodeType) => {
     e.dataTransfer.setData('nodeType', nodeType);
     onDragStart(nodeType);
+
+    // Create a custom drag image
+    const dragImage = document.createElement('div');
+    dragImage.className = 'w-40 h-40 bg-yellow-200 rounded-md shadow-md flex items-center justify-center';
+    dragImage.textContent = 'New Post-it';
+    document.body.appendChild(dragImage);
+    e.dataTransfer.setDragImage(dragImage, 20, 20);
+
+    // Remove the drag image after the drag operation
+    setTimeout(() => document.body.removeChild(dragImage), 0);
   };
 
   return (

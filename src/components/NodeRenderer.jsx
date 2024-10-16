@@ -31,8 +31,6 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpd
 
   const renderNodeContent = () => {
     switch (node.type) {
-      case 'blank':
-        return <div className="w-full h-full bg-white rounded-md shadow-md flex items-center justify-center">Node</div>;
       case 'postit':
         return (
           <div className={`w-full h-full bg-[${node.color || '#FFFFA5'}] rounded-md shadow-md flex flex-col p-4 relative overflow-hidden`}>
@@ -57,6 +55,8 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpd
             </div>
           </div>
         );
+      case 'blank':
+        return <div className="w-full h-full bg-white rounded-md shadow-md flex items-center justify-center">Node</div>;
       case 'text':
         return (
           <div
@@ -96,11 +96,7 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpd
       className={`cursor-move ${isFocused ? 'ring-2 ring-blue-500' : ''}`}
       onClick={handleClick}
     >
-      {node.image ? (
-        <img src={node.image} alt={node.text} className="w-full h-full object-cover rounded-md" />
-      ) : (
-        renderNodeContent()
-      )}
+      {renderNodeContent()}
       {isFocused && (
         <FocusedNodeTooltip
           node={node}

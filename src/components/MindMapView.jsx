@@ -77,6 +77,7 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
       text: '',
       width: 200,
       height: 200,
+      color: type === 'postit' ? '#FFFFA5' : '#FFFFFF',
     };
     onAddNode(newNode);
   };
@@ -102,47 +103,24 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
     setIsArticleModalOpen(true);
   };
 
-  const handleAddReport = () => {
-    setSelectedArticle(null);
-    setIsArticleModalOpen(true);
-  };
-
-  const handleSaveArticle = (article) => {
-    if (article.id) {
-      const updatedReports = project.reports.map(report =>
-        report.id === article.id ? article : report
-      );
-      updateProject({ ...project, reports: updatedReports });
-    } else {
-      const newArticle = { ...article, id: Date.now() };
-      const updatedReports = [...project.reports, newArticle];
-      updateProject({ ...project, reports: updatedReports });
-    }
-    setIsArticleModalOpen(false);
-    setSelectedArticle(null);
-  };
-
-  const handleDeleteArticle = (articleId) => {
-    const updatedReports = project.reports.filter(report => report.id !== articleId);
-    updateProject({ ...project, reports: updatedReports });
-  };
-
-  const handleSendMessage = (message) => {
-    // Handle sending message to AI (implement API call here)
-    console.log("Sending message to AI:", message);
-  };
-
-  const handleDragStart = (nodeType) => {
-    setIsDragging(true);
-    setDraggedNodeType(nodeType);
-  };
-
   const handleDragEnd = (e) => {
     if (isDragging && draggedNodeType) {
       const canvasRect = canvasRef.current.getBoundingClientRect();
       const x = (e.clientX - canvasRect.left) / zoom - position.x;
       const y = (e.clientY - canvasRect.top) / zoom - position.y;
-      handleAddNode(draggedNodeType, x, y);
+      
+      const newNode = {
+        id: Date.now().toString(),
+        type: draggedNodeType,
+        x,
+        y,
+        text: '',
+        width: 200,
+        height: 200,
+        color: draggedNodeType === 'postit' ? '#FFFFA5' : '#FFFFFF',
+      };
+      
+      onAddNode(newNode);
     }
     setIsDragging(false);
     setDraggedNodeType(null);
@@ -200,11 +178,17 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
           handleZoom={handleZoom}
           zoom={zoom}
           nodes={nodes}
-          onDragStart={handleDragStart}
+          onDragStart={(nodeType) => {
+            setIsDragging(true);
+            setDraggedNodeType(nodeType);
+          }}
         />
         <ReportList
           reports={project.reports}
-          onAddReport={handleAddReport}
+          onAddReport={() => {
+            setSelectedArticle(null);
+            setIsArticleModalOpen(true);
+          }}
           onEditReport={handleArticleClick}
         />
       </div>
@@ -212,14 +196,32 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
         isOpen={sidePanelOpen}
         onClose={() => setSidePanelOpen(false)}
         initialQuestion={initialAIMessage}
-        onSendMessage={handleSendMessage}
+        onSendMessage={(message) => {
+          console.log("Sending message to AI:", message);
+        }}
       />
       <ArticleModal
         isOpen={isArticleModalOpen}
         onClose={() => setIsArticleModalOpen(false)}
         article={selectedArticle}
-        onSave={handleSaveArticle}
-        onDelete={handleDeleteArticle}
+        onSave={(article) => {
+          if (article.id) {
+            const updatedReports = project.reports.map(report =>
+              report.id === article.id ? article : report
+            );
+            updateProject({ ...project, reports: updatedReports });
+          } else {
+            const newArticle = { ...article, id: Date.now() };
+            const updatedReports = [...project.reports, newArticle];
+            updateProject({ ...project, reports: updatedReports });
+          }
+          setIsArticleModalOpen(false);
+          setSelectedArticle(null);
+        }}
+        onDelete={(articleId) => {
+          const updatedReports = project.reports.filter(report => report.id !== articleId);
+          updateProject({ ...project, reports: updatedReports });
+        }}
       />
     </div>
   );
