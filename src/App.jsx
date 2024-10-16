@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage";
 import NewProjectPage from "./pages/NewProjectPage";
 import ProjectView from "./pages/ProjectView";
 import ProjectPage from "./pages/ProjectPage";
+import ProjectsPage from "./pages/ProjectsPage";
 import SubscriptionPlans from "./pages/SubscriptionPlans";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/new-project" element={<NewProjectPage />} />
+          <Route path="/project" element={<ProjectsPage />} />
           <Route path="/project/:id" element={<ProjectView />} />
           <Route path="/:username/project/:projectName" element={<ProjectPage />} />
           <Route path="/subscription-plans" element={<SubscriptionPlans />} />
