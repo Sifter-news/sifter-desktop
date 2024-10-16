@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import UserProfile from './UserProfile';
 
 const Header = ({ user, projectName, onProjectClick, onUpdateUser }) => {
   return (
@@ -33,13 +34,7 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser }) => {
           <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
             Dashboard
           </Link>
-          <Link to="/profile" className="flex items-center space-x-2">
-            <span className="text-sm font-normal">{user.name}</span>
-            <Avatar className="h-8 w-8">
-              <AvatarImage src="/default-image.png" alt={user.name} />
-              <AvatarFallback>{user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
-            </Avatar>
-          </Link>
+          <UserProfile user={user} onUpdateUser={onUpdateUser} />
         </div>
       </div>
     </header>

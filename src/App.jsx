@@ -6,7 +6,8 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import NewProjectPage from "./pages/NewProjectPage";
 import ProjectView from "./pages/ProjectView";
-import ProjectPage from "./pages/ProjectPage"; // Add this import
+import ProjectPage from "./pages/ProjectPage";
+import SubscriptionPlans from "./pages/SubscriptionPlans";
 
 const queryClient = new QueryClient();
 
@@ -20,7 +21,8 @@ const App = () => (
           <Route path="/login" element={<LoginPage />} />
           <Route path="/new-project" element={<NewProjectPage />} />
           <Route path="/project/:id" element={<ProjectView />} />
-          <Route path="/:username/project/:projectName" element={<ProjectPage />} /> {/* Add this new route */}
+          <Route path="/:username/project/:projectName" element={<ProjectPage />} />
+          <Route path="/subscription-plans" element={<SubscriptionPlans />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
