@@ -7,8 +7,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 const ReportList = ({ reports, onAddReport, onEditReport }) => {
   return (
     <div className="fixed bottom-12 right-12 z-10">
-      <div className="bg-white bg-opacity-20 backdrop-blur-sm p-4 rounded-lg">
-        <div className="flex flex-wrap justify-end gap-2 mb-2">
+      <div className="bg-white bg-opacity-20 backdrop-blur-sm p-4 rounded-full">
+        <div className="flex items-center space-x-2">
           {reports.map((report) => (
             <TooltipProvider key={report.id}>
               <Tooltip>
@@ -34,7 +34,7 @@ const ReportList = ({ reports, onAddReport, onEditReport }) => {
                 <Button
                   size="icon"
                   className="rounded-full w-12 h-12 bg-black hover:bg-gray-800 text-white shadow-lg"
-                  onClick={() => onAddReport({ type: 'report', title: 'New Report', content: '' })}
+                  onClick={onAddReport}
                 >
                   <PlusIcon className="h-6 w-6" />
                 </Button>

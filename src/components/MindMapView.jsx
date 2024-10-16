@@ -107,9 +107,9 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
   };
 
   const handleSaveArticle = (article) => {
-    if (selectedArticle) {
+    if (article.id) {
       const updatedReports = project.reports.map(report =>
-        report.id === selectedArticle.id ? { ...article, id: report.id } : report
+        report.id === article.id ? article : report
       );
       updateProject({ ...project, reports: updatedReports });
     } else {
@@ -119,6 +119,11 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
     }
     setIsArticleModalOpen(false);
     setSelectedArticle(null);
+  };
+
+  const handleDeleteArticle = (articleId) => {
+    const updatedReports = project.reports.filter(report => report.id !== articleId);
+    updateProject({ ...project, reports: updatedReports });
   };
 
   const handleSendMessage = (message) => {
@@ -191,8 +196,9 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
       <ArticleModal
         isOpen={isArticleModalOpen}
         onClose={() => setIsArticleModalOpen(false)}
-        article={selectedArticle || { title: '', content: '' }}
-        onUpdate={handleSaveArticle}
+        article={selectedArticle}
+        onSave={handleSaveArticle}
+        onDelete={handleDeleteArticle}
       />
     </div>
   );
