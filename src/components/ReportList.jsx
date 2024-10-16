@@ -6,10 +6,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 const ReportList = ({ reports, onAddReport, onEditReport }) => {
   return (
-    <div className="fixed bottom-12 right-12 flex flex-col items-end space-y-2 z-10">
-      <div className="bg-white bg-opacity-20 backdrop-blur-sm p-4 rounded-lg mb-2">
+    <div className="fixed bottom-12 right-12 z-10">
+      <div className="bg-white bg-opacity-20 backdrop-blur-sm p-4 rounded-lg">
         <div className="flex flex-wrap justify-end gap-2 mb-2">
-          {reports.map((report, index) => (
+          {reports.map((report) => (
             <TooltipProvider key={report.id}>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -28,24 +28,24 @@ const ReportList = ({ reports, onAddReport, onEditReport }) => {
               </Tooltip>
             </TooltipProvider>
           ))}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="icon"
+                  className="rounded-full w-12 h-12 bg-black hover:bg-gray-800 text-white shadow-lg"
+                  onClick={() => onAddReport({ type: 'report', title: 'New Report', content: '' })}
+                >
+                  <PlusIcon className="h-6 w-6" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Add New Report</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="icon"
-              className="rounded-full w-14 h-14 bg-black hover:bg-gray-800 text-white shadow-lg"
-              onClick={() => onAddReport({ type: 'report', title: 'New Report', content: '' })}
-            >
-              <PlusIcon className="h-6 w-6" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Add New Report</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
     </div>
   );
 };

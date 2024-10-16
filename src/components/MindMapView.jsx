@@ -96,14 +96,29 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
     setFocusedNodeId(null);
   };
 
-  const handleSendMessage = (message) => {
-    // Handle sending message to AI (implement API call here)
-    console.log("Sending message to AI:", message);
-  };
-
   const handleArticleClick = (article) => {
     setSelectedArticle(article);
     setIsArticleModalOpen(true);
+  };
+
+  const handleAddReport = () => {
+    setSelectedArticle(null);
+    setIsArticleModalOpen(true);
+  };
+
+  const handleSaveArticle = (article) => {
+    if (selectedArticle) {
+      const updatedReports = project.reports.map(report =>
+        report.id === selectedArticle.id ? { ...article, id: report.id } : report
+      );
+      updateProject({ ...project, reports: updatedReports });
+    } else {
+      const newArticle = { ...article, id: Date.now() };
+      const updatedReports = [...project.reports, newArticle];
+      updateProject({ ...project, reports: updatedReports });
+    }
+    setIsArticleModalOpen(false);
+    setSelectedArticle(null);
   };
 
   return (
@@ -158,7 +173,7 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
         />
         <ReportList
           reports={project.reports}
-          onAddReport={handleAddNode}
+          onAddReport={handleAddReport}
           onEditReport={handleArticleClick}
         />
       </div>
@@ -171,11 +186,8 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
       <ArticleModal
         isOpen={isArticleModalOpen}
         onClose={() => setIsArticleModalOpen(false)}
-        article={selectedArticle}
-        onUpdate={(updatedArticle) => {
-          // Handle article update if needed
-          console.log("Article updated:", updatedArticle);
-        }}
+        article={selectedArticle || { title: '', content: '' }}
+        onUpdate={handleSaveArticle}
       />
     </div>
   );
