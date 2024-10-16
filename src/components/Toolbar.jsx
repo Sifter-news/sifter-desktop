@@ -15,7 +15,7 @@ const Toolbar = ({ activeTool, setActiveTool, handleAIClick, handleAddNode, hand
 
   return (
     <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-20 backdrop-blur-sm rounded-full shadow-lg p-2">
-      <div className="bg-white bg-opacity-20 rounded-full p-2 flex items-center space-x-2">
+      <div className="bg-white rounded-full p-2 flex items-center space-x-2">
         <ToolButton 
           icon={<MousePointer className="h-4 w-4" />} 
           label="Select"
@@ -36,10 +36,14 @@ const Toolbar = ({ activeTool, setActiveTool, handleAIClick, handleAddNode, hand
         <ToolButton icon={<Layers className="h-4 w-4" />} label="Grouped Section Node" onClick={() => handleAddNode('group')} />
         <div className="flex items-center space-x-2">
           <ToolButton icon={<Eye className="h-4 w-4" />} label="View Distance" onClick={() => {}} />
-          <div className="flex flex-col items-center space-y-1">
-            <ToolButton icon={<Plus className="h-4 w-4" />} label="Zoom In" onClick={() => handleZoom(0.1)} />
-            <span className="text-xs font-medium">{Math.round(zoom * 100)}%</span>
-            <ToolButton icon={<Minus className="h-4 w-4" />} label="Zoom Out" onClick={() => handleZoom(-0.1)} />
+          <div className="flex items-center space-x-2">
+            <div className="flex flex-col items-center space-y-1">
+              <ToolButton icon={<Plus className="h-4 w-4" />} label="Zoom In" onClick={() => handleZoom(0.1)} />
+              <ToolButton icon={<Minus className="h-4 w-4" />} label="Zoom Out" onClick={() => handleZoom(-0.1)} />
+            </div>
+            <div className="flex items-center justify-center w-12">
+              <span className="text-xs font-medium">{Math.round(zoom * 100)}%</span>
+            </div>
           </div>
         </div>
         <TooltipProvider>
