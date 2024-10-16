@@ -12,14 +12,14 @@ const ProjectView = () => {
   const location = useLocation();
   const user = {
     name: 'User-Name',
-    avatar: '/placeholder.svg',
+    avatar: '/default-image.png',
     email: 'user@example.com',
   };
 
   const [project, setProject] = useState(location.state?.project || {
     id,
-    title: `Project ${id}`,
-    description: 'This is a sample project description.',
+    title: `New Project`,
+    description: '',
     reports: []
   });
 
@@ -28,12 +28,14 @@ const ProjectView = () => {
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
 
   useEffect(() => {
-    // Load nodes from localStorage or API
-    const savedNodes = localStorage.getItem(`project_${id}_nodes`);
-    if (savedNodes) {
-      setNodes(JSON.parse(savedNodes));
+    // Load nodes from localStorage or API if it's an existing project
+    if (location.state?.project) {
+      const savedNodes = localStorage.getItem(`project_${id}_nodes`);
+      if (savedNodes) {
+        setNodes(JSON.parse(savedNodes));
+      }
     }
-  }, [id]);
+  }, [id, location.state]);
 
   useEffect(() => {
     // Save nodes to localStorage whenever they change

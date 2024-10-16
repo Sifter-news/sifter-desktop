@@ -5,6 +5,7 @@ import InvestigationCard from '../components/InvestigationCard';
 import ReportCard from '../components/ReportCard';
 import { Button } from "@/components/ui/button";
 import { PlusIcon, FileSearchIcon } from 'lucide-react';
+import ReportModal from '../components/ReportModal';
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -65,6 +66,8 @@ const HomePage = () => {
     },
   ]);
 
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+
   const handleProjectClick = (project) => {
     navigate(`/project/${project.id}`, { state: { project } });
   };
@@ -81,6 +84,16 @@ const HomePage = () => {
     setUser(updatedUser);
   };
 
+  const handleAddNewProject = () => {
+    const newProject = {
+      id: Date.now().toString(),
+      title: 'New Project',
+      description: '',
+      reports: []
+    };
+    navigate(`/project/${newProject.id}`, { state: { project: newProject } });
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header user={user} onUpdateUser={handleUpdateUser} />
@@ -93,11 +106,12 @@ const HomePage = () => {
               </div>
               <h2 className="text-2xl font-bold">Investigations</h2>
             </div>
-            <Link to="/new-project">
-              <Button className="rounded-full w-14 h-14 p-0 flex items-center justify-center">
-                <PlusIcon className="h-6 w-6" />
-              </Button>
-            </Link>
+            <Button 
+              className="rounded-full w-14 h-14 p-0 flex items-center justify-center"
+              onClick={handleAddNewProject}
+            >
+              <PlusIcon className="h-6 w-6" />
+            </Button>
           </div>
           <div className="flex-grow overflow-y-auto scrollbar-hide">
             <div className="flex flex-col space-y-6">
@@ -143,6 +157,20 @@ const HomePage = () => {
           </div>
         </div>
       </div>
+      <ReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        onSave={(newReport) => {
+          if (investigations.length > 0) {
+            const updatedInvestigation = {
+              ...investigations[0],
+              reports: [...investigations[0].reports, newReport]
+            };
+            handleUpdateInvestigation(updatedInvestigation);
+          }
+          setIsReportModalOpen(false);
+        }}
+      />
     </div>
   );
 };
