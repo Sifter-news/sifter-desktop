@@ -1,32 +1,64 @@
-import React from 'react';
-import Header from '../components/Header';
-import { Button } from "@/components/ui/button";
-import { PlusIcon } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import ProjectHeader from '@/components/views/project/ProjectHeader';
+import ProjectList from '@/components/views/project/ProjectList';
+import ProjectEditModal from '@/components/ProjectEditModal';
+import { useToast } from "@/components/ui/use-toast";
 
 const ProjectsPage = () => {
-  const user = {
-    name: 'User-Name',
-    avatar: '/default-image.png',
-    email: 'user@example.com',
+  const [projects, setProjects] = useState([]);
+  const [editingProject, setEditingProject] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleCreateProject = () => {
+    setEditingProject(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEditProject = (project) => {
+    setEditingProject(project);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteProject = (projectId) => {
+    setProjects(projects.filter(p => p.id !== projectId));
+    toast({
+      title: "Project deleted",
+      description: "The project has been successfully deleted.",
+    });
+  };
+
+  const handleSaveProject = (project) => {
+    if (editingProject) {
+      setProjects(projects.map(p => p.id === project.id ? project : p));
+      toast({
+        title: "Project updated",
+        description: "The project has been successfully updated.",
+      });
+    } else {
+      setProjects([...projects, { ...project, id: Date.now() }]);
+      toast({
+        title: "Project created",
+        description: "A new project has been successfully created.",
+      });
+    }
+    setIsModalOpen(false);
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      <Header user={user} />
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">My Projects</h1>
-          <Link to="/new-project">
-            <Button className="flex items-center space-x-2">
-              <PlusIcon className="h-4 w-4" />
-              <span>New Project</span>
-            </Button>
-          </Link>
-        </div>
-        {/* Project list will be implemented here */}
-        <p>Your projects will be listed here.</p>
-      </main>
+    <div className="container mx-auto px-4 py-8">
+      <ProjectHeader onCreateProject={handleCreateProject} />
+      <ProjectList
+        projects={projects}
+        onEditProject={handleEditProject}
+        onDeleteProject={handleDeleteProject}
+      />
+      <ProjectEditModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveProject}
+        project={editingProject}
+      />
     </div>
   );
 };
