@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import Navigator from '../../components/Navigator';
-import { findAvailablePosition } from '../../utils/canvasUtils';
-import { testNodes } from '../../utils/testNodes';
+import Navigator from './Navigator';
+import { findAvailablePosition } from '../utils/canvasUtils';
 
 const TextView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => {
   const [selectedNode, setSelectedNode] = useState(null);
 
   useEffect(() => {
-    if (nodes.length === 0) {
-      onAddNode(testNodes);
-    } else if (!selectedNode) {
+    if (nodes.length > 0 && !selectedNode) {
       setSelectedNode(nodes[0]);
     }
-  }, [nodes, selectedNode, onAddNode]);
+  }, [nodes, selectedNode]);
 
   const handleNodeClick = (node) => {
     setSelectedNode(node);
