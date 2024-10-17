@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 
 const ProfileDialog = ({ user, onUpdateUser }) => {
   const navigate = useNavigate();
-  const [avatar, setAvatar] = useState('/default-image.png');
+  const [avatar, setAvatar] = useState('https://files.slack.com/files-pri/T0H44FCFR-F07T1KBE4HW/_____node________description.png');
 
   const handleSignOut = () => {
     navigate('/login');
@@ -30,10 +30,7 @@ const ProfileDialog = ({ user, onUpdateUser }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Avatar className="h-8 w-8 cursor-pointer">
-          <AvatarImage src="/default-image.png" alt={user.name} />
-          <AvatarFallback><UserIcon className="h-4 w-4" /></AvatarFallback>
-        </Avatar>
+        <Button variant="ghost" className="text-sm">Edit Profile</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -42,7 +39,7 @@ const ProfileDialog = ({ user, onUpdateUser }) => {
         <div className="grid gap-4 py-4">
           <div className="flex items-center justify-center">
             <Avatar className="h-24 w-24">
-              <AvatarImage src="/default-image.png" alt={user.name} />
+              <AvatarImage src={avatar} alt={user.name} />
               <AvatarFallback><UserIcon className="h-12 w-12" /></AvatarFallback>
             </Avatar>
           </div>
