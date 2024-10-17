@@ -10,7 +10,6 @@ import AISidePanel from '../../components/AISidePanel';
 import ReportList from '../../components/ReportList';
 import ArticleModal from '../../components/ArticleModal';
 import { Node } from '../../types/nodeTypes';
-import NodeCreator from './NodeCreator';
 
 const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode }) => {
   const [showAIInput, setShowAIInput] = useState(true);
@@ -111,7 +110,7 @@ const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteN
       const y = (e.clientY - canvasRect.top) / zoom - position.y;
       const newNode = {
         id: Date.now().toString(),
-        type: draggedNodeType,
+        type: 'basic',
         title: 'New Node',
         abstract: '',
         description: '',
@@ -178,12 +177,11 @@ const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteN
           handleZoom={handleZoom}
           zoom={zoom}
           nodes={nodes}
-        >
-          <NodeCreator onDragStart={(nodeType) => {
+          onDragStart={(nodeType) => {
             setIsDragging(true);
             setDraggedNodeType(nodeType);
-          }} />
-        </Toolbar>
+          }}
+        />
         <ReportList
           reports={project.reports}
           onAddReport={() => {
