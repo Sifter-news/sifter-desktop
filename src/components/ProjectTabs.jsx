@@ -1,10 +1,10 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Brain, FileText, Clock, Map } from 'lucide-react';
-import MindMapView from './MindMapView';
-import TextView from './TextView';
-import TimeView from './TimeView';
-import MapView from './MapView';
+import MindView from '../pages/project/MindView';
+import TextView from '../pages/project/TextView';
+import TimeView from '../pages/project/TimeView';
+import MapView from '../pages/project/MapView';
 
 const ProjectTabs = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode }) => {
   return (
@@ -29,7 +29,7 @@ const ProjectTabs = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
       </TabsList>
       <div className="flex-grow mt-12">
         <TabsContent value="mind" className="h-full">
-          <MindMapView 
+          <MindView 
             project={project} 
             nodes={nodes}
             setNodes={setNodes}

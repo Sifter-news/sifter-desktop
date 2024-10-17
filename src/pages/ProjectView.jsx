@@ -6,6 +6,7 @@ import ProjectModals from '../components/ProjectModals';
 import ReportList from '../components/ReportList';
 import ArticleModal from '../components/ArticleModal';
 import { findAvailablePosition } from '../utils/canvasUtils';
+import { getNodeSchema } from './project/node/nodeSchema';
 
 const ProjectView = () => {
   const { id } = useParams();
@@ -48,7 +49,8 @@ const ProjectView = () => {
 
   const handleAddNode = (newNode) => {
     const position = findAvailablePosition(nodes);
-    const nodeWithPosition = { ...newNode, x: position.x, y: position.y };
+    const nodeSchema = getNodeSchema(newNode.type);
+    const nodeWithPosition = { ...nodeSchema, ...newNode, x: position.x, y: position.y };
     setNodes(prevNodes => [...prevNodes, nodeWithPosition]);
   };
 
