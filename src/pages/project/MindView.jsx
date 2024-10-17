@@ -178,11 +178,12 @@ const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteN
           handleZoom={handleZoom}
           zoom={zoom}
           nodes={nodes}
-          onDragStart={(nodeType) => {
+        >
+          <NodeCreator onDragStart={(nodeType) => {
             setIsDragging(true);
             setDraggedNodeType(nodeType);
-          }}
-        />
+          }} />
+        </Toolbar>
         <ReportList
           reports={project.reports}
           onAddReport={() => {
