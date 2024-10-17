@@ -2,15 +2,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PlusIcon } from 'lucide-react';
-import { saveProjectState, loadProjectState } from '../utils/projectUtils';
-import { useZoomPan, findAvailablePosition, snapToGrid } from '../utils/canvasUtils';
-import Canvas from './Canvas';
-import Toolbar from './Toolbar';
-import AISidePanel from './AISidePanel';
-import ReportList from './ReportList';
-import ArticleModal from './ArticleModal';
+import { saveProjectState, loadProjectState } from '../../utils/projectUtils';
+import { useZoomPan, findAvailablePosition } from '../../utils/canvasUtils';
+import Canvas from '../../components/Canvas';
+import Toolbar from '../../components/Toolbar';
+import AISidePanel from '../../components/AISidePanel';
+import ReportList from '../../components/ReportList';
+import ArticleModal from '../../components/ArticleModal';
+import { Node } from '../../types/nodeTypes';
 
-const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode }) => {
+const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode }) => {
   const [showAIInput, setShowAIInput] = useState(true);
   const [activeTool, setActiveTool] = useState('select');
   const [focusedNodeId, setFocusedNodeId] = useState(null);
@@ -51,14 +52,14 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
   const handleAIAsk = () => {
     if (aiInputText.trim()) {
       const position = findAvailablePosition(nodes);
-      const newNode = {
+      const newNode: Node = {
         id: Date.now().toString(),
-        type: 'ai',
+        type: 'basic',
+        title: aiInputText,
+        abstract: '',
+        description: '',
         x: position.x,
         y: position.y,
-        text: aiInputText,
-        width: 200,
-        height: 200,
       };
       onAddNode(newNode);
       setShowAIInput(false);
@@ -69,16 +70,14 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
   };
 
   const handleAddNode = (type, x, y) => {
-    const newNode = {
+    const newNode: Node = {
       id: Date.now().toString(),
       type,
+      title: '',
+      abstract: '',
+      description: '',
       x,
       y,
-      text: '',
-      title: '',
-      width: type === 'text' ? 'auto' : 200,
-      height: type === 'text' ? 'auto' : 200,
-      color: type === 'postit' ? '#FFFFA5' : '#FFFFFF',
     };
     onAddNode(newNode);
   };
@@ -109,22 +108,7 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
       const canvasRect = canvasRef.current.getBoundingClientRect();
       const x = (e.clientX - canvasRect.left) / zoom - position.x;
       const y = (e.clientY - canvasRect.top) / zoom - position.y;
-      
-      const { x: snappedX, y: snappedY } = snapToGrid(x, y);
-      
-      const newNode = {
-        id: Date.now().toString(),
-        type: draggedNodeType,
-        x: snappedX,
-        y: snappedY,
-        text: '',
-        title: '',
-        width: draggedNodeType === 'text' ? 'auto' : 200,
-        height: draggedNodeType === 'text' ? 'auto' : 200,
-        color: draggedNodeType === 'postit' ? '#FFFFA5' : '#FFFFFF',
-      };
-      
-      onAddNode(newNode);
+      handleAddNode(draggedNodeType, x, y);
     }
     setIsDragging(false);
     setDraggedNodeType(null);
@@ -231,4 +215,4 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
   );
 };
 
-export default MindMapView;
+export default MindView;

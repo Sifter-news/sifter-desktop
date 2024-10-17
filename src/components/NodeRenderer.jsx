@@ -1,18 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import FocusedNodeTooltip from './FocusedNodeTooltip';
-import { Circle, ToggleLeft } from 'lucide-react';
 
-const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpdate, onFocus, isFocused, onDelete }) => {
+const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocused, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const contentRef = useRef(null);
-  const titleRef = useRef(null);
-
-  useEffect(() => {
-    if (isEditing && contentRef.current) {
-      contentRef.current.focus();
-    }
-  }, [isEditing]);
 
   const handleClick = (e) => {
     e.stopPropagation();
@@ -22,77 +16,86 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpd
 
   const handleBlur = () => {
     setIsEditing(false);
-    if (onNodeUpdate) {
-      onNodeUpdate(node.id, { 
-        text: contentRef.current ? contentRef.current.innerText : '',
-        title: titleRef.current ? titleRef.current.innerText : ''
-      });
-    }
+    onNodeUpdate(node.id, node);
   };
 
-  const snapToGrid = (x, y) => {
-    const snapSize = 8;
-    return {
-      x: Math.round(x / snapSize) * snapSize,
-      y: Math.round(y / snapSize) * snapSize
-    };
+  const handleTypeChange = (newType) => {
+    onNodeUpdate(node.id, { ...node, type: newType });
   };
 
   const renderNodeContent = () => {
+    return (
+      <div className="w-full h-full bg-white rounded-md shadow-md flex flex-col p-4 overflow-auto">
+        <Select onValueChange={handleTypeChange} defaultValue={node.type}>
+          <SelectTrigger>
+            <SelectValue placeholder="Node type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="basic">Basic</SelectItem>
+            <SelectItem value="person">Person</SelectItem>
+            <SelectItem value="organization">Organization</SelectItem>
+            <SelectItem value="object">Object</SelectItem>
+            <SelectItem value="event">Event</SelectItem>
+            <SelectItem value="concept">Concept</SelectItem>
+            <SelectItem value="location">Location</SelectItem>
+          </SelectContent>
+        </Select>
+        <Input
+          value={node.title}
+          onChange={(e) => onNodeUpdate(node.id, { ...node, title: e.target.value })}
+          placeholder="Title"
+          className="mt-2"
+        />
+        <Input
+          value={node.abstract}
+          onChange={(e) => onNodeUpdate(node.id, { ...node, abstract: e.target.value })}
+          placeholder="Abstract"
+          className="mt-2"
+        />
+        <Textarea
+          value={node.description}
+          onChange={(e) => onNodeUpdate(node.id, { ...node, description: e.target.value })}
+          placeholder="Description"
+          className="mt-2"
+        />
+        {renderAdditionalFields()}
+      </div>
+    );
+  };
+
+  const renderAdditionalFields = () => {
     switch (node.type) {
-      case 'postit':
+      case 'person':
         return (
-          <div className={`w-full h-full bg-[${node.color || '#FFFFA5'}] rounded-md shadow-md flex flex-col p-4 relative overflow-hidden`}>
-            <div className="absolute top-0 left-0 w-full h-2 bg-[#FFF98F] rounded-t-md"></div>
-            <h3 
-              ref={titleRef}
-              contentEditable={isEditing}
-              onBlur={handleBlur}
-              className="text-lg font-semibold mb-2 text-gray-800 outline-none"
-              suppressContentEditableWarning={true}
-            >
-              {node.title || ''}
-            </h3>
-            <div
-              ref={contentRef}
-              contentEditable={isEditing}
-              onBlur={handleBlur}
-              className={`text-sm text-gray-700 overflow-y-auto flex-grow outline-none ${node.textSize || 'text-base'}`}
-              suppressContentEditableWarning={true}
-            >
-              {node.text || ''}
-            </div>
-          </div>
+          <>
+            <Input
+              value={node.gender}
+              onChange={(e) => onNodeUpdate(node.id, { ...node, gender: e.target.value })}
+              placeholder="Gender"
+              className="mt-2"
+            />
+            <Input
+              value={node.dateOfBirth}
+              onChange={(e) => onNodeUpdate(node.id, { ...node, dateOfBirth: e.target.value })}
+              placeholder="Date of Birth"
+              className="mt-2"
+            />
+            {/* Add more fields for PersonNode */}
+          </>
         );
-      case 'text':
+      case 'organization':
         return (
-          <div className="flex items-center bg-white bg-opacity-20 backdrop-blur-sm rounded-full p-1 pr-4">
-            <div className="bg-blue-500 rounded-full p-2 mr-2">
-              <Circle className="w-4 h-4 text-white" />
-            </div>
-            <div
-              ref={contentRef}
-              contentEditable={isEditing}
-              onBlur={handleBlur}
-              className="outline-none"
-              suppressContentEditableWarning={true}
-            >
-              {node.text || ''}
-            </div>
-          </div>
+          <>
+            <Input
+              value={node.headquarters}
+              onChange={(e) => onNodeUpdate(node.id, { ...node, headquarters: e.target.value })}
+              placeholder="Headquarters"
+              className="mt-2"
+            />
+            {/* Add more fields for OrganizationNode */}
+          </>
         );
-      case 'blank':
-        return (
-          <div className="w-full h-full bg-white rounded-md shadow-md flex items-center justify-center">
-            <ToggleLeft className="w-6 h-6 text-gray-400" />
-          </div>
-        );
-      case 'ai':
-        return (
-          <div className="w-full h-full bg-blue-100 rounded-md shadow-md flex items-center justify-center p-2">
-            <span className="text-blue-600 font-semibold">AI Node</span>
-          </div>
-        );
+      // Add cases for other node types
       default:
         return null;
     }
@@ -103,17 +106,12 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpd
       size={{ width: node.width || 200, height: node.height || 200 }}
       position={{ x: node.x, y: node.y }}
       onDragStart={(e) => onDragStart(e, node.id)}
-      onDragStop={(e, d) => {
-        const { x, y } = snapToGrid(d.x, d.y);
-        onNodeUpdate(node.id, { x, y });
-      }}
+      onDragStop={(e, d) => onNodeUpdate(node.id, { x: d.x, y: d.y })}
       onResize={(e, direction, ref, delta, position) => {
-        const { x, y } = snapToGrid(position.x, position.y);
         onNodeUpdate(node.id, {
           width: ref.style.width,
           height: ref.style.height,
-          x,
-          y,
+          ...position,
         });
       }}
       className={`cursor-move ${isFocused ? 'ring-2 ring-blue-500' : ''}`}
