@@ -10,6 +10,7 @@ import AISidePanel from '../../components/AISidePanel';
 import ReportList from '../../components/ReportList';
 import ArticleModal from '../../components/ArticleModal';
 import { Node } from '../../types/nodeTypes';
+import NodeCreator from './NodeCreator';
 
 const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode }) => {
   const [showAIInput, setShowAIInput] = useState(true);
