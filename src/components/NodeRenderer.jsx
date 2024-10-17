@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Rnd } from 'react-rnd';
 import FocusedNodeTooltip from './FocusedNodeTooltip';
-import { Circle } from 'lucide-react';
+import { Circle, ToggleLeft } from 'lucide-react';
 
 const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpdate, onFocus, isFocused, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -82,7 +82,11 @@ const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpd
           </div>
         );
       case 'blank':
-        return <div className="w-full h-full bg-white rounded-md shadow-md flex items-center justify-center">Node</div>;
+        return (
+          <div className="w-full h-full bg-white rounded-md shadow-md flex items-center justify-center">
+            <ToggleLeft className="w-6 h-6 text-gray-400" />
+          </div>
+        );
       case 'ai':
         return (
           <div className="w-full h-full bg-blue-100 rounded-md shadow-md flex items-center justify-center p-2">
