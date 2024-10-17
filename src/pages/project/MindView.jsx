@@ -108,7 +108,18 @@ const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteN
       const canvasRect = canvasRef.current.getBoundingClientRect();
       const x = (e.clientX - canvasRect.left) / zoom - position.x;
       const y = (e.clientY - canvasRect.top) / zoom - position.y;
-      handleAddNode(draggedNodeType, x, y);
+      const newNode = {
+        id: Date.now().toString(),
+        type: 'basic',
+        title: 'New Node',
+        abstract: '',
+        description: '',
+        x,
+        y,
+        width: 200,
+        height: 200,
+      };
+      onAddNode(newNode);
     }
     setIsDragging(false);
     setDraggedNodeType(null);
