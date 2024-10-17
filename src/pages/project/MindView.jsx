@@ -110,7 +110,7 @@ const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteN
       const y = (e.clientY - canvasRect.top) / zoom - position.y;
       const newNode = {
         id: Date.now().toString(),
-        type: 'basic',
+        type: draggedNodeType,
         title: 'New Node',
         abstract: '',
         description: '',

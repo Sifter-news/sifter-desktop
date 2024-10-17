@@ -32,7 +32,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
       className={`cursor-move ${isFocused ? 'ring-2 ring-blue-500' : ''}`}
       onClick={handleClick}
     >
-      <div className="w-full h-full bg-white rounded-md shadow-md flex flex-col p-4 overflow-auto">
+      <div className={`w-full h-full rounded-md shadow-md flex flex-col p-4 overflow-auto ${node.type === 'postit' ? 'bg-yellow-200' : 'bg-white'}`}>
         <NodeEditor
           node={node}
           onUpdate={onNodeUpdate}

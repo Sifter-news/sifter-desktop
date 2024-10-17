@@ -103,8 +103,14 @@ const Canvas = forwardRef(({
         onMouseDown={handleCanvasMouseDown}
         onMouseMove={handleCanvasMouseMove}
         onMouseUp={handleCanvasMouseUp}
-        onDragOver={onDragOver}
-        onDrop={onDrop}
+        onDragOver={(e) => {
+          e.preventDefault();
+          onDragOver(e);
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          onDrop(e);
+        }}
         ref={ref}
       >
         <div 
