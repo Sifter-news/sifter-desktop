@@ -2,13 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PlusIcon } from 'lucide-react';
-import { saveProjectState, loadProjectState } from '../utils/projectUtils';
-import { useZoomPan, findAvailablePosition, snapToGrid } from '../utils/canvasUtils';
-import Canvas from './Canvas';
-import Toolbar from './Toolbar';
-import AISidePanel from './AISidePanel';
-import ReportList from './ReportList';
-import ArticleModal from './ArticleModal';
+import { saveProjectState, loadProjectState } from '../../utils/projectUtils';
+import { useZoomPan, findAvailablePosition, snapToGrid } from '../../utils/canvasUtils';
+import Canvas from '../../components/Canvas';
+import Toolbar from '../../components/Toolbar';
+import AISidePanel from '../../components/AISidePanel';
+import ReportList from '../../components/ReportList';
+import ArticleModal from '../../components/ArticleModal';
+import { testNodes } from '../../utils/testNodes';
 
 const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode }) => {
   const [showAIInput, setShowAIInput] = useState(true);
@@ -38,10 +39,10 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
     const savedNodes = loadProjectState(project.id);
     if (savedNodes.length > 0) {
       setNodes(savedNodes);
-      setShowAIInput(false);
     } else {
-      aiInputRef.current?.focus();
+      setNodes(testNodes);
     }
+    setShowAIInput(false);
   }, [project.id, setNodes]);
 
   useEffect(() => {
