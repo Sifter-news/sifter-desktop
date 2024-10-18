@@ -38,7 +38,6 @@ const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteN
       setNodes(savedNodes);
       setShowAIInput(false);
     } else {
-      // Add example nodes if there are no saved nodes
       const exampleNodes = addExampleNodes();
       setNodes(exampleNodes);
       setShowAIInput(false);
@@ -49,10 +48,10 @@ const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteN
     saveProjectState(project.id, nodes);
   }, [project.id, nodes]);
 
-  const handleAIAsk = () => {
+  const handleAIAsk = (aiInputText) => {
     if (aiInputText.trim()) {
       const position = findAvailablePosition(nodes);
-      const newNode: Node = {
+      const newNode = {
         id: Date.now().toString(),
         type: 'basic',
         title: aiInputText,
@@ -65,7 +64,6 @@ const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteN
       setShowAIInput(false);
       setSidePanelOpen(true);
       setInitialAIMessage(aiInputText);
-      setAIInputText('');
     }
   };
 
@@ -100,49 +98,55 @@ const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteN
 
   return (
     <div className="flex h-[calc(100vh-64px)] w-screen overflow-hidden">
-      <div className="flex-grow relative">
-        <Canvas
-          ref={canvasRef}
-          nodes={nodes}
-          setNodes={setNodes}
-          zoom={zoom}
-          position={position}
-          activeTool={activeTool}
-          handlePanStart={handlePanStart}
-          handlePanMove={handlePanMove}
-          handlePanEnd={handlePanEnd}
-          onNodeUpdate={handleNodeUpdate}
-          focusedNodeId={focusedNodeId}
-          onNodeFocus={setFocusedNodeId}
-          onNodeDelete={onDeleteNode}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDragEnd}
-        />
-        {showAIInput && <AIInput onAsk={handleAIAsk} />}
-        <Toolbar
-          activeTool={activeTool}
-          setActiveTool={setActiveTool}
-          handleAIClick={() => setShowAIInput(true)}
-          handleZoom={handleZoom}
-          zoom={zoom}
-          nodes={nodes}
-        >
-          <NodeCreator onDragStart={(nodeType) => {
-            setIsDragging(true);
-            setDraggedNodeType(nodeType);
-          }} />
-        </Toolbar>
-        <ReportList
-          reports={project.reports}
-          onAddReport={() => {
-            setSelectedArticle(null);
-            setIsArticleModalOpen(true);
-          }}
-          onEditReport={(article) => {
-            setSelectedArticle(article);
-            setIsArticleModalOpen(true);
-          }}
-        />
+      <div className="flex-grow relative flex flex-col">
+        {showAIInput && (
+          <div className="w-full px-4 py-2 bg-white shadow-md z-10">
+            <AIInput onAsk={handleAIAsk} />
+          </div>
+        )}
+        <div className="flex-grow relative">
+          <Canvas
+            ref={canvasRef}
+            nodes={nodes}
+            setNodes={setNodes}
+            zoom={zoom}
+            position={position}
+            activeTool={activeTool}
+            handlePanStart={handlePanStart}
+            handlePanMove={handlePanMove}
+            handlePanEnd={handlePanEnd}
+            onNodeUpdate={handleNodeUpdate}
+            focusedNodeId={focusedNodeId}
+            onNodeFocus={setFocusedNodeId}
+            onNodeDelete={onDeleteNode}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={handleDragEnd}
+          />
+          <Toolbar
+            activeTool={activeTool}
+            setActiveTool={setActiveTool}
+            handleAIClick={() => setShowAIInput(true)}
+            handleZoom={handleZoom}
+            zoom={zoom}
+            nodes={nodes}
+          >
+            <NodeCreator onDragStart={(nodeType) => {
+              setIsDragging(true);
+              setDraggedNodeType(nodeType);
+            }} />
+          </Toolbar>
+          <ReportList
+            reports={project.reports}
+            onAddReport={() => {
+              setSelectedArticle(null);
+              setIsArticleModalOpen(true);
+            }}
+            onEditReport={(article) => {
+              setSelectedArticle(article);
+              setIsArticleModalOpen(true);
+            }}
+          />
+        </div>
       </div>
       <AISidePanel
         isOpen={sidePanelOpen}
@@ -157,7 +161,6 @@ const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteN
         onClose={() => setIsArticleModalOpen(false)}
         article={selectedArticle}
         onUpdate={(updatedArticle) => {
-          // Handle article update if needed
           console.log("Article updated:", updatedArticle);
         }}
         onSave={(article) => {
