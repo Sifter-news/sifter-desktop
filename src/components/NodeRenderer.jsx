@@ -16,14 +16,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
     setIsEditing(false);
   };
 
-  const getNodeStyle = () => {
-    switch (node.type) {
-      case 'postit':
-        return 'bg-yellow-200 shadow-md';
-      default:
-        return 'bg-white shadow-md';
-    }
-  };
+  const nodeStyle = node.type === 'postit' ? 'bg-yellow-200' : 'bg-white';
 
   return (
     <Rnd
@@ -41,7 +34,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
       className={`cursor-move ${isFocused ? 'ring-2 ring-blue-500' : ''}`}
       onClick={handleClick}
     >
-      <div className={`w-full h-full rounded-md flex flex-col p-4 overflow-auto ${getNodeStyle()}`}>
+      <div className={`w-full h-full rounded-md shadow-md flex flex-col p-4 overflow-auto ${nodeStyle}`}>
         <NodeEditor
           node={node}
           onUpdate={onNodeUpdate}
