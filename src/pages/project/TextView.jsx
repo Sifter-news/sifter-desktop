@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import Navigator from './Navigator';
-import { findAvailablePosition } from '../utils/canvasUtils';
+import { findAvailablePosition } from "../utils/canvasUtils";
 
 const TextView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => {
   const [selectedNode, setSelectedNode] = useState(null);
@@ -57,12 +56,17 @@ const TextView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => 
   return (
     <div className="flex h-full">
       <div className="w-1/4 bg-gray-100 p-4 overflow-y-auto">
-        <Navigator 
-          items={nodes} 
-          setItems={onUpdateNode} 
-          onNodeClick={handleNodeClick}
-          focusedNode={selectedNode}
-        />
+        <ul>
+          {nodes.map(node => (
+            <li
+              key={node.id}
+              onClick={() => handleNodeClick(node)}
+              className={`cursor-pointer p-2 ${selectedNode?.id === node.id ? 'bg-blue-200' : ''}`}
+            >
+              {node.title}
+            </li>
+          ))}
+        </ul>
         <Button onClick={handleAddNode} className="mt-4 w-full">Add Node</Button>
       </div>
       <div className="flex-grow flex flex-col p-8 overflow-hidden">
@@ -82,7 +86,7 @@ const TextView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => 
           </div>
         ) : (
           <div className="text-center text-gray-500">
-            Select a node from the navigator to view its content.
+            Select a node from the list to view its content.
           </div>
         )}
       </div>

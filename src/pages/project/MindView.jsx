@@ -6,7 +6,6 @@ import Toolbar from '../../components/Toolbar';
 import AISidePanel from '../../components/AISidePanel';
 import ReportList from '../../components/ReportList';
 import ArticleModal from '../../components/ArticleModal';
-import AIInput from '../../components/AIInput';
 import { Node } from '../../types/nodeTypes';
 import { addExampleNodes } from '../../utils/exampleNodesUtil';
 
@@ -101,7 +100,17 @@ const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteN
       <div className="flex-grow relative flex flex-col">
         {showAIInput && (
           <div className="w-full px-4 py-2 bg-white shadow-md z-10">
-            <AIInput onAsk={handleAIAsk} />
+            <input
+              type="text"
+              placeholder="Ask AI..."
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleAIAsk(e.target.value);
+                  e.target.value = '';
+                }
+              }}
+              className="w-full p-2 border rounded"
+            />
           </div>
         )}
         <div className="flex-grow relative">
@@ -129,12 +138,7 @@ const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteN
             handleZoom={handleZoom}
             zoom={zoom}
             nodes={nodes}
-          >
-            <NodeCreator onDragStart={(nodeType) => {
-              setIsDragging(true);
-              setDraggedNodeType(nodeType);
-            }} />
-          </Toolbar>
+          />
           <ReportList
             reports={project.reports}
             onAddReport={() => {
