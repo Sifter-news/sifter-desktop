@@ -6,7 +6,6 @@ import Toolbar from '../../components/Toolbar';
 import AISidePanel from '../../components/AISidePanel';
 import ReportList from '../../components/ReportList';
 import ArticleModal from '../../components/ArticleModal';
-import { Node } from '../../types/nodeTypes';
 import { addExampleNodes } from '../../utils/exampleNodesUtil';
 
 const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode }) => {
@@ -28,7 +27,7 @@ const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteN
     handleZoom,
     handlePanStart,
     handlePanMove,
-    handlePanEnd,
+    handlePanEnd
   } = useZoomPan();
 
   useEffect(() => {
