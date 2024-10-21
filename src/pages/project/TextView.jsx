@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { findAvailablePosition } from "../utils/canvasUtils";
+import { findAvailablePosition } from "../../utils/canvasUtils";
 
 const TextView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => {
   const [selectedNode, setSelectedNode] = useState(null);
@@ -30,12 +30,10 @@ const TextView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => 
 
   const handleShare = () => {
     console.log('Share node');
-    // Implement share functionality here
   };
 
   const handleMove = () => {
     console.log('Move node');
-    // Implement move functionality here
   };
 
   const handleAddNode = () => {
