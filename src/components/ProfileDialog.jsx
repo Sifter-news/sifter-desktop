@@ -9,7 +9,10 @@ import { useNavigate } from 'react-router-dom';
 
 const ProfileDialog = ({ user, onUpdateUser, children }) => {
   const navigate = useNavigate();
-  const [avatar, setAvatar] = useState('https://files.slack.com/files-pri/T0H44FCFR-F07T1KBE4HW/_____node________description.png');
+  const proxyUrl = 'https://your-project-id.supabase.co/functions/v1/image-proxy?url=';
+  const [avatar, setAvatar] = useState(
+    `${proxyUrl}${encodeURIComponent('https://files.slack.com/files-pri/T0H44FCFR-F07T1KBE4HW/_____node________description.png')}`
+  );
 
   const handleSignOut = () => {
     navigate('/login');
