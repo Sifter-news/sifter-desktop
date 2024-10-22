@@ -28,7 +28,6 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser }) => {
           <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
             Dashboard
           </Link>
-          <span className="text-sm font-normal">{user.name}</span>
           <UserProfile user={user} onUpdateUser={onUpdateUser} />
         </div>
       </div>
