@@ -14,7 +14,7 @@ const LoginPage = () => {
     // Store default credentials in localStorage if not present
     if (!localStorage.getItem('defaultEmail')) {
       localStorage.setItem('defaultEmail', 'admin@sifter.news');
-      localStorage.setItem('defaultPassword', 'admin123');
+      localStorage.setItem('defaultPassword', 'SiftedWorld@2024');
     }
 
     const checkSession = async () => {
@@ -62,7 +62,7 @@ const LoginPage = () => {
     `,
     defaultValues: {
       email: localStorage.getItem('defaultEmail') || 'admin@sifter.news',
-      password: localStorage.getItem('defaultPassword') || 'admin123',
+      password: localStorage.getItem('defaultPassword') || 'SiftedWorld@2024',
     },
   };
 
