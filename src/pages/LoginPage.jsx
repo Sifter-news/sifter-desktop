@@ -1,30 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from '../integrations/supabase/supabase';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const LoginPage = () => {
-  useEffect(() => {
-    // Pre-fill login form if it exists in localStorage
-    const savedCredentials = localStorage.getItem('sifter-credentials');
-    if (savedCredentials) {
-      const { email, password } = JSON.parse(savedCredentials);
-      const emailInput = document.querySelector('input[type="email"]');
-      const passwordInput = document.querySelector('input[type="password"]');
-      if (emailInput && passwordInput) {
-        emailInput.value = email;
-        passwordInput.value = password;
-      }
-    } else {
-      // Save default admin credentials
-      localStorage.setItem('sifter-credentials', JSON.stringify({
-        email: 'admin@sifter.news',
-        password: 'password'
-      }));
-    }
-  }, []);
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#594BFF]">
       <div 
