@@ -137,6 +137,7 @@ const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteN
             handleZoom={handleZoom}
             zoom={zoom}
             nodes={nodes}
+            handleAddNode={onAddNode}
           />
           <ReportList
             reports={project.reports}
@@ -171,20 +172,15 @@ const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteN
             const updatedReports = project.reports.map(report =>
               report.id === article.id ? article : report
             );
-            // Note: updateProject is not defined in this component
-            // You might want to pass it as a prop or define it
-            // updateProject({ ...project, reports: updatedReports });
           } else {
             const newArticle = { ...article, id: Date.now() };
             const updatedReports = [...project.reports, newArticle];
-            // updateProject({ ...project, reports: updatedReports });
           }
           setIsArticleModalOpen(false);
           setSelectedArticle(null);
         }}
         onDelete={(articleId) => {
           const updatedReports = project.reports.filter(report => report.id !== articleId);
-          // updateProject({ ...project, reports: updatedReports });
         }}
       />
     </div>
