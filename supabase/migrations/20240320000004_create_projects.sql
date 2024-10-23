@@ -20,3 +20,14 @@ CREATE TABLE IF NOT EXISTS public.project_access (
 -- Add indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_project_owner ON public.project(owner_id);
 CREATE INDEX IF NOT EXISTS idx_project_created_at ON public.project(created_at);
+
+-- Insert some sample data
+INSERT INTO public.project (title, description, owner_id, visibility)
+SELECT 
+    'Sample Project',
+    'This is a sample project created automatically',
+    profiles.id,
+    'public'
+FROM public.profiles
+WHERE profiles.username = 'admin@sifter.news'
+LIMIT 1;
