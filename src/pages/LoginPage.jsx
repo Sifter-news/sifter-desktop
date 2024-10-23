@@ -26,16 +26,11 @@ const LoginPage = () => {
         }
       } catch (error) {
         console.error('Error checking session:', error);
-        toast({
-          title: "Error",
-          description: "Failed to check authentication status. Please try again.",
-          variant: "destructive",
-        });
       }
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         if (event === 'SIGNED_IN' && session) {
           navigate('/');
         }
@@ -44,12 +39,13 @@ const LoginPage = () => {
 
     checkSession();
     return () => subscription.unsubscribe();
-  }, [navigate, toast]);
+  }, [navigate]);
 
   const handleAuthError = (error) => {
+    console.error('Auth error:', error);
     toast({
       title: "Authentication Error",
-      description: "Invalid credentials. Please try again with email: admin@sifter.news and password: admin123",
+      description: "Please check your credentials and try again.",
       variant: "destructive",
     });
   };
