@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import UserProfile from './UserProfile';
+import ProjectTitleModal from './ProjectTitleModal';
 
 const Header = ({ user, projectName, onProjectClick, onUpdateUser }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
       <div className="mx-auto px-12 py-2 flex justify-between items-center">
@@ -17,7 +20,12 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser }) => {
           <div className="flex items-center space-x-2">
             <img src="/placeholder.svg" alt="Dashboard Icon" className="h-8 w-8" />
             {projectName ? (
-              <span className="text-sm font-normal text-[#4B25F3] cursor-pointer" onClick={onProjectClick}>{projectName}</span>
+              <button 
+                className="text-sm font-normal text-[#4B25F3] hover:underline cursor-pointer"
+                onClick={() => setIsModalOpen(true)}
+              >
+                {projectName}
+              </button>
             ) : (
               <span className="text-sm font-normal text-[#4B25F3]">Dashboard Name</span>
             )}
@@ -30,6 +38,12 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser }) => {
           <UserProfile user={user} onUpdateUser={onUpdateUser} />
         </div>
       </div>
+      <ProjectTitleModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)}
+        projectName={projectName}
+        onUpdateProject={onProjectClick}
+      />
     </header>
   );
 };
