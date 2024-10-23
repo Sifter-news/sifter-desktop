@@ -1,5 +1,5 @@
--- Table: projects
-CREATE TABLE IF NOT EXISTS public.projects (
+-- Table: project
+CREATE TABLE IF NOT EXISTS public.project (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title VARCHAR(255) NOT NULL,
     description TEXT,
@@ -11,12 +11,12 @@ CREATE TABLE IF NOT EXISTS public.projects (
 
 -- Table: project_access
 CREATE TABLE IF NOT EXISTS public.project_access (
-    project_id UUID REFERENCES public.projects(id),
+    project_id UUID REFERENCES public.project(id),
     user_id UUID REFERENCES public.profiles(id),
     role VARCHAR(20) DEFAULT 'viewer',
     PRIMARY KEY (project_id, user_id)
 );
 
 -- Add indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_projects_owner ON public.projects(owner_id);
-CREATE INDEX IF NOT EXISTS idx_projects_created_at ON public.projects(created_at);
+CREATE INDEX IF NOT EXISTS idx_project_owner ON public.project(owner_id);
+CREATE INDEX IF NOT EXISTS idx_project_created_at ON public.project(created_at);

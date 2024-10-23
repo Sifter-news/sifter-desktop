@@ -38,7 +38,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       const { data: projects, error } = await supabase
-        .from('projects')
+        .from('project')  // Changed from 'projects' to 'project'
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -66,7 +66,7 @@ const HomePage = () => {
 
   const handleUpdateInvestigation = async (updatedInvestigation) => {
     const { error } = await supabase
-      .from('projects')
+      .from('project')  // Changed from 'projects' to 'project'
       .update(updatedInvestigation)
       .eq('id', updatedInvestigation.id);
 
