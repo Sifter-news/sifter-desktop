@@ -6,42 +6,79 @@ import ReportModal from '../components/ReportModal';
 import ProjectEditModal from '../components/ProjectEditModal';
 import { Button } from "@/components/ui/button";
 import { PlusIcon, FileSearchIcon } from 'lucide-react';
-import { testProjects } from '../data/testProjects';
+import { supabase } from '../integrations/supabase/supabase';
+import { useToast } from "@/components/ui/use-toast";
 
 const HomePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [investigations, setInvestigations] = useState([]);
-  const [user, setUser] = useState({
-    name: 'User-Name',
-    avatar: '/default-image.png',
-    email: 'user@example.com',
-  });
-
-  useEffect(() => {
-    // Load existing projects from localStorage
-    const savedProjects = JSON.parse(localStorage.getItem('projects') || '[]');
-    
-    // If there's a new project from navigation state, add it at the beginning
-    if (location.state?.newProject) {
-      const updatedProjects = [location.state.newProject, ...savedProjects];
-      localStorage.setItem('projects', JSON.stringify(updatedProjects));
-      setInvestigations([location.state.newProject, ...testProjects, ...savedProjects]);
-    } else {
-      // Otherwise, just combine test projects with saved projects
-      setInvestigations([...testProjects, ...savedProjects]);
-    }
-  }, [location.state]);
-
+  const [user, setUser] = useState(null);
+  const { toast } = useToast();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
 
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/login');
+        return;
+      }
+      setUser({
+        name: session.user.user_metadata.full_name || 'John Ferreira',
+        avatar: '/placeholder.svg',
+        email: session.user.email,
+      });
+    };
+
+    checkSession();
+  }, [navigate]);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const { data: projects, error } = await supabase
+        .from('project')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to fetch projects",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setInvestigations(projects);
+    };
+
+    if (user) {
+      fetchProjects();
+    }
+  }, [user, toast]);
+
   const handleProjectClick = (project) => {
-    const username = 'user';
+    const username = 'john.ferreira';
     navigate(`/${username}/project/${encodeURIComponent(project.title)}`);
   };
 
-  const handleUpdateInvestigation = (updatedInvestigation) => {
+  const handleUpdateInvestigation = async (updatedInvestigation) => {
+    const { error } = await supabase
+      .from('project')
+      .update(updatedInvestigation)
+      .eq('id', updatedInvestigation.id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update project",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setInvestigations(prevInvestigations =>
       prevInvestigations.map(inv =>
         inv.id === updatedInvestigation.id ? updatedInvestigation : inv
@@ -50,14 +87,12 @@ const HomePage = () => {
   };
 
   const handleAddNewProject = () => {
-    const newProject = {
-      id: Date.now().toString(),
-      title: 'New Project',
-      description: '',
-      reports: []
-    };
-    navigate(`/project/${newProject.id}`, { state: { project: newProject } });
+    navigate('/new-project');
   };
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
