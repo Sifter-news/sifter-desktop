@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useEffect } from 'react';
+import React, { forwardRef, useCallback, useEffect, useState } from 'react';
 import NodeRenderer from './NodeRenderer';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
@@ -20,54 +20,9 @@ const Canvas = forwardRef(({
 }, ref) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = React.useState(false);
   const [nodeToDelete, setNodeToDelete] = React.useState(null);
-
-  const handleDragStart = useCallback((e, nodeId) => {
-    if (activeTool === 'select') {
-      setNodes(prevNodes => prevNodes.map(node => 
-        node.id === nodeId ? { ...node, isDragging: true } : node
-      ));
-    }
-  }, [activeTool, setNodes]);
-
-  const snapToGrid = useCallback((value) => {
-    return Math.round(value / 24) * 24;
-  }, []);
-
-  const handleDrag = useCallback((e) => {
-    if (activeTool === 'select') {
-      setNodes(prevNodes => prevNodes.map(node => 
-        node.isDragging ? { 
-          ...node, 
-          x: snapToGrid((e.clientX - ref.current.offsetLeft) / zoom - position.x), 
-          y: snapToGrid((e.clientY - ref.current.offsetTop) / zoom - position.y)
-        } : node
-      ));
-    }
-  }, [activeTool, zoom, position.x, position.y, setNodes, snapToGrid, ref]);
-
-  const handleDragEnd = useCallback(() => {
-    setNodes(prevNodes => prevNodes.map(node => ({ ...node, isDragging: false })));
-  }, [setNodes]);
-
-  const handleCanvasMouseDown = useCallback((e) => {
-    if (activeTool === 'pan') {
-      handlePanStart();
-    }
-  }, [activeTool, handlePanStart]);
-
-  const handleCanvasMouseMove = useCallback((e) => {
-    handleDrag(e);
-    if (activeTool === 'pan') {
-      handlePanMove(e);
-    }
-  }, [activeTool, handleDrag, handlePanMove]);
-
-  const handleCanvasMouseUp = useCallback(() => {
-    handleDragEnd();
-    if (activeTool === 'pan') {
-      handlePanEnd();
-    }
-  }, [activeTool, handleDragEnd, handlePanEnd]);
+  const [isSpacePressed, setIsSpacePressed] = useState(false);
+  const [isPanning, setIsPanning] = useState(false);
+  const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Delete' && focusedNodeId) {
@@ -79,14 +34,69 @@ const Canvas = forwardRef(({
         onNodeDelete(focusedNodeId);
       }
     }
-  }, [focusedNodeId, nodes, onNodeDelete]);
+    if (e.code === 'Space' && !isSpacePressed) {
+      e.preventDefault();
+      setIsSpacePressed(true);
+      document.body.style.cursor = 'grab';
+    }
+  }, [focusedNodeId, nodes, onNodeDelete, isSpacePressed]);
+
+  const handleKeyUp = useCallback((e) => {
+    if (e.code === 'Space') {
+      setIsSpacePressed(false);
+      document.body.style.cursor = 'default';
+      setIsPanning(false);
+    }
+  }, []);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      document.body.style.cursor = 'default';
     };
-  }, [handleKeyDown]);
+  }, [handleKeyDown, handleKeyUp]);
+
+  const handleDragStart = useCallback((e, nodeId) => {
+    if (activeTool === 'select' && !isSpacePressed) {
+      setNodes(prevNodes => prevNodes.map(node => 
+        node.id === nodeId ? { ...node, isDragging: true } : node
+      ));
+    }
+  }, [activeTool, setNodes, isSpacePressed]);
+
+  const handleMouseDown = useCallback((e) => {
+    if (isSpacePressed) {
+      setIsPanning(true);
+      document.body.style.cursor = 'grabbing';
+      setLastMousePosition({ x: e.clientX, y: e.clientY });
+    } else if (activeTool === 'pan') {
+      handlePanStart();
+    }
+  }, [isSpacePressed, activeTool, handlePanStart]);
+
+  const handleMouseMove = useCallback((e) => {
+    if (isPanning && isSpacePressed) {
+      const deltaX = e.clientX - lastMousePosition.x;
+      const deltaY = e.clientY - lastMousePosition.y;
+      handlePanMove({ movementX: deltaX, movementY: deltaY });
+      setLastMousePosition({ x: e.clientX, y: e.clientY });
+    } else if (activeTool === 'pan') {
+      handlePanMove(e);
+    }
+  }, [isPanning, isSpacePressed, lastMousePosition, activeTool, handlePanMove]);
+
+  const handleMouseUp = useCallback(() => {
+    if (isSpacePressed) {
+      document.body.style.cursor = 'grab';
+      setIsPanning(false);
+    }
+    if (activeTool === 'pan') {
+      handlePanEnd();
+    }
+  }, [isSpacePressed, activeTool, handlePanEnd]);
 
   const handleConfirmDelete = () => {
     if (nodeToDelete) {
@@ -100,9 +110,10 @@ const Canvas = forwardRef(({
     <>
       <div 
         className="w-screen h-full bg-[#594BFF] overflow-hidden"
-        onMouseDown={handleCanvasMouseDown}
-        onMouseMove={handleCanvasMouseMove}
-        onMouseUp={handleCanvasMouseUp}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
         onDragOver={onDragOver}
         onDrop={onDrop}
         ref={ref}
