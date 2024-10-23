@@ -22,12 +22,12 @@ const Canvas = forwardRef(({
   const [nodeToDelete, setNodeToDelete] = React.useState(null);
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
-  const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
+  const [startPanPosition, setStartPanPosition] = useState({ x: 0, y: 0 });
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Delete' && focusedNodeId) {
       const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
-      if (nodeToDelete.type === 'ai') {
+      if (nodeToDelete?.type === 'ai') {
         setNodeToDelete(nodeToDelete);
         setShowDeleteConfirmation(true);
       } else {
@@ -71,32 +71,25 @@ const Canvas = forwardRef(({
     if (isSpacePressed) {
       setIsPanning(true);
       document.body.style.cursor = 'grabbing';
-      setLastMousePosition({ x: e.clientX, y: e.clientY });
-    } else if (activeTool === 'pan') {
-      handlePanStart();
+      setStartPanPosition({ x: e.clientX, y: e.clientY });
     }
-  }, [isSpacePressed, activeTool, handlePanStart]);
+  }, [isSpacePressed]);
 
   const handleMouseMove = useCallback((e) => {
     if (isPanning && isSpacePressed) {
-      const deltaX = e.clientX - lastMousePosition.x;
-      const deltaY = e.clientY - lastMousePosition.y;
+      const deltaX = e.clientX - startPanPosition.x;
+      const deltaY = e.clientY - startPanPosition.y;
       handlePanMove({ movementX: deltaX, movementY: deltaY });
-      setLastMousePosition({ x: e.clientX, y: e.clientY });
-    } else if (activeTool === 'pan') {
-      handlePanMove(e);
+      setStartPanPosition({ x: e.clientX, y: e.clientY });
     }
-  }, [isPanning, isSpacePressed, lastMousePosition, activeTool, handlePanMove]);
+  }, [isPanning, isSpacePressed, startPanPosition, handlePanMove]);
 
   const handleMouseUp = useCallback(() => {
     if (isSpacePressed) {
       document.body.style.cursor = 'grab';
       setIsPanning(false);
     }
-    if (activeTool === 'pan') {
-      handlePanEnd();
-    }
-  }, [isSpacePressed, activeTool, handlePanEnd]);
+  }, [isSpacePressed]);
 
   const handleConfirmDelete = () => {
     if (nodeToDelete) {
