@@ -10,7 +10,6 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Check session and redirect if already logged in
   React.useEffect(() => {
     const checkSession = async () => {
       try {
@@ -29,7 +28,16 @@ const LoginPage = () => {
       }
     };
 
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          navigate('/');
+        }
+      }
+    );
+
     checkSession();
+    return () => subscription.unsubscribe();
   }, [navigate, toast]);
 
   const handleAuthError = (error) => {
