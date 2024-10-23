@@ -37,8 +37,15 @@ const ProjectView = () => {
       if (savedNodes) {
         setNodes(JSON.parse(savedNodes));
       }
+    } else if (location.state?.newProject) {
+      // Show toast for new project creation
+      toast({
+        title: "Project Created",
+        description: `Project "${location.state.newProject.title}" has been created`,
+        duration: 3000,
+      });
     }
-  }, [id, location.state]);
+  }, [id, location.state, toast]);
 
   useEffect(() => {
     localStorage.setItem(`project_${id}_nodes`, JSON.stringify(nodes));
@@ -60,7 +67,7 @@ const ProjectView = () => {
     setNodes(prevNodes => [...prevNodes, nodeWithPosition]);
     toast({
       title: "Node Created",
-      description: `New ${newNode.type} node "${newNode.title}" has been created`,
+      description: `New ${newNode.type || 'blank'} node has been created`,
       duration: 3000,
     });
   };
@@ -71,24 +78,28 @@ const ProjectView = () => {
         node.id === nodeId ? { ...node, ...updates } : node
       );
       const updatedNode = updatedNodes.find(node => node.id === nodeId);
-      toast({
-        title: "Node Updated",
-        description: `Node "${updatedNode.title}" has been updated`,
-        duration: 3000,
-      });
+      if (updatedNode) {
+        toast({
+          title: "Node Updated",
+          description: `Node "${updatedNode.title || 'Untitled'}" has been updated`,
+          duration: 3000,
+        });
+      }
       return updatedNodes;
     });
   };
 
   const handleDeleteNode = (nodeId) => {
     const nodeToDelete = nodes.find(node => node.id === nodeId);
-    setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
-    toast({
-      title: "Node Deleted",
-      description: `Node "${nodeToDelete.title}" has been deleted`,
-      duration: 3000,
-      variant: "destructive",
-    });
+    if (nodeToDelete) {
+      setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
+      toast({
+        title: "Node Deleted",
+        description: `Node "${nodeToDelete.title || 'Untitled'}" has been deleted`,
+        duration: 3000,
+        variant: "destructive",
+      });
+    }
   };
 
   const handleArticleClick = (article) => {
@@ -123,7 +134,7 @@ const ProjectView = () => {
         onUpdate={(updatedArticle) => {
           toast({
             title: "Article Updated",
-            description: `Article "${updatedArticle.title}" has been updated`,
+            description: `Article "${updatedArticle.title || 'Untitled'}" has been updated`,
             duration: 3000,
           });
         }}
