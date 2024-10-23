@@ -1,10 +1,41 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from '../integrations/supabase/supabase';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 
 const LoginPage = () => {
+  useEffect(() => {
+    // Pre-fill login form if it exists in localStorage
+    const savedCredentials = localStorage.getItem('sifter-credentials');
+    if (savedCredentials) {
+      const { email, password } = JSON.parse(savedCredentials);
+      const emailInput = document.querySelector('input[type="email"]');
+      const passwordInput = document.querySelector('input[type="password"]');
+      if (emailInput && passwordInput) {
+        emailInput.value = email;
+        passwordInput.value = password;
+      }
+    } else {
+      // Save default admin credentials
+      localStorage.setItem('sifter-credentials', JSON.stringify({
+        email: 'sifter-admin',
+        password: 'password'
+      }));
+    }
+  }, []);
+
+  const handleQuickLogin = async () => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: 'sifter-admin',
+      password: 'password'
+    });
+    if (!error) {
+      window.location.href = '/';
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#594BFF]">
       <div 
@@ -25,6 +56,12 @@ const LoginPage = () => {
           </Avatar>
         </div>
         <h2 className="text-2xl font-bold text-center mb-6">Login to Sifter</h2>
+        <Button 
+          className="w-full mb-4" 
+          onClick={handleQuickLogin}
+        >
+          Quick Login (Admin)
+        </Button>
         <Auth
           supabaseClient={supabase}
           appearance={{ theme: ThemeSupa }}
