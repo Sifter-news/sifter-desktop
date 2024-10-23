@@ -3,7 +3,6 @@ import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from '../integrations/supabase/supabase';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 
 const LoginPage = () => {
   useEffect(() => {
@@ -20,21 +19,11 @@ const LoginPage = () => {
     } else {
       // Save default admin credentials
       localStorage.setItem('sifter-credentials', JSON.stringify({
-        email: 'sifter-admin',
+        email: 'admin@sifter.news',
         password: 'password'
       }));
     }
   }, []);
-
-  const handleQuickLogin = async () => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: 'sifter-admin',
-      password: 'password'
-    });
-    if (!error) {
-      window.location.href = '/';
-    }
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#594BFF]">
@@ -56,12 +45,6 @@ const LoginPage = () => {
           </Avatar>
         </div>
         <h2 className="text-2xl font-bold text-center mb-6">Login to Sifter</h2>
-        <Button 
-          className="w-full mb-4" 
-          onClick={handleQuickLogin}
-        >
-          Quick Login (Admin)
-        </Button>
         <Auth
           supabaseClient={supabase}
           appearance={{ theme: ThemeSupa }}
