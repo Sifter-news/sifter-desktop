@@ -3,8 +3,27 @@ import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from '../integrations/supabase/supabase';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+
+  // Check session and redirect if already logged in
+  React.useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          navigate('/');
+        }
+      } catch (error) {
+        console.error('Error checking session:', error);
+      }
+    };
+
+    checkSession();
+  }, [navigate]);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#594BFF]">
       <div 
@@ -30,6 +49,8 @@ const LoginPage = () => {
           appearance={{ theme: ThemeSupa }}
           theme="light"
           providers={[]}
+          onlyThirdPartyProviders={false}
+          redirectTo={window.location.origin}
         />
       </div>
     </div>
