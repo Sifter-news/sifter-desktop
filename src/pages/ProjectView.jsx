@@ -5,6 +5,7 @@ import ProjectTabs from '../components/ProjectTabs';
 import ProjectModals from '../components/ProjectModals';
 import ReportList from '../components/ReportList';
 import ArticleModal from '../components/ArticleModal';
+import Toolbar from '../components/Toolbar';
 import { findAvailablePosition } from '../utils/canvasUtils';
 import { getNodeSchema } from './project/node/nodeSchema';
 import { useToast } from "@/components/ui/use-toast";
@@ -13,6 +14,7 @@ const ProjectView = () => {
   const { id } = useParams();
   const location = useLocation();
   const { toast } = useToast();
+  const [zoom, setZoom] = useState(1);
   
   const user = {
     name: 'User-Name',
@@ -30,6 +32,7 @@ const ProjectView = () => {
   const [nodes, setNodes] = useState([]);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
+  const [activeTool, setActiveTool] = useState('select');
 
   useEffect(() => {
     if (location.state?.project) {
@@ -38,7 +41,6 @@ const ProjectView = () => {
         setNodes(JSON.parse(savedNodes));
       }
     } else if (location.state?.newProject) {
-      // Show toast for new project creation
       toast({
         title: "Project Created",
         description: `Project "${location.state.newProject.title}" has been created`,
@@ -107,17 +109,32 @@ const ProjectView = () => {
     setIsArticleModalOpen(true);
   };
 
+  const handleZoom = (delta) => {
+    setZoom(prevZoom => Math.max(0.1, Math.min(prevZoom + delta, 5)));
+  };
+
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-[#594BFF] flex flex-col">
       <Header user={user} projectName={project.title} onProjectClick={() => {}} />
-      <ProjectTabs
-        project={project}
-        nodes={nodes}
-        setNodes={setNodes}
-        onAddNode={handleAddNode}
-        onUpdateNode={handleUpdateNode}
-        onDeleteNode={handleDeleteNode}
-      />
+      <div className="flex-grow relative">
+        <ProjectTabs
+          project={project}
+          nodes={nodes}
+          setNodes={setNodes}
+          onAddNode={handleAddNode}
+          onUpdateNode={handleUpdateNode}
+          onDeleteNode={handleDeleteNode}
+        />
+        <Toolbar
+          activeTool={activeTool}
+          setActiveTool={setActiveTool}
+          handleAIClick={() => {}}
+          handleAddNode={handleAddNode}
+          handleZoom={handleZoom}
+          zoom={zoom}
+          nodes={nodes}
+        />
+      </div>
       <ProjectModals
         project={project}
         onProjectUpdate={handleProjectUpdate}
