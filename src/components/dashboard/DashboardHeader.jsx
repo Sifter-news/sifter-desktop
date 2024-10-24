@@ -16,7 +16,7 @@ const DashboardHeader = () => {
       </div>
       <Button 
         className="rounded-full w-14 h-14 p-0 flex items-center justify-center"
-        onClick={() => navigate('/new-project')}
+        onClick={() => navigate('/project/new')}
       >
         <PlusIcon className="h-6 w-6" />
       </Button>
