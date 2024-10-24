@@ -1,64 +1,68 @@
-import React, { useState } from 'react';
-import ProjectHeader from '@/components/views/project/ProjectHeader';
-import ProjectList from '@/components/views/project/ProjectList';
-import ProjectEditModal from '@/components/ProjectEditModal';
+import React from 'react';
+import Header from '../components/Header';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '../integrations/supabase/supabase';
+import InvestigationCard from '../components/InvestigationCard';
 import { useToast } from "@/components/ui/use-toast";
 
 const ProjectsPage = () => {
-  const [projects, setProjects] = useState([]);
-  const [editingProject, setEditingProject] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
-
-  const handleCreateProject = () => {
-    setEditingProject(null);
-    setIsModalOpen(true);
+  const user = {
+    name: 'User Name',
+    avatar: '/default-image.png',
+    email: 'user@example.com',
   };
 
-  const handleEditProject = (project) => {
-    setEditingProject(project);
-    setIsModalOpen(true);
-  };
+  const { data: investigations = [], isLoading } = useQuery({
+    queryKey: ['all-investigations'],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase
+          .from('investigation')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-  const handleDeleteProject = (projectId) => {
-    setProjects(projects.filter(p => p.id !== projectId));
-    toast({
-      title: "Project deleted",
-      description: "The project has been successfully deleted.",
-    });
-  };
+        if (error) {
+          toast({
+            title: "Error",
+            description: "Failed to fetch investigations",
+            variant: "destructive",
+          });
+          return [];
+        }
 
-  const handleSaveProject = (project) => {
-    if (editingProject) {
-      setProjects(projects.map(p => p.id === project.id ? project : p));
-      toast({
-        title: "Project updated",
-        description: "The project has been successfully updated.",
-      });
-    } else {
-      setProjects([...projects, { ...project, id: Date.now() }]);
-      toast({
-        title: "Project created",
-        description: "A new project has been successfully created.",
-      });
-    }
-    setIsModalOpen(false);
-  };
+        return data;
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred",
+          variant: "destructive",
+        });
+        return [];
+      }
+    },
+  });
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <ProjectHeader onCreateProject={handleCreateProject} />
-      <ProjectList
-        projects={projects}
-        onEditProject={handleEditProject}
-        onDeleteProject={handleDeleteProject}
-      />
-      <ProjectEditModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleSaveProject}
-        project={editingProject}
-      />
+    <div className="min-h-screen bg-white">
+      <Header user={user} />
+      <main className="container mx-auto px-4 py-8">
+        <div className="bg-gray-100 rounded-[64px] p-8">
+          <h1 className="text-3xl font-bold mb-8">All Projects</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {isLoading ? (
+              <div className="col-span-3 text-center py-8">Loading...</div>
+            ) : (
+              investigations.map((investigation) => (
+                <InvestigationCard
+                  key={investigation.id}
+                  investigation={investigation}
+                />
+              ))
+            )}
+          </div>
+        </div>
+      </main>
     </div>
   );
 };

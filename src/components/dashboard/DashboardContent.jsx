@@ -1,8 +1,11 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import { supabase } from '../../integrations/supabase/supabase';
 import InvestigationCard from '../InvestigationCard';
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 const staticInvestigations = [
   {
@@ -90,13 +93,24 @@ const DashboardContent = ({ user }) => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-      {investigations.map((investigation) => (
-        <InvestigationCard
-          key={investigation.id}
-          investigation={investigation}
-        />
-      ))}
+    <div className="flex flex-col space-y-6">
+      <div className="flex justify-between items-center px-6">
+        <h2 className="text-2xl font-bold">Recent Investigations</h2>
+        <Link to="/projects">
+          <Button variant="ghost" className="flex items-center gap-2">
+            View All Projects
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </Link>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+        {investigations.map((investigation) => (
+          <InvestigationCard
+            key={investigation.id}
+            investigation={investigation}
+          />
+        ))}
+      </div>
     </div>
   );
 };
