@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
-import ProjectList from './components/views/project/ProjectList';
+import ProjectList from '../components/views/project/ProjectList';
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from 'lucide-react';
 import { supabase } from '../integrations/supabase/supabase';
