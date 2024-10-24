@@ -54,23 +54,37 @@ const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteN
 
   return (
     <div className="relative w-full h-full overflow-hidden">
-      <Canvas
+      <div 
         ref={canvasRef}
-        nodes={nodes}
-        setNodes={setNodes}
-        zoom={zoom}
-        position={position}
-        activeTool={activeTool}
-        handlePanStart={handlePanStart}
-        handlePanMove={handlePanMove}
-        handlePanEnd={handlePanEnd}
-        onNodeUpdate={onUpdateNode}
-        focusedNodeId={focusedNodeId}
-        onNodeFocus={setFocusedNodeId}
-        onNodeDelete={onDeleteNode}
+        className="absolute inset-0 bg-[#594BFF]"
+        style={{
+          backgroundImage: `
+            radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px),
+            linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '24px 24px, 24px 24px, 24px 24px',
+          backgroundPosition: '0 0, 12px 12px, 12px 12px',
+          transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
+        }}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
-      />
+      >
+        <Canvas
+          nodes={nodes}
+          setNodes={setNodes}
+          zoom={zoom}
+          position={position}
+          activeTool={activeTool}
+          handlePanStart={handlePanStart}
+          handlePanMove={handlePanMove}
+          handlePanEnd={handlePanEnd}
+          onNodeUpdate={onUpdateNode}
+          focusedNodeId={focusedNodeId}
+          onNodeFocus={setFocusedNodeId}
+          onNodeDelete={onDeleteNode}
+        />
+      </div>
     </div>
   );
 };
