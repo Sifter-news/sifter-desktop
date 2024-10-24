@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import InvestigationList from '../components/views/investigations/InvestigationList';
 import ReportModal from '../components/ReportModal';
@@ -11,7 +11,6 @@ import { useToast } from "@/components/ui/use-toast";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [investigations, setInvestigations] = useState([]);
   const [user, setUser] = useState(null);
   const { toast } = useToast();
@@ -38,7 +37,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       const { data: projects, error } = await supabase
-        .from('user_project')  // Changed from 'project' to 'user_project'
+        .from('project')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -66,7 +65,7 @@ const HomePage = () => {
 
   const handleUpdateInvestigation = async (updatedInvestigation) => {
     const { error } = await supabase
-      .from('user_project')  // Changed from 'project' to 'user_project'
+      .from('project')
       .update(updatedInvestigation)
       .eq('id', updatedInvestigation.id);
 
