@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/button";
 import { PlusIcon, FileSearchIcon } from 'lucide-react';
 import { supabase } from '../integrations/supabase/supabase';
 import { useToast } from "@/components/ui/use-toast";
+import { useQuery } from '@tanstack/react-query';
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [investigations, setInvestigations] = useState([]);
   const [user, setUser] = useState(null);
   const { toast } = useToast();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -25,6 +25,7 @@ const HomePage = () => {
         return;
       }
       setUser({
+        id: session.user.id,
         name: session.user.email === 'admin@sifter.news' ? 'Sifter Admin' : session.user.email,
         avatar: '/placeholder.svg',
         email: session.user.email,
@@ -34,63 +35,56 @@ const HomePage = () => {
     checkSession();
   }, [navigate]);
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      const { data: projects, error } = await supabase
-        .from('project')
+  const { data: investigations = [], isLoading, error } = useQuery({
+    queryKey: ['investigations', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      
+      const { data: userInvestigations, error } = await supabase
+        .from('investigation')
         .select(`
           *,
-          nodes:node(*)
+          nodes (*)
         `)
+        .eq('owner_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) {
         toast({
           title: "Error",
-          description: "Failed to fetch projects",
+          description: "Failed to fetch investigations",
           variant: "destructive",
         });
-        return;
+        return [];
       }
 
-      // Transform the projects data to match the investigations format
-      const transformedProjects = projects.map(project => ({
-        ...project,
-        reports: project.nodes || [], // Use nodes as reports for now
+      return userInvestigations.map(investigation => ({
+        ...investigation,
+        reports: investigation.nodes || [],
       }));
-
-      setInvestigations(transformedProjects);
-    };
-
-    if (user) {
-      fetchProjects();
-    }
-  }, [user, toast]);
-
-  const handleProjectClick = (project) => {
-    navigate(`/${user.name}/project/${encodeURIComponent(project.title)}`);
-  };
+    },
+    enabled: !!user?.id,
+  });
 
   const handleUpdateInvestigation = async (updatedInvestigation) => {
     const { error } = await supabase
-      .from('project')
+      .from('investigation')
       .update(updatedInvestigation)
       .eq('id', updatedInvestigation.id);
 
     if (error) {
       toast({
         title: "Error",
-        description: "Failed to update project",
+        description: "Failed to update investigation",
         variant: "destructive",
       });
       return;
     }
 
-    setInvestigations(prevInvestigations =>
-      prevInvestigations.map(inv =>
-        inv.id === updatedInvestigation.id ? updatedInvestigation : inv
-      )
-    );
+    toast({
+      title: "Success",
+      description: "Investigation updated successfully",
+    });
   };
 
   const handleAddNewProject = () => {
@@ -99,6 +93,14 @@ const HomePage = () => {
 
   if (!user) {
     return null;
+  }
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="flex items-center justify-center min-h-screen">Error loading investigations</div>;
   }
 
   return (
