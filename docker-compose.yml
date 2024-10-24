@@ -1,4 +1,3 @@
-version: '3'
 services:
   db:
     image: supabase/postgres:15.1.0.117
@@ -11,7 +10,7 @@ services:
       - ./supabase/migrations:/docker-entrypoint-initdb.d
 
   studio:
-    image: supabase/studio:latest
+    image: supabase/studio:20240320-3c4f3ed
     ports:
       - "54323:3000"
     environment:
@@ -22,17 +21,19 @@ services:
       - db
 
   kong:
-    image: kong:2.8.1
+    image: kong:2.8.1-alpine
     ports:
       - "54321:8000"
     environment:
       KONG_DATABASE: "off"
       KONG_DECLARATIVE_CONFIG: /kong.yml
+      KONG_DNS_ORDER: LAST,A,CNAME
+      KONG_PLUGINS: request-transformer,cors,key-auth,acl
     depends_on:
       - db
 
   meta:
-    image: supabase/postgres-meta:latest
+    image: supabase/postgres-meta:v0.68.0
     ports:
       - "8080:8080"
     environment:
