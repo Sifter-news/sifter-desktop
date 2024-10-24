@@ -1,4 +1,8 @@
-DO $$ 
+DO $$
+DECLARE
+    financial_user_id UUID;
+    criminal_user_id UUID;
+    private_user_id UUID;
 BEGIN
     -- Insert subscription plans
     IF NOT EXISTS (SELECT 1 FROM public.subscription_plan LIMIT 1) THEN
@@ -6,6 +10,15 @@ BEGIN
         ('11111111-1111-1111-1111-111111111111', 'Free', 0, 'Basic features for individual use'),
         ('22222222-2222-2222-2222-222222222222', 'Pro', 9.99, 'Advanced features for professionals'),
         ('33333333-3333-3333-3333-333333333333', 'Team', 29.99, 'Collaborative features for teams');
+    END IF;
+
+    -- Create auth users first
+    IF NOT EXISTS (SELECT 1 FROM auth.users WHERE email = 'financial@example.com') THEN
+        INSERT INTO auth.users (id, email, encrypted_password, email_confirmed_at, created_at, updated_at)
+        VALUES 
+        ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'financial@example.com', '$2a$10$abcdefghijklmnopqrstuvwxyz', NOW(), NOW(), NOW()),
+        ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'criminal@example.com', '$2a$10$abcdefghijklmnopqrstuvwxyz', NOW(), NOW(), NOW()),
+        ('cccccccc-cccc-cccc-cccc-cccccccccccc', 'private@example.com', '$2a$10$abcdefghijklmnopqrstuvwxyz', NOW(), NOW(), NOW());
     END IF;
 
     -- Insert sample profiles
