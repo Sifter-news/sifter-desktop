@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
-import ProjectList from '../components/views/project/ProjectList';
+import InvestigationList from '../components/views/investigations/InvestigationList';
+import ReportModal from '../components/ReportModal';
+import ProjectEditModal from '../components/ProjectEditModal';
 import { Button } from "@/components/ui/button";
-import { PlusIcon } from 'lucide-react';
+import { PlusIcon, FileSearchIcon } from 'lucide-react';
 import { supabase } from '../integrations/supabase/supabase';
 import { useToast } from "@/components/ui/use-toast";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [projects, setProjects] = useState([]);
+  const [investigations, setInvestigations] = useState([]);
   const [user, setUser] = useState(null);
   const { toast } = useToast();
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -34,7 +38,10 @@ const HomePage = () => {
     const fetchProjects = async () => {
       const { data: projects, error } = await supabase
         .from('project')
-        .select('*')
+        .select(`
+          *,
+          nodes:node(*)
+        `)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -46,7 +53,13 @@ const HomePage = () => {
         return;
       }
 
-      setProjects(projects);
+      // Transform the projects data to match the investigations format
+      const transformedProjects = projects.map(project => ({
+        ...project,
+        reports: project.nodes || [], // Use nodes as reports for now
+      }));
+
+      setInvestigations(transformedProjects);
     };
 
     if (user) {
@@ -54,30 +67,30 @@ const HomePage = () => {
     }
   }, [user, toast]);
 
-  const handleEditProject = (project) => {
-    navigate(`/project/${project.id}`);
+  const handleProjectClick = (project) => {
+    navigate(`/${user.name}/project/${encodeURIComponent(project.title)}`);
   };
 
-  const handleDeleteProject = async (projectId) => {
+  const handleUpdateInvestigation = async (updatedInvestigation) => {
     const { error } = await supabase
       .from('project')
-      .delete()
-      .eq('id', projectId);
+      .update(updatedInvestigation)
+      .eq('id', updatedInvestigation.id);
 
     if (error) {
       toast({
         title: "Error",
-        description: "Failed to delete project",
+        description: "Failed to update project",
         variant: "destructive",
       });
       return;
     }
 
-    setProjects(prev => prev.filter(p => p.id !== projectId));
-    toast({
-      title: "Success",
-      description: "Project deleted successfully",
-    });
+    setInvestigations(prevInvestigations =>
+      prevInvestigations.map(inv =>
+        inv.id === updatedInvestigation.id ? updatedInvestigation : inv
+      )
+    );
   };
 
   const handleAddNewProject = () => {
@@ -94,23 +107,50 @@ const HomePage = () => {
       <div className="flex-grow container mx-auto px-4 py-8 flex flex-col">
         <div className="bg-gray-100 rounded-[64px] p-8 overflow-hidden shadow-inner flex-grow flex flex-col">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">My Projects</h2>
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                <FileSearchIcon className="h-4 w-4 text-gray-600" />
+              </div>
+              <h2 className="text-2xl font-bold">Investigations</h2>
+            </div>
             <Button 
-              className="rounded-full"
+              className="rounded-full w-14 h-14 p-0 flex items-center justify-center"
               onClick={handleAddNewProject}
             >
-              <PlusIcon className="h-4 w-4 mr-2" />
-              New Project
+              <PlusIcon className="h-6 w-6" />
             </Button>
           </div>
           
-          <ProjectList 
-            projects={projects}
-            onEditProject={handleEditProject}
-            onDeleteProject={handleDeleteProject}
+          <InvestigationList 
+            investigations={investigations}
+            onUpdateInvestigation={handleUpdateInvestigation}
           />
         </div>
       </div>
+
+      <ReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        onSave={(newReport) => {
+          if (investigations.length > 0) {
+            const updatedInvestigation = {
+              ...investigations[0],
+              reports: [...investigations[0].reports, newReport]
+            };
+            handleUpdateInvestigation(updatedInvestigation);
+          }
+          setIsReportModalOpen(false);
+        }}
+      />
+      
+      {editingProject && (
+        <ProjectEditModal
+          isOpen={!!editingProject}
+          onClose={() => setEditingProject(null)}
+          project={editingProject}
+          onUpdate={handleUpdateInvestigation}
+        />
+      )}
     </div>
   );
 };
