@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PlusIcon } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from '../integrations/supabase/supabase';
 
 const NewProjectPage = () => {
   const navigate = useNavigate();
@@ -17,29 +18,44 @@ const NewProjectPage = () => {
     email: 'user@example.com',
   };
 
-  const handleCreateProject = () => {
+  const handleCreateProject = async () => {
     if (projectTitle.trim()) {
-      const newProject = {
-        id: Date.now().toString(),
-        title: projectTitle.trim(),
-        description: '',
-        reports: []
-      };
+      try {
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        
+        if (!currentUser) {
+          throw new Error('User not authenticated');
+        }
 
-      // Get existing projects from localStorage
-      const existingProjects = JSON.parse(localStorage.getItem('projects') || '[]');
-      
-      // Add new project to the list
-      const updatedProjects = [...existingProjects, newProject];
-      localStorage.setItem('projects', JSON.stringify(updatedProjects));
+        const { data: newProject, error } = await supabase
+          .from('investigation')
+          .insert([
+            {
+              title: projectTitle.trim(),
+              description: '',
+              owner_id: currentUser.id
+            }
+          ])
+          .select()
+          .single();
 
-      toast({
-        title: "Project created",
-        description: "Your new project has been created successfully.",
-      });
+        if (error) throw error;
 
-      // Navigate to the new project
-      navigate('/', { state: { newProject } });
+        toast({
+          title: "Project created",
+          description: "Your new project has been created successfully.",
+        });
+
+        // Navigate to the new project
+        navigate('/', { state: { newProject } });
+      } catch (error) {
+        console.error('Error creating project:', error);
+        toast({
+          title: "Error",
+          description: "Failed to create project. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -104,7 +120,6 @@ const NewProjectPage = () => {
       <footer className="bg-white shadow-lg">
         <div className="container mx-auto px-4 py-2">
           <div className="flex justify-center space-x-4">
-            {/* Add toolbar buttons here */}
             <Button variant="ghost">Tool 1</Button>
             <Button variant="ghost">Tool 2</Button>
             <Button variant="ghost">Tool 3</Button>

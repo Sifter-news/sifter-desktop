@@ -16,6 +16,7 @@ const DashboardContent = ({ user }) => {
         const { data: userInvestigations, error: investigationsError } = await supabase
           .from('investigation')
           .select('id, title, description, created_at')
+          .eq('owner_id', user.id)
           .order('created_at', { ascending: false });
 
         if (investigationsError) {
