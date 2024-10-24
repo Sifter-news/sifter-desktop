@@ -8,13 +8,13 @@ extra_search_path = ["public", "extensions"]
 max_rows = 1000
 
 [db]
-port = 54325  # Changed from 54323 to avoid conflicts
-shadow_port = 54326  # Changed to avoid conflicts
+port = 54325
+shadow_port = 54326
 major_version = 15
 
 [studio]
 enabled = true
-port = 54324
+port = 54329  # Changed from 54324 to avoid conflicts
 api_url = "http://127.0.0.1"
 
 [auth]
