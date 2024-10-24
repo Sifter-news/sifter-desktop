@@ -44,7 +44,7 @@ const HomePage = () => {
         .from('investigation')
         .select(`
           *,
-          nodes (*)
+          node (*)
         `)
         .eq('owner_id', user.id)
         .order('created_at', { ascending: false });
@@ -60,7 +60,7 @@ const HomePage = () => {
 
       return userInvestigations.map(investigation => ({
         ...investigation,
-        reports: investigation.nodes || [],
+        reports: investigation.node || [],
       }));
     },
     enabled: !!user?.id,
