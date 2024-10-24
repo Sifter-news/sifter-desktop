@@ -15,13 +15,27 @@ SELECT
   'user' || i || '@example.com'
 FROM generate_series(1, 10) i;
 
--- Create 6 investigations per user
+-- Create 6 investigations per user with due diligence focus
 WITH user_ids AS (SELECT id FROM public.profiles)
 INSERT INTO public.investigations (id, title, description, owner_id, visibility, view_type)
 SELECT 
   uuid_generate_v4(),
-  'Investigation ' || u.id || '_' || i,
-  'Description for investigation ' || i || ' by user ' || u.id,
+  CASE (i % 6)
+    WHEN 0 THEN 'Financial Due Diligence - ' || u.id
+    WHEN 1 THEN 'Legal Compliance Review - ' || u.id
+    WHEN 2 THEN 'Market Competition Analysis - ' || u.id
+    WHEN 3 THEN 'Technical Infrastructure Assessment - ' || u.id
+    WHEN 4 THEN 'Environmental Impact Study - ' || u.id
+    WHEN 5 THEN 'Human Resources Due Diligence - ' || u.id
+  END,
+  CASE (i % 6)
+    WHEN 0 THEN 'Comprehensive financial analysis including cash flow, revenue models, and financial projections'
+    WHEN 1 THEN 'Review of legal structure, contracts, and regulatory compliance status'
+    WHEN 2 THEN 'Analysis of market position, competitive landscape, and growth potential'
+    WHEN 3 THEN 'Assessment of technical infrastructure, scalability, and security measures'
+    WHEN 4 THEN 'Evaluation of environmental impact and sustainability practices'
+    WHEN 5 THEN 'Review of HR policies, team composition, and organizational culture'
+  END,
   u.id,
   CASE (i % 3) 
     WHEN 0 THEN 'private'
@@ -37,14 +51,69 @@ SELECT
 FROM user_ids u
 CROSS JOIN generate_series(1, 6) i;
 
--- Create 6 reports per investigation
-WITH investigation_ids AS (SELECT id FROM public.investigations)
+-- Create 6 reports per investigation with specific due diligence content
+WITH investigation_ids AS (SELECT id, title FROM public.investigations)
 INSERT INTO public.reports (id, investigation_id, title, content)
 SELECT 
   uuid_generate_v4(),
   inv.id,
-  'Report ' || r || ' for Investigation ' || inv.id,
-  'Detailed content for report ' || r || ' of investigation ' || inv.id
+  CASE 
+    WHEN inv.title LIKE 'Financial%' THEN
+      CASE r % 6
+        WHEN 0 THEN 'Revenue Analysis'
+        WHEN 1 THEN 'Cash Flow Assessment'
+        WHEN 2 THEN 'Balance Sheet Review'
+        WHEN 3 THEN 'Financial Projections'
+        WHEN 4 THEN 'Investment History'
+        WHEN 5 THEN 'Risk Assessment'
+      END
+    WHEN inv.title LIKE 'Legal%' THEN
+      CASE r % 6
+        WHEN 0 THEN 'Corporate Structure'
+        WHEN 1 THEN 'Regulatory Compliance'
+        WHEN 2 THEN 'Contract Review'
+        WHEN 3 THEN 'Intellectual Property'
+        WHEN 4 THEN 'Pending Litigation'
+        WHEN 5 THEN 'License Status'
+      END
+    WHEN inv.title LIKE 'Market%' THEN
+      CASE r % 6
+        WHEN 0 THEN 'Market Size Analysis'
+        WHEN 1 THEN 'Competitor Mapping'
+        WHEN 2 THEN 'Growth Opportunities'
+        WHEN 3 THEN 'Customer Analysis'
+        WHEN 4 THEN 'Distribution Channels'
+        WHEN 5 THEN 'Market Trends'
+      END
+    WHEN inv.title LIKE 'Technical%' THEN
+      CASE r % 6
+        WHEN 0 THEN 'Architecture Review'
+        WHEN 1 THEN 'Security Assessment'
+        WHEN 2 THEN 'Scalability Analysis'
+        WHEN 3 THEN 'Tech Stack Evaluation'
+        WHEN 4 THEN 'Infrastructure Costs'
+        WHEN 5 THEN 'Technical Debt'
+      END
+    WHEN inv.title LIKE 'Environmental%' THEN
+      CASE r % 6
+        WHEN 0 THEN 'Carbon Footprint'
+        WHEN 1 THEN 'Waste Management'
+        WHEN 2 THEN 'Energy Efficiency'
+        WHEN 3 THEN 'Environmental Compliance'
+        WHEN 4 THEN 'Sustainability Initiatives'
+        WHEN 5 THEN 'Environmental Risks'
+      END
+    ELSE
+      CASE r % 6
+        WHEN 0 THEN 'Team Structure'
+        WHEN 1 THEN 'Compensation Analysis'
+        WHEN 2 THEN 'Culture Assessment'
+        WHEN 3 THEN 'Policy Review'
+        WHEN 4 THEN 'Training Programs'
+        WHEN 5 THEN 'Retention Analysis'
+      END
+  END,
+  'Detailed analysis and findings for ' || inv.title || ' - Report ' || r
 FROM investigation_ids inv
 CROSS JOIN generate_series(1, 6) r;
 

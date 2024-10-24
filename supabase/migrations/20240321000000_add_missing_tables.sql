@@ -96,8 +96,8 @@ CREATE TABLE IF NOT EXISTS public.log_node_suggestions (
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create log_project table
-CREATE TABLE IF NOT EXISTS public.log_project (
+-- Create log_investigation table
+CREATE TABLE IF NOT EXISTS public.log_investigation (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     investigation_id UUID REFERENCES public.investigations(id),
     action_type VARCHAR(50),
@@ -124,5 +124,5 @@ ALTER TABLE public.node_object ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.node_concept ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.log_node_chain_of_custody ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.log_node_suggestions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.log_project ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.log_investigation ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.log_user ENABLE ROW LEVEL SECURITY;
