@@ -25,7 +25,7 @@ const HomePage = () => {
         return;
       }
       setUser({
-        name: session.user.user_metadata.full_name || 'John Ferreira',
+        name: session.user.email === 'admin@sifter.news' ? 'Sifter Admin' : session.user.email,
         avatar: '/placeholder.svg',
         email: session.user.email,
       });
@@ -38,7 +38,10 @@ const HomePage = () => {
     const fetchProjects = async () => {
       const { data: projects, error } = await supabase
         .from('project')
-        .select('*')
+        .select(`
+          *,
+          nodes:node(*)
+        `)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -50,7 +53,13 @@ const HomePage = () => {
         return;
       }
 
-      setInvestigations(projects);
+      // Transform the projects data to match the investigations format
+      const transformedProjects = projects.map(project => ({
+        ...project,
+        reports: project.nodes || [], // Use nodes as reports for now
+      }));
+
+      setInvestigations(transformedProjects);
     };
 
     if (user) {
@@ -59,8 +68,7 @@ const HomePage = () => {
   }, [user, toast]);
 
   const handleProjectClick = (project) => {
-    const username = 'john.ferreira';
-    navigate(`/${username}/project/${encodeURIComponent(project.title)}`);
+    navigate(`/${user.name}/project/${encodeURIComponent(project.title)}`);
   };
 
   const handleUpdateInvestigation = async (updatedInvestigation) => {
