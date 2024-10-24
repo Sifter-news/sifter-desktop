@@ -40,37 +40,52 @@ const HomePage = () => {
     queryFn: async () => {
       if (!user?.id) return [];
       
-      const { data: userInvestigations, error: investigationsError } = await supabase
-        .from('investigation')
-        .select('id, title, description, created_at')
-        .eq('owner_id', user.id)
-        .order('created_at', { ascending: false });
+      try {
+        const { data: userInvestigations, error: investigationsError } = await supabase
+          .from('investigation')
+          .select('id, title, description, created_at')
+          .eq('owner_id', user.id)
+          .order('created_at', { ascending: false });
 
-      if (investigationsError) {
+        if (investigationsError) {
+          console.error('Error fetching investigations:', investigationsError);
+          toast({
+            title: "Error",
+            description: "Failed to fetch investigations",
+            variant: "destructive",
+          });
+          return [];
+        }
+
+        // Fetch reports separately for each investigation
+        const investigationsWithReports = await Promise.all(
+          (userInvestigations || []).map(async (investigation) => {
+            const { data: reports, error: reportsError } = await supabase
+              .from('report')
+              .select('id, title, content, created_at')
+              .eq('investigation_id', investigation.id);
+            
+            if (reportsError) {
+              console.error('Error fetching reports:', reportsError);
+            }
+            
+            return {
+              ...investigation,
+              reports: reports || []
+            };
+          })
+        );
+
+        return investigationsWithReports;
+      } catch (error) {
+        console.error('Error in query function:', error);
         toast({
           title: "Error",
-          description: "Failed to fetch investigations",
+          description: "An unexpected error occurred",
           variant: "destructive",
         });
         return [];
       }
-
-      // Fetch reports separately for each investigation
-      const investigationsWithReports = await Promise.all(
-        userInvestigations.map(async (investigation) => {
-          const { data: reports } = await supabase
-            .from('report')
-            .select('id, title, content, created_at')
-            .eq('investigation_id', investigation.id);
-          
-          return {
-            ...investigation,
-            reports: reports || []
-          };
-        })
-      );
-
-      return investigationsWithReports;
     },
     enabled: !!user?.id,
   });
@@ -129,7 +144,7 @@ const HomePage = () => {
             </div>
             <Button 
               className="rounded-full w-14 h-14 p-0 flex items-center justify-center"
-              onClick={handleAddNewInvestigation}
+              onClick={() => navigate('/new-project')}
             >
               <PlusIcon className="h-6 w-6" />
             </Button>
