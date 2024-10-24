@@ -1,5 +1,5 @@
--- Create projects table
-CREATE TABLE IF NOT EXISTS public.project (
+-- Create investigations table
+CREATE TABLE IF NOT EXISTS public.investigation (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title TEXT NOT NULL,
     description TEXT,
@@ -9,13 +9,13 @@ CREATE TABLE IF NOT EXISTS public.project (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create project access table
-CREATE TABLE IF NOT EXISTS public.project_access (
-    project_id UUID REFERENCES public.project(id) ON DELETE CASCADE,
+-- Create investigation access table
+CREATE TABLE IF NOT EXISTS public.investigation_access (
+    investigation_id UUID REFERENCES public.investigation(id) ON DELETE CASCADE,
     user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
     role TEXT DEFAULT 'viewer',
-    PRIMARY KEY (project_id, user_id)
+    PRIMARY KEY (investigation_id, user_id)
 );
 
-ALTER TABLE public.project ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.project_access ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.investigation ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.investigation_access ENABLE ROW LEVEL SECURITY;

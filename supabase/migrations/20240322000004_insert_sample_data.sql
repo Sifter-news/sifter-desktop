@@ -22,8 +22,8 @@ BEGIN
         INSERT INTO public.profiles (id, username, full_name)
         VALUES (admin_user_id, 'admin', 'Sifter Admin');
         
-        -- Insert sample projects
-        INSERT INTO public.project (id, title, description, owner_id, visibility) VALUES
+        -- Insert sample investigations
+        INSERT INTO public.investigation (id, title, description, owner_id, visibility) VALUES
         ('11111111-2222-3333-4444-555555555555', 'Epstein Network Investigation', 
          'Investigation into Jeffrey Epstein''s network of associates and financial dealings', 
          admin_user_id, 'private'),
@@ -48,8 +48,8 @@ BEGIN
          'Due diligence investigation into Credit Suisse''s exposure to Archegos Capital', 
          admin_user_id, 'private');
 
-        -- Insert nodes for each project
-        INSERT INTO public.node (id, title, description, type, owner_id, project_id) VALUES
+        -- Insert nodes for each investigation
+        INSERT INTO public.node (id, title, description, type, owner_id, investigation_id) VALUES
         -- Epstein Investigation nodes
         ('a1111111-1111-1111-1111-111111111111', 'Key Associates', 
          'Network map of key associates and their connections to financial transactions', 
