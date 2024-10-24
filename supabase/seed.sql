@@ -21,8 +21,8 @@ INSERT INTO public.reports (investigation_id, title, content) VALUES
 ((SELECT id FROM public.investigations WHERE title = 'Corporate Investigation'), 'Initial Findings', 'Preliminary report on corporate investigation.'),
 ((SELECT id FROM public.investigations WHERE title = 'Market Research'), 'Market Analysis', 'Analysis of current market trends.');
 
--- Insert sample nodes
-INSERT INTO public.nodes (id, title, description, type, owner_id, investigation_id) VALUES
+-- Insert sample nodes (using correct table name 'node' instead of 'nodes')
+INSERT INTO public.node (id, title, description, type, owner_id, investigation_id) VALUES
 (uuid_generate_v4(), 'Company A', 'Major corporation in investigation', 'organization', 
  (SELECT id FROM public.profiles WHERE username = 'john_doe'),
  (SELECT id FROM public.investigations WHERE title = 'Corporate Investigation'));
