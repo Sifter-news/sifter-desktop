@@ -38,34 +38,34 @@ BEGIN
     -- Insert reports for each investigation
     INSERT INTO public.report (id, investigation_id, title, content, author_id) VALUES
     -- Human Survival Needs Reports
-    ('r1111111-1111-1111-1111-111111111111', 
+    ('11111111-1111-1111-1111-111111111111', 
      '11111111-2222-3333-4444-555555555555',
      'Basic Physiological Needs',
      'Humans require air, water, food, shelter, and sleep to survive. This article explores the minimum requirements for each of these essential needs...',
      admin_user_id),
     
-    ('r2222222-2222-2222-2222-222222222222',
+    ('22222222-2222-2222-2222-222222222222',
      '11111111-2222-3333-4444-555555555555',
      'Safety and Security',
      'Beyond basic physiological needs, humans require safety and security for long-term survival. This includes physical safety, financial security, and health...',
      admin_user_id),
 
     -- Startup Investment Reports
-    ('r3333333-3333-3333-3333-333333333333',
+    ('33333333-3333-3333-3333-333333333333',
      '22222222-3333-4444-5555-666666666666',
      'Financial Analysis',
      'This report delves into the startup''s financial health, including revenue models, burn rate, and projections. It also examines the company''s funding history and capitalization table...',
      admin_user_id),
 
     -- Climate Change Reports
-    ('r4444444-4444-4444-4444-444444444444',
+    ('44444444-4444-4444-4444-444444444444',
      '33333333-4444-5555-6666-777777777777',
      'Global Warming Trends',
      'Recent studies show an alarming increase in global temperatures over the past century, with significant acceleration in the last few decades...',
      admin_user_id),
 
     -- AI Reports
-    ('r5555555-5555-5555-5555-555555555555',
+    ('55555555-5555-5555-5555-555555555555',
      '44444444-5555-6666-7777-888888888888',
      'Machine Learning Breakthroughs',
      'Recent advancements in machine learning algorithms have led to significant improvements in natural language processing and computer vision...',
