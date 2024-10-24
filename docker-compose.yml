@@ -1,6 +1,6 @@
 services:
   db:
-    image: supabase/postgres:15.1.0.117
+    image: supabase/postgres:14.1.0.34
     ports:
       - "54322:5432"
     environment:
@@ -10,7 +10,7 @@ services:
       - ./supabase/migrations:/docker-entrypoint-initdb.d
 
   studio:
-    image: supabase/studio:20231211-0819d93
+    image: supabase/studio:20240115-34b32c9
     ports:
       - "54323:3000"
     environment:
@@ -33,7 +33,7 @@ services:
       - db
 
   meta:
-    image: supabase/postgres-meta:0.68.0
+    image: supabase/postgres-meta:0.58.0
     ports:
       - "8080:8080"
     environment:
