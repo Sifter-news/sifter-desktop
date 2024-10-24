@@ -8,8 +8,8 @@ extra_search_path = ["public", "extensions"]
 max_rows = 1000
 
 [db]
-port = 54323
-shadow_port = 54320
+port = 54325  # Changed from 54323 to avoid conflicts
+shadow_port = 54326  # Changed to avoid conflicts
 major_version = 15
 
 [studio]
