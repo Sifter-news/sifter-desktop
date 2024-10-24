@@ -42,18 +42,7 @@ const HomePage = () => {
       
       const { data: userInvestigations, error: investigationsError } = await supabase
         .from('investigation')
-        .select(`
-          id,
-          title,
-          description,
-          created_at,
-          report (
-            id,
-            title,
-            content,
-            created_at
-          )
-        `)
+        .select('id, title, description, created_at')
         .eq('owner_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -66,10 +55,22 @@ const HomePage = () => {
         return [];
       }
 
-      return userInvestigations.map(investigation => ({
-        ...investigation,
-        reports: investigation.report || []
-      }));
+      // Fetch reports separately for each investigation
+      const investigationsWithReports = await Promise.all(
+        userInvestigations.map(async (investigation) => {
+          const { data: reports } = await supabase
+            .from('report')
+            .select('id, title, content, created_at')
+            .eq('investigation_id', investigation.id);
+          
+          return {
+            ...investigation,
+            reports: reports || []
+          };
+        })
+      );
+
+      return investigationsWithReports;
     },
     enabled: !!user?.id,
   });
