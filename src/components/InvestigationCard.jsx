@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 const InvestigationCard = ({ investigation }) => {
   return (
     <Link to={`/project/${investigation.id}`} className="block w-full">
-      <Card className="w-full h-full hover:shadow-lg transition-shadow duration-200 bg-white dark:bg-gray-800">
+      <Card className="w-full h-full hover:shadow-lg transition-shadow duration-200 bg-gray-100 dark:bg-gray-800">
         <CardContent className="p-6">
           <div className="flex items-start justify-between">
             <div>
