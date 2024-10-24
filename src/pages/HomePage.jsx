@@ -42,7 +42,18 @@ const HomePage = () => {
       
       const { data: userInvestigations, error: investigationsError } = await supabase
         .from('investigation')
-        .select('*')
+        .select(`
+          id,
+          title,
+          description,
+          created_at,
+          report (
+            id,
+            title,
+            content,
+            created_at
+          )
+        `)
         .eq('owner_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -55,21 +66,10 @@ const HomePage = () => {
         return [];
       }
 
-      const investigationsWithNodes = await Promise.all(
-        userInvestigations.map(async (investigation) => {
-          const { data: nodes } = await supabase
-            .from('node')
-            .select('*')
-            .eq('investigation_id', investigation.id);
-          
-          return {
-            ...investigation,
-            reports: nodes || [],
-          };
-        })
-      );
-
-      return investigationsWithNodes;
+      return userInvestigations.map(investigation => ({
+        ...investigation,
+        reports: investigation.report || []
+      }));
     },
     enabled: !!user?.id,
   });
@@ -77,7 +77,10 @@ const HomePage = () => {
   const handleUpdateInvestigation = async (updatedInvestigation) => {
     const { error } = await supabase
       .from('investigation')
-      .update(updatedInvestigation)
+      .update({
+        title: updatedInvestigation.title,
+        description: updatedInvestigation.description
+      })
       .eq('id', updatedInvestigation.id);
 
     if (error) {
@@ -141,13 +144,30 @@ const HomePage = () => {
       <ReportModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
-        onSave={(newReport) => {
+        onSave={async (newReport) => {
           if (investigations.length > 0) {
-            const updatedInvestigation = {
-              ...investigations[0],
-              reports: [...investigations[0].reports, newReport]
-            };
-            handleUpdateInvestigation(updatedInvestigation);
+            const { error } = await supabase
+              .from('report')
+              .insert({
+                investigation_id: investigations[0].id,
+                title: newReport.title,
+                content: newReport.content,
+                author_id: user.id
+              });
+
+            if (error) {
+              toast({
+                title: "Error",
+                description: "Failed to create report",
+                variant: "destructive",
+              });
+              return;
+            }
+
+            toast({
+              title: "Success",
+              description: "Report created successfully",
+            });
           }
           setIsReportModalOpen(false);
         }}
