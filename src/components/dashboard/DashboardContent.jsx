@@ -4,13 +4,55 @@ import { supabase } from '../../integrations/supabase/supabase';
 import InvestigationCard from '../InvestigationCard';
 import { useToast } from "@/components/ui/use-toast";
 
+const staticInvestigations = [
+  {
+    id: '1',
+    title: 'Human Survival Needs',
+    description: 'An investigation into the essential elements required for human survival, including physiological needs, safety, and psychological well-being.',
+    reports: [
+      { id: '1', title: 'Basic Physiological Needs', content: 'Humans require air, water, food, shelter, and sleep to survive...' },
+      { id: '2', title: 'Safety and Security', content: 'Beyond basic physiological needs, humans require safety and security...' },
+      { id: '3', title: 'Psychological Well-being', content: 'Mental health is crucial for human survival...' },
+      { id: '4', title: 'Environmental Adaptations', content: 'How humans adapt to various environments...' },
+      { id: '5', title: 'Long-term Sustainability', content: 'Exploring sustainable practices for long-term human survival...' },
+      { id: '6', title: 'Social Connections', content: 'The importance of social bonds in human survival...' }
+    ]
+  },
+  {
+    id: '2',
+    title: 'Climate Change Impact',
+    description: 'A comprehensive study of climate change effects on global ecosystems and human societies.',
+    reports: [
+      { id: '7', title: 'Rising Sea Levels', content: 'Analysis of coastal impacts and predictions...' },
+      { id: '8', title: 'Extreme Weather Events', content: 'Tracking the increase in natural disasters...' },
+      { id: '9', title: 'Biodiversity Loss', content: 'Species extinction rates and ecosystem disruption...' },
+      { id: '10', title: 'Agricultural Changes', content: 'Impact on global food production...' },
+      { id: '11', title: 'Mitigation Strategies', content: 'Current and proposed solutions...' },
+      { id: '12', title: 'Economic Implications', content: 'Financial impact of climate change...' }
+    ]
+  },
+  {
+    id: '3',
+    title: 'AI Ethics Research',
+    description: 'Investigating ethical considerations in artificial intelligence development and deployment.',
+    reports: [
+      { id: '13', title: 'Bias in AI Systems', content: 'Examining sources and impacts of AI bias...' },
+      { id: '14', title: 'Privacy Concerns', content: 'Data collection and user privacy issues...' },
+      { id: '15', title: 'Job Displacement', content: 'Impact of AI on employment...' },
+      { id: '16', title: 'Decision Transparency', content: 'Understanding AI decision-making processes...' },
+      { id: '17', title: 'Safety Protocols', content: 'Ensuring safe AI development...' },
+      { id: '18', title: 'Future Governance', content: 'Proposed frameworks for AI regulation...' }
+    ]
+  }
+];
+
 const DashboardContent = ({ user }) => {
   const { toast } = useToast();
 
-  const { data: investigations = [], isLoading, error } = useQuery({
+  const { data: investigations = staticInvestigations, isLoading } = useQuery({
     queryKey: ['investigations', user?.id],
     queryFn: async () => {
-      if (!user?.id) return [];
+      if (!user?.id) return staticInvestigations;
       
       try {
         const { data: userInvestigations, error: investigationsError } = await supabase
@@ -26,28 +68,10 @@ const DashboardContent = ({ user }) => {
             description: "Failed to fetch investigations",
             variant: "destructive",
           });
-          return [];
+          return staticInvestigations;
         }
 
-        const investigationsWithReports = await Promise.all(
-          (userInvestigations || []).map(async (investigation) => {
-            const { data: reports, error: reportsError } = await supabase
-              .from('report')
-              .select('id, title, content, created_at')
-              .eq('investigation_id', investigation.id);
-            
-            if (reportsError) {
-              console.error('Error fetching reports:', reportsError);
-            }
-            
-            return {
-              ...investigation,
-              reports: reports || []
-            };
-          })
-        );
-
-        return investigationsWithReports;
+        return userInvestigations || staticInvestigations;
       } catch (error) {
         console.error('Error in query function:', error);
         toast({
@@ -55,7 +79,7 @@ const DashboardContent = ({ user }) => {
           description: "An unexpected error occurred",
           variant: "destructive",
         });
-        return [];
+        return staticInvestigations;
       }
     },
     enabled: !!user?.id,
@@ -63,10 +87,6 @@ const DashboardContent = ({ user }) => {
 
   if (isLoading) {
     return <div className="flex items-center justify-center min-h-[200px]">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="flex items-center justify-center min-h-[200px]">Error loading investigations</div>;
   }
 
   return (
