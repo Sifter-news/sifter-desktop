@@ -1,5 +1,3 @@
--- Enable UUID generation
+-- Enable necessary extensions for the database
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
--- Enable PostGIS for location data
-CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE EXTENSION IF NOT EXISTS "postgis";
