@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
-import ProjectList from '../components/views/project/ProjectList';
+import InvestigationList from '../components/views/investigations/InvestigationList';
 import ReportModal from '../components/ReportModal';
 import ProjectEditModal from '../components/ProjectEditModal';
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [projects, setProjects] = useState([]);
+  const [investigations, setInvestigations] = useState([]);
   const [user, setUser] = useState(null);
   const { toast } = useToast();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -59,7 +59,7 @@ const HomePage = () => {
         reports: project.nodes || [], // Use nodes as reports for now
       }));
 
-      setProjects(transformedProjects);
+      setInvestigations(transformedProjects);
     };
 
     if (user) {
@@ -71,11 +71,11 @@ const HomePage = () => {
     navigate(`/${user.name}/project/${encodeURIComponent(project.title)}`);
   };
 
-  const handleUpdateProject = async (updatedProject) => {
+  const handleUpdateInvestigation = async (updatedInvestigation) => {
     const { error } = await supabase
       .from('project')
-      .update(updatedProject)
-      .eq('id', updatedProject.id);
+      .update(updatedInvestigation)
+      .eq('id', updatedInvestigation.id);
 
     if (error) {
       toast({
@@ -86,9 +86,9 @@ const HomePage = () => {
       return;
     }
 
-    setProjects(prevProjects =>
-      prevProjects.map(proj =>
-        proj.id === updatedProject.id ? updatedProject : proj
+    setInvestigations(prevInvestigations =>
+      prevInvestigations.map(inv =>
+        inv.id === updatedInvestigation.id ? updatedInvestigation : inv
       )
     );
   };
@@ -111,7 +111,7 @@ const HomePage = () => {
               <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
                 <FileSearchIcon className="h-4 w-4 text-gray-600" />
               </div>
-              <h2 className="text-2xl font-bold">Projects</h2>
+              <h2 className="text-2xl font-bold">Investigations</h2>
             </div>
             <Button 
               className="rounded-full w-14 h-14 p-0 flex items-center justify-center"
@@ -121,9 +121,9 @@ const HomePage = () => {
             </Button>
           </div>
           
-          <ProjectList 
-            projects={projects}
-            onUpdateProject={handleUpdateProject}
+          <InvestigationList 
+            investigations={investigations}
+            onUpdateInvestigation={handleUpdateInvestigation}
           />
         </div>
       </div>
@@ -132,12 +132,12 @@ const HomePage = () => {
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
         onSave={(newReport) => {
-          if (projects.length > 0) {
-            const updatedProject = {
-              ...projects[0],
-              reports: [...projects[0].reports, newReport]
+          if (investigations.length > 0) {
+            const updatedInvestigation = {
+              ...investigations[0],
+              reports: [...investigations[0].reports, newReport]
             };
-            handleUpdateProject(updatedProject);
+            handleUpdateInvestigation(updatedInvestigation);
           }
           setIsReportModalOpen(false);
         }}
@@ -148,7 +148,7 @@ const HomePage = () => {
           isOpen={!!editingProject}
           onClose={() => setEditingProject(null)}
           project={editingProject}
-          onUpdate={handleUpdateProject}
+          onUpdate={handleUpdateInvestigation}
         />
       )}
     </div>
