@@ -1,0 +1,43 @@
+version: '3'
+services:
+  db:
+    image: supabase/postgres:15.1.0.117
+    ports:
+      - "54322:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - ./supabase/migrations:/docker-entrypoint-initdb.d
+
+  studio:
+    image: supabase/studio:latest
+    ports:
+      - "54323:3000"
+    environment:
+      SUPABASE_URL: http://kong:8000
+      STUDIO_PG_META_URL: http://meta:8080
+      POSTGRES_PASSWORD: postgres
+    depends_on:
+      - db
+
+  kong:
+    image: kong:2.8.1
+    ports:
+      - "54321:8000"
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /kong.yml
+    depends_on:
+      - db
+
+  meta:
+    image: supabase/postgres-meta:latest
+    ports:
+      - "8080:8080"
+    environment:
+      PG_META_PORT: 8080
+      PG_META_DB_HOST: db
+      PG_META_DB_PASSWORD: postgres
+    depends_on:
+      - db
