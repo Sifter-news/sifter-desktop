@@ -1,6 +1,15 @@
 -- Enable necessary extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- Create subscription_plan table if it doesn't exist
+CREATE TABLE IF NOT EXISTS public.subscription_plan (
+    id UUID PRIMARY KEY,
+    name VARCHAR(255),
+    price DECIMAL(10,2),
+    description TEXT,
+    stripe_plan_id VARCHAR(255)
+);
+
 -- Insert sample data for subscription plans
 INSERT INTO public.subscription_plan (id, name, price, description, stripe_plan_id) VALUES
 (uuid_generate_v4(), 'Free Forever', 0, 'Basic free features', 'free_plan'),
