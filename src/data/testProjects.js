@@ -1,4 +1,4 @@
-export const testProjects = [
+export const testInvestigations = [
   { 
     id: 1, 
     title: 'Human Survival Needs', 

@@ -15,7 +15,7 @@ const HomePage = () => {
   const [user, setUser] = useState(null);
   const { toast } = useToast();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const [editingProject, setEditingProject] = useState(null);
+  const [editingInvestigation, setEditingInvestigation] = useState(null);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -40,7 +40,6 @@ const HomePage = () => {
     queryFn: async () => {
       if (!user?.id) return [];
       
-      // First, fetch investigations
       const { data: userInvestigations, error: investigationsError } = await supabase
         .from('investigation')
         .select('*')
@@ -56,7 +55,6 @@ const HomePage = () => {
         return [];
       }
 
-      // Then, for each investigation, fetch its nodes
       const investigationsWithNodes = await Promise.all(
         userInvestigations.map(async (investigation) => {
           const { data: nodes } = await supabase
@@ -97,7 +95,7 @@ const HomePage = () => {
     });
   };
 
-  const handleAddNewProject = () => {
+  const handleAddNewInvestigation = () => {
     navigate('/new-project');
   };
 
@@ -127,7 +125,7 @@ const HomePage = () => {
             </div>
             <Button 
               className="rounded-full w-14 h-14 p-0 flex items-center justify-center"
-              onClick={handleAddNewProject}
+              onClick={handleAddNewInvestigation}
             >
               <PlusIcon className="h-6 w-6" />
             </Button>
@@ -155,11 +153,11 @@ const HomePage = () => {
         }}
       />
       
-      {editingProject && (
+      {editingInvestigation && (
         <ProjectEditModal
-          isOpen={!!editingProject}
-          onClose={() => setEditingProject(null)}
-          project={editingProject}
+          isOpen={!!editingInvestigation}
+          onClose={() => setEditingInvestigation(null)}
+          project={editingInvestigation}
           onUpdate={handleUpdateInvestigation}
         />
       )}
