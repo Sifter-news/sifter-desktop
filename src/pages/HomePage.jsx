@@ -40,16 +40,14 @@ const HomePage = () => {
     queryFn: async () => {
       if (!user?.id) return [];
       
-      const { data: userInvestigations, error } = await supabase
+      // First, fetch investigations
+      const { data: userInvestigations, error: investigationsError } = await supabase
         .from('investigation')
-        .select(`
-          *,
-          node (*)
-        `)
+        .select('*')
         .eq('owner_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (error) {
+      if (investigationsError) {
         toast({
           title: "Error",
           description: "Failed to fetch investigations",
@@ -58,10 +56,22 @@ const HomePage = () => {
         return [];
       }
 
-      return userInvestigations.map(investigation => ({
-        ...investigation,
-        reports: investigation.node || [],
-      }));
+      // Then, for each investigation, fetch its nodes
+      const investigationsWithNodes = await Promise.all(
+        userInvestigations.map(async (investigation) => {
+          const { data: nodes } = await supabase
+            .from('node')
+            .select('*')
+            .eq('investigation_id', investigation.id);
+          
+          return {
+            ...investigation,
+            reports: nodes || [],
+          };
+        })
+      );
+
+      return investigationsWithNodes;
     },
     enabled: !!user?.id,
   });
