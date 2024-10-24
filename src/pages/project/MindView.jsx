@@ -15,12 +15,12 @@ const MindView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteN
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   
   const { 
-    transform,
-    setTransform,
-    handleWheel,
-    handleMouseDown,
-    handleMouseMove,
-    handleMouseUp
+    zoom: transform,
+    position,
+    handleZoom: handleWheel,
+    handlePanStart: handleMouseDown,
+    handlePanMove: handleMouseMove,
+    handlePanEnd: handleMouseUp
   } = useZoomPan();
 
   useEffect(() => {
