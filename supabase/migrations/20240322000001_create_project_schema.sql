@@ -17,5 +17,31 @@ CREATE TABLE IF NOT EXISTS public.investigation_access (
     PRIMARY KEY (investigation_id, user_id)
 );
 
+-- Enable RLS
 ALTER TABLE public.investigation ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.investigation_access ENABLE ROW LEVEL SECURITY;
+
+-- Create policies for investigation table
+CREATE POLICY "Users can view their own investigations"
+    ON public.investigation
+    FOR SELECT
+    TO authenticated
+    USING (owner_id = auth.uid());
+
+CREATE POLICY "Users can insert their own investigations"
+    ON public.investigation
+    FOR INSERT
+    TO authenticated
+    WITH CHECK (owner_id = auth.uid());
+
+CREATE POLICY "Users can update their own investigations"
+    ON public.investigation
+    FOR UPDATE
+    TO authenticated
+    USING (owner_id = auth.uid());
+
+CREATE POLICY "Users can delete their own investigations"
+    ON public.investigation
+    FOR DELETE
+    TO authenticated
+    USING (owner_id = auth.uid());
