@@ -6,14 +6,10 @@ import ProjectModals from '../components/ProjectModals';
 import ReportList from '../components/ReportList';
 import ArticleModal from '../components/ArticleModal';
 import { findAvailablePosition } from '../utils/canvasUtils';
-import { getNodeSchema } from './project/node/nodeSchema';
-import { useToast } from "@/components/ui/use-toast";
 
 const ProjectView = () => {
   const { id } = useParams();
   const location = useLocation();
-  const { toast } = useToast();
-  
   const user = {
     name: 'User-Name',
     avatar: '/default-image.png',
@@ -32,74 +28,38 @@ const ProjectView = () => {
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
 
   useEffect(() => {
+    // Load nodes from localStorage or API if it's an existing project
     if (location.state?.project) {
       const savedNodes = localStorage.getItem(`project_${id}_nodes`);
       if (savedNodes) {
         setNodes(JSON.parse(savedNodes));
       }
-    } else if (location.state?.newProject) {
-      // Show toast for new project creation
-      toast({
-        title: "Project Created",
-        description: `Project "${location.state.newProject.title}" has been created`,
-        duration: 3000,
-      });
     }
-  }, [id, location.state, toast]);
+  }, [id, location.state]);
 
   useEffect(() => {
+    // Save nodes to localStorage whenever they change
     localStorage.setItem(`project_${id}_nodes`, JSON.stringify(nodes));
   }, [id, nodes]);
 
   const handleProjectUpdate = (updatedProject) => {
     setProject(updatedProject);
-    toast({
-      title: "Project Updated",
-      description: `Project "${updatedProject.title}" has been updated`,
-      duration: 3000,
-    });
   };
 
   const handleAddNode = (newNode) => {
     const position = findAvailablePosition(nodes);
-    const nodeSchema = getNodeSchema(newNode.type);
-    const nodeWithPosition = { ...nodeSchema, ...newNode, x: position.x, y: position.y };
+    const nodeWithPosition = { ...newNode, x: position.x, y: position.y };
     setNodes(prevNodes => [...prevNodes, nodeWithPosition]);
-    toast({
-      title: "Node Created",
-      description: `New ${newNode.type || 'blank'} node has been created`,
-      duration: 3000,
-    });
   };
 
   const handleUpdateNode = (nodeId, updates) => {
-    setNodes(prevNodes => {
-      const updatedNodes = prevNodes.map(node => 
-        node.id === nodeId ? { ...node, ...updates } : node
-      );
-      const updatedNode = updatedNodes.find(node => node.id === nodeId);
-      if (updatedNode) {
-        toast({
-          title: "Node Updated",
-          description: `Node "${updatedNode.title || 'Untitled'}" has been updated`,
-          duration: 3000,
-        });
-      }
-      return updatedNodes;
-    });
+    setNodes(prevNodes => prevNodes.map(node => 
+      node.id === nodeId ? { ...node, ...updates } : node
+    ));
   };
 
   const handleDeleteNode = (nodeId) => {
-    const nodeToDelete = nodes.find(node => node.id === nodeId);
-    if (nodeToDelete) {
-      setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
-      toast({
-        title: "Node Deleted",
-        description: `Node "${nodeToDelete.title || 'Untitled'}" has been deleted`,
-        duration: 3000,
-        variant: "destructive",
-      });
-    }
+    setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
   };
 
   const handleArticleClick = (article) => {
@@ -132,11 +92,8 @@ const ProjectView = () => {
         onClose={() => setIsArticleModalOpen(false)}
         article={selectedArticle}
         onUpdate={(updatedArticle) => {
-          toast({
-            title: "Article Updated",
-            description: `Article "${updatedArticle.title || 'Untitled'}" has been updated`,
-            duration: 3000,
-          });
+          // Handle article update if needed
+          console.log("Article updated:", updatedArticle);
         }}
       />
     </div>

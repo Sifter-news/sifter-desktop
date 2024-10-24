@@ -5,11 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PlusIcon } from 'lucide-react';
-import { useToast } from "@/components/ui/use-toast";
 
 const NewProjectPage = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [projectTitle, setProjectTitle] = useState('');
   const user = {
     name: 'User-Name',
@@ -21,25 +19,13 @@ const NewProjectPage = () => {
     if (projectTitle.trim()) {
       const newProject = {
         id: Date.now().toString(),
-        title: projectTitle.trim(),
+        title: projectTitle,
         description: '',
         reports: []
       };
-
-      // Get existing projects from localStorage
-      const existingProjects = JSON.parse(localStorage.getItem('projects') || '[]');
-      
-      // Add new project to the list
-      const updatedProjects = [...existingProjects, newProject];
-      localStorage.setItem('projects', JSON.stringify(updatedProjects));
-
-      toast({
-        title: "Project created",
-        description: "Your new project has been created successfully.",
-      });
-
-      // Navigate to the new project
-      navigate('/', { state: { newProject } });
+      // Here you would typically save the new project to your backend
+      // For now, we'll just navigate to the new project view
+      navigate(`/project/${newProject.id}`, { state: { project: newProject } });
     }
   };
 
@@ -87,11 +73,6 @@ const NewProjectPage = () => {
             className="flex-grow text-lg border-none focus:ring-0 rounded-full"
             value={projectTitle}
             onChange={(e) => setProjectTitle(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                handleCreateProject();
-              }
-            }}
           />
           <Button 
             className="bg-[#594BFF] hover:bg-[#4B3FD9] text-white rounded-full px-6"
