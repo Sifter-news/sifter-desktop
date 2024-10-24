@@ -1,5 +1,5 @@
 -- Create projects table
-CREATE TABLE public.project (
+CREATE TABLE IF NOT EXISTS public.project (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title TEXT NOT NULL,
     description TEXT,
@@ -10,7 +10,7 @@ CREATE TABLE public.project (
 );
 
 -- Create project access table
-CREATE TABLE public.project_access (
+CREATE TABLE IF NOT EXISTS public.project_access (
     project_id UUID REFERENCES public.project(id) ON DELETE CASCADE,
     user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
     role TEXT DEFAULT 'viewer',

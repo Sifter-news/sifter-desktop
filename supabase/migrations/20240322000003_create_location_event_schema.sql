@@ -1,5 +1,5 @@
 -- Create location nodes
-CREATE TABLE public.node_location (
+CREATE TABLE IF NOT EXISTS public.node_location (
     node_id UUID PRIMARY KEY REFERENCES public.node(id) ON DELETE CASCADE,
     coordinates GEOGRAPHY(Point, 4326),
     address TEXT,
@@ -7,7 +7,7 @@ CREATE TABLE public.node_location (
 );
 
 -- Create event nodes
-CREATE TABLE public.node_event (
+CREATE TABLE IF NOT EXISTS public.node_event (
     node_id UUID PRIMARY KEY REFERENCES public.node(id) ON DELETE CASCADE,
     start_date TIMESTAMP WITH TIME ZONE,
     end_date TIMESTAMP WITH TIME ZONE,

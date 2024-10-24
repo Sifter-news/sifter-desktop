@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "postgis";
 
 -- Create profiles table
-CREATE TABLE public.profiles (
+CREATE TABLE IF NOT EXISTS public.profiles (
     id UUID PRIMARY KEY REFERENCES auth.users ON DELETE CASCADE,
     username TEXT UNIQUE NOT NULL,
     full_name TEXT,
@@ -12,7 +12,7 @@ CREATE TABLE public.profiles (
 );
 
 -- Create subscription plans
-CREATE TABLE public.subscription_plan (
+CREATE TABLE IF NOT EXISTS public.subscription_plan (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL,
     price DECIMAL(10, 2),
@@ -21,7 +21,7 @@ CREATE TABLE public.subscription_plan (
 );
 
 -- Create organizations
-CREATE TABLE public.organization (
+CREATE TABLE IF NOT EXISTS public.organization (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL,
     description TEXT,
