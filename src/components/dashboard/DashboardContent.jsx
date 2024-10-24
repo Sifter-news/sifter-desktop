@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../integrations/supabase/supabase';
-import InvestigationList from '../views/investigations/InvestigationList';
+import InvestigationCard from '../InvestigationCard';
 import { useToast } from "@/components/ui/use-toast";
 
 const DashboardContent = ({ user }) => {
@@ -70,32 +70,37 @@ const DashboardContent = ({ user }) => {
   }
 
   return (
-    <InvestigationList 
-      investigations={investigations}
-      onUpdateInvestigation={async (updatedInvestigation) => {
-        const { error } = await supabase
-          .from('investigation')
-          .update({
-            title: updatedInvestigation.title,
-            description: updatedInvestigation.description
-          })
-          .eq('id', updatedInvestigation.id);
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+      {investigations.map((investigation) => (
+        <InvestigationCard
+          key={investigation.id}
+          investigation={investigation}
+          onUpdateInvestigation={async (updatedInvestigation) => {
+            const { error } = await supabase
+              .from('investigation')
+              .update({
+                title: updatedInvestigation.title,
+                description: updatedInvestigation.description
+              })
+              .eq('id', updatedInvestigation.id);
 
-        if (error) {
-          toast({
-            title: "Error",
-            description: "Failed to update investigation",
-            variant: "destructive",
-          });
-          return;
-        }
+            if (error) {
+              toast({
+                title: "Error",
+                description: "Failed to update investigation",
+                variant: "destructive",
+              });
+              return;
+            }
 
-        toast({
-          title: "Success",
-          description: "Investigation updated successfully",
-        });
-      }}
-    />
+            toast({
+              title: "Success",
+              description: "Investigation updated successfully",
+            });
+          }}
+        />
+      ))}
+    </div>
   );
 };
 

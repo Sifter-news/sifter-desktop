@@ -1,23 +1,8 @@
-import React, { useState } from 'react';
-import { Card, CardContent } from "@/components/ui/card";
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 
 const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
-  const [image, setImage] = useState(investigation.image || '/default-image.png');
-
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result);
-        onUpdateInvestigation({ ...investigation, image: reader.result });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   return (
     <Link to={`/project/${investigation.id}`} className="block w-full h-[323px]">
       <Card className="w-full h-full p-6 bg-[#594BFF] shadow-lg relative overflow-hidden rounded-l-[48px] rounded-r-none lg:rounded-r-none">
@@ -39,18 +24,12 @@ const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
               alt={investigation.title}
               className="w-full h-full object-cover"
             />
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="absolute inset-0 opacity-0 cursor-pointer"
-            />
           </div>
-          <CardContent className="p-6 h-[calc(100%-128px)] flex flex-col relative z-10">
+          <div className="p-6 h-[calc(100%-128px)] flex flex-col relative z-10">
             <div className="text-xs uppercase text-purple-600 font-semibold tracking-wide mb-2">Investigation</div>
             <h3 className="text-lg font-bold text-gray-800 mb-2">{investigation.title}</h3>
             <p className="text-sm text-gray-600 flex-grow overflow-hidden line-clamp-2">{investigation.description}</p>
-          </CardContent>
+          </div>
         </div>
       </Card>
     </Link>
