@@ -26,3 +26,31 @@ INSERT INTO public.node (id, title, description, type, owner_id, investigation_i
 (uuid_generate_v4(), 'Company A', 'Major corporation in investigation', 'organization', 
  (SELECT id FROM public.profiles WHERE username = 'john_doe'),
  (SELECT id FROM public.investigations WHERE title = 'Corporate Investigation'));
+
+-- Insert sample person node
+WITH new_node AS (
+    INSERT INTO public.node (title, description, type)
+    VALUES ('John Smith', 'Key person of interest', 'person')
+    RETURNING id
+)
+INSERT INTO public.node_person (node_id, first_name, last_name, birth_date, nationality, occupation)
+SELECT id, 'John', 'Smith', '1980-01-01', 'American', 'Business Executive'
+FROM new_node;
+
+-- Insert sample organization node
+WITH new_node AS (
+    INSERT INTO public.node (title, description, type)
+    VALUES ('Acme Corporation', 'Major corporation', 'organization')
+    RETURNING id
+)
+INSERT INTO public.node_organization (node_id, org_name, org_type, founding_date)
+SELECT id, 'Acme Corporation', 'Corporation', '1950-01-01'
+FROM new_node;
+
+-- Insert sample relationship
+INSERT INTO public.node_relationship (source_node_id, target_node_id, relationship_type, description)
+SELECT 
+    (SELECT id FROM public.node WHERE title = 'John Smith' LIMIT 1),
+    (SELECT id FROM public.node WHERE title = 'Acme Corporation' LIMIT 1),
+    'EMPLOYED_BY',
+    'Executive position';
