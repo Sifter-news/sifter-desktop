@@ -1,37 +1,45 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
-const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
+const InvestigationCard = ({ investigation }) => {
   return (
     <Link to={`/project/${investigation.id}`} className="block w-full">
-      <Card className="w-full h-full bg-[#594BFF] shadow-lg relative overflow-hidden rounded-[24px]">
-        <div 
-          className="absolute inset-0" 
-          style={{
-            backgroundImage: `
-              linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
-            `,
-            backgroundSize: '48px 48px',
-          }}
-        />
-        <div className="relative z-10 p-6">
-          <div className="bg-white rounded-[16px] overflow-hidden">
-            <div className="h-[128px] w-full overflow-hidden relative">
-              <img 
-                src="/default-image.png"
-                alt={investigation.title}
-                className="w-full h-full object-cover"
-              />
+      <Card className="w-full h-full hover:shadow-lg transition-shadow duration-200 bg-white dark:bg-gray-800">
+        <CardContent className="p-6">
+          <div className="flex items-start justify-between">
+            <div>
+              <Badge variant="secondary" className="mb-2">
+                Investigation
+              </Badge>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                {investigation.title}
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+                {investigation.description}
+              </p>
             </div>
-            <CardContent className="p-6">
-              <div className="text-xs uppercase text-purple-600 font-semibold tracking-wide mb-2">Investigation</div>
-              <h3 className="text-lg font-bold text-gray-800 mb-2">{investigation.title}</h3>
-              <p className="text-sm text-gray-600 line-clamp-2">{investigation.description}</p>
-            </CardContent>
           </div>
-        </div>
+          
+          <div className="mt-4">
+            <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+              Reports ({investigation.reports?.length || 0})
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {investigation.reports?.slice(0, 3).map((report) => (
+                <Badge key={report.id} variant="outline" className="text-xs">
+                  {report.title}
+                </Badge>
+              ))}
+              {investigation.reports?.length > 3 && (
+                <Badge variant="outline" className="text-xs">
+                  +{investigation.reports.length - 3} more
+                </Badge>
+              )}
+            </div>
+          </div>
+        </CardContent>
       </Card>
     </Link>
   );

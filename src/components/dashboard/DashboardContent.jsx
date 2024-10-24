@@ -95,29 +95,6 @@ const DashboardContent = ({ user }) => {
         <InvestigationCard
           key={investigation.id}
           investigation={investigation}
-          onUpdateInvestigation={async (updatedInvestigation) => {
-            const { error } = await supabase
-              .from('investigation')
-              .update({
-                title: updatedInvestigation.title,
-                description: updatedInvestigation.description
-              })
-              .eq('id', updatedInvestigation.id);
-
-            if (error) {
-              toast({
-                title: "Error",
-                description: "Failed to update investigation",
-                variant: "destructive",
-              });
-              return;
-            }
-
-            toast({
-              title: "Success",
-              description: "Investigation updated successfully",
-            });
-          }}
         />
       ))}
     </div>
