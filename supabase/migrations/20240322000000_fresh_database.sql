@@ -1,29 +1,29 @@
+DO $$ 
+BEGIN
+    -- Drop existing tables if they exist
+    DROP TABLE IF EXISTS public.log_node_suggestions CASCADE;
+    DROP TABLE IF EXISTS public.log_node_chain_of_custody CASCADE;
+    DROP TABLE IF EXISTS public.log_project CASCADE;
+    DROP TABLE IF EXISTS public.log_user CASCADE;
+    DROP TABLE IF EXISTS public.node_person CASCADE;
+    DROP TABLE IF EXISTS public.node_organization CASCADE;
+    DROP TABLE IF EXISTS public.node_object CASCADE;
+    DROP TABLE IF EXISTS public.node_concept CASCADE;
+    DROP TABLE IF EXISTS public.node_location CASCADE;
+    DROP TABLE IF EXISTS public.node_event CASCADE;
+    DROP TABLE IF EXISTS public.node CASCADE;
+    DROP TABLE IF EXISTS public.project_access CASCADE;
+    DROP TABLE IF EXISTS public.project CASCADE;
+    DROP TABLE IF EXISTS public.organization_subscription CASCADE;
+    DROP TABLE IF EXISTS public.organization CASCADE;
+    DROP TABLE IF EXISTS public.subscription_plan CASCADE;
+    DROP TABLE IF EXISTS public.profiles CASCADE;
+END $$;
+
 -- Enable required extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "postgis";
 
--- Drop all existing tables (in correct order to handle dependencies)
-DROP TABLE IF EXISTS public.log_node_suggestions CASCADE;
-DROP TABLE IF EXISTS public.log_node_versions CASCADE;
-DROP TABLE IF EXISTS public.log_chain_of_custody CASCADE;
-DROP TABLE IF EXISTS public.log_node CASCADE;
-DROP TABLE IF EXISTS public.log_project CASCADE;
-DROP TABLE IF EXISTS public.log_user CASCADE;
-DROP TABLE IF EXISTS public.node_person CASCADE;
-DROP TABLE IF EXISTS public.node_organization CASCADE;
-DROP TABLE IF EXISTS public.node_object CASCADE;
-DROP TABLE IF EXISTS public.node_concept CASCADE;
-DROP TABLE IF EXISTS public.node_location CASCADE;
-DROP TABLE IF EXISTS public.node_event CASCADE;
-DROP TABLE IF EXISTS public.node CASCADE;
-DROP TABLE IF EXISTS public.project_access CASCADE;
-DROP TABLE IF EXISTS public.project CASCADE;
-DROP TABLE IF EXISTS public.organization_subscription CASCADE;
-DROP TABLE IF EXISTS public.organization CASCADE;
-DROP TABLE IF EXISTS public.subscription_plan CASCADE;
-DROP TABLE IF EXISTS public.profiles CASCADE;
-
--- Create profiles table
 CREATE TABLE public.profiles (
     id UUID PRIMARY KEY REFERENCES auth.users ON DELETE CASCADE,
     username TEXT UNIQUE NOT NULL,
