@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS public.node (
     title TEXT NOT NULL,
     description TEXT,
     type TEXT NOT NULL,
-    owner_id UUID REFERENCES public.profiles(id),
+    owner_id UUID REFERENCES auth.users(id),
     investigation_id UUID REFERENCES public.investigation(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
