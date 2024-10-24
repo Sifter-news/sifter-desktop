@@ -10,8 +10,7 @@ CREATE TABLE IF NOT EXISTS public.investigation (
     owner_id UUID REFERENCES auth.users(id),
     organization_id UUID REFERENCES public.organization(id),
     visibility TEXT DEFAULT 'private',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create investigation access table
@@ -50,7 +49,3 @@ CREATE POLICY "Users can delete their own investigations"
     FOR DELETE
     TO authenticated
     USING (owner_id = auth.uid());
-
--- Add indexes for better query performance
-CREATE INDEX IF NOT EXISTS investigation_owner_id_idx ON public.investigation(owner_id);
-CREATE INDEX IF NOT EXISTS investigation_created_at_idx ON public.investigation(created_at DESC);
