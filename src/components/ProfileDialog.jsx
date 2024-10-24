@@ -7,9 +7,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserIcon, LogOutIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const ProfileDialog = ({ user, onUpdateUser }) => {
+const ProfileDialog = ({ user, onUpdateUser, children }) => {
   const navigate = useNavigate();
-  const [avatar, setAvatar] = useState('https://files.slack.com/files-pri/T0H44FCFR-F07T1KBE4HW/_____node________description.png');
+  const [avatar, setAvatar] = useState('/default-image.png');
 
   const handleSignOut = () => {
     navigate('/login');
@@ -30,7 +30,7 @@ const ProfileDialog = ({ user, onUpdateUser }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="text-sm">Edit Profile</Button>
+        {children}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

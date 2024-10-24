@@ -10,12 +10,11 @@ import {
 import ToolButton from './ToolbarButton';
 import ExportDialog from './ExportDialog';
 
-const Toolbar = ({ activeTool, setActiveTool, handleAIClick, handleAddNode, handleZoom, zoom, nodes, onDragStart }) => {
+const Toolbar = ({ activeTool, setActiveTool, handleAIClick, handleAddNode, handleZoom, zoom, nodes }) => {
   const [isExportDialogOpen, setIsExportDialogOpen] = React.useState(false);
 
   const handleDragStart = (e, nodeType) => {
     e.dataTransfer.setData('nodeType', nodeType);
-    onDragStart(nodeType);
 
     // Create a custom drag image
     const dragImage = document.createElement('div');
