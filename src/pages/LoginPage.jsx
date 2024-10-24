@@ -1,71 +1,10 @@
 import React from 'react';
-import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { supabase } from '../integrations/supabase/supabase';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useNavigate } from 'react-router-dom';
-import { useToast } from "@/components/ui/use-toast";
 
 const LoginPage = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-
-  React.useEffect(() => {
-    // Store default credentials in localStorage if not present
-    if (!localStorage.getItem('defaultEmail')) {
-      localStorage.setItem('defaultEmail', 'admin@sifter.news');
-      localStorage.setItem('defaultPassword', 'SiftedWorld@2024');
-    }
-
-    const checkSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        if (session) {
-          navigate('/');
-        }
-      } catch (error) {
-        console.error('Error checking session:', error);
-      }
-    };
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === 'SIGNED_IN' && session) {
-          navigate('/');
-        }
-      }
-    );
-
-    checkSession();
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  const handleAuthError = (error) => {
-    console.error('Auth error:', error);
-    toast({
-      title: "Authentication Error",
-      description: "Please check your credentials and try again.",
-      variant: "destructive",
-    });
-  };
-
-  // Custom styles to inject the default credentials
-  const customStyles = {
-    input: `
-      #auth-sign-in input[name="email"] { 
-        background-image: none !important;
-      }
-      #auth-sign-in input[name="password"] {
-        background-image: none !important;
-      }
-    `,
-    defaultValues: {
-      email: localStorage.getItem('defaultEmail') || 'admin@sifter.news',
-      password: localStorage.getItem('defaultPassword') || 'SiftedWorld@2024',
-    },
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#594BFF]">
       <div 
@@ -86,29 +25,17 @@ const LoginPage = () => {
           </Avatar>
         </div>
         <h2 className="text-2xl font-bold text-center mb-6">Login to Sifter</h2>
-        <div className="text-sm text-center text-gray-600 mb-4">
-          Use these credentials:<br/>
-          Email: {customStyles.defaultValues.email}<br/>
-          Password: {customStyles.defaultValues.password}
-        </div>
-        <style>{customStyles.input}</style>
-        <Auth
-          supabaseClient={supabase}
-          appearance={{ 
-            theme: ThemeSupa,
-            style: {
-              input: {
-                color: 'black',
-              }
-            }
-          }}
-          theme="light"
-          providers={[]}
-          onlyThirdPartyProviders={false}
-          redirectTo={window.location.origin}
-          onError={handleAuthError}
-          defaultValues={customStyles.defaultValues}
-        />
+        <form className="space-y-4">
+          <div>
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" type="email" placeholder="Enter your email" />
+          </div>
+          <div>
+            <Label htmlFor="password">Password</Label>
+            <Input id="password" type="password" placeholder="Enter your password" />
+          </div>
+          <Button className="w-full">Sign In</Button>
+        </form>
       </div>
     </div>
   );

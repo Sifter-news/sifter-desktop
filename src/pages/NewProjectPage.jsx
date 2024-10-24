@@ -5,12 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PlusIcon } from 'lucide-react';
-import { useToast } from "@/components/ui/use-toast";
-import { supabase } from '../integrations/supabase/supabase';
 
 const NewProjectPage = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [projectTitle, setProjectTitle] = useState('');
   const user = {
     name: 'User-Name',
@@ -18,44 +15,17 @@ const NewProjectPage = () => {
     email: 'user@example.com',
   };
 
-  const handleCreateProject = async () => {
+  const handleCreateProject = () => {
     if (projectTitle.trim()) {
-      try {
-        const { data: { user: currentUser } } = await supabase.auth.getUser();
-        
-        if (!currentUser) {
-          throw new Error('User not authenticated');
-        }
-
-        const { data: newProject, error } = await supabase
-          .from('investigation')
-          .insert([
-            {
-              title: projectTitle.trim(),
-              description: '',
-              owner_id: currentUser.id
-            }
-          ])
-          .select()
-          .single();
-
-        if (error) throw error;
-
-        toast({
-          title: "Project created",
-          description: "Your new project has been created successfully.",
-        });
-
-        // Navigate to the new project
-        navigate('/', { state: { newProject } });
-      } catch (error) {
-        console.error('Error creating project:', error);
-        toast({
-          title: "Error",
-          description: "Failed to create project. Please try again.",
-          variant: "destructive",
-        });
-      }
+      const newProject = {
+        id: Date.now().toString(),
+        title: projectTitle,
+        description: '',
+        reports: []
+      };
+      // Here you would typically save the new project to your backend
+      // For now, we'll just navigate to the new project view
+      navigate(`/project/${newProject.id}`, { state: { project: newProject } });
     }
   };
 
@@ -103,11 +73,6 @@ const NewProjectPage = () => {
             className="flex-grow text-lg border-none focus:ring-0 rounded-full"
             value={projectTitle}
             onChange={(e) => setProjectTitle(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                handleCreateProject();
-              }
-            }}
           />
           <Button 
             className="bg-[#594BFF] hover:bg-[#4B3FD9] text-white rounded-full px-6"
@@ -120,6 +85,7 @@ const NewProjectPage = () => {
       <footer className="bg-white shadow-lg">
         <div className="container mx-auto px-4 py-2">
           <div className="flex justify-center space-x-4">
+            {/* Add toolbar buttons here */}
             <Button variant="ghost">Tool 1</Button>
             <Button variant="ghost">Tool 2</Button>
             <Button variant="ghost">Tool 3</Button>

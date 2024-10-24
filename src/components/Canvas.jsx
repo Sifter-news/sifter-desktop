@@ -3,10 +3,10 @@ import NodeRenderer from './NodeRenderer';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const Canvas = forwardRef(({ 
-  nodes = [], 
+  nodes, 
   setNodes, 
-  zoom = 1, 
-  position = { x: 0, y: 0 }, // Add default value for position
+  zoom, 
+  position, 
   activeTool, 
   handlePanStart, 
   handlePanMove, 
@@ -38,8 +38,8 @@ const Canvas = forwardRef(({
       setNodes(prevNodes => prevNodes.map(node => 
         node.isDragging ? { 
           ...node, 
-          x: snapToGrid((e.clientX - (ref.current?.offsetLeft || 0)) / zoom - position.x), 
-          y: snapToGrid((e.clientY - (ref.current?.offsetTop || 0)) / zoom - position.y)
+          x: snapToGrid((e.clientX - ref.current.offsetLeft) / zoom - position.x), 
+          y: snapToGrid((e.clientY - ref.current.offsetTop) / zoom - position.y)
         } : node
       ));
     }
@@ -51,32 +51,32 @@ const Canvas = forwardRef(({
 
   const handleCanvasMouseDown = useCallback((e) => {
     if (activeTool === 'pan') {
-      handlePanStart?.();
+      handlePanStart();
     }
   }, [activeTool, handlePanStart]);
 
   const handleCanvasMouseMove = useCallback((e) => {
     handleDrag(e);
     if (activeTool === 'pan') {
-      handlePanMove?.(e);
+      handlePanMove(e);
     }
   }, [activeTool, handleDrag, handlePanMove]);
 
   const handleCanvasMouseUp = useCallback(() => {
     handleDragEnd();
     if (activeTool === 'pan') {
-      handlePanEnd?.();
+      handlePanEnd();
     }
   }, [activeTool, handleDragEnd, handlePanEnd]);
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Delete' && focusedNodeId) {
       const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
-      if (nodeToDelete?.type === 'ai') {
+      if (nodeToDelete.type === 'ai') {
         setNodeToDelete(nodeToDelete);
         setShowDeleteConfirmation(true);
       } else {
-        onNodeDelete?.(focusedNodeId);
+        onNodeDelete(focusedNodeId);
       }
     }
   }, [focusedNodeId, nodes, onNodeDelete]);
@@ -90,7 +90,7 @@ const Canvas = forwardRef(({
 
   const handleConfirmDelete = () => {
     if (nodeToDelete) {
-      onNodeDelete?.(nodeToDelete.id);
+      onNodeDelete(nodeToDelete.id);
     }
     setShowDeleteConfirmation(false);
     setNodeToDelete(null);
@@ -120,7 +120,7 @@ const Canvas = forwardRef(({
             transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
           }}
         >
-          {nodes?.map(node => (
+          {nodes.map(node => (
             <NodeRenderer
               key={node.id}
               node={node}

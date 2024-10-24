@@ -61,15 +61,4 @@ export interface LocationNode extends BaseNode {
   keyLinks?: string[];
 }
 
-export interface DueDiligenceNode extends BaseNode {
-  type: 'duediligence';
-  category: 'financial' | 'legal' | 'technical' | 'market' | 'operational';
-  status: 'pending' | 'in-progress' | 'completed' | 'flagged';
-  priority: 'low' | 'medium' | 'high';
-  assignee?: string;
-  dueDate?: string;
-  findings?: string[];
-  risks?: { description: string; severity: 'low' | 'medium' | 'high' }[];
-}
-
-export type Node = BaseNode | PersonNode | OrganizationNode | ObjectNode | EventNode | ConceptNode | LocationNode | DueDiligenceNode;
+export type Node = BaseNode | PersonNode | OrganizationNode | ObjectNode | EventNode | ConceptNode | LocationNode;

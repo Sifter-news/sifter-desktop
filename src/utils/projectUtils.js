@@ -1,8 +1,8 @@
-export const saveInvestigationState = (investigationId, nodes) => {
-  localStorage.setItem(`investigation_${investigationId}`, JSON.stringify(nodes));
+export const saveProjectState = (projectId, nodes) => {
+  localStorage.setItem(`project_${projectId}`, JSON.stringify(nodes));
 };
 
-export const loadInvestigationState = (investigationId) => {
-  const savedState = localStorage.getItem(`investigation_${investigationId}`);
+export const loadProjectState = (projectId) => {
+  const savedState = localStorage.getItem(`project_${projectId}`);
   return savedState ? JSON.parse(savedState) : [];
 };

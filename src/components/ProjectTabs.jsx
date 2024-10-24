@@ -9,25 +9,25 @@ import MapView from '../pages/project/MapView';
 const ProjectTabs = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode }) => {
   return (
     <Tabs defaultValue="mind" className="w-full flex flex-col flex-grow">
-      <TabsList className="mx-auto justify-center fixed top-16 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex rounded-full">
-        <TabsTrigger value="mind" className="flex items-center px-3 py-1.5">
+      <TabsList className="mx-auto justify-center fixed top-16 left-0 right-0 bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex">
+        <TabsTrigger value="mind" className="flex items-center">
           <Brain className="w-4 h-4 mr-2" />
           Mind
         </TabsTrigger>
-        <TabsTrigger value="text" className="flex items-center px-3 py-1.5">
+        <TabsTrigger value="text" className="flex items-center">
           <FileText className="w-4 h-4 mr-2" />
           Text
         </TabsTrigger>
-        <TabsTrigger value="time" className="flex items-center px-3 py-1.5">
+        <TabsTrigger value="time" className="flex items-center">
           <Clock className="w-4 h-4 mr-2" />
           Time
         </TabsTrigger>
-        <TabsTrigger value="map" className="flex items-center px-3 py-1.5">
+        <TabsTrigger value="map" className="flex items-center">
           <Map className="w-4 h-4 mr-2" />
           Map
         </TabsTrigger>
       </TabsList>
-      <div className="flex-grow mt-16">
+      <div className="flex-grow mt-12">
         <TabsContent value="mind" className="h-full">
           <MindView 
             project={project} 
