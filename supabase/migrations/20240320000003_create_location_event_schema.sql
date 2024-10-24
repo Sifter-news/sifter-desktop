@@ -15,7 +15,7 @@ CREATE TABLE public.node_event (
     end_date TIMESTAMP,
     location_id UUID REFERENCES public.node_location(id),
     description TEXT,
-    investigation_id UUID REFERENCES public.investigation(id),
+    investigation_id UUID REFERENCES public.investigations(id),
     parent_event_id UUID REFERENCES public.node_event(id) ON DELETE SET NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

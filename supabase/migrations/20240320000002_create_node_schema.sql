@@ -7,7 +7,7 @@ CREATE TABLE public.node (
     avatar TEXT DEFAULT 'default_avatar.png',
     is_public BOOLEAN DEFAULT FALSE,
     owner_id UUID REFERENCES public.profiles(id),
-    investigation_id UUID REFERENCES public.investigation(id),
+    investigation_id UUID REFERENCES public.investigations(id),
     parent_node_id UUID REFERENCES public.node(id) ON DELETE SET NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

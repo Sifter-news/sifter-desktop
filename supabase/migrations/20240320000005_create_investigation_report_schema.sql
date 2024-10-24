@@ -1,5 +1,5 @@
 -- Create investigation and report tables
-CREATE TABLE public.investigation (
+CREATE TABLE public.investigations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title VARCHAR(255),
     description TEXT,
@@ -7,10 +7,10 @@ CREATE TABLE public.investigation (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE public.report (
+CREATE TABLE public.reports (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title VARCHAR(255),
     description TEXT,
-    investigation_id UUID REFERENCES public.investigation(id),
+    investigation_id UUID REFERENCES public.investigations(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
