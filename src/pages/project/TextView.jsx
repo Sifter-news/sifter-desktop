@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import Navigator from './Navigator';
-import { findAvailablePosition } from '../utils/canvasUtils';
+import Navigator from "./Navigator";
+import { findAvailablePosition } from '../../utils/canvasUtils';
 
 const TextView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => {
   const [selectedNode, setSelectedNode] = useState(null);
