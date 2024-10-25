@@ -5,11 +5,8 @@ export const useInvestigation = (id) => useQuery({
   queryKey: ['investigations', id],
   queryFn: async () => {
     const { data, error } = await supabase
-      .from('investigations')
-      .select(`
-        *,
-        reports (*)
-      `)
+      .from('investigation_with_reports')
+      .select('*')
       .eq('id', id)
       .single();
       
@@ -25,11 +22,8 @@ export const useInvestigations = ({ select, filter } = {}) => {
     queryFn: async () => {
       try {
         let query = supabase
-          .from('investigations')
-          .select(`
-            *,
-            reports (*)
-          `);
+          .from('investigation_with_reports')
+          .select('*');
         
         if (filter?.startsWith('owner_id.eq.')) {
           const userId = filter.replace('owner_id.eq.', '');
@@ -87,10 +81,7 @@ export const useUpdateInvestigation = () => {
           .from('investigations')
           .update(updates)
           .eq('id', id)
-          .select(`
-            *,
-            reports (*)
-          `)
+          .select()
           .single();
           
         if (error) throw error;
@@ -101,10 +92,7 @@ export const useUpdateInvestigation = () => {
       }
     },
     onSuccess: (updatedInvestigation) => {
-      // Update the investigations list query
       queryClient.invalidateQueries({ queryKey: ['investigations'] });
-      
-      // Update the individual investigation query
       queryClient.setQueryData(
         ['investigations', updatedInvestigation.id],
         updatedInvestigation
