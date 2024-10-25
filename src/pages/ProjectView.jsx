@@ -18,16 +18,38 @@ const ProjectView = () => {
     email: 'user@example.com',
   };
 
-  const [project, setProject] = useState(location.state?.project || {
-    id,
-    title: `New Project`,
-    description: '',
-    reports: []
-  });
-
+  const [project, setProject] = useState(null);
   const [nodes, setNodes] = useState([]);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
+
+  useEffect(() => {
+    const loadProject = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('investigations')
+          .select('*')
+          .eq('id', id)
+          .single();
+          
+        if (error) throw error;
+        
+        if (data) {
+          setProject({
+            ...data,
+            reports: []
+          });
+        }
+      } catch (error) {
+        console.error('Error loading project:', error);
+        toast.error('Failed to load project');
+      }
+    };
+
+    if (id) {
+      loadProject();
+    }
+  }, [id]);
 
   useEffect(() => {
     const loadNodes = async () => {
@@ -128,6 +150,10 @@ const ProjectView = () => {
     setSelectedArticle(article);
     setIsArticleModalOpen(true);
   };
+
+  if (!project) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
