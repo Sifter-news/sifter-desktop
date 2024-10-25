@@ -56,3 +56,7 @@ CREATE POLICY "Enable delete for report owners" ON public.reports
         SELECT 1 FROM public.investigations i 
         WHERE i.id = investigation_id AND i.owner_id = auth.uid()
     ));
+
+-- Create indexes for better performance
+CREATE INDEX idx_reports_investigation_id ON public.reports(investigation_id);
+CREATE INDEX idx_investigations_owner_id ON public.investigations(owner_id);
