@@ -44,7 +44,7 @@ const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
           <div className="h-[128px] w-full overflow-hidden relative">
             <img 
               src={image}
-              alt={investigation.title}
+              alt={investigation.title || 'Investigation'}
               className="w-full h-full object-cover"
               onError={(e) => {
                 e.target.src = '/placeholder.svg';
@@ -59,8 +59,10 @@ const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
           </div>
           <CardContent className="p-6 h-[calc(100%-128px)] flex flex-col relative z-10">
             <div className="text-xs uppercase text-purple-600 font-semibold tracking-wide mb-2">Investigation</div>
-            <h3 className="text-lg font-bold text-gray-800 mb-2">{investigation.title}</h3>
-            <p className="text-sm text-gray-600 flex-grow overflow-hidden line-clamp-2">{investigation.description}</p>
+            <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">{investigation.title || 'Untitled Investigation'}</h3>
+            <p className="text-sm text-gray-600 flex-grow overflow-hidden line-clamp-3">
+              {investigation.description || 'No description available'}
+            </p>
           </CardContent>
         </div>
       </Card>
