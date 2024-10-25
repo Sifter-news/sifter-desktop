@@ -29,7 +29,7 @@ const ProjectTabs = ({
 
   return (
     <div className="relative h-full">
-      <div className="fixed top-20 right-4 z-50">
+      <div className="fixed top-16 right-4 z-50">
         <Select value={investigatorType} onValueChange={setInvestigatorType}>
           <SelectTrigger className="w-[180px] bg-white bg-opacity-80 backdrop-blur-md shadow-lg">
             <SelectValue placeholder="Select investigator type" />
