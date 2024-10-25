@@ -3,7 +3,24 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "postgis";
 CREATE EXTENSION IF NOT EXISTS "wrappers" WITH SCHEMA "extensions";
 
--- Create base tables
+DROP TABLE IF EXISTS public.node;
+CREATE TABLE public.node (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title VARCHAR(255),
+    description TEXT,
+    type VARCHAR(50),
+    avatar TEXT DEFAULT 'default_avatar.png',
+    is_public BOOLEAN DEFAULT FALSE,
+    owner_id UUID REFERENCES public.profiles(id),
+    investigation_id UUID REFERENCES public.investigations(id),
+    parent_node_id UUID REFERENCES public.node(id) ON DELETE SET NULL,
+    x NUMERIC(10,2) DEFAULT 0,
+    y NUMERIC(10,2) DEFAULT 0,
+    width INTEGER DEFAULT 200,
+    height INTEGER DEFAULT 200,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE public.profiles (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username VARCHAR(255) NOT NULL UNIQUE,
@@ -40,24 +57,6 @@ CREATE TABLE public.reports (
     content TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP
-);
-
-DROP TABLE IF EXISTS public.node;
-CREATE TABLE public.node (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    title VARCHAR(255),
-    description TEXT,
-    type VARCHAR(50),
-    avatar TEXT DEFAULT 'default_avatar.png',
-    is_public BOOLEAN DEFAULT FALSE,
-    owner_id UUID REFERENCES public.profiles(id),
-    investigation_id UUID REFERENCES public.investigations(id),
-    parent_node_id UUID REFERENCES public.node(id) ON DELETE SET NULL,
-    position_x NUMERIC(10,2) DEFAULT 0,
-    position_y NUMERIC(10,2) DEFAULT 0,
-    width INTEGER DEFAULT 200,
-    height INTEGER DEFAULT 200,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Enable Row Level Security
@@ -104,4 +103,4 @@ CREATE POLICY "Enable delete for report owners" ON public.reports
 CREATE INDEX idx_reports_investigation_id ON public.reports(investigation_id);
 CREATE INDEX idx_investigations_owner_id ON public.investigations(owner_id);
 CREATE INDEX idx_node_investigation_id ON public.node(investigation_id);
-CREATE INDEX idx_node_coordinates ON public.node(position_x, position_y);
+CREATE INDEX idx_node_coordinates ON public.node(x, y);

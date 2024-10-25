@@ -11,8 +11,8 @@ export const useNodeOperations = (setNodes) => {
         description: newNode.description,
         type: newNode.type,
         investigation_id: projectId,
-        position_x: position.x,
-        position_y: position.y,
+        x: position.x,
+        y: position.y,
         width: newNode.width || 200
       };
 
@@ -26,8 +26,8 @@ export const useNodeOperations = (setNodes) => {
 
       setNodes(prevNodes => [...prevNodes, {
         ...data,
-        x: data.position_x,
-        y: data.position_y
+        x: data.x,
+        y: data.y
       }]);
       toast.success('Node added successfully');
     } catch (error) {
@@ -41,8 +41,8 @@ export const useNodeOperations = (setNodes) => {
       const validUpdates = {
         title: updates.title,
         description: updates.description,
-        position_x: updates.x,
-        position_y: updates.y,
+        x: updates.x,
+        y: updates.y,
         width: updates.width
       };
 
