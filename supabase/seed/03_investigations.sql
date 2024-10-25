@@ -1,23 +1,29 @@
--- Create 6 investigations per user with due diligence focus
+-- Create investigations with realistic scenarios
 WITH user_ids AS (SELECT id FROM public.profiles)
 INSERT INTO public.investigations (id, title, description, owner_id, visibility, view_type)
 SELECT 
   uuid_generate_v4(),
-  CASE (i % 6)
-    WHEN 0 THEN 'Financial Due Diligence - ' || u.id
-    WHEN 1 THEN 'Legal Compliance Review - ' || u.id
-    WHEN 2 THEN 'Market Competition Analysis - ' || u.id
-    WHEN 3 THEN 'Technical Infrastructure Assessment - ' || u.id
-    WHEN 4 THEN 'Environmental Impact Study - ' || u.id
-    WHEN 5 THEN 'Human Resources Due Diligence - ' || u.id
+  CASE (i % 9)
+    WHEN 0 THEN 'Financial Due Diligence - Tech Startup Acquisition'
+    WHEN 1 THEN 'Criminal Investigation - Downtown Robbery Series'
+    WHEN 2 THEN 'Historical Research - Civil War Battle Site'
+    WHEN 3 THEN 'M&A Due Diligence - Healthcare Merger'
+    WHEN 4 THEN 'Cold Case Investigation - 1985 Missing Person'
+    WHEN 5 THEN 'Archaeological Investigation - Ancient Trade Route'
+    WHEN 6 THEN 'Corporate Fraud Investigation - Accounting Irregularities'
+    WHEN 7 THEN 'Environmental Due Diligence - Industrial Site'
+    WHEN 8 THEN 'Historical Analysis - Medieval Manuscript Authentication'
   END,
-  CASE (i % 6)
-    WHEN 0 THEN 'Comprehensive financial analysis including cash flow, revenue models, and financial projections'
-    WHEN 1 THEN 'Review of legal structure, contracts, and regulatory compliance status'
-    WHEN 2 THEN 'Analysis of market position, competitive landscape, and growth potential'
-    WHEN 3 THEN 'Assessment of technical infrastructure, scalability, and security measures'
-    WHEN 4 THEN 'Evaluation of environmental impact and sustainability practices'
-    WHEN 5 THEN 'Review of HR policies, team composition, and organizational culture'
+  CASE (i % 9)
+    WHEN 0 THEN 'Comprehensive analysis of startup financials, IP portfolio, and market position for potential acquisition'
+    WHEN 1 THEN 'Investigation of connected robbery incidents in downtown area between January-March 2024'
+    WHEN 2 THEN 'Archaeological and historical analysis of newly discovered Civil War battle site in Virginia'
+    WHEN 3 THEN 'Pre-merger analysis of healthcare provider including compliance, assets, and liabilities'
+    WHEN 4 THEN 'Re-examination of cold case involving disappearance of local resident Sarah Johnson'
+    WHEN 5 THEN 'Study of ancient trade routes through satellite imagery and archaeological findings'
+    WHEN 6 THEN 'Investigation into suspected financial statement manipulation and insider trading'
+    WHEN 7 THEN 'Environmental impact assessment and contamination analysis of former industrial site'
+    WHEN 8 THEN 'Authentication and provenance research of recently discovered medieval manuscript'
   END,
   u.id,
   CASE (i % 3) 
@@ -32,4 +38,4 @@ SELECT
     ELSE 'text'
   END
 FROM user_ids u
-CROSS JOIN generate_series(1, 6) i;
+CROSS JOIN generate_series(1, 9) i;
