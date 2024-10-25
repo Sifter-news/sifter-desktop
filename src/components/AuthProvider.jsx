@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/supabase';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const AuthContext = createContext({});
 
@@ -12,25 +13,86 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check active sessions and sets the user
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+    const checkSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Session error:', error);
+          setUser(null);
+          navigate('/login');
+          return;
+        }
+
+        if (!session) {
+          setUser(null);
+          navigate('/login');
+          return;
+        }
+
+        setUser(session.user);
+      } catch (error) {
+        console.error('Auth error:', error);
+        setUser(null);
+        navigate('/login');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN') {
+        setUser(session?.user ?? null);
+        toast.success('Successfully signed in!');
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        navigate('/login');
+        toast.success('Signed out successfully');
+      } else if (event === 'TOKEN_REFRESHED') {
+        setUser(session?.user ?? null);
+      } else if (event === 'USER_UPDATED') {
+        setUser(session?.user ?? null);
+      }
       setLoading(false);
     });
 
-    // Listen for changes on auth state (sign in, sign out, etc.)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   const value = {
-    signUp: (data) => supabase.auth.signUp(data),
-    signIn: (data) => supabase.auth.signInWithPassword(data),
-    signOut: () => supabase.auth.signOut(),
+    signUp: async (data) => {
+      try {
+        const { error } = await supabase.auth.signUp(data);
+        if (error) throw error;
+        toast.success('Check your email to confirm your account');
+      } catch (error) {
+        toast.error(error.message);
+        throw error;
+      }
+    },
+    signIn: async (data) => {
+      try {
+        const { error } = await supabase.auth.signInWithPassword(data);
+        if (error) throw error;
+      } catch (error) {
+        toast.error(error.message);
+        throw error;
+      }
+    },
+    signOut: async () => {
+      try {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+        navigate('/login');
+      } catch (error) {
+        toast.error(error.message);
+        throw error;
+      }
+    },
     user,
   };
 
