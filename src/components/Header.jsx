@@ -13,14 +13,14 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
       <div className="mx-auto px-12 py-2 flex justify-between items-center">
         <div className="flex items-center space-x-4 min-w-[200px]">
           <div className="flex items-center space-x-2">
-            <img src="https://files.slack.com/files-pri/T0H44FCFR-F07SQ8UB8JD/logo_sifter_256px.png" alt="Sifter Logo" className="h-8 w-8" />
+            <img src="/favicon.ico" alt="Sifter Logo" className="h-8 w-8" />
             <span className="text-sm font-normal">Sifter</span>
             <span className="text-sm font-normal text-gray-400">beta</span>
           </div>
         </div>
         <div className="flex-grow flex justify-center items-center">
           <div className="flex items-center space-x-2">
-            <img src="https://files.slack.com/files-pri/T0H44FCFR-F07T1KBE4HW/_____node________description.png" alt="Dashboard Icon" className="h-8 w-8" />
+            <img src="/placeholder.svg" alt="Dashboard Icon" className="h-8 w-8" />
             {projectName ? (
               <span 
                 className="text-sm font-normal text-[#4B25F3] cursor-pointer hover:underline" 
