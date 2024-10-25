@@ -21,15 +21,13 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
         <div className="flex-grow flex justify-center items-center">
           <div className="flex items-center space-x-2">
             <img src="/placeholder.svg" alt="Dashboard Icon" className="h-8 w-8" />
-            {projectName ? (
+            {projectName && (
               <span 
                 className="text-sm font-normal text-[#4B25F3] cursor-pointer hover:underline" 
                 onClick={() => setIsEditModalOpen(true)}
               >
                 {projectName}
               </span>
-            ) : (
-              <span className="text-sm font-normal text-[#4B25F3]">Loading...</span>
             )}
           </div>
         </div>
