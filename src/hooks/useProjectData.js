@@ -34,19 +34,13 @@ export const useProjectData = (id) => {
       try {
         const { data, error } = await supabase
           .from('node')
-          .select('id, title, description, type, investigation_id, position_x, position_y, width')
+          .select('id, title, description, type, investigation_id, x, y, width')
           .eq('investigation_id', id);
           
         if (error) throw error;
         
         if (data) {
-          // Map position_x and position_y to x and y for frontend compatibility
-          const mappedNodes = data.map(node => ({
-            ...node,
-            x: node.position_x,
-            y: node.position_y
-          }));
-          setNodes(mappedNodes);
+          setNodes(data);
         }
       } catch (error) {
         console.error('Error loading nodes:', error);
