@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Input } from "@/components/ui/input";
 
 const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
-  const [image, setImage] = useState('/default-image.png');
+  const [image, setImage] = useState(investigation.image || '/placeholder.svg');
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -47,7 +47,7 @@ const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
               alt={investigation.title}
               className="w-full h-full object-cover"
               onError={(e) => {
-                e.target.src = '/default-image.png';
+                e.target.src = '/placeholder.svg';
               }}
             />
             <Input
