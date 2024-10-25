@@ -11,8 +11,8 @@ export const useNodeOperations = (setNodes) => {
         description: newNode.description,
         type: newNode.type,
         investigation_id: projectId,
-        x: position.x,
-        y: position.y,
+        position_x: position.x,
+        position_y: position.y,
         width: newNode.width || 200
       };
 
@@ -24,7 +24,14 @@ export const useNodeOperations = (setNodes) => {
 
       if (error) throw error;
 
-      setNodes(prevNodes => [...prevNodes, data]);
+      // Map position_x and position_y to x and y for frontend compatibility
+      const mappedNode = {
+        ...data,
+        x: data.position_x,
+        y: data.position_y
+      };
+
+      setNodes(prevNodes => [...prevNodes, mappedNode]);
       toast.success('Node added successfully');
     } catch (error) {
       console.error('Error adding node:', error);
@@ -37,8 +44,8 @@ export const useNodeOperations = (setNodes) => {
       const validUpdates = {
         title: updates.title,
         description: updates.description,
-        x: updates.x,
-        y: updates.y,
+        position_x: updates.x,
+        position_y: updates.y,
         width: updates.width
       };
 
