@@ -44,18 +44,14 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
       return;
     }
     
-    if (!project?.id) {
-      toast.error("Invalid project data");
-      onClose();
-      return;
-    }
-    
     try {
-      await onUpdate({ 
-        ...project,
-        title: title.trim(), 
-        description: description.trim() 
-      });
+      const updatedProject = {
+        id: project.id,
+        title: title.trim(),
+        description: description.trim()
+      };
+      
+      await onUpdate(updatedProject);
       toast.success("Project updated successfully");
       onClose();
     } catch (error) {
