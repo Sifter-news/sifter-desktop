@@ -108,7 +108,7 @@ const ProjectTabs = ({
         </div>
       </Tabs>
       
-      <div className="fixed bottom-12 right-12 z-50">
+      <div className="fixed bottom-[calc(12px+480px)] right-12 z-50">
         <ReportList
           reports={project.reports}
           onAddReport={onAddReport}
