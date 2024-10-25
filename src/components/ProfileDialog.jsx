@@ -12,10 +12,11 @@ import { useProfile, useUpdateProfile } from '@/integrations/supabase/index';
 
 const ProfileDialog = ({ user }) => {
   const navigate = useNavigate();
-  const { data: profile, isLoading } = useProfile(user?.id);
+  const { data: profile, isLoading, error } = useProfile(user?.id);
   const { mutate: updateProfile } = useUpdateProfile();
   const [username, setUsername] = useState('');
   const [avatar, setAvatar] = useState('/placeholder.svg');
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (profile) {
@@ -26,8 +27,7 @@ const ProfileDialog = ({ user }) => {
 
   const handleSignOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      await supabase.auth.signOut();
       navigate('/login');
       toast.success('Signed out successfully');
     } catch (error) {
@@ -48,6 +48,7 @@ const ProfileDialog = ({ user }) => {
         avatar_url: avatar
       });
       toast.success('Profile updated successfully');
+      setIsOpen(false);
     } catch (error) {
       toast.error('Error updating profile: ' + error.message);
     }
@@ -90,11 +91,15 @@ const ProfileDialog = ({ user }) => {
   };
 
   if (isLoading) {
-    return null;
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading profile</div>;
   }
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" className="text-sm">
           <Avatar className="h-8 w-8 mr-2">

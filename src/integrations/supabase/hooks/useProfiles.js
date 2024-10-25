@@ -3,7 +3,7 @@ import { supabase } from '../supabase';
 
 const fromSupabase = async (query) => {
   const { data, error } = await query;
-  if (error) throw new Error(error.message);
+  if (error) throw error;
   return data;
 };
 
@@ -11,16 +11,39 @@ export const useProfile = (id) => useQuery({
   queryKey: ['profiles', id],
   queryFn: async () => {
     if (!id) return null;
-    const { data, error } = await supabase
+    
+    // First try to get the existing profile
+    let { data, error } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', id)
       .single();
     
+    // If no profile exists, create one
+    if (!data && !error) {
+      const { data: userData } = await supabase.auth.getUser();
+      const newProfile = {
+        id: id,
+        username: userData.user?.email?.split('@')[0] || 'user',
+        email: userData.user?.email,
+        created_at: new Date().toISOString()
+      };
+      
+      const { data: createdProfile, error: createError } = await supabase
+        .from('profiles')
+        .insert([newProfile])
+        .select()
+        .single();
+        
+      if (createError) throw createError;
+      return createdProfile;
+    }
+    
     if (error) throw error;
     return data;
   },
-  enabled: !!id, // Only run query if id exists
+  enabled: !!id,
+  retry: 1
 });
 
 export const useProfiles = () => useQuery({
