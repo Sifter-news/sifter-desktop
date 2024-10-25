@@ -80,7 +80,7 @@ const ProjectTabs = ({
         </div>
       </Tabs>
       
-      {/* Single ReportList instance in the bottom right corner */}
+      {/* Floating ReportList that appears above all views */}
       <div className="fixed bottom-12 right-12 z-50">
         <ReportList
           reports={project.reports}
