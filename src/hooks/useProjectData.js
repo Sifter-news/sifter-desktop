@@ -34,7 +34,7 @@ export const useProjectData = (id) => {
       try {
         const { data, error } = await supabase
           .from('node')
-          .select('id, title, description, type, investigation_id, x, y, width')
+          .select('id, title, description, type, investigation_id, position_x, position_y, width')
           .eq('investigation_id', id);
           
         if (error) throw error;
@@ -42,8 +42,8 @@ export const useProjectData = (id) => {
         if (data) {
           setNodes(data.map(node => ({
             ...node,
-            x: node.x || 0,
-            y: node.y || 0,
+            x: node.position_x || 0,
+            y: node.position_y || 0,
             width: node.width || 200,
           })));
         }
