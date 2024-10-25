@@ -1,0 +1,6 @@
+-- Add position and dimension columns to node table
+ALTER TABLE public.node
+ADD COLUMN x FLOAT DEFAULT 0,
+ADD COLUMN y FLOAT DEFAULT 0,
+ADD COLUMN width INTEGER DEFAULT 200,
+ADD COLUMN height INTEGER DEFAULT 200;

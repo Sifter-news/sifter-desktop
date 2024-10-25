@@ -88,11 +88,15 @@ const ProjectView = () => {
   const handleAddNode = async (newNode) => {
     try {
       const position = findAvailablePosition(nodes);
-      const nodeWithPosition = { 
-        ...newNode, 
-        x: position.x, 
+      const nodeWithPosition = {
+        title: newNode.title,
+        description: newNode.description,
+        type: newNode.type,
+        investigation_id: id,
+        x: position.x,
         y: position.y,
-        investigation_id: id
+        width: newNode.width || 200,
+        height: newNode.height || 200
       };
 
       const { data, error } = await supabase
@@ -113,9 +117,19 @@ const ProjectView = () => {
 
   const handleUpdateNode = async (nodeId, updates) => {
     try {
+      // Only update the allowed columns
+      const validUpdates = {
+        title: updates.title,
+        description: updates.description,
+        x: updates.x,
+        y: updates.y,
+        width: updates.width,
+        height: updates.height
+      };
+
       const { error } = await supabase
         .from('node')
-        .update(updates)
+        .update(validUpdates)
         .eq('id', nodeId);
 
       if (error) throw error;
