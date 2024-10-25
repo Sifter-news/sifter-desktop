@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 
-const ProjectEditModal = ({ isOpen, onClose, projectName, description = "", onUpdate, onDelete }) => {
+const ProjectEditModal = ({ isOpen, onClose, projectName = "", description = "", onUpdate, onDelete }) => {
   const [title, setTitle] = useState(projectName);
   const [desc, setDesc] = useState(description);
 
@@ -15,15 +15,26 @@ const ProjectEditModal = ({ isOpen, onClose, projectName, description = "", onUp
       toast.error("Project title cannot be empty");
       return;
     }
-    onUpdate({ title: title.trim(), description: desc.trim() });
-    toast.success("Project updated successfully");
-    onClose();
+    
+    if (typeof onUpdate === 'function') {
+      onUpdate({ title: title.trim(), description: desc.trim() });
+      toast.success("Project updated successfully");
+      onClose();
+    } else {
+      console.warn('onUpdate prop is not a function');
+      onClose();
+    }
   };
 
   const handleDelete = () => {
-    onDelete();
-    toast.success("Project deleted successfully");
-    onClose();
+    if (typeof onDelete === 'function') {
+      onDelete();
+      toast.success("Project deleted successfully");
+      onClose();
+    } else {
+      console.warn('onDelete prop is not a function');
+      onClose();
+    }
   };
 
   return (
