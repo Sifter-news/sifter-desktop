@@ -1,6 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Brain, FileText, Clock, Map } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import MindMapView from './MindMapView';
 import TextView from './TextView';
 import TimeView from './TimeView';
@@ -18,10 +25,29 @@ const ProjectTabs = ({
   onUpdateReport,
   onDeleteReport 
 }) => {
+  const [investigatorType, setInvestigatorType] = useState('private');
+
   return (
     <div className="relative h-full">
+      <div className="fixed top-16 left-0 right-0 z-20 bg-white bg-opacity-80 backdrop-blur-md px-4 py-2">
+        <div className="max-w-[280px] mx-auto flex items-center justify-center gap-4">
+          <Select value={investigatorType} onValueChange={setInvestigatorType}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select investigator type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="private">Private Investigator</SelectItem>
+              <SelectItem value="police">Police Detective</SelectItem>
+              <SelectItem value="journalist">Investigative Journalist</SelectItem>
+              <SelectItem value="corporate">Corporate Investigator</SelectItem>
+              <SelectItem value="cyber">Cyber Investigator</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      
       <Tabs defaultValue="mind" className="w-full flex flex-col flex-grow">
-        <TabsList className="max-w-[280px] mx-auto justify-center fixed top-16 left-0 right-0 bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex">
+        <TabsList className="max-w-[280px] mx-auto justify-center fixed top-28 left-0 right-0 bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex">
           <TabsTrigger value="mind" className="flex items-center">
             <Brain className="w-4 h-4 mr-2" />
             Mind
@@ -39,7 +65,7 @@ const ProjectTabs = ({
             Map
           </TabsTrigger>
         </TabsList>
-        <div className="flex-grow mt-12">
+        <div className="flex-grow mt-24">
           <TabsContent value="mind" className="h-full">
             <MindMapView 
               project={project} 
@@ -48,6 +74,7 @@ const ProjectTabs = ({
               onAddNode={onAddNode}
               onUpdateNode={onUpdateNode}
               onDeleteNode={onDeleteNode}
+              investigatorType={investigatorType}
             />
           </TabsContent>
           <TabsContent value="text" className="h-full">
@@ -57,6 +84,7 @@ const ProjectTabs = ({
               onAddNode={onAddNode}
               onUpdateNode={onUpdateNode}
               onDeleteNode={onDeleteNode}
+              investigatorType={investigatorType}
             />
           </TabsContent>
           <TabsContent value="time" className="h-full">
@@ -66,6 +94,7 @@ const ProjectTabs = ({
               onAddNode={onAddNode}
               onUpdateNode={onUpdateNode}
               onDeleteNode={onDeleteNode}
+              investigatorType={investigatorType}
             />
           </TabsContent>
           <TabsContent value="map" className="h-full">
@@ -75,12 +104,12 @@ const ProjectTabs = ({
               onAddNode={onAddNode}
               onUpdateNode={onUpdateNode}
               onDeleteNode={onDeleteNode}
+              investigatorType={investigatorType}
             />
           </TabsContent>
         </div>
       </Tabs>
       
-      {/* Floating ReportList that appears above all views */}
       <div className="fixed bottom-12 right-12 z-50">
         <ReportList
           reports={project.reports}
