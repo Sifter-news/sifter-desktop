@@ -52,8 +52,8 @@ CREATE TABLE public.node (
     owner_id UUID REFERENCES public.profiles(id),
     investigation_id UUID REFERENCES public.investigations(id),
     parent_node_id UUID REFERENCES public.node(id) ON DELETE SET NULL,
-    x FLOAT DEFAULT 0,
-    y FLOAT DEFAULT 0,
+    x DECIMAL DEFAULT 0,
+    y DECIMAL DEFAULT 0,
     width INTEGER DEFAULT 200,
     height INTEGER DEFAULT 200,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -103,3 +103,4 @@ CREATE POLICY "Enable delete for report owners" ON public.reports
 CREATE INDEX idx_reports_investigation_id ON public.reports(investigation_id);
 CREATE INDEX idx_investigations_owner_id ON public.investigations(owner_id);
 CREATE INDEX idx_node_investigation_id ON public.node(investigation_id);
+CREATE INDEX idx_node_coordinates ON public.node(x, y);
