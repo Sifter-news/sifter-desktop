@@ -12,40 +12,41 @@ export const useProfile = (id) => useQuery({
   queryFn: async () => {
     if (!id) return null;
     
-    // First check if profile exists
-    const { data: existingProfile, error: checkError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
-    
-    if (checkError) throw checkError;
-    
-    // If profile exists, return it
-    if (existingProfile) {
-      return existingProfile;
+    try {
+      // First check if profile exists
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+      
+      if (existingProfile) {
+        return existingProfile;
+      }
+      
+      // If no profile exists, create one
+      const { data: { user } } = await supabase.auth.getUser();
+      const newProfile = {
+        id: id,
+        username: user?.email?.split('@')[0] || 'user',
+        email: user?.email,
+        created_at: new Date().toISOString()
+      };
+      
+      const { data: createdProfile } = await supabase
+        .from('profiles')
+        .insert([newProfile])
+        .select()
+        .maybeSingle();
+      
+      return createdProfile || newProfile;
+    } catch (error) {
+      console.error('Profile fetch/create error:', error);
+      return null;
     }
-    
-    // If no profile exists, create one
-    const { data: userData } = await supabase.auth.getUser();
-    const newProfile = {
-      id: id,
-      username: userData.user?.email?.split('@')[0] || 'user',
-      email: userData.user?.email,
-      created_at: new Date().toISOString()
-    };
-    
-    const { data: createdProfile, error: createError } = await supabase
-      .from('profiles')
-      .insert([newProfile])
-      .select()
-      .single();
-    
-    if (createError) throw createError;
-    return createdProfile;
   },
   enabled: !!id,
-  retry: 1
+  retry: false
 });
 
 export const useProfiles = () => useQuery({
