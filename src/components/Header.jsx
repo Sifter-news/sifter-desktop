@@ -35,8 +35,10 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
           <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
             Dashboard
           </Link>
-          <span className="text-sm font-normal">{user.name}</span>
-          <UserProfile user={user} onUpdateUser={onUpdateUser} />
+          <div className="flex items-center space-x-2">
+            <span className="text-sm font-normal">{user.name}</span>
+            <UserProfile user={user} onUpdateUser={onUpdateUser} />
+          </div>
         </div>
       </div>
       <ProjectEditModal 
