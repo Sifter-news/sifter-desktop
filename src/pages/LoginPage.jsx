@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
+import { Twitter } from 'lucide-react';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -65,6 +66,23 @@ const LoginPage = () => {
       toast.error(error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleTwitterLogin = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'twitter',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) {
+        toast.error('Twitter login failed: ' + error.message);
+      }
+    } catch (error) {
+      toast.error('Failed to initialize Twitter login');
     }
   };
 
@@ -148,6 +166,25 @@ const LoginPage = () => {
           </div>
           <Button className="w-full" type="submit" disabled={loading}>
             {loading ? 'Loading...' : 'Sign In'}
+          </Button>
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+          <Button 
+            type="button"
+            variant="outline" 
+            className="w-full flex items-center justify-center gap-2"
+            onClick={handleTwitterLogin}
+          >
+            <Twitter className="h-4 w-4" />
+            Twitter
           </Button>
           <Button 
             className="w-full" 
