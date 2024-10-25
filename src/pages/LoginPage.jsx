@@ -15,17 +15,30 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    
+    if (!email || !password) {
+      toast.error('Please enter both email and password');
+      return;
+    }
+
     setLoading(true);
     
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: email.trim(),
+        password: password.trim()
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message === 'Invalid login credentials') {
+          toast.error('Invalid email or password. Please try again.');
+        } else {
+          toast.error(error.message);
+        }
+        return;
+      }
 
-      // Create profile if it doesn't exist
+      // Check if profile exists
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select()
@@ -72,8 +85,8 @@ const LoginPage = () => {
     
     try {
       const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
+        email: email.trim(),
+        password: password.trim(),
         options: {
           emailRedirectTo: window.location.origin,
         }
