@@ -9,11 +9,11 @@ const ReportList = ({ reports = [], onAddReport, onEditReport, onDeleteReport })
 
   const handleSaveArticle = (article) => {
     if (typeof onAddReport === 'function') {
-      // Create a new serializable object with only the needed properties
+      // Create a serializable object with primitive values only
       const newArticle = {
-        id: Date.now(),
-        title: article.title,
-        content: article.content,
+        id: Date.now().toString(), // Convert to string to ensure serializability
+        title: article.title || '',
+        content: article.content || '',
         image: '/default-image.png'
       };
       
@@ -24,11 +24,11 @@ const ReportList = ({ reports = [], onAddReport, onEditReport, onDeleteReport })
 
   const handleEditReport = (report) => {
     if (typeof onEditReport === 'function') {
-      // Create a serializable copy of the report
+      // Create a serializable copy with primitive values only
       const serializableReport = {
-        id: report.id,
-        title: report.title,
-        content: report.content,
+        id: report.id.toString(), // Convert to string to ensure serializability
+        title: report.title || '',
+        content: report.content || '',
         image: report.image || '/default-image.png'
       };
       onEditReport(serializableReport);
@@ -38,7 +38,7 @@ const ReportList = ({ reports = [], onAddReport, onEditReport, onDeleteReport })
   return (
     <div className="bg-white bg-opacity-20 backdrop-blur-sm p-4 rounded-full">
       <div className="flex flex-col items-center">
-        {reports.length > 0 && (
+        {reports?.length > 0 && (
           <div className="w-[30%] mb-4 flex flex-wrap justify-center gap-2">
             {reports.map((report) => (
               <TooltipProvider key={report.id}>
@@ -52,7 +52,7 @@ const ReportList = ({ reports = [], onAddReport, onEditReport, onDeleteReport })
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="font-bold">{report.title}</p>
+                    <p className="font-bold">{report.title || 'Untitled'}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
