@@ -9,7 +9,6 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
 
   const handleSaveArticle = (article) => {
-    // Create a serializable article object
     const serializableArticle = {
       id: String(Date.now()),
       title: article.title || '',
@@ -29,7 +28,6 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
   const handleEditReport = (report) => {
     if (!report) return;
     
-    // Create a serializable report object
     const serializableReport = {
       id: String(report.id),
       title: report.title || '',
