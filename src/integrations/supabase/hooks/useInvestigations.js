@@ -30,9 +30,9 @@ export const useInvestigations = ({ select, filter } = {}) => {
         .from('investigations')
         .select(select || '*');
       
-      // Only apply filter if it's a valid user ID
-      if (filter && filter.includes('owner_id.eq.')) {
-        const userId = filter.split('owner_id.eq.')[1];
+      // Extract user ID from filter string if it exists
+      if (filter?.startsWith('owner_id.eq.')) {
+        const userId = filter.replace('owner_id.eq.', '');
         if (userId && userId !== 'undefined') {
           query = query.eq('owner_id', userId);
         }
