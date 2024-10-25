@@ -6,6 +6,8 @@ import ProjectModals from '../components/ProjectModals';
 import ReportList from '../components/ReportList';
 import ArticleModal from '../components/ArticleModal';
 import { findAvailablePosition } from '../utils/canvasUtils';
+import { supabase } from '@/integrations/supabase/supabase';
+import { toast } from 'sonner';
 
 const ProjectView = () => {
   const { id } = useParams();
@@ -28,57 +30,98 @@ const ProjectView = () => {
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
 
   useEffect(() => {
-    if (location.state?.project) {
-      const savedNodes = localStorage.getItem(`project_${id}_nodes`);
-      if (savedNodes) {
-        try {
-          setNodes(JSON.parse(savedNodes));
-        } catch (error) {
-          console.error('Error loading nodes:', error);
-          setNodes([]);
+    const loadNodes = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('node')
+          .select('*')
+          .eq('investigation_id', id);
+          
+        if (error) throw error;
+        
+        if (data) {
+          setNodes(data.map(node => ({
+            ...node,
+            x: node.x || 0,
+            y: node.y || 0,
+            width: node.width || 200,
+            height: node.height || 200,
+          })));
         }
+      } catch (error) {
+        console.error('Error loading nodes:', error);
+        toast.error('Failed to load nodes');
       }
-    }
-  }, [id, location.state]);
+    };
 
-  useEffect(() => {
-    const safeNodes = nodes.map(node => ({
-      id: node.id,
-      type: node.type,
-      x: node.x,
-      y: node.y,
-      text: node.text,
-      title: node.title,
-      width: node.width,
-      height: node.height,
-      color: node.color,
-    }));
-
-    try {
-      localStorage.setItem(`project_${id}_nodes`, JSON.stringify(safeNodes));
-    } catch (error) {
-      console.error('Error saving nodes:', error);
+    if (id) {
+      loadNodes();
     }
-  }, [id, nodes]);
+  }, [id]);
 
   const handleProjectUpdate = (updatedProject) => {
     setProject(updatedProject);
   };
 
-  const handleAddNode = (newNode) => {
-    const position = findAvailablePosition(nodes);
-    const nodeWithPosition = { ...newNode, x: position.x, y: position.y };
-    setNodes(prevNodes => [...prevNodes, nodeWithPosition]);
+  const handleAddNode = async (newNode) => {
+    try {
+      const position = findAvailablePosition(nodes);
+      const nodeWithPosition = { 
+        ...newNode, 
+        x: position.x, 
+        y: position.y,
+        investigation_id: id
+      };
+
+      const { data, error } = await supabase
+        .from('node')
+        .insert([nodeWithPosition])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setNodes(prevNodes => [...prevNodes, data]);
+      toast.success('Node added successfully');
+    } catch (error) {
+      console.error('Error adding node:', error);
+      toast.error('Failed to add node');
+    }
   };
 
-  const handleUpdateNode = (nodeId, updates) => {
-    setNodes(prevNodes => prevNodes.map(node => 
-      node.id === nodeId ? { ...node, ...updates } : node
-    ));
+  const handleUpdateNode = async (nodeId, updates) => {
+    try {
+      const { error } = await supabase
+        .from('node')
+        .update(updates)
+        .eq('id', nodeId);
+
+      if (error) throw error;
+
+      setNodes(prevNodes => prevNodes.map(node => 
+        node.id === nodeId ? { ...node, ...updates } : node
+      ));
+    } catch (error) {
+      console.error('Error updating node:', error);
+      toast.error('Failed to update node');
+    }
   };
 
-  const handleDeleteNode = (nodeId) => {
-    setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
+  const handleDeleteNode = async (nodeId) => {
+    try {
+      const { error } = await supabase
+        .from('node')
+        .delete()
+        .eq('id', nodeId);
+
+      if (error) throw error;
+
+      setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
+      toast.success('Node deleted successfully');
+    } catch (error) {
+      console.error('Error deleting node:', error);
+      toast.error('Failed to delete node');
+    }
   };
 
   const handleArticleClick = (article) => {
