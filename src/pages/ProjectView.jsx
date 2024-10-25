@@ -28,18 +28,37 @@ const ProjectView = () => {
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
 
   useEffect(() => {
-    // Load nodes from localStorage or API if it's an existing project
     if (location.state?.project) {
       const savedNodes = localStorage.getItem(`project_${id}_nodes`);
       if (savedNodes) {
-        setNodes(JSON.parse(savedNodes));
+        try {
+          setNodes(JSON.parse(savedNodes));
+        } catch (error) {
+          console.error('Error loading nodes:', error);
+          setNodes([]);
+        }
       }
     }
   }, [id, location.state]);
 
   useEffect(() => {
-    // Save nodes to localStorage whenever they change
-    localStorage.setItem(`project_${id}_nodes`, JSON.stringify(nodes));
+    const safeNodes = nodes.map(node => ({
+      id: node.id,
+      type: node.type,
+      x: node.x,
+      y: node.y,
+      text: node.text,
+      title: node.title,
+      width: node.width,
+      height: node.height,
+      color: node.color,
+    }));
+
+    try {
+      localStorage.setItem(`project_${id}_nodes`, JSON.stringify(safeNodes));
+    } catch (error) {
+      console.error('Error saving nodes:', error);
+    }
   }, [id, nodes]);
 
   const handleProjectUpdate = (updatedProject) => {
@@ -92,7 +111,6 @@ const ProjectView = () => {
         onClose={() => setIsArticleModalOpen(false)}
         article={selectedArticle}
         onUpdate={(updatedArticle) => {
-          // Handle article update if needed
           console.log("Article updated:", updatedArticle);
         }}
       />
