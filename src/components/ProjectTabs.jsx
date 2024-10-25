@@ -45,7 +45,7 @@ const ProjectTabs = ({
       </div>
       
       <Tabs defaultValue="mind" className="w-full flex flex-col flex-grow">
-        <TabsList className="max-w-[280px] mx-auto justify-center fixed top-16 left-0 right-0 bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex">
+        <TabsList className="max-w-[340px] mx-auto justify-center fixed top-16 left-0 right-0 bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex">
           <TabsTrigger value="mind" className="flex items-center">
             <Brain className="w-4 h-4 mr-2" />
             Mind
