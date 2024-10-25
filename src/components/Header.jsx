@@ -29,7 +29,7 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
                 {projectName}
               </span>
             ) : (
-              <span className="text-sm font-normal text-[#4B25F3]">Dashboard Name</span>
+              <span className="text-sm font-normal text-[#4B25F3]">Loading...</span>
             )}
           </div>
         </div>
