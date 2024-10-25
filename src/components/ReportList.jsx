@@ -8,26 +8,29 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
 
   const handleSaveArticle = (article) => {
-    // Create a new serializable object with only the needed properties
-    const newArticle = {
-      id: Date.now(),
-      title: article.title,
-      content: article.content,
-      image: '/default-image.png'
+    // Create a serializable article object
+    const serializableArticle = {
+      id: String(Date.now()),
+      title: article.title || '',
+      content: article.content || '',
+      image: article.image || '/default-image.png'
     };
     
-    onAddReport(newArticle);
+    onAddReport(serializableArticle);
     setIsArticleModalOpen(false);
   };
 
   const handleEditReport = (report) => {
-    // Create a serializable copy of the report
+    if (!report) return;
+    
+    // Create a serializable report object
     const serializableReport = {
-      id: report.id,
-      title: report.title,
-      content: report.content,
+      id: String(report.id),
+      title: report.title || '',
+      content: report.content || '',
       image: report.image || '/default-image.png'
     };
+    
     onEditReport(serializableReport);
   };
 
@@ -35,10 +38,10 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
     <div className="fixed bottom-12 right-12 z-10">
       <div className="bg-white bg-opacity-20 backdrop-blur-sm p-4 rounded-full">
         <div className="flex flex-col items-center">
-          {reports.length > 0 && (
+          {reports && reports.length > 0 && (
             <div className="w-[30%] mb-4 flex flex-wrap justify-center gap-2">
               {reports.map((report) => (
-                <TooltipProvider key={report.id}>
+                <TooltipProvider key={String(report.id)}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
@@ -49,7 +52,7 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="font-bold">{report.title}</p>
+                      <p className="font-bold">{report.title || 'Untitled'}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
