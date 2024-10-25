@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -9,8 +9,15 @@ import { toast } from "sonner";
 
 const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
   const navigate = useNavigate();
-  const [title, setTitle] = useState(project?.title || '');
-  const [description, setDescription] = useState(project?.description || '');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+
+  useEffect(() => {
+    if (project) {
+      setTitle(project.title || '');
+      setDescription(project.description || '');
+    }
+  }, [project]);
 
   const handleSave = () => {
     if (!title.trim()) {
@@ -25,11 +32,10 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
     }
     
     onUpdate({ 
-      id: project.id,
+      ...project,
       title: title.trim(), 
       description: description.trim() 
     });
-    onClose();
   };
 
   const handleDelete = () => {
@@ -40,7 +46,6 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
     }
     
     onDelete(project.id);
-    navigate('/');
     onClose();
   };
 
