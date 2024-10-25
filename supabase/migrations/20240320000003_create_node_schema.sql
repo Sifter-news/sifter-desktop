@@ -9,5 +9,9 @@ CREATE TABLE public.node (
     owner_id UUID REFERENCES public.profiles(id),
     investigation_id UUID REFERENCES public.investigations(id),
     parent_node_id UUID REFERENCES public.node(id) ON DELETE SET NULL,
+    x FLOAT DEFAULT 0,
+    y FLOAT DEFAULT 0,
+    width INTEGER DEFAULT 200,
+    height INTEGER DEFAULT 200,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
