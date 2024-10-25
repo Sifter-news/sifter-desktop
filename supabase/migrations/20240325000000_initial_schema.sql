@@ -42,6 +42,7 @@ CREATE TABLE public.reports (
     updated_at TIMESTAMP
 );
 
+DROP TABLE IF EXISTS public.node;
 CREATE TABLE public.node (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title VARCHAR(255),
@@ -52,8 +53,8 @@ CREATE TABLE public.node (
     owner_id UUID REFERENCES public.profiles(id),
     investigation_id UUID REFERENCES public.investigations(id),
     parent_node_id UUID REFERENCES public.node(id) ON DELETE SET NULL,
-    x DECIMAL DEFAULT 0,
-    y DECIMAL DEFAULT 0,
+    x NUMERIC(10,2) DEFAULT 0,
+    y NUMERIC(10,2) DEFAULT 0,
     width INTEGER DEFAULT 200,
     height INTEGER DEFAULT 200,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
