@@ -10,13 +10,23 @@ const SocialLoginButtons = () => {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'twitter',
         options: {
-          redirectTo: 'https://dzzkeiacwaddihxavrhy.supabase.co/auth/v1/callback'
+          redirectTo: `${window.location.origin}/auth/callback`,
+          scopes: 'tweet.read users.read'
         }
       });
 
       if (error) {
         toast.error('Twitter login failed: ' + error.message);
+        return;
       }
+
+      if (!data.url) {
+        toast.error('Failed to get authorization URL from Twitter');
+        return;
+      }
+
+      // Redirect to Twitter OAuth
+      window.location.href = data.url;
     } catch (error) {
       toast.error('Failed to initialize Twitter login');
     }
