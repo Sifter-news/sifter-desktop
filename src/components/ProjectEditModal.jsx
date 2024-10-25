@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +8,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { toast } from "sonner";
 
 const ProjectEditModal = ({ isOpen, onClose, projectName = "", description = "", onUpdate, onDelete }) => {
+  const navigate = useNavigate();
   const [title, setTitle] = useState(projectName);
   const [desc, setDesc] = useState(description);
 
@@ -30,6 +32,7 @@ const ProjectEditModal = ({ isOpen, onClose, projectName = "", description = "",
     if (typeof onDelete === 'function') {
       onDelete();
       toast.success("Project deleted successfully");
+      navigate('/');
       onClose();
     } else {
       console.warn('onDelete prop is not a function');
