@@ -2,8 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import UserProfile from './UserProfile';
+import ProjectEditModal from './ProjectEditModal';
+import { useState } from 'react';
 
-const Header = ({ user, projectName, onProjectClick, onUpdateUser }) => {
+const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpdate, onProjectDelete }) => {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
   return (
     <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
       <div className="mx-auto px-12 py-2 flex justify-between items-center">
@@ -18,7 +22,12 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser }) => {
           <div className="flex items-center space-x-2">
             <img src="https://files.slack.com/files-pri/T0H44FCFR-F07T1KBE4HW/_____node________description.png" alt="Dashboard Icon" className="h-8 w-8" />
             {projectName ? (
-              <span className="text-sm font-normal text-[#4B25F3] cursor-pointer" onClick={onProjectClick}>{projectName}</span>
+              <span 
+                className="text-sm font-normal text-[#4B25F3] cursor-pointer hover:underline" 
+                onClick={() => setIsEditModalOpen(true)}
+              >
+                {projectName}
+              </span>
             ) : (
               <span className="text-sm font-normal text-[#4B25F3]">Dashboard Name</span>
             )}
@@ -32,6 +41,13 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser }) => {
           <UserProfile user={user} onUpdateUser={onUpdateUser} />
         </div>
       </div>
+      <ProjectEditModal 
+        isOpen={isEditModalOpen} 
+        onClose={() => setIsEditModalOpen(false)}
+        projectName={projectName}
+        onUpdate={onProjectUpdate}
+        onDelete={onProjectDelete}
+      />
     </header>
   );
 };

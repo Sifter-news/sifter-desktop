@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import ProjectTabs from '../components/ProjectTabs';
 
 const ProjectPage = () => {
   const { username, projectName } = useParams();
+  const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [user, setUser] = useState({
     name: username,
@@ -13,8 +14,6 @@ const ProjectPage = () => {
   });
 
   useEffect(() => {
-    // Here you would typically fetch the project data based on the username and projectName
-    // For now, we'll use mock data
     setProject({
       id: '1',
       title: projectName,
@@ -22,6 +21,18 @@ const ProjectPage = () => {
       reports: [],
     });
   }, [username, projectName]);
+
+  const handleProjectUpdate = ({ title, description }) => {
+    setProject(prev => ({
+      ...prev,
+      title,
+      description
+    }));
+  };
+
+  const handleProjectDelete = () => {
+    navigate('/');
+  };
 
   const handleAddReport = (newReport) => {
     setProject(prev => ({
@@ -52,7 +63,12 @@ const ProjectPage = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <Header user={user} projectName={project.title} onProjectClick={() => {}} />
+      <Header 
+        user={user} 
+        projectName={project.title} 
+        onProjectUpdate={handleProjectUpdate}
+        onProjectDelete={handleProjectDelete}
+      />
       <ProjectTabs
         project={project}
         nodes={[]}
