@@ -1,4 +1,4 @@
--- Add position and dimension columns to node table
+-- Add position and dimension columns to node table if they don't exist
 ALTER TABLE public.node
 ADD COLUMN IF NOT EXISTS x FLOAT DEFAULT 0,
 ADD COLUMN IF NOT EXISTS y FLOAT DEFAULT 0,
