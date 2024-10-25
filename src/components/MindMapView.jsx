@@ -74,6 +74,32 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
     setIsArticleModalOpen(true);
   };
 
+  const handleDragEnd = (e) => {
+    if (isDragging && draggedNodeType) {
+      const canvasRect = canvasRef.current.getBoundingClientRect();
+      const x = (e.clientX - canvasRect.left) / zoom - position.x;
+      const y = (e.clientY - canvasRect.top) / zoom - position.y;
+      
+      const { x: snappedX, y: snappedY } = snapToGrid(x, y);
+      
+      const newNode = {
+        id: Date.now().toString(),
+        type: draggedNodeType,
+        x: snappedX,
+        y: snappedY,
+        text: '',
+        title: '',
+        width: draggedNodeType === 'text' ? 'auto' : 200,
+        height: draggedNodeType === 'text' ? 'auto' : 200,
+        color: draggedNodeType === 'postit' ? '#FFFFA5' : '#FFFFFF',
+      };
+      
+      onAddNode(newNode);
+    }
+    setIsDragging(false);
+    setDraggedNodeType(null);
+  };
+
   return (
     <div className="flex h-[calc(100vh-64px)] w-screen overflow-hidden">
       <div className="flex-grow relative">
