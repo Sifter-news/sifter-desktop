@@ -12,35 +12,37 @@ export const useProfile = (id) => useQuery({
   queryFn: async () => {
     if (!id) return null;
     
-    // First try to get the existing profile
-    let { data, error } = await supabase
+    // First check if profile exists
+    const { data: existingProfile, error: checkError } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', id)
-      .single();
+      .maybeSingle();
     
-    // If no profile exists, create one
-    if (!data && !error) {
-      const { data: userData } = await supabase.auth.getUser();
-      const newProfile = {
-        id: id,
-        username: userData.user?.email?.split('@')[0] || 'user',
-        email: userData.user?.email,
-        created_at: new Date().toISOString()
-      };
-      
-      const { data: createdProfile, error: createError } = await supabase
-        .from('profiles')
-        .insert([newProfile])
-        .select()
-        .single();
-        
-      if (createError) throw createError;
-      return createdProfile;
+    if (checkError) throw checkError;
+    
+    // If profile exists, return it
+    if (existingProfile) {
+      return existingProfile;
     }
     
-    if (error) throw error;
-    return data;
+    // If no profile exists, create one
+    const { data: userData } = await supabase.auth.getUser();
+    const newProfile = {
+      id: id,
+      username: userData.user?.email?.split('@')[0] || 'user',
+      email: userData.user?.email,
+      created_at: new Date().toISOString()
+    };
+    
+    const { data: createdProfile, error: createError } = await supabase
+      .from('profiles')
+      .insert([newProfile])
+      .select()
+      .single();
+    
+    if (createError) throw createError;
+    return createdProfile;
   },
   enabled: !!id,
   retry: 1
