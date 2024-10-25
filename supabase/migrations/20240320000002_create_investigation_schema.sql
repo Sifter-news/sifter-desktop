@@ -56,12 +56,3 @@ CREATE POLICY "Enable delete for report owners" ON public.reports
         SELECT 1 FROM public.investigations i 
         WHERE i.id = investigation_id AND i.owner_id = auth.uid()
     ));
-
--- Create views for better querying
-CREATE OR REPLACE VIEW investigation_with_reports AS
-SELECT 
-    i.*,
-    COALESCE(json_agg(r.* ORDER BY r.created_at) FILTER (WHERE r.id IS NOT NULL), '[]') as reports
-FROM public.investigations i
-LEFT JOIN public.reports r ON r.investigation_id = i.id
-GROUP BY i.id;

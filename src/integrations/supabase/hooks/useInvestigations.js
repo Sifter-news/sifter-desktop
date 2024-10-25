@@ -5,8 +5,11 @@ export const useInvestigation = (id) => useQuery({
   queryKey: ['investigations', id],
   queryFn: async () => {
     const { data, error } = await supabase
-      .from('investigation_with_reports')
-      .select('*')
+      .from('investigations')
+      .select(`
+        *,
+        reports (*)
+      `)
       .eq('id', id)
       .single();
       
@@ -22,8 +25,11 @@ export const useInvestigations = ({ select, filter } = {}) => {
     queryFn: async () => {
       try {
         let query = supabase
-          .from('investigation_with_reports')
-          .select('*');
+          .from('investigations')
+          .select(`
+            *,
+            reports (*)
+          `);
         
         if (filter?.startsWith('owner_id.eq.')) {
           const userId = filter.replace('owner_id.eq.', '');
@@ -54,7 +60,10 @@ export const useAddInvestigation = () => {
         const { data, error } = await supabase
           .from('investigations')
           .insert([newInvestigation])
-          .select()
+          .select(`
+            *,
+            reports (*)
+          `)
           .single();
           
         if (error) throw error;
@@ -81,7 +90,10 @@ export const useUpdateInvestigation = () => {
           .from('investigations')
           .update(updates)
           .eq('id', id)
-          .select()
+          .select(`
+            *,
+            reports (*)
+          `)
           .single();
           
         if (error) throw error;
