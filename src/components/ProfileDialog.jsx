@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,10 +12,17 @@ import { useProfile, useUpdateProfile } from '@/integrations/supabase/index';
 
 const ProfileDialog = ({ user }) => {
   const navigate = useNavigate();
-  const { data: profile } = useProfile(user?.id);
+  const { data: profile, isLoading } = useProfile(user?.id);
   const { mutate: updateProfile } = useUpdateProfile();
-  const [username, setUsername] = useState(profile?.username || '');
-  const [avatar, setAvatar] = useState(profile?.avatar_url || '/placeholder.svg');
+  const [username, setUsername] = useState('');
+  const [avatar, setAvatar] = useState('/placeholder.svg');
+
+  useEffect(() => {
+    if (profile) {
+      setUsername(profile.username || '');
+      setAvatar(profile.avatar_url || '/placeholder.svg');
+    }
+  }, [profile]);
 
   const handleSignOut = async () => {
     try {
@@ -29,6 +36,11 @@ const ProfileDialog = ({ user }) => {
   };
 
   const handleSaveChanges = async () => {
+    if (!user?.id) {
+      toast.error('No user found');
+      return;
+    }
+
     try {
       await updateProfile({
         id: user.id,
@@ -42,6 +54,11 @@ const ProfileDialog = ({ user }) => {
   };
 
   const handleImageUpload = async (event) => {
+    if (!user?.id) {
+      toast.error('No user found');
+      return;
+    }
+
     try {
       const file = event.target.files[0];
       if (!file) return;
@@ -72,15 +89,19 @@ const ProfileDialog = ({ user }) => {
     }
   };
 
+  if (isLoading) {
+    return null;
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="ghost" className="text-sm">
           <Avatar className="h-8 w-8 mr-2">
-            <AvatarImage src={profile?.avatar_url || '/placeholder.svg'} alt={profile?.username} />
+            <AvatarImage src={avatar} alt={username} />
             <AvatarFallback><UserIcon className="h-4 w-4" /></AvatarFallback>
           </Avatar>
-          {profile?.username || 'Profile'}
+          {username || 'Profile'}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -119,7 +140,7 @@ const ProfileDialog = ({ user }) => {
             </Label>
             <Input 
               id="email" 
-              value={profile?.email || ''} 
+              value={user?.email || ''} 
               disabled 
               className="col-span-3" 
             />

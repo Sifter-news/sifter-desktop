@@ -7,26 +7,20 @@ const fromSupabase = async (query) => {
   return data;
 };
 
-/*
-### profiles
-
-| name                    | type      | format    | required |
-|------------------------|-----------|-----------|----------|
-| id                     | uuid      | string    | true     |
-| username               | varchar   | string    | true     |
-| email                  | varchar   | string    | false    |
-| created_at             | timestamp | string    | false    |
-| subscription_plan_id   | uuid      | string    | false    |
-| subscription_start_date| timestamp | string    | false    |
-| subscription_end_date  | timestamp | string    | false    |
-
-Foreign Key Relationships:
-- subscription_plan_id references subscription_plans.id
-*/
-
 export const useProfile = (id) => useQuery({
   queryKey: ['profiles', id],
-  queryFn: () => fromSupabase(supabase.from('profiles').select('*').eq('id', id).single()),
+  queryFn: async () => {
+    if (!id) return null;
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+  enabled: !!id, // Only run query if id exists
 });
 
 export const useProfiles = () => useQuery({
