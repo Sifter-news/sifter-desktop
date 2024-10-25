@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-const ArticleModal = ({ isOpen, onClose, article, onSave, onDelete }) => {
+const ArticleModal = ({ isOpen, onClose, article, onSave }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
@@ -19,12 +19,15 @@ const ArticleModal = ({ isOpen, onClose, article, onSave, onDelete }) => {
   }, [article]);
 
   const handleSave = () => {
-    onSave({ id: article?.id, title, content });
-    onClose();
-  };
-
-  const handleDelete = () => {
-    onDelete(article.id);
+    if (!title.trim()) return;
+    
+    const updatedArticle = {
+      ...(article || {}),
+      title: title.trim(),
+      content: content.trim(),
+    };
+    
+    onSave(updatedArticle);
     onClose();
   };
 
@@ -56,11 +59,6 @@ const ArticleModal = ({ isOpen, onClose, article, onSave, onDelete }) => {
           </div>
         </div>
         <DialogFooter>
-          {article && (
-            <Button variant="destructive" onClick={handleDelete}>
-              Delete
-            </Button>
-          )}
           <Button type="submit" onClick={handleSave}>
             Save Article
           </Button>

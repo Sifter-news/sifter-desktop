@@ -1,10 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import ArticleModal from './ArticleModal';
 
-const ReportList = ({ reports, onAddReport, onEditReport }) => {
+const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
+  const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
+
+  const handleSaveArticle = (article) => {
+    const newArticle = {
+      ...article,
+      id: Date.now(),
+      image: '/default-image.png'
+    };
+    onAddReport(newArticle);
+    setIsArticleModalOpen(false);
+  };
+
   return (
     <div className="fixed bottom-12 right-12 z-10">
       <div className="bg-white bg-opacity-20 backdrop-blur-sm p-4 rounded-full">
@@ -34,7 +47,7 @@ const ReportList = ({ reports, onAddReport, onEditReport }) => {
                 <Button
                   size="icon"
                   className="rounded-full w-12 h-12 bg-black hover:bg-gray-800 text-white shadow-lg"
-                  onClick={onAddReport}
+                  onClick={() => setIsArticleModalOpen(true)}
                 >
                   <PlusIcon className="h-6 w-6" />
                 </Button>
@@ -46,6 +59,12 @@ const ReportList = ({ reports, onAddReport, onEditReport }) => {
           </TooltipProvider>
         </div>
       </div>
+      <ArticleModal
+        isOpen={isArticleModalOpen}
+        onClose={() => setIsArticleModalOpen(false)}
+        article={null}
+        onSave={handleSaveArticle}
+      />
     </div>
   );
 };
