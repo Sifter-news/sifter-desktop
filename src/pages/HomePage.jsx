@@ -9,28 +9,40 @@ import { PlusIcon, FileSearchIcon } from 'lucide-react';
 import ReportModal from '../components/ReportModal';
 import ProjectEditModal from '../components/ProjectEditModal';
 import { useInvestigations, useAddInvestigation, useUpdateInvestigation, useDeleteInvestigation } from '@/integrations/supabase/index';
-import { useProfile } from '@/integrations/supabase/index';
+import { supabase } from '@/integrations/supabase/supabase';
+import { useEffect } from 'react';
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState({
-    name: 'User-Name',
-    avatar: '/default-image.png',
-    email: 'user@example.com',
-  });
+  const [user, setUser] = useState(null);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
 
-  // Replace static data with Supabase queries
-  const { data: investigations, isLoading, error } = useInvestigations();
+  // Get current user and their investigations
+  const { data: investigations, isLoading, error } = useInvestigations({
+    select: '*, reports(*)',
+    filter: user ? `owner_id.eq.${user.id}` : undefined,
+  });
+  
   const { mutate: addInvestigation } = useAddInvestigation();
   const { mutate: updateInvestigation } = useUpdateInvestigation();
   const { mutate: deleteInvestigation } = useDeleteInvestigation();
 
-  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const [editingProject, setEditingProject] = useState(null);
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/login');
+      } else {
+        setUser(user);
+      }
+    };
+
+    checkUser();
+  }, [navigate]);
 
   const handleProjectClick = (project) => {
-    const username = 'user'; // Replace this with actual username logic
-    navigate(`/${username}/project/${encodeURIComponent(project.title)}`);
+    navigate(`/project/${project.id}`);
   };
 
   const handleUpdateInvestigation = (updatedInvestigation) => {
@@ -55,15 +67,16 @@ const HomePage = () => {
     });
   };
 
-  const handleUpdateUser = (updatedUser) => {
-    setUser(updatedUser);
-  };
-
   const handleAddNewProject = () => {
+    if (!user) {
+      toast.error('Please log in to create a project');
+      return;
+    }
+
     const newProject = {
       title: 'New Project',
       description: '',
-      owner_id: user.id, // Add owner ID
+      owner_id: user.id,
       visibility: 'private',
       view_type: 'mind'
     };
@@ -79,6 +92,10 @@ const HomePage = () => {
     });
   };
 
+  if (!user) {
+    return null; // Will redirect in useEffect
+  }
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -89,7 +106,7 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <Header user={user} onUpdateUser={handleUpdateUser} />
+      <Header user={user} />
       <div className="flex-grow container mx-auto px-4 py-8 flex flex-col">
         <div className="bg-gray-100 rounded-[64px] p-8 overflow-hidden shadow-inner flex-grow flex flex-col">
           <div className="flex justify-between items-center mb-6">
@@ -97,7 +114,7 @@ const HomePage = () => {
               <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
                 <FileSearchIcon className="h-4 w-4 text-gray-600" />
               </div>
-              <h2 className="text-2xl font-bold">Investigations</h2>
+              <h2 className="text-2xl font-bold">My Investigations</h2>
             </div>
             <Button 
               className="rounded-full w-14 h-14 p-0 flex items-center justify-center"

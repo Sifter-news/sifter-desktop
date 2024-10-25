@@ -6,31 +6,82 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserIcon, LogOutIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/supabase';
+import { toast } from 'sonner';
+import { useProfile, useUpdateProfile } from '@/integrations/supabase/index';
 
-const ProfileDialog = ({ user, onUpdateUser }) => {
+const ProfileDialog = ({ user }) => {
   const navigate = useNavigate();
-  const [avatar, setAvatar] = useState('https://files.slack.com/files-pri/T0H44FCFR-F07T1KBE4HW/_____node________description.png');
+  const { data: profile } = useProfile(user?.id);
+  const { mutate: updateProfile } = useUpdateProfile();
+  const [username, setUsername] = useState(profile?.username || '');
+  const [avatar, setAvatar] = useState(profile?.avatar_url || '/placeholder.svg');
 
-  const handleSignOut = () => {
-    navigate('/login');
+  const handleSignOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      navigate('/login');
+      toast.success('Signed out successfully');
+    } catch (error) {
+      toast.error('Error signing out: ' + error.message);
+    }
   };
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatar(reader.result);
-        onUpdateUser({ ...user, avatar: reader.result });
-      };
-      reader.readAsDataURL(file);
+  const handleSaveChanges = async () => {
+    try {
+      await updateProfile({
+        id: user.id,
+        username,
+        avatar_url: avatar
+      });
+      toast.success('Profile updated successfully');
+    } catch (error) {
+      toast.error('Error updating profile: ' + error.message);
+    }
+  };
+
+  const handleImageUpload = async (event) => {
+    try {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-avatar.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      setAvatar(publicUrl);
+      await updateProfile({
+        id: user.id,
+        avatar_url: publicUrl
+      });
+
+      toast.success('Avatar updated successfully');
+    } catch (error) {
+      toast.error('Error uploading avatar: ' + error.message);
     }
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="text-sm">Edit Profile</Button>
+        <Button variant="ghost" className="text-sm">
+          <Avatar className="h-8 w-8 mr-2">
+            <AvatarImage src={profile?.avatar_url || '/placeholder.svg'} alt={profile?.username} />
+            <AvatarFallback><UserIcon className="h-4 w-4" /></AvatarFallback>
+          </Avatar>
+          {profile?.username || 'Profile'}
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -39,7 +90,7 @@ const ProfileDialog = ({ user, onUpdateUser }) => {
         <div className="grid gap-4 py-4">
           <div className="flex items-center justify-center">
             <Avatar className="h-24 w-24">
-              <AvatarImage src={avatar} alt={user.name} />
+              <AvatarImage src={avatar} alt={username} />
               <AvatarFallback><UserIcon className="h-12 w-12" /></AvatarFallback>
             </Avatar>
           </div>
@@ -52,22 +103,26 @@ const ProfileDialog = ({ user, onUpdateUser }) => {
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
+            <Label htmlFor="username" className="text-right">
+              Username
             </Label>
-            <Input id="name" defaultValue={user.name} className="col-span-3" />
+            <Input 
+              id="username" 
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="col-span-3" 
+            />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="email" className="text-right">
               Email
             </Label>
-            <Input id="email" defaultValue={user.email} className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="password" className="text-right">
-              Password
-            </Label>
-            <Input id="password" type="password" defaultValue="********" className="col-span-3" />
+            <Input 
+              id="email" 
+              value={profile?.email || ''} 
+              disabled 
+              className="col-span-3" 
+            />
           </div>
         </div>
         <div className="flex justify-between">
@@ -75,7 +130,7 @@ const ProfileDialog = ({ user, onUpdateUser }) => {
             <LogOutIcon className="mr-2 h-4 w-4" />
             Sign Out
           </Button>
-          <Button type="submit">Save changes</Button>
+          <Button type="submit" onClick={handleSaveChanges}>Save changes</Button>
         </div>
       </DialogContent>
     </Dialog>
