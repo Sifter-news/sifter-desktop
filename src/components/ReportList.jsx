@@ -9,18 +9,26 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
 
   const handleSaveArticle = (article) => {
+    // Ensure we're only passing serializable data
     const serializableArticle = {
       id: String(Date.now()),
-      title: article.title || '',
-      content: article.content || '',
-      image: article.image || '/default-image.png'
+      title: article?.title || '',
+      content: article?.content || '',
+      image: article?.image || '/default-image.png'
     };
     
-    if (typeof onAddReport === 'function') {
-      onAddReport(serializableArticle);
-    } else {
-      console.warn('onAddReport prop is not a function');
-      toast.error("Unable to add report at this time");
+    try {
+      if (typeof onAddReport === 'function') {
+        // Clone the object to ensure it's serializable
+        const clonedArticle = JSON.parse(JSON.stringify(serializableArticle));
+        onAddReport(clonedArticle);
+      } else {
+        console.warn('onAddReport prop is not a function');
+        toast.error("Unable to add report at this time");
+      }
+    } catch (error) {
+      console.error('Error saving article:', error);
+      toast.error("Failed to save report");
     }
     setIsArticleModalOpen(false);
   };
@@ -28,23 +36,31 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
   const handleEditReport = (report) => {
     if (!report) return;
     
-    const serializableReport = {
-      id: String(report.id),
-      title: report.title || '',
-      content: report.content || '',
-      image: report.image || '/default-image.png'
-    };
-    
-    if (typeof onEditReport === 'function') {
-      onEditReport(serializableReport);
-    } else {
-      console.warn('onEditReport prop is not a function');
-      toast.error("Unable to edit report at this time");
+    try {
+      // Ensure we're only passing serializable data
+      const serializableReport = {
+        id: String(report.id),
+        title: report?.title || '',
+        content: report?.content || '',
+        image: report?.image || '/default-image.png'
+      };
+      
+      if (typeof onEditReport === 'function') {
+        // Clone the object to ensure it's serializable
+        const clonedReport = JSON.parse(JSON.stringify(serializableReport));
+        onEditReport(clonedReport);
+      } else {
+        console.warn('onEditReport prop is not a function');
+        toast.error("Unable to edit report at this time");
+      }
+    } catch (error) {
+      console.error('Error editing report:', error);
+      toast.error("Failed to edit report");
     }
   };
 
   return (
-    <div className="fixed bottom-12 right-12 z-10">
+    <div className="fixed bottom-12 right-12" style={{ zIndex: 10 }}>
       <div className="bg-white bg-opacity-20 backdrop-blur-sm p-4 rounded-full">
         <div className="flex flex-col items-center">
           {reports && reports.length > 0 && (
