@@ -7,8 +7,6 @@ import { useZoomPan, findAvailablePosition, snapToGrid } from '../utils/canvasUt
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
 import AISidePanel from './AISidePanel';
-import ReportList from './ReportList';
-import ArticleModal from './ArticleModal';
 import AIInputSection from './AIInputSection';
 import NewArticlePreview from './NewArticlePreview';
 
@@ -21,8 +19,6 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
   const [initialAIMessage, setInitialAIMessage] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const [draggedNodeType, setDraggedNodeType] = useState(null);
-  const [showNewArticlePreview, setShowNewArticlePreview] = useState(false);
-  const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
   const canvasRef = useRef(null);
   const aiInputRef = useRef(null);
 
@@ -67,11 +63,6 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
       setInitialAIMessage(aiInputText);
       setAIInputText('');
     }
-  };
-
-  const handlePlusButtonClick = () => {
-    setShowNewArticlePreview(true);
-    setIsArticleModalOpen(true);
   };
 
   const handleDragEnd = (e) => {
@@ -123,9 +114,6 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
         {showAIInput && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <div className="relative">
-              {showNewArticlePreview && (
-                <NewArticlePreview onClose={() => setShowNewArticlePreview(false)} />
-              )}
               <AIInputSection
                 aiInputText={aiInputText}
                 setAIInputText={setAIInputText}
@@ -155,21 +143,6 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
         initialQuestion={initialAIMessage}
         onSendMessage={(message) => {
           console.log("Sending message to AI:", message);
-        }}
-      />
-      <ArticleModal
-        isOpen={isArticleModalOpen}
-        onClose={() => {
-          setIsArticleModalOpen(false);
-          setShowNewArticlePreview(false);
-        }}
-        article={null}
-        onSave={(article) => {
-          const newArticle = { ...article, id: Date.now() };
-          const updatedReports = [...project.reports, newArticle];
-          updateProject({ ...project, reports: updatedReports });
-          setIsArticleModalOpen(false);
-          setShowNewArticlePreview(false);
         }}
       />
     </div>
