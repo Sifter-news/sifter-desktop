@@ -23,6 +23,29 @@ const ProjectPage = () => {
     });
   }, [username, projectName]);
 
+  const handleAddReport = (newReport) => {
+    setProject(prev => ({
+      ...prev,
+      reports: [...(prev.reports || []), newReport]
+    }));
+  };
+
+  const handleUpdateReport = (updatedReport) => {
+    setProject(prev => ({
+      ...prev,
+      reports: prev.reports.map(report => 
+        report.id === updatedReport.id ? updatedReport : report
+      )
+    }));
+  };
+
+  const handleDeleteReport = (reportId) => {
+    setProject(prev => ({
+      ...prev,
+      reports: prev.reports.filter(report => report.id !== reportId)
+    }));
+  };
+
   if (!project) {
     return <div>Loading...</div>;
   }
@@ -32,11 +55,14 @@ const ProjectPage = () => {
       <Header user={user} projectName={project.title} onProjectClick={() => {}} />
       <ProjectTabs
         project={project}
-        nodes={[]} // You'll need to implement this based on your project structure
-        setNodes={() => {}} // You'll need to implement this based on your project structure
+        nodes={[]}
+        setNodes={() => {}}
         onAddNode={() => {}}
         onUpdateNode={() => {}}
         onDeleteNode={() => {}}
+        onAddReport={handleAddReport}
+        onUpdateReport={handleUpdateReport}
+        onDeleteReport={handleDeleteReport}
       />
     </div>
   );

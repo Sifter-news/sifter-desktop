@@ -6,7 +6,17 @@ import TextView from './TextView';
 import TimeView from './TimeView';
 import MapView from './MapView';
 
-const ProjectTabs = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode }) => {
+const ProjectTabs = ({ 
+  project, 
+  nodes, 
+  setNodes, 
+  onAddNode, 
+  onUpdateNode, 
+  onDeleteNode,
+  onAddReport,
+  onUpdateReport,
+  onDeleteReport 
+}) => {
   return (
     <Tabs defaultValue="mind" className="w-full flex flex-col flex-grow">
       <TabsList className="max-w-[280px] mx-auto justify-center fixed top-16 left-0 right-0 bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex">
@@ -36,6 +46,9 @@ const ProjectTabs = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
             onAddNode={onAddNode}
             onUpdateNode={onUpdateNode}
             onDeleteNode={onDeleteNode}
+            onAddReport={onAddReport}
+            onUpdateReport={onUpdateReport}
+            onDeleteReport={onDeleteReport}
           />
         </TabsContent>
         <TabsContent value="text" className="h-full">
