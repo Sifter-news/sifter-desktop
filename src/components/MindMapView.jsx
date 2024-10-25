@@ -8,9 +8,9 @@ import Canvas from './Canvas';
 import Toolbar from './Toolbar';
 import AISidePanel from './AISidePanel';
 import AIInputSection from './AIInputSection';
-import NewArticlePreview from './NewArticlePreview';
+import ReportList from './ReportList';
 
-const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode }) => {
+const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode, reports, onAddReport, onUpdateReport }) => {
   const [showAIInput, setShowAIInput] = useState(true);
   const [activeTool, setActiveTool] = useState('select');
   const [focusedNodeId, setFocusedNodeId] = useState(null);
@@ -20,7 +20,6 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
   const [isDragging, setIsDragging] = useState(false);
   const [draggedNodeType, setDraggedNodeType] = useState(null);
   const canvasRef = useRef(null);
-  const aiInputRef = useRef(null);
 
   const {
     zoom,
@@ -145,6 +144,13 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
           console.log("Sending message to AI:", message);
         }}
       />
+      <div className="fixed bottom-12 right-12 z-50">
+        <ReportList
+          reports={reports}
+          onAddReport={onAddReport}
+          onEditReport={onUpdateReport}
+        />
+      </div>
     </div>
   );
 };

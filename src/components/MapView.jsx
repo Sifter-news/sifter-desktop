@@ -2,10 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Button } from "@/components/ui/button";
+import ReportList from './ReportList';
 
 mapboxgl.accessToken = 'YOUR_MAPBOX_ACCESS_TOKEN_HERE';
 
-const MapView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => {
+const MapView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode, reports, onAddReport, onUpdateReport }) => {
   const mapContainer = useRef(null);
   const map = useRef(null);
   const [lng, setLng] = useState(-70);
@@ -13,7 +14,7 @@ const MapView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => {
   const [zoom, setZoom] = useState(2);
 
   useEffect(() => {
-    if (map.current) return; // initialize map only once
+    if (map.current) return;
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v11',
@@ -32,7 +33,7 @@ const MapView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => {
       onAddNode({
         id: Date.now(),
         type: 'map',
-        title: `Node at ${lng.toFixed(2)}, ${lat.toFixed(2)}`,
+        title: `Location at ${lng.toFixed(2)}, ${lat.toFixed(2)}`,
         content: '',
         longitude: lng,
         latitude: lat,
@@ -66,10 +67,12 @@ const MapView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode }) => {
       <div className="absolute top-0 left-0 m-4 bg-white p-2 rounded shadow">
         Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
       </div>
-      <div className="absolute bottom-4 right-4">
-        <Button onClick={() => console.log('Add node functionality to be implemented')}>
-          Add Node
-        </Button>
+      <div className="fixed bottom-12 right-12 z-50">
+        <ReportList
+          reports={reports}
+          onAddReport={onAddReport}
+          onEditReport={onUpdateReport}
+        />
       </div>
     </div>
   );

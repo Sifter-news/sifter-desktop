@@ -1,14 +1,13 @@
 import React from 'react';
 import { format } from 'date-fns';
+import ReportList from './ReportList';
 
-const TimeView = ({ project, nodes }) => {
-  // Sort nodes by timestamp
+const TimeView = ({ project, nodes, reports, onAddReport, onUpdateReport }) => {
   const sortedNodes = [...nodes].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
   return (
-    <div className="min-h-[calc(100vh-120px)] p-8">
+    <div className="min-h-[calc(100vh-120px)] p-8 relative">
       <div className="bg-white shadow-lg rounded-lg p-6">
-        <h2 className="text-2xl font-bold mb-6">{project.title} Timeline</h2>
         <div className="relative">
           <div className="absolute top-5 left-5 w-[calc(100%-40px)] h-1 bg-blue-200"></div>
           <div className="flex justify-between">
@@ -29,6 +28,13 @@ const TimeView = ({ project, nodes }) => {
             ))}
           </div>
         </div>
+      </div>
+      <div className="fixed bottom-12 right-12 z-50">
+        <ReportList
+          reports={reports}
+          onAddReport={onAddReport}
+          onEditReport={onUpdateReport}
+        />
       </div>
     </div>
   );
