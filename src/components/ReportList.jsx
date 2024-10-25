@@ -8,13 +8,27 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
 
   const handleSaveArticle = (article) => {
+    // Create a new serializable object with only the needed properties
     const newArticle = {
-      ...article,
       id: Date.now(),
+      title: article.title,
+      content: article.content,
       image: '/default-image.png'
     };
+    
     onAddReport(newArticle);
     setIsArticleModalOpen(false);
+  };
+
+  const handleEditReport = (report) => {
+    // Create a serializable copy of the report
+    const serializableReport = {
+      id: report.id,
+      title: report.title,
+      content: report.content,
+      image: report.image || '/default-image.png'
+    };
+    onEditReport(serializableReport);
   };
 
   return (
@@ -29,7 +43,7 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
                     <TooltipTrigger asChild>
                       <button
                         className="w-12 h-12 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors flex items-center justify-center text-white cursor-pointer"
-                        onClick={() => onEditReport(report)}
+                        onClick={() => handleEditReport(report)}
                       >
                         <Circle className="w-6 h-6" />
                       </button>
