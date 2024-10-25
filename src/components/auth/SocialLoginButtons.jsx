@@ -3,14 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Twitter } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 const SocialLoginButtons = () => {
+  const navigate = useNavigate();
+
   const handleTwitterLogin = async () => {
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'twitter',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}`,
           scopes: 'tweet.read users.read'
         }
       });
@@ -25,7 +28,6 @@ const SocialLoginButtons = () => {
         return;
       }
 
-      // Redirect to Twitter OAuth
       window.location.href = data.url;
     } catch (error) {
       toast.error('Failed to initialize Twitter login');

@@ -9,6 +9,7 @@ import NewProjectPage from "./pages/NewProjectPage";
 import ProjectView from "./pages/ProjectView";
 import ProjectPage from "./pages/ProjectPage";
 import SubscriptionPlans from "./pages/SubscriptionPlans";
+import AuthCallback from "./components/auth/AuthCallback";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/project/:id" element={<ProjectView />} />
             <Route path="/:username/project/:projectName" element={<ProjectPage />} />
             <Route path="/subscription-plans" element={<SubscriptionPlans />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
