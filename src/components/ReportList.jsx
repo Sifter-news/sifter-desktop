@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { PlusIcon, Circle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import ArticleModal from './ArticleModal';
+import { toast } from "sonner";
 
 const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
@@ -16,7 +17,12 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
       image: article.image || '/default-image.png'
     };
     
-    onAddReport(serializableArticle);
+    if (typeof onAddReport === 'function') {
+      onAddReport(serializableArticle);
+    } else {
+      console.warn('onAddReport prop is not a function');
+      toast.error("Unable to add report at this time");
+    }
     setIsArticleModalOpen(false);
   };
 
@@ -31,7 +37,12 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
       image: report.image || '/default-image.png'
     };
     
-    onEditReport(serializableReport);
+    if (typeof onEditReport === 'function') {
+      onEditReport(serializableReport);
+    } else {
+      console.warn('onEditReport prop is not a function');
+      toast.error("Unable to edit report at this time");
+    }
   };
 
   return (
