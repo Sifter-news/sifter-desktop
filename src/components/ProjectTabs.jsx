@@ -29,25 +29,23 @@ const ProjectTabs = ({
 
   return (
     <div className="relative h-full">
-      <div className="fixed top-16 left-0 right-0 z-20 bg-white bg-opacity-80 backdrop-blur-md px-4 py-2">
-        <div className="max-w-[280px] mx-auto flex items-center justify-center gap-4">
-          <Select value={investigatorType} onValueChange={setInvestigatorType}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select investigator type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="private">Private Investigator</SelectItem>
-              <SelectItem value="police">Police Detective</SelectItem>
-              <SelectItem value="journalist">Investigative Journalist</SelectItem>
-              <SelectItem value="corporate">Corporate Investigator</SelectItem>
-              <SelectItem value="cyber">Cyber Investigator</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="fixed top-20 right-4 z-50">
+        <Select value={investigatorType} onValueChange={setInvestigatorType}>
+          <SelectTrigger className="w-[180px] bg-white bg-opacity-80 backdrop-blur-md shadow-lg">
+            <SelectValue placeholder="Select investigator type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="private">Private Investigator</SelectItem>
+            <SelectItem value="police">Police Detective</SelectItem>
+            <SelectItem value="journalist">Investigative Journalist</SelectItem>
+            <SelectItem value="corporate">Corporate Investigator</SelectItem>
+            <SelectItem value="cyber">Cyber Investigator</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       
       <Tabs defaultValue="mind" className="w-full flex flex-col flex-grow">
-        <TabsList className="max-w-[280px] mx-auto justify-center fixed top-28 left-0 right-0 bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex">
+        <TabsList className="max-w-[280px] mx-auto justify-center fixed top-16 left-0 right-0 bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex">
           <TabsTrigger value="mind" className="flex items-center">
             <Brain className="w-4 h-4 mr-2" />
             Mind
@@ -65,7 +63,7 @@ const ProjectTabs = ({
             Map
           </TabsTrigger>
         </TabsList>
-        <div className="flex-grow mt-24">
+        <div className="flex-grow mt-12">
           <TabsContent value="mind" className="h-full">
             <MindMapView 
               project={project} 
