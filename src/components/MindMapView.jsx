@@ -9,6 +9,8 @@ import Toolbar from './Toolbar';
 import AISidePanel from './AISidePanel';
 import ReportList from './ReportList';
 import ArticleModal from './ArticleModal';
+import AIInputSection from './AIInputSection';
+import NewArticlePreview from './NewArticlePreview';
 
 const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode }) => {
   const [showAIInput, setShowAIInput] = useState(true);
@@ -19,11 +21,10 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
   const [initialAIMessage, setInitialAIMessage] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const [draggedNodeType, setDraggedNodeType] = useState(null);
+  const [showNewArticlePreview, setShowNewArticlePreview] = useState(false);
+  const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
   const canvasRef = useRef(null);
   const aiInputRef = useRef(null);
-
-  const [selectedArticle, setSelectedArticle] = useState(null);
-  const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
 
   const {
     zoom,
@@ -68,66 +69,9 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
     }
   };
 
-  const handleAddNode = (type, x, y) => {
-    const newNode = {
-      id: Date.now().toString(),
-      type,
-      x,
-      y,
-      text: '',
-      title: '',
-      width: type === 'text' ? 'auto' : 200,
-      height: type === 'text' ? 'auto' : 200,
-      color: type === 'postit' ? '#FFFFA5' : '#FFFFFF',
-    };
-    onAddNode(newNode);
-  };
-
-  const handleNodeUpdate = (nodeId, updates) => {
-    onUpdateNode(nodeId, updates);
-    if (updates.text && nodes.find(node => node.id === nodeId)?.type === 'ai') {
-      setSidePanelOpen(true);
-    }
-  };
-
-  const handleNodeFocus = (nodeId) => {
-    setFocusedNodeId(nodeId);
-  };
-
-  const handleNodeDelete = (nodeId) => {
-    onDeleteNode(nodeId);
-    setFocusedNodeId(null);
-  };
-
-  const handleArticleClick = (article) => {
-    setSelectedArticle(article);
+  const handlePlusButtonClick = () => {
+    setShowNewArticlePreview(true);
     setIsArticleModalOpen(true);
-  };
-
-  const handleDragEnd = (e) => {
-    if (isDragging && draggedNodeType) {
-      const canvasRect = canvasRef.current.getBoundingClientRect();
-      const x = (e.clientX - canvasRect.left) / zoom - position.x;
-      const y = (e.clientY - canvasRect.top) / zoom - position.y;
-      
-      const { x: snappedX, y: snappedY } = snapToGrid(x, y);
-      
-      const newNode = {
-        id: Date.now().toString(),
-        type: draggedNodeType,
-        x: snappedX,
-        y: snappedY,
-        text: '',
-        title: '',
-        width: draggedNodeType === 'text' ? 'auto' : 200,
-        height: draggedNodeType === 'text' ? 'auto' : 200,
-        color: draggedNodeType === 'postit' ? '#FFFFA5' : '#FFFFFF',
-      };
-      
-      onAddNode(newNode);
-    }
-    setIsDragging(false);
-    setDraggedNodeType(null);
   };
 
   return (
@@ -143,34 +87,25 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
           handlePanStart={handlePanStart}
           handlePanMove={handlePanMove}
           handlePanEnd={handlePanEnd}
-          onNodeUpdate={handleNodeUpdate}
+          onNodeUpdate={onUpdateNode}
           focusedNodeId={focusedNodeId}
-          onNodeFocus={handleNodeFocus}
-          onNodeDelete={handleNodeDelete}
+          onNodeFocus={setFocusedNodeId}
+          onNodeDelete={onDeleteNode}
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDragEnd}
         />
         {showAIInput && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div className="bg-white rounded-full shadow-lg p-2 flex items-center space-x-2 max-w-xl w-full ring-2 ring-blue-500">
-              <Button size="icon" className="rounded-full flex-shrink-0 bg-[#594BFF1A] hover:bg-[#594BFF33]">
-                <PlusIcon className="h-6 w-6 text-[#594BFF]" />
-              </Button>
-              <Input 
-                ref={aiInputRef}
-                type="text" 
-                placeholder="Ask anything about this project" 
-                className="flex-grow text-lg border-none focus:ring-0 rounded-full"
-                value={aiInputText}
-                onChange={(e) => setAIInputText(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleAIAsk()}
+            <div className="relative">
+              {showNewArticlePreview && (
+                <NewArticlePreview onClose={() => setShowNewArticlePreview(false)} />
+              )}
+              <AIInputSection
+                aiInputText={aiInputText}
+                setAIInputText={setAIInputText}
+                handleAIAsk={handleAIAsk}
+                aiInputRef={aiInputRef}
               />
-              <Button 
-                className="bg-[#594BFF] hover:bg-[#4B3FD9] text-white rounded-full px-6"
-                onClick={handleAIAsk}
-              >
-                Ask
-              </Button>
             </div>
           </div>
         )}
@@ -178,7 +113,7 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
           activeTool={activeTool}
           setActiveTool={setActiveTool}
           handleAIClick={() => setShowAIInput(true)}
-          handleAddNode={handleAddNode}
+          handleAddNode={onAddNode}
           handleZoom={handleZoom}
           zoom={zoom}
           nodes={nodes}
@@ -186,14 +121,6 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
             setIsDragging(true);
             setDraggedNodeType(nodeType);
           }}
-        />
-        <ReportList
-          reports={project.reports}
-          onAddReport={() => {
-            setSelectedArticle(null);
-            setIsArticleModalOpen(true);
-          }}
-          onEditReport={handleArticleClick}
         />
       </div>
       <AISidePanel
@@ -206,25 +133,17 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
       />
       <ArticleModal
         isOpen={isArticleModalOpen}
-        onClose={() => setIsArticleModalOpen(false)}
-        article={selectedArticle}
-        onSave={(article) => {
-          if (article.id) {
-            const updatedReports = project.reports.map(report =>
-              report.id === article.id ? article : report
-            );
-            updateProject({ ...project, reports: updatedReports });
-          } else {
-            const newArticle = { ...article, id: Date.now() };
-            const updatedReports = [...project.reports, newArticle];
-            updateProject({ ...project, reports: updatedReports });
-          }
+        onClose={() => {
           setIsArticleModalOpen(false);
-          setSelectedArticle(null);
+          setShowNewArticlePreview(false);
         }}
-        onDelete={(articleId) => {
-          const updatedReports = project.reports.filter(report => report.id !== articleId);
+        article={null}
+        onSave={(article) => {
+          const newArticle = { ...article, id: Date.now() };
+          const updatedReports = [...project.reports, newArticle];
           updateProject({ ...project, reports: updatedReports });
+          setIsArticleModalOpen(false);
+          setShowNewArticlePreview(false);
         }}
       />
     </div>
