@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +11,7 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
@@ -25,7 +27,10 @@ const LoginForm = () => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
-        password: password.trim()
+        password: password.trim(),
+        options: {
+          persistSession: rememberMe
+        }
       });
 
       if (error) {
@@ -91,6 +96,19 @@ const LoginForm = () => {
           required
           minLength={6}
         />
+      </div>
+      <div className="flex items-center space-x-2">
+        <Checkbox 
+          id="remember"
+          checked={rememberMe}
+          onCheckedChange={setRememberMe}
+        />
+        <Label 
+          htmlFor="remember" 
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Remember me
+        </Label>
       </div>
       <Button className="w-full" type="submit" disabled={loading}>
         {loading ? 'Loading...' : 'Sign In'}
