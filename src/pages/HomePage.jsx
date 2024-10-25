@@ -1,16 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import Header from '../components/Header';
 import InvestigationCard from '../components/InvestigationCard';
 import ReportCard from '../components/ReportCard';
 import { Button } from "@/components/ui/button";
-import { PlusIcon, FileSearchIcon } from 'lucide-react';
+import { PlusIcon, FileSearchIcon, MoreVertical, Pencil, Trash } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import ReportModal from '../components/ReportModal';
 import ProjectEditModal from '../components/ProjectEditModal';
 import { useInvestigations, useAddInvestigation, useUpdateInvestigation, useDeleteInvestigation } from '@/integrations/supabase/index';
 import { supabase } from '@/integrations/supabase/supabase';
-import { useEffect } from 'react';
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -18,7 +23,6 @@ const HomePage = () => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
 
-  // Get current user and their investigations
   const { data: investigations, isLoading, error } = useInvestigations({
     select: '*, reports(*)',
     filter: user ? `owner_id.eq.${user.id}` : undefined,
@@ -49,6 +53,7 @@ const HomePage = () => {
     updateInvestigation(updatedInvestigation, {
       onSuccess: () => {
         toast.success('Investigation updated successfully');
+        setEditingProject(null);
       },
       onError: (error) => {
         toast.error('Failed to update investigation: ' + error.message);
@@ -68,11 +73,6 @@ const HomePage = () => {
   };
 
   const handleAddNewProject = () => {
-    if (!user) {
-      toast.error('Please log in to create a project');
-      return;
-    }
-
     const newProject = {
       title: 'New Project',
       description: '',
@@ -92,17 +92,9 @@ const HomePage = () => {
     });
   };
 
-  if (!user) {
-    return null; // Will redirect in useEffect
-  }
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
+  if (!user) return null;
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -127,11 +119,35 @@ const HomePage = () => {
             <div className="flex flex-col space-y-6">
               {investigations?.map((investigation) => (
                 <div key={investigation.id} className="flex flex-col lg:flex-row w-full">
-                  <div className="w-full lg:w-1/2 flex-shrink-0" onClick={() => handleProjectClick(investigation)}>
-                    <InvestigationCard 
-                      investigation={investigation} 
-                      onUpdateInvestigation={handleUpdateInvestigation}
-                    />
+                  <div className="w-full lg:w-1/2 flex-shrink-0 relative">
+                    <div onClick={() => handleProjectClick(investigation)}>
+                      <InvestigationCard 
+                        investigation={investigation} 
+                        onUpdateInvestigation={handleUpdateInvestigation}
+                      />
+                    </div>
+                    <div className="absolute top-2 right-2 z-10">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/20">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem onClick={() => setEditingProject(investigation)}>
+                            <Pencil className="mr-2 h-4 w-4" />
+                            <span>Rename</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            className="text-red-600"
+                            onClick={() => handleDeleteInvestigation(investigation.id)}
+                          >
+                            <Trash className="mr-2 h-4 w-4" />
+                            <span>Delete</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                   <div className="w-full lg:w-1/2 flex-shrink-0">
                     <div className="bg-white bg-opacity-30 rounded-r-lg p-4 h-full relative overflow-hidden">
@@ -185,9 +201,10 @@ const HomePage = () => {
         <ProjectEditModal
           isOpen={!!editingProject}
           onClose={() => setEditingProject(null)}
-          project={editingProject}
-          onUpdate={handleUpdateInvestigation}
-          onDelete={handleDeleteInvestigation}
+          projectName={editingProject.title}
+          description={editingProject.description}
+          onUpdate={(updates) => handleUpdateInvestigation({ ...editingProject, ...updates })}
+          onDelete={() => handleDeleteInvestigation(editingProject.id)}
         />
       )}
     </div>
