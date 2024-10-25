@@ -4,17 +4,25 @@ import { Link } from 'react-router-dom';
 import { Input } from "@/components/ui/input";
 
 const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
-  const [image, setImage] = useState(investigation.image || '/default-image.png');
+  const [image, setImage] = useState('/default-image.png');
 
-  const handleImageUpload = (event) => {
+  const handleImageUpload = async (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result);
-        onUpdateInvestigation({ ...investigation, image: reader.result });
-      };
-      reader.readAsDataURL(file);
+      try {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64String = reader.result;
+          setImage(base64String);
+          onUpdateInvestigation({ 
+            ...investigation, 
+            image: base64String 
+          });
+        };
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
     }
   };
 
@@ -35,9 +43,12 @@ const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
           <div className="absolute top-4 right-4 w-8 h-8 bg-white rounded-full shadow-md"></div>
           <div className="h-[128px] w-full overflow-hidden relative">
             <img 
-              src="/default-image.png"
+              src={image}
               alt={investigation.title}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.src = '/default-image.png';
+              }}
             />
             <Input
               type="file"
