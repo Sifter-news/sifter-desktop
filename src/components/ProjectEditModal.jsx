@@ -19,7 +19,7 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
     }
   }, [project]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!title.trim()) {
       toast.error("Project title cannot be empty");
       return;
@@ -31,22 +31,36 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
       return;
     }
     
-    onUpdate({ 
-      ...project,
-      title: title.trim(), 
-      description: description.trim() 
-    });
+    try {
+      await onUpdate({ 
+        ...project,
+        title: title.trim(), 
+        description: description.trim() 
+      });
+      toast.success("Project updated successfully");
+      onClose();
+    } catch (error) {
+      toast.error("Failed to update project");
+      console.error(error);
+    }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!project?.id) {
       toast.error("Invalid project data");
       onClose();
       return;
     }
     
-    onDelete(project.id);
-    onClose();
+    try {
+      await onDelete(project.id);
+      toast.success("Project deleted successfully");
+      onClose();
+      navigate('/');
+    } catch (error) {
+      toast.error("Failed to delete project");
+      console.error(error);
+    }
   };
 
   return (
