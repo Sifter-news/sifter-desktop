@@ -32,7 +32,7 @@ const LoginPage = () => {
         .eq('id', data.user.id)
         .single();
 
-      if (!profile) {
+      if (!profile && !profileError) {
         const { error: insertError } = await supabase
           .from('profiles')
           .insert([
@@ -57,12 +57,26 @@ const LoginPage = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    
+    if (!email || !password) {
+      toast.error('Please enter both email and password');
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error('Password must be at least 6 characters long');
+      return;
+    }
+    
     setLoading(true);
     
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: window.location.origin,
+        }
       });
 
       if (error) throw error;
@@ -116,6 +130,7 @@ const LoginPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              minLength={6}
             />
           </div>
           <Button className="w-full" type="submit" disabled={loading}>
