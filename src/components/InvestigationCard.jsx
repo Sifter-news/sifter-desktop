@@ -59,10 +59,15 @@ const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
           </div>
           <CardContent className="p-6 h-[calc(100%-128px)] flex flex-col relative z-10">
             <div className="text-xs uppercase text-purple-600 font-semibold tracking-wide mb-2">Investigation</div>
-            <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">{investigation.title || 'Untitled Investigation'}</h3>
+            <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">
+              {investigation.title || 'Untitled Investigation'}
+            </h3>
             <p className="text-sm text-gray-600 flex-grow overflow-hidden line-clamp-3">
               {investigation.description || 'No description available'}
             </p>
+            <div className="mt-4 text-xs text-gray-400">
+              {new Date(investigation.created_at).toLocaleDateString()}
+            </div>
           </CardContent>
         </div>
       </Card>
