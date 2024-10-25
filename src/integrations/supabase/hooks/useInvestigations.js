@@ -4,23 +4,17 @@ import { supabase } from '../supabase';
 export const useInvestigation = (id) => useQuery({
   queryKey: ['investigations', id],
   queryFn: async () => {
-    const { data: investigation, error: investigationError } = await supabase
+    const { data, error } = await supabase
       .from('investigations')
-      .select('*')
+      .select(`
+        *,
+        reports (*)
+      `)
       .eq('id', id)
       .single();
       
-    if (investigationError) throw investigationError;
-
-    // Fetch associated reports separately
-    const { data: reports, error: reportsError } = await supabase
-      .from('reports')
-      .select('*')
-      .eq('investigation_id', id);
-
-    if (reportsError) throw reportsError;
-
-    return { ...investigation, reports: reports || [] };
+    if (error) throw error;
+    return data;
   },
   enabled: !!id,
 });
@@ -30,10 +24,12 @@ export const useInvestigations = ({ select, filter } = {}) => {
     queryKey: ['investigations', { select, filter }],
     queryFn: async () => {
       try {
-        // First fetch investigations
         let query = supabase
           .from('investigations')
-          .select('*');
+          .select(`
+            *,
+            reports (*)
+          `);
         
         if (filter?.startsWith('owner_id.eq.')) {
           const userId = filter.replace('owner_id.eq.', '');
@@ -42,25 +38,9 @@ export const useInvestigations = ({ select, filter } = {}) => {
           }
         }
         
-        const { data: investigations, error: investigationsError } = await query;
-        if (investigationsError) throw investigationsError;
-
-        // Then fetch all reports for these investigations
-        const investigationIds = investigations.map(inv => inv.id);
-        const { data: reports, error: reportsError } = await supabase
-          .from('reports')
-          .select('*')
-          .in('investigation_id', investigationIds);
-
-        if (reportsError) throw reportsError;
-
-        // Combine investigations with their reports
-        const investigationsWithReports = investigations.map(investigation => ({
-          ...investigation,
-          reports: reports?.filter(report => report.investigation_id === investigation.id) || []
-        }));
-
-        return investigationsWithReports || [];
+        const { data, error } = await query;
+        if (error) throw error;
+        return data || [];
       } catch (error) {
         console.error('Investigation query error:', error);
         throw error;
