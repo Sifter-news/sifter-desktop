@@ -20,6 +20,7 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
   const [isDragging, setIsDragging] = useState(false);
   const [draggedNodeType, setDraggedNodeType] = useState(null);
   const canvasRef = useRef(null);
+  const aiInputRef = useRef(null);
 
   const {
     zoom,
