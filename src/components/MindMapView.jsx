@@ -100,17 +100,6 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
     setDraggedNodeType(null);
   };
 
-  const handleArticleSave = (article) => {
-    const newArticle = { ...article, id: Date.now() };
-    const updatedReports = [...project.reports, newArticle];
-    // Update the project with the new article
-    if (project.onUpdate) {
-      project.onUpdate({ ...project, reports: updatedReports });
-    }
-    setIsArticleModalOpen(false);
-    setShowNewArticlePreview(false);
-  };
-
   return (
     <div className="flex h-[calc(100vh-64px)] w-screen overflow-hidden">
       <div className="flex-grow relative">
@@ -146,12 +135,6 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
             </div>
           </div>
         )}
-        <Button
-          onClick={handlePlusButtonClick}
-          className="fixed bottom-24 right-24 rounded-full w-14 h-14 bg-black hover:bg-gray-800 text-white shadow-lg"
-        >
-          <PlusIcon className="h-6 w-6" />
-        </Button>
         <Toolbar
           activeTool={activeTool}
           setActiveTool={setActiveTool}
@@ -181,7 +164,13 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
           setShowNewArticlePreview(false);
         }}
         article={null}
-        onSave={handleArticleSave}
+        onSave={(article) => {
+          const newArticle = { ...article, id: Date.now() };
+          const updatedReports = [...project.reports, newArticle];
+          updateProject({ ...project, reports: updatedReports });
+          setIsArticleModalOpen(false);
+          setShowNewArticlePreview(false);
+        }}
       />
     </div>
   );
