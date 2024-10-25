@@ -1,46 +1,51 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../supabase';
 
-const fromSupabase = async (query) => {
-  const { data, error } = await query;
-  if (error) throw new Error(error.message);
-  return data;
-};
-
-/*
-### reports
-
-| name            | type      | format    | required |
-|-----------------|-----------|-----------|----------|
-| id              | uuid      | string    | true     |
-| investigation_id| uuid      | string    | false    |
-| title           | varchar   | string    | true     |
-| content         | text      | string    | false    |
-| created_at      | timestamp | string    | false    |
-| updated_at      | timestamp | string    | false    |
-
-Foreign Key Relationships:
-- investigation_id references investigations.id
-*/
-
 export const useReport = (id) => useQuery({
   queryKey: ['reports', id],
-  queryFn: () => fromSupabase(supabase.from('reports').select('*').eq('id', id).single()),
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from('reports')
+      .select('*')
+      .eq('id', id)
+      .single();
+      
+    if (error) throw error;
+    return data;
+  },
+  enabled: !!id,
 });
 
 export const useReports = (investigationId) => useQuery({
   queryKey: ['reports', { investigationId }],
-  queryFn: () => fromSupabase(
-    investigationId 
-      ? supabase.from('reports').select('*').eq('investigation_id', investigationId)
-      : supabase.from('reports').select('*')
-  ),
+  queryFn: async () => {
+    let query = supabase.from('reports').select('*');
+    
+    if (investigationId) {
+      query = query.eq('investigation_id', investigationId);
+    }
+    
+    const { data, error } = await query;
+    if (error) throw error;
+    return data;
+  },
+  enabled: true,
 });
 
 export const useAddReport = () => {
   const queryClient = useQueryClient();
+  
   return useMutation({
-    mutationFn: (newReport) => fromSupabase(supabase.from('reports').insert([newReport])),
+    mutationFn: async (newReport) => {
+      const { data, error } = await supabase
+        .from('reports')
+        .insert([newReport])
+        .select()
+        .single();
+        
+      if (error) throw error;
+      return data;
+    },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['reports'] });
       if (variables.investigation_id) {
@@ -54,9 +59,19 @@ export const useAddReport = () => {
 
 export const useUpdateReport = () => {
   const queryClient = useQueryClient();
+  
   return useMutation({
-    mutationFn: ({ id, ...updates }) => 
-      fromSupabase(supabase.from('reports').update(updates).eq('id', id)),
+    mutationFn: async ({ id, ...updates }) => {
+      const { data, error } = await supabase
+        .from('reports')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+        
+      if (error) throw error;
+      return data;
+    },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['reports'] });
       if (variables.investigation_id) {
@@ -70,8 +85,17 @@ export const useUpdateReport = () => {
 
 export const useDeleteReport = () => {
   const queryClient = useQueryClient();
+  
   return useMutation({
-    mutationFn: (id) => fromSupabase(supabase.from('reports').delete().eq('id', id)),
+    mutationFn: async (id) => {
+      const { error } = await supabase
+        .from('reports')
+        .delete()
+        .eq('id', id);
+        
+      if (error) throw error;
+      return id;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reports'] });
     },
