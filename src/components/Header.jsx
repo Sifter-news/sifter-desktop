@@ -19,17 +19,14 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
           </div>
         </div>
         <div className="flex-grow flex justify-center items-center">
-          <div className="flex items-center space-x-2">
-            <img src="/placeholder.svg" alt="Dashboard Icon" className="h-8 w-8" />
-            {projectName && (
-              <span 
-                className="text-sm font-normal text-[#4B25F3] cursor-pointer hover:underline" 
-                onClick={() => setIsEditModalOpen(true)}
-              >
-                {projectName}
-              </span>
-            )}
-          </div>
+          {projectName && (
+            <span 
+              className="text-sm font-normal text-[#4B25F3] cursor-pointer hover:underline" 
+              onClick={() => setIsEditModalOpen(true)}
+            >
+              {projectName}
+            </span>
+          )}
         </div>
         <div className="flex items-center space-x-4 min-w-[200px] justify-end">
           <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
