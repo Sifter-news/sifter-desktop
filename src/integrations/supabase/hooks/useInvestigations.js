@@ -23,15 +23,25 @@ export const useInvestigation = (id) => useQuery({
 });
 
 export const useInvestigations = ({ select, filter } = {}) => {
-  let query = supabase.from('investigations').select(select || '*');
-  
-  if (filter) {
-    query = query.filter(filter);
-  }
-  
   return useQuery({
     queryKey: ['investigations', { select, filter }],
-    queryFn: () => fromSupabase(query),
+    queryFn: async () => {
+      let query = supabase
+        .from('investigations')
+        .select(select || '*');
+      
+      // Only apply filter if it's a valid user ID
+      if (filter && filter.includes('owner_id.eq.')) {
+        const userId = filter.split('owner_id.eq.')[1];
+        if (userId && userId !== 'undefined') {
+          query = query.eq('owner_id', userId);
+        }
+      }
+      
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
