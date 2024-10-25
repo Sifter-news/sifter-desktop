@@ -70,8 +70,9 @@ export const useAddInvestigation = () => {
         throw error;
       }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['investigations'] });
+      return data;
     },
   });
 };
@@ -86,7 +87,10 @@ export const useUpdateInvestigation = () => {
           .from('investigations')
           .update(updates)
           .eq('id', id)
-          .select()
+          .select(`
+            *,
+            reports (*)
+          `)
           .single();
           
         if (error) throw error;
@@ -96,8 +100,15 @@ export const useUpdateInvestigation = () => {
         throw error;
       }
     },
-    onSuccess: () => {
+    onSuccess: (updatedInvestigation) => {
+      // Update the investigations list query
       queryClient.invalidateQueries({ queryKey: ['investigations'] });
+      
+      // Update the individual investigation query
+      queryClient.setQueryData(
+        ['investigations', updatedInvestigation.id],
+        updatedInvestigation
+      );
     },
   });
 };
@@ -120,8 +131,9 @@ export const useDeleteInvestigation = () => {
         throw error;
       }
     },
-    onSuccess: () => {
+    onSuccess: (deletedId) => {
       queryClient.invalidateQueries({ queryKey: ['investigations'] });
+      queryClient.removeQueries({ queryKey: ['investigations', deletedId] });
     },
   });
 };

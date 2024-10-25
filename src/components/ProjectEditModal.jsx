@@ -7,10 +7,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 
-const ProjectEditModal = ({ isOpen, onClose, projectName = "", description = "", onUpdate, onDelete }) => {
+const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
   const navigate = useNavigate();
-  const [title, setTitle] = useState(projectName);
-  const [desc, setDesc] = useState(description);
+  const [title, setTitle] = useState(project?.title || '');
+  const [description, setDescription] = useState(project?.description || '');
 
   const handleSave = () => {
     if (!title.trim()) {
@@ -18,26 +18,18 @@ const ProjectEditModal = ({ isOpen, onClose, projectName = "", description = "",
       return;
     }
     
-    if (typeof onUpdate === 'function') {
-      onUpdate({ title: title.trim(), description: desc.trim() });
-      toast.success("Project updated successfully");
-      onClose();
-    } else {
-      console.warn('onUpdate prop is not a function');
-      onClose();
-    }
+    onUpdate({ 
+      id: project.id,
+      title: title.trim(), 
+      description: description.trim() 
+    });
+    onClose();
   };
 
   const handleDelete = () => {
-    if (typeof onDelete === 'function') {
-      onDelete();
-      toast.success("Project deleted successfully");
-      navigate('/');
-      onClose();
-    } else {
-      console.warn('onDelete prop is not a function');
-      onClose();
-    }
+    onDelete(project.id);
+    navigate('/');
+    onClose();
   };
 
   return (
@@ -64,8 +56,8 @@ const ProjectEditModal = ({ isOpen, onClose, projectName = "", description = "",
             </label>
             <Textarea
               id="description"
-              value={desc}
-              onChange={(e) => setDesc(e.target.value)}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               className="col-span-3"
               placeholder="Add a project description..."
             />
