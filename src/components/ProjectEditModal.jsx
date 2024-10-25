@@ -11,6 +11,7 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [errors, setErrors] = useState({ title: '', description: '' });
 
   useEffect(() => {
     if (project) {
@@ -19,9 +20,27 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
     }
   }, [project]);
 
-  const handleSave = async () => {
+  const validateForm = () => {
+    const newErrors = {
+      title: '',
+      description: ''
+    };
+    
     if (!title.trim()) {
-      toast.error("Project title cannot be empty");
+      newErrors.title = 'Title is required';
+    }
+    
+    if (!description.trim()) {
+      newErrors.description = 'Description is required';
+    }
+    
+    setErrors(newErrors);
+    return !newErrors.title && !newErrors.description;
+  };
+
+  const handleSave = async () => {
+    if (!validateForm()) {
+      toast.error("Please fill in all required fields");
       return;
     }
     
@@ -72,26 +91,33 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <label htmlFor="title" className="text-right">
-              Title
+              Title <span className="text-red-500">*</span>
             </label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="col-span-3"
-            />
+            <div className="col-span-3">
+              <Input
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className={errors.title ? "border-red-500" : ""}
+                placeholder="Enter project title"
+              />
+              {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
+            </div>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <label htmlFor="description" className="text-right">
-              Description
+              Description <span className="text-red-500">*</span>
             </label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="col-span-3"
-              placeholder="Add a project description..."
-            />
+            <div className="col-span-3">
+              <Textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className={errors.description ? "border-red-500" : ""}
+                placeholder="Add a project description..."
+              />
+              {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
+            </div>
           </div>
         </div>
         <DialogFooter className="flex justify-between">
