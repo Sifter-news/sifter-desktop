@@ -7,6 +7,21 @@ const fromSupabase = async (query) => {
   return data;
 };
 
+export const useInvestigation = (id) => useQuery({
+  queryKey: ['investigations', id],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from('investigations')
+      .select('*')
+      .eq('id', id)
+      .single();
+      
+    if (error) throw error;
+    return data;
+  },
+  enabled: !!id,
+});
+
 export const useInvestigations = ({ select, filter } = {}) => {
   let query = supabase.from('investigations').select(select || '*');
   
