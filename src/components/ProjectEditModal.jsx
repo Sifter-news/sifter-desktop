@@ -18,6 +18,12 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
       return;
     }
     
+    if (!project?.id) {
+      toast.error("Invalid project data");
+      onClose();
+      return;
+    }
+    
     onUpdate({ 
       id: project.id,
       title: title.trim(), 
@@ -27,6 +33,12 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
   };
 
   const handleDelete = () => {
+    if (!project?.id) {
+      toast.error("Invalid project data");
+      onClose();
+      return;
+    }
+    
     onDelete(project.id);
     navigate('/');
     onClose();
