@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Rnd } from 'react-rnd';
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Layout, Type, Trash2, ChevronDown } from 'lucide-react';
@@ -18,11 +18,38 @@ import {
 import ConnectionDot from './node/ConnectionDot';
 import NodeContent from './node/NodeContent';
 
-const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocused, onAIConversation, onDelete }) => {
+const NodeRenderer = ({ 
+  node, 
+  onDragStart, 
+  zoom, 
+  onNodeUpdate, 
+  onFocus, 
+  isFocused, 
+  onAIConversation, 
+  onDelete,
+  onAddNode 
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [localTitle, setLocalTitle] = useState(node.title);
   const [localDescription, setLocalDescription] = useState(node.description);
   const [hoveredDot, setHoveredDot] = useState(null);
+  const [isDuplicating, setIsDuplicating] = useState(false);
+
+  const handleDragStart = useCallback((e) => {
+    if (e.altKey) {
+      setIsDuplicating(true);
+      // Create a new node as a copy
+      const newNode = {
+        ...node,
+        id: Date.now().toString(),
+        x: e.clientX / zoom,
+        y: e.clientY / zoom,
+      };
+      onAddNode(newNode);
+    } else {
+      onDragStart(e, node.id);
+    }
+  }, [node, onDragStart, onAddNode, zoom]);
 
   const handleStyleChange = (value) => {
     onNodeUpdate(node.id, { visualStyle: value });
@@ -51,7 +78,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
       <Rnd
         size={{ width: node.width, height: node.height }}
         position={{ x: node.x, y: node.y }}
-        onDragStart={(e) => onDragStart(e, node.id)}
+        onDragStart={handleDragStart}
         scale={zoom}
         className="relative"
       >
