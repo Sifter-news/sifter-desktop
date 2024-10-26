@@ -7,15 +7,15 @@ const NodeContent = ({ style, isEditing, node, localTitle, localDescription, han
     switch (style) {
       case 'compact':
         return (
-          <div className="w-10 h-10 p-1 bg-white rounded-full inline-flex">
+          <div className="w-10 h-10 p-1 bg-white rounded-full">
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full" />
           </div>
         );
       case 'expanded':
         return (
-          <div className="inline-flex items-center p-2 bg-white rounded-lg">
+          <div className="flex items-center p-2 bg-white rounded-lg">
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full mr-2" />
-            <div className="max-w-[200px]">
+            <div>
               <div className="font-medium">{node.title}</div>
               <div className="text-sm text-gray-600">{node.description}</div>
             </div>
@@ -23,7 +23,7 @@ const NodeContent = ({ style, isEditing, node, localTitle, localDescription, han
         );
       case 'postit':
         return (
-          <div className="inline-block w-[240px] h-[200px] p-4 bg-yellow-100 rounded-sm shadow-md">
+          <div className="w-[240px] h-[200px] p-4 bg-yellow-100 rounded-sm shadow-md">
             {isEditing ? (
               <div className="h-full flex flex-col gap-2">
                 <Input
@@ -49,7 +49,7 @@ const NodeContent = ({ style, isEditing, node, localTitle, localDescription, han
         );
       default:
         return (
-          <div className="inline-flex items-center p-2 bg-white rounded-lg">
+          <div className="flex items-center p-2 bg-white rounded-lg">
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full mr-2" />
             <div>
               <div className="font-medium">{node.title}</div>
@@ -61,9 +61,9 @@ const NodeContent = ({ style, isEditing, node, localTitle, localDescription, han
   };
 
   return (
-    <div onClick={handleNodeClick} className="p-4 inline-block">
+    <div onClick={handleNodeClick} className="p-4">
       {isEditing ? (
-        <div className="space-y-2 p-4 bg-white rounded-lg inline-block">
+        <div className="space-y-2 p-4 bg-white rounded-lg">
           <Input
             value={localTitle}
             onChange={(e) => setLocalTitle(e.target.value)}
