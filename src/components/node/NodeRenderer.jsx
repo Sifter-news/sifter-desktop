@@ -122,7 +122,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
                 <PopoverTrigger asChild>
                   <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
                     <Layout className="h-4 w-4 mr-2" />
-                    {styles[node.visualStyle] || "Style"}
+                    Style
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-32">
@@ -145,7 +145,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
                 <PopoverTrigger asChild>
                   <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
                     <Type className="h-4 w-4 mr-2" />
-                    {nodeTypes[node.nodeType] || "Type"}
+                    Type
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-40">
@@ -173,10 +173,11 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
                 <MessageCircle className="h-4 w-4 mr-2" />
                 AI
               </Button>
+
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-white hover:bg-gray-800"
+                className="text-white hover:bg-red-700"
                 onClick={() => onDelete(node.id)}
               >
                 <Trash2 className="h-4 w-4 mr-2" />
