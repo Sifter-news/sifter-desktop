@@ -70,10 +70,10 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
         position={{ x: node.x, y: node.y }}
         onDragStart={(e) => onDragStart(e, node.id)}
         scale={zoom}
-        className={`relative ${
+        className={`relative rounded-lg ${
           isFocused 
-            ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' 
-            : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01]'
+            ? 'ring-2 ring-blue-500/20 ring-offset-2 shadow-lg scale-[1.02]' 
+            : 'hover:ring-1 hover:ring-blue-300/20 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01]'
         }`}
       >
         <NodeContent
