@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Layout, Type, Trash2, ChevronDown } from 'lucide-react';
+import { MessageCircle, Layout, Type, Trash2, ChevronDown, Circle } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -22,6 +22,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
   const [isEditing, setIsEditing] = useState(false);
   const [localTitle, setLocalTitle] = useState(node.title);
   const [localDescription, setLocalDescription] = useState(node.description);
+  const [hoveredDot, setHoveredDot] = useState(null);
 
   const handleStyleChange = (value) => {
     onNodeUpdate(node.id, { visualStyle: value });
@@ -43,6 +44,33 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
       title: localTitle,
       description: localDescription
     });
+  };
+
+  const renderConnectionDot = (position) => {
+    const isHovered = hoveredDot === position;
+    const baseStyles = "absolute w-2 h-2 rounded-full bg-white transition-opacity duration-200";
+    const positionStyles = {
+      top: "left-1/2 -translate-x-1/2 -top-4",
+      bottom: "left-1/2 -translate-x-1/2 -bottom-4",
+      left: "top-1/2 -translate-y-1/2 -left-4",
+      right: "top-1/2 -translate-y-1/2 -right-4"
+    };
+
+    return (
+      <div
+        className={`${baseStyles} ${positionStyles[position]}`}
+        style={{ opacity: isHovered ? 1 : 0.2 }}
+        onMouseEnter={() => setHoveredDot(position)}
+        onMouseLeave={() => setHoveredDot(null)}
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          // Handle connection start
+          console.log(`Starting connection from ${position}`);
+        }}
+      >
+        <Circle className="w-full h-full" />
+      </div>
+    );
   };
 
   const renderNodeContent = () => {
@@ -120,6 +148,10 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
         className="relative"
       >
         {renderNodeContent()}
+        {renderConnectionDot('top')}
+        {renderConnectionDot('bottom')}
+        {renderConnectionDot('left')}
+        {renderConnectionDot('right')}
         <TooltipProvider delayDuration={500}>
           <Tooltip>
             <TooltipTrigger asChild>
