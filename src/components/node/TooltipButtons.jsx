@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Layout, Type, Trash2, Pencil } from 'lucide-react';
+import { Separator } from "@/components/ui/separator";
 import {
   Popover,
   PopoverContent,
@@ -37,11 +38,13 @@ const TooltipButtons = ({
         Edit
       </Button>
 
+      <Separator orientation="vertical" className="bg-white/20" />
+
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
             <Layout className="h-4 w-4 mr-2" />
-            {getStyleLabel(node.visualStyle)}
+            {node.visualStyle || 'Default Style'}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-32">
@@ -59,6 +62,8 @@ const TooltipButtons = ({
           </div>
         </PopoverContent>
       </Popover>
+
+      <Separator orientation="vertical" className="bg-white/20" />
 
       <Popover>
         <PopoverTrigger asChild>
@@ -83,6 +88,8 @@ const TooltipButtons = ({
         </PopoverContent>
       </Popover>
 
+      <Separator orientation="vertical" className="bg-white/20" />
+
       <Button
         variant="ghost"
         size="sm"
@@ -92,6 +99,8 @@ const TooltipButtons = ({
         <MessageCircle className="h-4 w-4 mr-2" />
         AI
       </Button>
+
+      <Separator orientation="vertical" className="bg-white/20" />
 
       <Button
         variant="ghost"
