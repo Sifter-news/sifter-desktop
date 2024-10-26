@@ -19,7 +19,9 @@ const Navigator = ({ items, setItems, onDocumentClick, focusedDocument }) => {
       id: Date.now().toString(),
       type: 'folder',
       title: `New Folder ${items.filter(item => item.type === 'folder').length + 1}`,
-      children: []
+      children: [],
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2
     };
     setItems([...items, newFolder]);
   };
@@ -30,7 +32,9 @@ const Navigator = ({ items, setItems, onDocumentClick, focusedDocument }) => {
       type: 'document',
       title: `New Document ${items.filter(item => item.type === 'document').length + 1}`,
       content: 'This is a new document.',
-      children: []
+      children: [],
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2
     };
     setItems([...items, newDocument]);
   };

@@ -47,15 +47,15 @@ export const useProjectData = (id) => {
         if (error) throw error;
         
         if (data) {
-          // Ensure we only store serializable data
+          // Ensure we only store serializable data and center nodes
           const serializedNodes = data.map(node => ({
             id: node.id,
             title: node.title || '',
             description: node.description || '',
             type: node.type || 'generic',
             investigation_id: node.investigation_id,
-            x: 0,
-            y: 0,
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2,
             width: 200,
             color: 'bg-yellow-200'
           }));
