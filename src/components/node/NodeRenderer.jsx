@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Rnd } from 'react-rnd';
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Layout, Type, Trash2, Pencil } from 'lucide-react';
@@ -22,32 +22,30 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
   const [localTitle, setLocalTitle] = useState(node.title);
   const [localDescription, setLocalDescription] = useState(node.description);
   const [hoveredDot, setHoveredDot] = useState(null);
-  const [showTooltip, setShowTooltip] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  const handleStyleChange = (value) => {
+  const handleStyleChange = useCallback((value) => {
     onNodeUpdate(node.id, { visualStyle: value });
     setIsEditing(false);
-  };
+  }, [node.id, onNodeUpdate]);
 
-  const handleTypeChange = (value) => {
+  const handleTypeChange = useCallback((value) => {
     onNodeUpdate(node.id, { nodeType: value });
     setIsEditing(false);
-  };
+  }, [node.id, onNodeUpdate]);
 
-  const handleNodeClick = (e) => {
+  const handleNodeClick = useCallback((e) => {
     e.stopPropagation();
-    setShowTooltip(true);
     onFocus(node.id);
-  };
+  }, [node.id, onFocus]);
 
-  const handleBlur = () => {
+  const handleBlur = useCallback(() => {
     setIsEditing(false);
     onNodeUpdate(node.id, {
       title: localTitle,
       description: localDescription
     });
-  };
+  }, [node.id, localTitle, localDescription, onNodeUpdate]);
 
   const styles = {
     compact: "Compact",
@@ -64,6 +62,86 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
     node_location: "Location",
     node_event: "Event"
   };
+
+  const renderTooltipButtons = () => (
+    <div className="flex gap-2">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="text-white hover:bg-gray-800"
+        onClick={() => setShowEditModal(true)}
+      >
+        <Pencil className="h-4 w-4 mr-2" />
+        Edit
+      </Button>
+
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
+            <Layout className="h-4 w-4 mr-2" />
+            Style
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-32">
+          <div className="flex flex-col space-y-1">
+            {Object.entries(styles).map(([value, label]) => (
+              <Button
+                key={value}
+                variant="ghost"
+                size="sm"
+                onClick={() => handleStyleChange(value)}
+              >
+                {label}
+              </Button>
+            ))}
+          </div>
+        </PopoverContent>
+      </Popover>
+
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
+            <Type className="h-4 w-4 mr-2" />
+            Type
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-40">
+          <div className="flex flex-col space-y-1">
+            {Object.entries(nodeTypes).map(([value, label]) => (
+              <Button
+                key={value}
+                variant="ghost"
+                size="sm"
+                onClick={() => handleTypeChange(value)}
+              >
+                {label}
+              </Button>
+            ))}
+          </div>
+        </PopoverContent>
+      </Popover>
+
+      <Button
+        variant="ghost"
+        size="sm"
+        className="text-white hover:bg-purple-700 bg-purple-600"
+        onClick={() => onAIConversation(node)}
+      >
+        <MessageCircle className="h-4 w-4 mr-2" />
+        AI
+      </Button>
+
+      <Button
+        variant="ghost"
+        size="sm"
+        className="text-white hover:bg-red-700"
+        onClick={() => onDelete(node.id)}
+      >
+        <Trash2 className="h-4 w-4 mr-2" />
+        Delete
+      </Button>
+    </div>
+  );
 
   return (
     <div className="group">
@@ -96,7 +174,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
             isHovered={hoveredDot === position}
             onHover={() => setHoveredDot(position)}
             onLeaveHover={() => setHoveredDot(null)}
-            onStartConnection={() => console.log(`Starting connection from ${position}`)}
+            onStartConnection={() => {}}
           />
         ))}
         <TooltipProvider delayDuration={500}>
@@ -106,83 +184,9 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
             </TooltipTrigger>
             <TooltipContent 
               side="top" 
-              className="flex gap-2 bg-black text-white border-black p-2"
+              className="bg-black text-white border-black p-2"
             >
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-white hover:bg-gray-800"
-                onClick={() => setShowEditModal(true)}
-              >
-                <Pencil className="h-4 w-4 mr-2" />
-                Edit
-              </Button>
-
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
-                    <Layout className="h-4 w-4 mr-2" />
-                    Style
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-32">
-                  <div className="flex flex-col space-y-1">
-                    {Object.entries(styles).map(([value, label]) => (
-                      <Button
-                        key={value}
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleStyleChange(value)}
-                      >
-                        {label}
-                      </Button>
-                    ))}
-                  </div>
-                </PopoverContent>
-              </Popover>
-
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
-                    <Type className="h-4 w-4 mr-2" />
-                    Type
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-40">
-                  <div className="flex flex-col space-y-1">
-                    {Object.entries(nodeTypes).map(([value, label]) => (
-                      <Button
-                        key={value}
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleTypeChange(value)}
-                      >
-                        {label}
-                      </Button>
-                    ))}
-                  </div>
-                </PopoverContent>
-              </Popover>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-white hover:bg-purple-700 bg-purple-600"
-                onClick={() => onAIConversation(node)}
-              >
-                <MessageCircle className="h-4 w-4 mr-2" />
-                AI
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-white hover:bg-red-700"
-                onClick={() => onDelete(node.id)}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete
-              </Button>
+              {renderTooltipButtons()}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
