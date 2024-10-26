@@ -31,9 +31,9 @@ const NavigatorItem = ({ item, index, onDocumentClick, dragOverFolder, setDragOv
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`cursor-pointer hover:bg-gray-200 p-2 rounded flex justify-between items-center ${
+          className={`cursor-pointer hover:bg-gray-200 p-2 rounded flex justify-between items-center transition-all duration-200 ${
             dragOverFolder === item.id ? 'bg-blue-100' : ''
-          } ${isFocused ? 'bg-blue-200' : ''}`}
+          } ${isFocused ? 'ring-2 ring-blue-500 bg-blue-50' : ''}`}
           onClick={() => item.type === 'document' && onDocumentClick(item)}
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
