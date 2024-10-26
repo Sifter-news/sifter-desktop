@@ -84,58 +84,61 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
   };
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Rnd
-            size={{ width: node.width, height: node.height }}
-            position={{ x: node.x, y: node.y }}
-            onDragStart={(e) => onDragStart(e, node.id)}
-            scale={zoom}
-            className="group relative"
-          >
-            {renderNodeContent()}
-          </Rnd>
-        </TooltipTrigger>
-        <TooltipContent 
-          side="top" 
-          className="flex gap-2 bg-black text-white border-black"
-        >
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-white hover:bg-gray-800"
-            onClick={() => handleVisualTypeChange('pill')}
-          >
-            <Type className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-white hover:bg-gray-800"
-            onClick={() => handleVisualTypeChange('postit')}
-          >
-            <Type className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-white hover:bg-gray-800"
-            onClick={() => onAIConversation(node)}
-          >
-            <MessageCircle className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-white hover:bg-gray-800"
-            onClick={handleDelete}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <div className="group">
+      <Rnd
+        size={{ width: node.width, height: node.height }}
+        position={{ x: node.x, y: node.y }}
+        onDragStart={(e) => onDragStart(e, node.id)}
+        scale={zoom}
+        className="relative"
+      >
+        {renderNodeContent()}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="absolute inset-0 cursor-move" />
+            </TooltipTrigger>
+            <TooltipContent 
+              side="top" 
+              className="flex gap-2 bg-black text-white border-black"
+            >
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-white hover:bg-gray-800"
+                onClick={() => handleVisualTypeChange('pill')}
+              >
+                <Type className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-white hover:bg-gray-800"
+                onClick={() => handleVisualTypeChange('postit')}
+              >
+                <Type className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-white hover:bg-gray-800"
+                onClick={() => onAIConversation(node)}
+              >
+                <MessageCircle className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-white hover:bg-gray-800"
+                onClick={handleDelete}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </Rnd>
+    </div>
   );
 };
 
