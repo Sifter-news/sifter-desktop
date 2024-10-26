@@ -2,9 +2,6 @@ import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-const POSTIT_WIDTH = 240;
-const POSTIT_HEIGHT = 200;
-
 const NodeContent = ({ style, isEditing, node, localTitle, localDescription, handleBlur, setLocalTitle, setLocalDescription, handleNodeClick }) => {
   const getNodeStyle = () => {
     switch (style) {
@@ -26,18 +23,8 @@ const NodeContent = ({ style, isEditing, node, localTitle, localDescription, han
           </div>
         );
       case 'postit':
-        // Set fixed dimensions for the post-it style
-        if (node.width !== POSTIT_WIDTH || node.height !== POSTIT_HEIGHT) {
-          // Update node dimensions if they don't match
-          node.width = POSTIT_WIDTH;
-          node.height = POSTIT_HEIGHT;
-        }
-        
         return (
-          <div 
-            className="w-[240px] h-[200px] p-4 bg-yellow-100 rounded-sm shadow-md"
-            style={{ width: POSTIT_WIDTH, height: POSTIT_HEIGHT }}
-          >
+          <div className="w-[240px] h-[200px] p-4 bg-yellow-100 rounded-sm shadow-md">
             {isEditing ? (
               <div className="h-full flex flex-col gap-2">
                 <Input
