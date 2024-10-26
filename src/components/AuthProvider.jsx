@@ -19,6 +19,8 @@ export const AuthProvider = ({ children }) => {
         
         if (error) {
           console.error('Session error:', error);
+          // Clear any invalid session data
+          await supabase.auth.signOut();
           setUser(null);
           navigate('/login');
           return;
@@ -30,9 +32,21 @@ export const AuthProvider = ({ children }) => {
           return;
         }
 
-        setUser(session.user);
+        // Verify the session is still valid
+        const { data: { user: currentUser }, error: refreshError } = await supabase.auth.getUser();
+        
+        if (refreshError || !currentUser) {
+          console.error('Session refresh error:', refreshError);
+          await supabase.auth.signOut();
+          setUser(null);
+          navigate('/login');
+          return;
+        }
+
+        setUser(currentUser);
       } catch (error) {
         console.error('Auth error:', error);
+        await supabase.auth.signOut();
         setUser(null);
         navigate('/login');
       } finally {
