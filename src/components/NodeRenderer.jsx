@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Type, Database, Palette } from 'lucide-react';
 
-const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocused }) => {
+const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocused, onAIConversation }) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleVisualTypeChange = (value) => {
@@ -22,6 +22,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
 
   const handleAIClick = () => {
     onFocus(node.id);
+    onAIConversation(node);
   };
 
   const renderNodeContent = () => {

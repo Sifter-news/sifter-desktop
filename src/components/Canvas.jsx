@@ -16,7 +16,8 @@ const Canvas = forwardRef(({
   onNodeFocus,
   onNodeDelete,
   onDragOver,
-  onDrop
+  onDrop,
+  onAIConversation
 }, ref) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = React.useState(false);
   const [nodeToDelete, setNodeToDelete] = React.useState(null);
@@ -130,6 +131,7 @@ const Canvas = forwardRef(({
               onFocus={onNodeFocus}
               isFocused={focusedNodeId === node.id}
               onDelete={onNodeDelete}
+              onAIConversation={onAIConversation}
             />
           ))}
         </div>

@@ -37,10 +37,15 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
       width: 200,
       height: 100,
       color: '#FFFFFF',
-      backgroundColor: '#FFFFFF', // Added explicit white background
+      backgroundColor: '#FFFFFF',
     };
     
     onAddNode(newNode);
+  };
+
+  const handleAIConversation = (node) => {
+    setInitialAIMessage(`Tell me about the node "${node.title}"`);
+    setSidePanelOpen(true);
   };
 
   return (
@@ -60,6 +65,7 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
           focusedNodeId={focusedNodeId}
           onNodeFocus={setFocusedNodeId}
           onNodeDelete={onDeleteNode}
+          onAIConversation={handleAIConversation}
         />
         <Toolbar
           activeTool={activeTool}
