@@ -3,11 +3,18 @@ import { Rnd } from 'react-rnd';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Type, Database, Palette } from 'lucide-react';
+import { MessageCircle, Type, Database, Palette, MoreVertical, Trash2 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocused, onAIConversation }) => {
+const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocused, onAIConversation, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [localTitle, setLocalTitle] = useState(node.title);
   const [localDescription, setLocalDescription] = useState(node.description);
@@ -44,6 +51,11 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
     });
   };
 
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    onDelete(node.id);
+  };
+
   const renderNodeContent = () => {
     if (node.visualType === 'pill') {
       return (
@@ -56,7 +68,6 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
         </div>
       );
     } else {
-      // Post-it style
       const postitStyle = `w-full h-full p-4 ${node.color || 'bg-yellow-200'} shadow-md transform rotate-1`;
       
       return (
@@ -98,67 +109,33 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
     >
       {renderNodeContent()}
       <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="ghost" size="sm" className="bg-black bg-opacity-10">
-              <Type className="h-4 w-4" />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8 bg-white bg-opacity-80 rounded-full hover:bg-opacity-100">
+              <MoreVertical className="h-4 w-4" />
             </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-64">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Type className="h-4 w-4" />
-                <Select onValueChange={handleVisualTypeChange} defaultValue={node.visualType || 'pill'}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Visual Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pill">Pill Node</SelectItem>
-                    <SelectItem value="postit">Post-it Node</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Database className="h-4 w-4" />
-                <Select onValueChange={handleDataTypeChange} defaultValue={node.type}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Data Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="generic">Generic</SelectItem>
-                    <SelectItem value="person">Person</SelectItem>
-                    <SelectItem value="organization">Organization</SelectItem>
-                    <SelectItem value="object">Object</SelectItem>
-                    <SelectItem value="event">Event</SelectItem>
-                    <SelectItem value="concept">Concept</SelectItem>
-                    <SelectItem value="location">Location</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Palette className="h-4 w-4" />
-                <Select onValueChange={handleColorChange} defaultValue={node.color}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Color" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="bg-yellow-200">Yellow</SelectItem>
-                    <SelectItem value="bg-pink-200">Pink</SelectItem>
-                    <SelectItem value="bg-blue-200">Blue</SelectItem>
-                    <SelectItem value="bg-green-200">Green</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button 
-                onClick={handleAIClick}
-                className="w-full bg-purple-500 hover:bg-purple-600"
-              >
-                <MessageCircle className="h-4 w-4 mr-2" />
-                AI Conversation
-              </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => handleVisualTypeChange('pill')}>
+                <Type className="mr-2 h-4 w-4" />
+                <span>Pill Style</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleVisualTypeChange('postit')}>
+                <Type className="mr-2 h-4 w-4" />
+                <span>Post-it Style</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleAIClick}>
+                <MessageCircle className="mr-2 h-4 w-4" />
+                <span>AI Conversation</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleDelete} className="text-red-600">
+                <Trash2 className="mr-2 h-4 w-4" />
+                <span>Delete Node</span>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </Rnd>
   );
