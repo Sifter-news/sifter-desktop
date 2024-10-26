@@ -1,128 +1,119 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
-import FocusedNodeTooltip from './FocusedNodeTooltip';
-import { Circle } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { MessageCircle, Type, Database, Palette } from 'lucide-react';
 
-const NodeRenderer = ({ node, onDragStart, onConnectorDragStart, zoom, onNodeUpdate, onFocus, isFocused, onDelete }) => {
+const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocused }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const contentRef = useRef(null);
-  const titleRef = useRef(null);
 
-  useEffect(() => {
-    if (isEditing && contentRef.current) {
-      contentRef.current.focus();
-    }
-  }, [isEditing]);
+  const handleVisualTypeChange = (value) => {
+    onNodeUpdate(node.id, { visualType: value });
+  };
 
-  const handleClick = (e) => {
-    e.stopPropagation();
-    setIsEditing(true);
+  const handleDataTypeChange = (value) => {
+    onNodeUpdate(node.id, { type: value });
+  };
+
+  const handleColorChange = (value) => {
+    onNodeUpdate(node.id, { color: value });
+  };
+
+  const handleAIClick = () => {
     onFocus(node.id);
   };
 
-  const handleBlur = () => {
-    setIsEditing(false);
-    if (onNodeUpdate) {
-      onNodeUpdate(node.id, { 
-        text: contentRef.current ? contentRef.current.innerText : '',
-        title: titleRef.current ? titleRef.current.innerText : ''
-      });
-    }
-  };
-
-  const snapToGrid = (x, y) => {
-    const snapSize = 8;
-    return {
-      x: Math.round(x / snapSize) * snapSize,
-      y: Math.round(y / snapSize) * snapSize
-    };
-  };
-
   const renderNodeContent = () => {
-    switch (node.type) {
-      case 'postit':
-        return (
-          <div className={`w-full h-full bg-[${node.color || '#FFFFA5'}] rounded-md shadow-md flex flex-col p-4 relative overflow-hidden`}>
-            <div className="absolute top-0 left-0 w-full h-2 bg-[#FFF98F] rounded-t-md"></div>
-            <h3 
-              ref={titleRef}
-              contentEditable={isEditing}
-              onBlur={handleBlur}
-              className="text-lg font-semibold mb-2 text-gray-800 outline-none"
-              suppressContentEditableWarning={true}
-            >
-              {node.title || ''}
-            </h3>
-            <div
-              ref={contentRef}
-              contentEditable={isEditing}
-              onBlur={handleBlur}
-              className={`text-sm text-gray-700 overflow-y-auto flex-grow outline-none ${node.textSize || 'text-base'}`}
-              suppressContentEditableWarning={true}
-            >
-              {node.text || ''}
-            </div>
-          </div>
-        );
-      case 'text':
-        return (
-          <div className="flex items-center bg-white bg-opacity-20 backdrop-blur-sm rounded-full p-1 pr-4">
-            <div className="bg-blue-500 rounded-full p-2 mr-2">
-              <Circle className="w-4 h-4 text-white" />
-            </div>
-            <div
-              ref={contentRef}
-              contentEditable={isEditing}
-              onBlur={handleBlur}
-              className="outline-none"
-              suppressContentEditableWarning={true}
-            >
-              {node.text || ''}
-            </div>
-          </div>
-        );
-      case 'blank':
-        return <div className="w-full h-full bg-white rounded-md shadow-md flex items-center justify-center">Node</div>;
-      case 'ai':
-        return (
-          <div className="w-full h-full bg-blue-100 rounded-md shadow-md flex items-center justify-center p-2">
-            <span className="text-blue-600 font-semibold">AI Node</span>
-          </div>
-        );
-      default:
-        return null;
-    }
+    const baseClasses = `w-full h-full p-4 ${node.color} transition-colors`;
+    return node.visualType === 'pill' ? (
+      <div className={`${baseClasses} rounded-full flex items-center`}>
+        <div className="w-8 h-8 rounded-full bg-gray-200 mr-2" />
+        <div className="flex-grow">
+          <h3 className="font-medium">{node.title}</h3>
+          <p className="text-sm text-gray-600">{node.description}</p>
+        </div>
+      </div>
+    ) : (
+      <div className={`${baseClasses} rounded-md`}>
+        <h3 className="font-medium mb-2">{node.title}</h3>
+        <p className="text-sm">{node.description}</p>
+      </div>
+    );
   };
 
   return (
     <Rnd
-      size={{ width: node.width || 200, height: node.height || 200 }}
+      size={{ width: node.width, height: node.height }}
       position={{ x: node.x, y: node.y }}
       onDragStart={(e) => onDragStart(e, node.id)}
-      onDragStop={(e, d) => {
-        const { x, y } = snapToGrid(d.x, d.y);
-        onNodeUpdate(node.id, { x, y });
-      }}
-      onResize={(e, direction, ref, delta, position) => {
-        const { x, y } = snapToGrid(position.x, position.y);
-        onNodeUpdate(node.id, {
-          width: ref.style.width,
-          height: ref.style.height,
-          x,
-          y,
-        });
-      }}
-      className={`cursor-move ${isFocused ? 'ring-2 ring-blue-500' : ''}`}
-      onClick={handleClick}
+      scale={zoom}
+      className="group relative"
     >
       {renderNodeContent()}
-      {isFocused && (
-        <FocusedNodeTooltip
-          node={node}
-          onUpdate={onNodeUpdate}
-          onDelete={onDelete}
-        />
-      )}
+      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="sm" className="bg-black bg-opacity-10">
+              <Type className="h-4 w-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-64">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Type className="h-4 w-4" />
+                <Select onValueChange={handleVisualTypeChange} defaultValue={node.visualType}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Visual Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pill">Pill Node</SelectItem>
+                    <SelectItem value="postit">Post-it Node</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Database className="h-4 w-4" />
+                <Select onValueChange={handleDataTypeChange} defaultValue={node.type}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Data Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="generic">Generic</SelectItem>
+                    <SelectItem value="person">Person</SelectItem>
+                    <SelectItem value="organization">Organization</SelectItem>
+                    <SelectItem value="object">Object</SelectItem>
+                    <SelectItem value="event">Event</SelectItem>
+                    <SelectItem value="concept">Concept</SelectItem>
+                    <SelectItem value="location">Location</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Palette className="h-4 w-4" />
+                <Select onValueChange={handleColorChange} defaultValue={node.color}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Color" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="#FFFFA5">Yellow</SelectItem>
+                    <SelectItem value="#FFB5E8">Pink</SelectItem>
+                    <SelectItem value="#85E3FF">Blue</SelectItem>
+                    <SelectItem value="#ACE7AE">Green</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button 
+                onClick={handleAIClick}
+                className="w-full bg-purple-500 hover:bg-purple-600"
+              >
+                <MessageCircle className="h-4 w-4 mr-2" />
+                AI Conversation
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
     </Rnd>
   );
 };
