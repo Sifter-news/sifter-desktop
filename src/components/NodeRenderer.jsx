@@ -59,7 +59,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
     return (
       <div
         className={`${baseStyles} ${positionStyles[position]}`}
-        style={{ opacity: isHovered ? 1 : 0.2 }}
+        style={{ opacity: isHovered ? 1 : 0.5 }}
         onMouseEnter={() => setHoveredDot(position)}
         onMouseLeave={() => setHoveredDot(null)}
         onMouseDown={(e) => {
