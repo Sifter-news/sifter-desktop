@@ -11,8 +11,8 @@ export const useNodeOperations = (setNodes) => {
         description: newNode.description,
         type: newNode.type,
         investigation_id: projectId,
-        x: position.x,
-        y: position.y
+        position_x: position.x,
+        position_y: position.y
       };
 
       const { data, error } = await supabase
@@ -23,9 +23,11 @@ export const useNodeOperations = (setNodes) => {
 
       if (error) throw error;
 
-      // Add the width property after fetching from database
+      // Transform database response to match frontend expectations
       const nodeWithUI = {
         ...data,
+        x: data.position_x,
+        y: data.position_y,
         width: newNode.width || 200
       };
 
@@ -39,12 +41,11 @@ export const useNodeOperations = (setNodes) => {
 
   const handleUpdateNode = async (nodeId, updates) => {
     try {
-      // Remove width from database updates
-      const { width, ...databaseUpdates } = {
+      const databaseUpdates = {
         title: updates.title,
         description: updates.description,
-        x: updates.x,
-        y: updates.y
+        position_x: updates.x,
+        position_y: updates.y
       };
 
       const { error } = await supabase
