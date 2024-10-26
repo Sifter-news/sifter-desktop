@@ -61,24 +61,28 @@ const NodeRenderer = ({
         position={{ x: node.x, y: node.y }}
         onDragStart={(e) => onDragStart(e, node.id)}
         scale={zoom}
-        className={`relative ${
-          isFocused 
-            ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' 
-            : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01]'
-        }`}
-        onClick={handleNodeClick}
+        className="relative"
       >
-        <NodeContent
-          style={node.visualStyle}
-          isEditing={isEditing}
-          node={node}
-          localTitle={localTitle}
-          localDescription={localDescription}
-          handleBlur={handleBlur}
-          setLocalTitle={setLocalTitle}
-          setLocalDescription={setLocalDescription}
-          handleNodeClick={handleNodeClick}
-        />
+        <div 
+          className={`w-full h-full ${
+            isFocused 
+              ? 'ring-2 ring-blue-500 ring-offset-0' 
+              : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-0'
+          } transition-all duration-200 ease-in-out rounded-lg overflow-hidden`}
+          onClick={handleNodeClick}
+        >
+          <NodeContent
+            style={node.visualStyle}
+            isEditing={isEditing}
+            node={node}
+            localTitle={localTitle}
+            localDescription={localDescription}
+            handleBlur={handleBlur}
+            setLocalTitle={setLocalTitle}
+            setLocalDescription={setLocalDescription}
+            handleNodeClick={handleNodeClick}
+          />
+        </div>
         <TooltipProvider>
           <Tooltip open={showTooltip}>
             <TooltipTrigger asChild>
