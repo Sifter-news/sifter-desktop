@@ -10,6 +10,12 @@ export const useNodeOperations = (setNodes) => {
         title: newNode.title,
         description: newNode.description,
         type: newNode.type,
+        node_type: newNode.nodeType || 'generic',
+        visual_style: newNode.visualStyle || 'expanded',
+        position_x: newNode.x || position.x,
+        position_y: newNode.y || position.y,
+        width: newNode.width || 200,
+        height: newNode.height || 100,
         investigation_id: projectId
       };
 
@@ -21,12 +27,15 @@ export const useNodeOperations = (setNodes) => {
 
       if (error) throw error;
 
-      // Add UI-specific properties
+      // Transform database fields to UI format
       const nodeWithUI = {
         ...data,
-        x: 0,
-        y: 0,
-        width: newNode.width || 200
+        x: data.position_x,
+        y: data.position_y,
+        nodeType: data.node_type,
+        visualStyle: data.visual_style,
+        width: data.width,
+        height: data.height
       };
 
       setNodes(prevNodes => [...prevNodes, nodeWithUI]);
@@ -41,7 +50,13 @@ export const useNodeOperations = (setNodes) => {
     try {
       const databaseUpdates = {
         title: updates.title,
-        description: updates.description
+        description: updates.description,
+        position_x: updates.x,
+        position_y: updates.y,
+        node_type: updates.nodeType,
+        visual_style: updates.visualStyle,
+        width: updates.width,
+        height: updates.height
       };
 
       const { error } = await supabase
