@@ -19,10 +19,17 @@ export const useProjectData = (id) => {
         if (error) throw error;
         
         if (data) {
-          setProject({
-            ...data,
+          // Ensure we only store serializable data
+          const serializedProject = {
+            id: data.id,
+            title: data.title || '',
+            description: data.description || '',
+            created_at: data.created_at || new Date().toISOString(),
+            updated_at: data.updated_at || new Date().toISOString(),
+            user_id: data.user_id || '',
             reports: []
-          });
+          };
+          setProject(serializedProject);
         }
       } catch (error) {
         console.error('Error loading project:', error);
@@ -40,14 +47,19 @@ export const useProjectData = (id) => {
         if (error) throw error;
         
         if (data) {
-          // Add default positions for UI purposes
-          const transformedNodes = data.map(node => ({
-            ...node,
+          // Ensure we only store serializable data
+          const serializedNodes = data.map(node => ({
+            id: node.id,
+            title: node.title || '',
+            description: node.description || '',
+            type: node.type || 'generic',
+            investigation_id: node.investigation_id,
             x: 0,
             y: 0,
-            width: 200
+            width: 200,
+            color: 'bg-yellow-200'
           }));
-          setNodes(transformedNodes);
+          setNodes(serializedNodes);
         }
       } catch (error) {
         console.error('Error loading nodes:', error);
