@@ -70,7 +70,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
         position={{ x: node.x, y: node.y }}
         onDragStart={(e) => onDragStart(e, node.id)}
         scale={zoom}
-        className={`relative transition-all duration-200 ${
+        className={`relative ${
           isFocused 
             ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' 
             : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01]'
@@ -97,10 +97,10 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
             onStartConnection={() => console.log(`Starting connection from ${position}`)}
           />
         ))}
-        <TooltipProvider delayDuration={0}>
-          <Tooltip open={showTooltip && isFocused}>
+        <TooltipProvider delayDuration={500}>
+          <Tooltip>
             <TooltipTrigger asChild>
-              <div className="absolute inset-0 cursor-move" onClick={handleNodeClick} />
+              <div className="absolute inset-0 cursor-move" />
             </TooltipTrigger>
             <TooltipContent 
               side="top" 
@@ -155,7 +155,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-white hover:bg-gray-800"
+                className="text-white hover:bg-purple-700 bg-purple-600"
                 onClick={() => onAIConversation(node)}
               >
                 <MessageCircle className="h-4 w-4 mr-2" />
