@@ -66,7 +66,6 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
           onNodeFocus={setFocusedNodeId}
           onNodeDelete={onDeleteNode}
           onAIConversation={handleAIConversation}
-          onAddNode={onAddNode}
         />
         <Toolbar
           activeTool={activeTool}
