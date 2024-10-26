@@ -16,7 +16,7 @@ const NodeContent = ({ style, isEditing, node, localTitle, localDescription, han
         return (
           <div className="flex items-start p-2 bg-white rounded-lg">
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full mr-2" />
-            <div>
+            <div className="text-center w-full">
               <div className="font-medium">{node.title}</div>
               <div className="text-sm text-gray-600">{node.description}</div>
             </div>
@@ -24,7 +24,7 @@ const NodeContent = ({ style, isEditing, node, localTitle, localDescription, han
         );
       case 'postit':
         return (
-          <div className="p-4 bg-yellow-100 rounded-lg">
+          <div className="p-4 bg-yellow-100 rounded-lg text-center">
             <h3 className="font-medium mb-2">{node.title}</h3>
             <p className="text-sm">{node.description}</p>
           </div>
@@ -33,7 +33,7 @@ const NodeContent = ({ style, isEditing, node, localTitle, localDescription, han
         return (
           <div className="flex items-start p-2 bg-white rounded-lg">
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full mr-2" />
-            <div>
+            <div className="text-center w-full">
               <div className="font-medium">{node.title}</div>
               <div className="text-sm text-gray-600">{node.description}</div>
             </div>
@@ -50,14 +50,14 @@ const NodeContent = ({ style, isEditing, node, localTitle, localDescription, han
             value={localTitle}
             onChange={(e) => setLocalTitle(e.target.value)}
             onBlur={handleBlur}
-            className="bg-transparent border-none focus:ring-0"
+            className="bg-transparent border-none focus:ring-0 text-center"
             autoFocus
           />
           <Textarea
             value={localDescription}
             onChange={(e) => setLocalDescription(e.target.value)}
             onBlur={handleBlur}
-            className="bg-transparent border-none focus:ring-0 resize-none"
+            className="bg-transparent border-none focus:ring-0 resize-none text-center"
           />
         </div>
       ) : getNodeStyle()}
