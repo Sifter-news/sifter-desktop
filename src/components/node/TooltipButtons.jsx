@@ -33,7 +33,7 @@ const TooltipButtons = ({
         <PopoverTrigger asChild>
           <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
             <Layout className="h-4 w-4 mr-2" />
-            Style
+            Style: {node.visualStyle || 'Default'}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-32">
@@ -56,7 +56,7 @@ const TooltipButtons = ({
         <PopoverTrigger asChild>
           <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
             <Type className="h-4 w-4 mr-2" />
-            Type
+            Type: {node.nodeType || 'Generic'}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-40">
