@@ -9,17 +9,13 @@ CREATE TABLE public.node (
     title VARCHAR(255),
     description TEXT,
     type VARCHAR(50),
-    node_type VARCHAR(50) DEFAULT 'generic',
-    visual_style VARCHAR(50) DEFAULT 'expanded',
-    position_x NUMERIC(10,2) DEFAULT 0,
-    position_y NUMERIC(10,2) DEFAULT 0,
-    width NUMERIC(10,2) DEFAULT 200,
-    height NUMERIC(10,2) DEFAULT 100,
     avatar TEXT DEFAULT 'default_avatar.png',
     is_public BOOLEAN DEFAULT FALSE,
     owner_id UUID REFERENCES public.profiles(id),
     investigation_id UUID REFERENCES public.investigations(id),
     parent_node_id UUID REFERENCES public.node(id) ON DELETE SET NULL,
+    position_x NUMERIC(10,2) DEFAULT 0,
+    position_y NUMERIC(10,2) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
