@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Layout, Type, Trash2, Edit } from 'lucide-react';
+import { MessageCircle, Layout, Type, Trash2 } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/popover";
 import ConnectionDot from './ConnectionDot';
 import NodeContent from './NodeContent';
-import NodeEditModal from './NodeEditModal';
 
 const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocused, onAIConversation, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -23,7 +22,6 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
   const [localDescription, setLocalDescription] = useState(node.description);
   const [hoveredDot, setHoveredDot] = useState(null);
   const [showTooltip, setShowTooltip] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
 
   const handleStyleChange = (value) => {
     onNodeUpdate(node.id, { visualStyle: value });
@@ -108,16 +106,6 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
               side="top" 
               className="flex gap-2 bg-black text-white border-black p-2"
             >
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-white hover:bg-gray-800"
-                onClick={() => setShowEditModal(true)}
-              >
-                <Edit className="h-4 w-4 mr-2" />
-                Edit
-              </Button>
-
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
@@ -186,12 +174,6 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
           </Tooltip>
         </TooltipProvider>
       </Rnd>
-      <NodeEditModal
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        node={node}
-        onUpdate={onNodeUpdate}
-      />
     </div>
   );
 };
