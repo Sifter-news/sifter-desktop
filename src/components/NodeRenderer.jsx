@@ -4,12 +4,17 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Type, Database, Palette } from 'lucide-react';
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocused, onAIConversation }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [localTitle, setLocalTitle] = useState(node.title);
+  const [localDescription, setLocalDescription] = useState(node.description);
 
   const handleVisualTypeChange = (value) => {
     onNodeUpdate(node.id, { visualType: value });
+    setIsEditing(false);
   };
 
   const handleDataTypeChange = (value) => {
@@ -25,22 +30,62 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
     onAIConversation(node);
   };
 
+  const handleNodeClick = () => {
+    if (node.visualType === 'postit') {
+      setIsEditing(true);
+    }
+  };
+
+  const handleBlur = () => {
+    setIsEditing(false);
+    onNodeUpdate(node.id, {
+      title: localTitle,
+      description: localDescription
+    });
+  };
+
   const renderNodeContent = () => {
-    const baseClasses = `w-full h-full p-4 ${node.color} transition-colors`;
-    return node.visualType === 'pill' ? (
-      <div className={`${baseClasses} rounded-full flex items-center`}>
-        <div className="w-8 h-8 rounded-full bg-gray-200 mr-2" />
-        <div className="flex-grow">
-          <h3 className="font-medium">{node.title}</h3>
-          <p className="text-sm text-gray-600">{node.description}</p>
+    if (node.visualType === 'pill') {
+      return (
+        <div className="w-full h-full p-4 bg-white rounded-full flex items-center">
+          <div className="w-8 h-8 rounded-full bg-gray-200 mr-2" />
+          <div className="flex-grow">
+            <h3 className="font-medium">{node.title}</h3>
+            <p className="text-sm text-gray-600">{node.description}</p>
+          </div>
         </div>
-      </div>
-    ) : (
-      <div className={`${baseClasses} rounded-md`}>
-        <h3 className="font-medium mb-2">{node.title}</h3>
-        <p className="text-sm">{node.description}</p>
-      </div>
-    );
+      );
+    } else {
+      // Post-it style
+      const postitStyle = `w-full h-full p-4 ${node.color || 'bg-yellow-200'} shadow-md transform rotate-1`;
+      
+      return (
+        <div className={postitStyle} onClick={handleNodeClick}>
+          {isEditing ? (
+            <div className="space-y-2">
+              <Input
+                value={localTitle}
+                onChange={(e) => setLocalTitle(e.target.value)}
+                onBlur={handleBlur}
+                className="bg-transparent border-none focus:ring-0"
+                autoFocus
+              />
+              <Textarea
+                value={localDescription}
+                onChange={(e) => setLocalDescription(e.target.value)}
+                onBlur={handleBlur}
+                className="bg-transparent border-none focus:ring-0 resize-none"
+              />
+            </div>
+          ) : (
+            <>
+              <h3 className="font-medium mb-2">{node.title}</h3>
+              <p className="text-sm">{node.description}</p>
+            </>
+          )}
+        </div>
+      );
+    }
   };
 
   return (
@@ -63,7 +108,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <Type className="h-4 w-4" />
-                <Select onValueChange={handleVisualTypeChange} defaultValue={node.visualType}>
+                <Select onValueChange={handleVisualTypeChange} defaultValue={node.visualType || 'pill'}>
                   <SelectTrigger>
                     <SelectValue placeholder="Visual Type" />
                   </SelectTrigger>
@@ -97,10 +142,10 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
                     <SelectValue placeholder="Color" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="#FFFFA5">Yellow</SelectItem>
-                    <SelectItem value="#FFB5E8">Pink</SelectItem>
-                    <SelectItem value="#85E3FF">Blue</SelectItem>
-                    <SelectItem value="#ACE7AE">Green</SelectItem>
+                    <SelectItem value="bg-yellow-200">Yellow</SelectItem>
+                    <SelectItem value="bg-pink-200">Pink</SelectItem>
+                    <SelectItem value="bg-blue-200">Blue</SelectItem>
+                    <SelectItem value="bg-green-200">Green</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
