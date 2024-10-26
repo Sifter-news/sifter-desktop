@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useZoomPan, findAvailablePosition, snapToGrid } from '../utils/canvasUtils';
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
@@ -37,6 +37,7 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
       width: 200,
       height: 100,
       color: '#FFFFFF',
+      backgroundColor: '#FFFFFF', // Added explicit white background
     };
     
     onAddNode(newNode);
