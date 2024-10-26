@@ -110,7 +110,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
                 <PopoverTrigger asChild>
                   <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
                     <Layout className="h-4 w-4 mr-2" />
-                    Style
+                    {styles[node.visualStyle] || "Style"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-32">
@@ -133,7 +133,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
                 <PopoverTrigger asChild>
                   <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
                     <Type className="h-4 w-4 mr-2" />
-                    Type
+                    {nodeTypes[node.nodeType] || "Type"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-40">
