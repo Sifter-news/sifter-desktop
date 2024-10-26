@@ -17,6 +17,14 @@ const TooltipButtons = ({
   node, 
   onEdit 
 }) => {
+  const getStyleLabel = (value) => {
+    return styles[value] || value || 'Default';
+  };
+
+  const getTypeLabel = (value) => {
+    return nodeTypes[value] || value || 'Generic';
+  };
+
   return (
     <div className="flex gap-2">
       <Button
@@ -33,7 +41,7 @@ const TooltipButtons = ({
         <PopoverTrigger asChild>
           <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
             <Layout className="h-4 w-4 mr-2" />
-            Style: {node.visualStyle || 'Default'}
+            {getStyleLabel(node.visualStyle)}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-32">
@@ -56,7 +64,7 @@ const TooltipButtons = ({
         <PopoverTrigger asChild>
           <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
             <Type className="h-4 w-4 mr-2" />
-            Type: {node.nodeType || 'Generic'}
+            {getTypeLabel(node.nodeType)}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-40">
