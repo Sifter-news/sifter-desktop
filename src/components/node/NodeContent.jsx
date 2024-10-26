@@ -7,7 +7,7 @@ const NodeContent = ({ style, isEditing, node, localTitle, localDescription, han
     switch (style) {
       case 'compact':
         return (
-          <div className="flex flex-col justify-center items-center p-2 bg-white rounded-full">
+          <div className="flex flex-col justify-center items-center p-1 bg-white rounded-full">
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full" />
           </div>
         );
