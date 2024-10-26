@@ -46,14 +46,15 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
   };
 
   const renderNodeContent = () => {
-    const style = node.visualStyle || 'compact';
+    const style = node.visualStyle || 'expanded'; // Changed default to expanded
     
     const getNodeStyle = () => {
       switch (style) {
         case 'compact':
           return (
-            <div className="flex items-center p-2">
-              <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full" />
+            <div className="flex flex-col items-center p-2">
+              <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full mb-1" />
+              <div className="text-sm font-medium text-center">{node.title}</div>
             </div>
           );
         case 'expanded':
@@ -74,7 +75,15 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
             </div>
           );
         default:
-          return null;
+          return (
+            <div className="flex items-start p-2">
+              <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full mr-2" />
+              <div>
+                <div className="font-medium">{node.title}</div>
+                <div className="text-sm text-gray-600">{node.description}</div>
+              </div>
+            </div>
+          );
       }
     };
 
@@ -120,7 +129,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
               side="top" 
               className="flex gap-2 bg-black text-white border-black p-2"
             >
-              <Select onValueChange={handleStyleChange} defaultValue={node.visualStyle || 'compact'}>
+              <Select onValueChange={handleStyleChange} defaultValue={node.visualStyle || 'expanded'}>
                 <SelectTrigger className="w-[100px] bg-transparent border-none text-white">
                   <Layout className="h-4 w-4 mr-1" />
                   <span className="text-xs">Style</span>
