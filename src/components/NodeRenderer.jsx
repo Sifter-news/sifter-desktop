@@ -46,14 +46,35 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
     });
   };
 
+  const resizeHandleStyles = {
+    width: 10,
+    height: 10,
+    background: isFocused ? '#3B82F6' : 'transparent',
+    borderRadius: '50%'
+  };
+
   return (
     <div className="group">
       <Rnd
-        size={{ width: node.width, height: node.height }}
+        size={{ width: node.width || 200, height: node.height || 200 }}
         position={{ x: node.x, y: node.y }}
         onDragStart={(e) => onDragStart(e, node.id)}
         scale={zoom}
         className="relative"
+        enableResizing={node.visualStyle === 'postit' && isFocused}
+        resizeHandleStyles={{
+          topLeft: resizeHandleStyles,
+          topRight: resizeHandleStyles,
+          bottomLeft: resizeHandleStyles,
+          bottomRight: resizeHandleStyles
+        }}
+        onResize={(e, direction, ref, delta, position) => {
+          onNodeUpdate(node.id, {
+            width: ref.offsetWidth,
+            height: ref.offsetHeight,
+            ...position
+          });
+        }}
       >
         <NodeContent
           style={node.visualStyle}
