@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Layout, Type, Trash2 } from 'lucide-react';
+import { MessageCircle, Layout, Type, Trash2, Edit } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Tooltip,
   TooltipContent,
@@ -22,6 +31,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
   const [localDescription, setLocalDescription] = useState(node.description);
   const [hoveredDot, setHoveredDot] = useState(null);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
 
   const handleStyleChange = (value) => {
     onNodeUpdate(node.id, { visualStyle: value });
@@ -39,12 +49,12 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
     onFocus(node.id);
   };
 
-  const handleBlur = () => {
-    setIsEditing(false);
+  const handleEditSave = () => {
     onNodeUpdate(node.id, {
       title: localTitle,
       description: localDescription
     });
+    setShowEditDialog(false);
   };
 
   const styles = {
@@ -82,7 +92,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
           node={node}
           localTitle={localTitle}
           localDescription={localDescription}
-          handleBlur={handleBlur}
+          handleBlur={handleEditSave}
           setLocalTitle={setLocalTitle}
           setLocalDescription={setLocalDescription}
           handleNodeClick={handleNodeClick}
@@ -106,6 +116,16 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
               side="top" 
               className="flex gap-2 bg-black text-white border-black p-2"
             >
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-gray-800"
+                onClick={() => setShowEditDialog(true)}
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Edit
+              </Button>
+
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
@@ -173,6 +193,41 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
+
+        <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Node</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label htmlFor="title" className="text-right">
+                  Title
+                </label>
+                <Input
+                  id="title"
+                  value={localTitle}
+                  onChange={(e) => setLocalTitle(e.target.value)}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label htmlFor="description" className="text-right">
+                  Description
+                </label>
+                <Textarea
+                  id="description"
+                  value={localDescription}
+                  onChange={(e) => setLocalDescription(e.target.value)}
+                  className="col-span-3"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button onClick={handleEditSave}>Save changes</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </Rnd>
     </div>
   );
