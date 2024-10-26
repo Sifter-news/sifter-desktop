@@ -15,14 +15,20 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import ConnectionDot from './node/ConnectionDot';
-import NodeContent from './node/NodeContent';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import ConnectionDot from './ConnectionDot';
+import NodeContent from './NodeContent';
 
 const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocused, onAIConversation, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [localTitle, setLocalTitle] = useState(node.title);
   const [localDescription, setLocalDescription] = useState(node.description);
   const [hoveredDot, setHoveredDot] = useState(null);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const handleStyleChange = (value) => {
     onNodeUpdate(node.id, { visualStyle: value });
@@ -34,8 +40,10 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
     setIsEditing(false);
   };
 
-  const handleNodeClick = () => {
-    setIsEditing(true);
+  const handleNodeClick = (e) => {
+    e.stopPropagation();
+    setShowTooltip(true);
+    onFocus(node.id);
   };
 
   const handleBlur = () => {
@@ -44,6 +52,28 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
       title: localTitle,
       description: localDescription
     });
+  };
+
+  React.useEffect(() => {
+    if (!isFocused) {
+      setShowTooltip(false);
+    }
+  }, [isFocused]);
+
+  const styles = {
+    compact: "Compact",
+    expanded: "Expanded",
+    postit: "Post-it"
+  };
+
+  const nodeTypes = {
+    generic: "Generic Note",
+    node_person: "Person",
+    node_organization: "Organization",
+    node_object: "Object",
+    node_concept: "Concept",
+    node_location: "Location",
+    node_event: "Event"
   };
 
   return (
@@ -58,6 +88,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
             ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' 
             : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01]'
         }`}
+        onClick={handleNodeClick}
       >
         <NodeContent
           style={node.visualStyle}
@@ -80,8 +111,8 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
             onStartConnection={() => console.log(`Starting connection from ${position}`)}
           />
         ))}
-        <TooltipProvider delayDuration={500}>
-          <Tooltip>
+        <TooltipProvider>
+          <Tooltip open={showTooltip}>
             <TooltipTrigger asChild>
               <div className="absolute inset-0 cursor-move" />
             </TooltipTrigger>
@@ -89,33 +120,51 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
               side="top" 
               className="flex gap-2 bg-black text-white border-black p-2"
             >
-              <Select onValueChange={handleStyleChange} defaultValue={node.visualStyle || 'expanded'}>
-                <SelectTrigger className="w-[100px] bg-transparent border-none text-white">
-                  <Layout className="h-4 w-4 mr-1" />
-                  <span className="text-xs">Style</span>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="compact">Compact</SelectItem>
-                  <SelectItem value="expanded">Expanded</SelectItem>
-                  <SelectItem value="postit">Post-it</SelectItem>
-                </SelectContent>
-              </Select>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
+                    <Layout className="h-4 w-4 mr-2" />
+                    Style
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-32">
+                  <div className="flex flex-col space-y-1">
+                    {Object.entries(styles).map(([value, label]) => (
+                      <Button
+                        key={value}
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleStyleChange(value)}
+                      >
+                        {label}
+                      </Button>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
 
-              <Select onValueChange={handleTypeChange} defaultValue={node.nodeType || 'generic'}>
-                <SelectTrigger className="w-[100px] bg-transparent border-none text-white">
-                  <Type className="h-4 w-4 mr-1" />
-                  <span className="text-xs">Type</span>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="generic">Generic Note</SelectItem>
-                  <SelectItem value="node_person">Person</SelectItem>
-                  <SelectItem value="node_organization">Organization</SelectItem>
-                  <SelectItem value="node_object">Object</SelectItem>
-                  <SelectItem value="node_concept">Concept</SelectItem>
-                  <SelectItem value="node_location">Location</SelectItem>
-                  <SelectItem value="node_event">Event</SelectItem>
-                </SelectContent>
-              </Select>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
+                    <Type className="h-4 w-4 mr-2" />
+                    Type
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-40">
+                  <div className="flex flex-col space-y-1">
+                    {Object.entries(nodeTypes).map(([value, label]) => (
+                      <Button
+                        key={value}
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleTypeChange(value)}
+                      >
+                        {label}
+                      </Button>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
 
               <Button
                 variant="ghost"

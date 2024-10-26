@@ -50,6 +50,12 @@ const Canvas = forwardRef(({
     setNodes(prevNodes => prevNodes.map(node => ({ ...node, isDragging: false })));
   }, [setNodes]);
 
+  const handleCanvasClick = useCallback((e) => {
+    if (e.target === e.currentTarget) {
+      onNodeFocus(null);
+    }
+  }, [onNodeFocus]);
+
   const handleCanvasMouseDown = useCallback((e) => {
     if (activeTool === 'pan') {
       handlePanStart();
@@ -104,6 +110,7 @@ const Canvas = forwardRef(({
         onMouseDown={handleCanvasMouseDown}
         onMouseMove={handleCanvasMouseMove}
         onMouseUp={handleCanvasMouseUp}
+        onClick={handleCanvasClick}
         onDragOver={onDragOver}
         onDrop={onDrop}
         ref={ref}
