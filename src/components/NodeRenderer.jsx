@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Layout, Type, Trash2, ChevronDown } from 'lucide-react';
+import { MessageCircle, Layout, Type, Trash2 } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -53,7 +53,11 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
         position={{ x: node.x, y: node.y }}
         onDragStart={(e) => onDragStart(e, node.id)}
         scale={zoom}
-        className="relative"
+        className={`relative ${
+          isFocused 
+            ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' 
+            : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01]'
+        }`}
       >
         <NodeContent
           style={node.visualStyle}
@@ -89,7 +93,6 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
                 <SelectTrigger className="w-[100px] bg-transparent border-none text-white">
                   <Layout className="h-4 w-4 mr-1" />
                   <span className="text-xs">Style</span>
-                  <ChevronDown className="h-3 w-3 ml-1" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="compact">Compact</SelectItem>
@@ -102,7 +105,6 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
                 <SelectTrigger className="w-[100px] bg-transparent border-none text-white">
                   <Type className="h-4 w-4 mr-1" />
                   <span className="text-xs">Type</span>
-                  <ChevronDown className="h-3 w-3 ml-1" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="generic">Generic Note</SelectItem>
@@ -117,19 +119,21 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
 
               <Button
                 variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-white hover:bg-gray-800"
+                size="sm"
+                className="text-white hover:bg-purple-700 bg-purple-600"
                 onClick={() => onAIConversation(node)}
               >
-                <MessageCircle className="h-4 w-4" />
+                <MessageCircle className="h-4 w-4 mr-2" />
+                AI
               </Button>
               <Button
                 variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-white hover:bg-gray-800"
+                size="sm"
+                className="text-white hover:bg-gray-800"
                 onClick={() => onDelete(node.id)}
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
               </Button>
             </TooltipContent>
           </Tooltip>
