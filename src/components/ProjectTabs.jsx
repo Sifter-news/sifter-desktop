@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Brain, FileText, Clock, Map } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import MindMapView from './MindMapView';
 import TextView from './TextView';
 import TimeView from './TimeView';
@@ -25,7 +18,6 @@ const ProjectTabs = ({
   onUpdateReport,
   onDeleteReport 
 }) => {
-  const [investigatorType, setInvestigatorType] = useState('private');
   const [focusedNodeId, setFocusedNodeId] = useState(null);
 
   const handleNodeFocus = (nodeId) => {
@@ -34,21 +26,6 @@ const ProjectTabs = ({
 
   return (
     <div className="relative h-full">
-      <div className="fixed top-12 right-12 z-50">
-        <Select value={investigatorType} onValueChange={setInvestigatorType}>
-          <SelectTrigger className="w-[180px] bg-white bg-opacity-80 backdrop-blur-md shadow-lg">
-            <SelectValue placeholder="Select investigator type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="private">Private Investigator</SelectItem>
-            <SelectItem value="police">Police Detective</SelectItem>
-            <SelectItem value="journalist">Investigative Journalist</SelectItem>
-            <SelectItem value="corporate">Corporate Investigator</SelectItem>
-            <SelectItem value="cyber">Cyber Investigator</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      
       <Tabs defaultValue="mind" className="w-full flex flex-col flex-grow">
         <TabsList className="max-w-[340px] mx-auto justify-center fixed top-16 left-0 right-0 bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex">
           <TabsTrigger value="mind" className="flex items-center">
@@ -77,7 +54,6 @@ const ProjectTabs = ({
               onAddNode={onAddNode}
               onUpdateNode={onUpdateNode}
               onDeleteNode={onDeleteNode}
-              investigatorType={investigatorType}
               focusedNodeId={focusedNodeId}
               onNodeFocus={handleNodeFocus}
             />
@@ -89,7 +65,6 @@ const ProjectTabs = ({
               onAddNode={onAddNode}
               onUpdateNode={onUpdateNode}
               onDeleteNode={onDeleteNode}
-              investigatorType={investigatorType}
               focusedNodeId={focusedNodeId}
               onNodeFocus={handleNodeFocus}
             />
@@ -101,7 +76,6 @@ const ProjectTabs = ({
               onAddNode={onAddNode}
               onUpdateNode={onUpdateNode}
               onDeleteNode={onDeleteNode}
-              investigatorType={investigatorType}
               focusedNodeId={focusedNodeId}
               onNodeFocus={handleNodeFocus}
             />
@@ -113,7 +87,6 @@ const ProjectTabs = ({
               onAddNode={onAddNode}
               onUpdateNode={onUpdateNode}
               onDeleteNode={onDeleteNode}
-              investigatorType={investigatorType}
               focusedNodeId={focusedNodeId}
               onNodeFocus={handleNodeFocus}
             />
