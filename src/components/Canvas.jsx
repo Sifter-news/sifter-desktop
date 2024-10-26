@@ -1,6 +1,7 @@
 import React, { forwardRef, useCallback, useEffect } from 'react';
 import NodeRenderer from './NodeRenderer';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 const Canvas = forwardRef(({ 
   nodes, 
@@ -16,8 +17,7 @@ const Canvas = forwardRef(({
   onNodeFocus,
   onNodeDelete,
   onDragOver,
-  onDrop,
-  onAIConversation
+  onDrop
 }, ref) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = React.useState(false);
   const [nodeToDelete, setNodeToDelete] = React.useState(null);
@@ -30,80 +30,51 @@ const Canvas = forwardRef(({
     }
   }, [activeTool, setNodes]);
 
-  const snapToGrid = useCallback((value) => {
-    return Math.round(value / 24) * 24;
-  }, []);
-
   const handleDrag = useCallback((e) => {
     if (activeTool === 'select') {
       setNodes(prevNodes => prevNodes.map(node => 
         node.isDragging ? { 
           ...node, 
-          x: snapToGrid((e.clientX - ref.current.offsetLeft) / zoom - position.x), 
-          y: snapToGrid((e.clientY - ref.current.offsetTop) / zoom - position.y)
+          x: Math.round((e.clientX - ref.current.offsetLeft) / zoom - position.x), 
+          y: Math.round((e.clientY - ref.current.offsetTop) / zoom - position.y)
         } : node
       ));
     }
-  }, [activeTool, zoom, position.x, position.y, setNodes, snapToGrid, ref]);
+  }, [activeTool, zoom, position.x, position.y, setNodes, ref]);
 
   const handleDragEnd = useCallback(() => {
     setNodes(prevNodes => prevNodes.map(node => ({ ...node, isDragging: false })));
   }, [setNodes]);
 
-  const handleCanvasMouseDown = useCallback((e) => {
-    if (activeTool === 'pan') {
-      handlePanStart();
+  const handleNodeDelete = useCallback((nodeId) => {
+    const node = nodes.find(n => n.id === nodeId);
+    if (node.type === 'person' || node.type === 'organization') {
+      setNodeToDelete(node);
+      setShowDeleteConfirmation(true);
+    } else {
+      onNodeDelete(nodeId);
+      toast.success("Node deleted successfully");
     }
-  }, [activeTool, handlePanStart]);
-
-  const handleCanvasMouseMove = useCallback((e) => {
-    handleDrag(e);
-    if (activeTool === 'pan') {
-      handlePanMove(e);
-    }
-  }, [activeTool, handleDrag, handlePanMove]);
-
-  const handleCanvasMouseUp = useCallback(() => {
-    handleDragEnd();
-    if (activeTool === 'pan') {
-      handlePanEnd();
-    }
-  }, [activeTool, handleDragEnd, handlePanEnd]);
-
-  const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Delete' && focusedNodeId) {
-      const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
-      if (nodeToDelete.type === 'ai') {
-        setNodeToDelete(nodeToDelete);
-        setShowDeleteConfirmation(true);
-      } else {
-        onNodeDelete(focusedNodeId);
-      }
-    }
-  }, [focusedNodeId, nodes, onNodeDelete]);
+  }, [nodes, onNodeDelete]);
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+    const handleKeyDown = (e) => {
+      if (e.key === 'Delete' && focusedNodeId) {
+        handleNodeDelete(focusedNodeId);
+      }
     };
-  }, [handleKeyDown]);
 
-  const handleConfirmDelete = () => {
-    if (nodeToDelete) {
-      onNodeDelete(nodeToDelete.id);
-    }
-    setShowDeleteConfirmation(false);
-    setNodeToDelete(null);
-  };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [focusedNodeId, handleNodeDelete]);
 
   return (
     <>
       <div 
         className="w-screen h-full bg-[#594BFF] overflow-hidden"
-        onMouseDown={handleCanvasMouseDown}
-        onMouseMove={handleCanvasMouseMove}
-        onMouseUp={handleCanvasMouseUp}
+        onMouseDown={handlePanStart}
+        onMouseMove={handlePanMove}
+        onMouseUp={handlePanEnd}
         onDragOver={onDragOver}
         onDrop={onDrop}
         ref={ref}
@@ -130,8 +101,7 @@ const Canvas = forwardRef(({
               onNodeUpdate={onNodeUpdate}
               onFocus={onNodeFocus}
               isFocused={focusedNodeId === node.id}
-              onDelete={onNodeDelete}
-              onAIConversation={onAIConversation}
+              onDelete={handleNodeDelete}
             />
           ))}
         </div>
@@ -139,14 +109,19 @@ const Canvas = forwardRef(({
       <AlertDialog open={showDeleteConfirmation} onOpenChange={setShowDeleteConfirmation}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure you want to delete this AI node?</AlertDialogTitle>
+            <AlertDialogTitle>Delete {nodeToDelete?.type} node?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the AI node and its associated data.
+              This action cannot be undone. This will permanently delete the node and its associated data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setShowDeleteConfirmation(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete}>Delete</AlertDialogAction>
+            <AlertDialogAction onClick={() => {
+              onNodeDelete(nodeToDelete?.id);
+              setShowDeleteConfirmation(false);
+              setNodeToDelete(null);
+              toast.success("Node deleted successfully");
+            }}>Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
