@@ -26,6 +26,11 @@ const ProjectTabs = ({
   onDeleteReport 
 }) => {
   const [investigatorType, setInvestigatorType] = useState('private');
+  const [focusedNodeId, setFocusedNodeId] = useState(null);
+
+  const handleNodeFocus = (nodeId) => {
+    setFocusedNodeId(nodeId);
+  };
 
   return (
     <div className="relative h-full">
@@ -73,6 +78,8 @@ const ProjectTabs = ({
               onUpdateNode={onUpdateNode}
               onDeleteNode={onDeleteNode}
               investigatorType={investigatorType}
+              focusedNodeId={focusedNodeId}
+              onNodeFocus={handleNodeFocus}
             />
           </TabsContent>
           <TabsContent value="text" className="h-full">
@@ -83,6 +90,8 @@ const ProjectTabs = ({
               onUpdateNode={onUpdateNode}
               onDeleteNode={onDeleteNode}
               investigatorType={investigatorType}
+              focusedNodeId={focusedNodeId}
+              onNodeFocus={handleNodeFocus}
             />
           </TabsContent>
           <TabsContent value="time" className="h-full">
@@ -93,6 +102,8 @@ const ProjectTabs = ({
               onUpdateNode={onUpdateNode}
               onDeleteNode={onDeleteNode}
               investigatorType={investigatorType}
+              focusedNodeId={focusedNodeId}
+              onNodeFocus={handleNodeFocus}
             />
           </TabsContent>
           <TabsContent value="map" className="h-full">
@@ -103,6 +114,8 @@ const ProjectTabs = ({
               onUpdateNode={onUpdateNode}
               onDeleteNode={onDeleteNode}
               investigatorType={investigatorType}
+              focusedNodeId={focusedNodeId}
+              onNodeFocus={handleNodeFocus}
             />
           </TabsContent>
         </div>

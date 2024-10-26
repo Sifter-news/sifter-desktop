@@ -4,23 +4,29 @@ import Navigator from './Navigator';
 import ReportList from './ReportList';
 import { findAvailablePosition } from '../utils/canvasUtils';
 
-const TextView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode, reports, onAddReport, onUpdateReport }) => {
-  const [selectedNode, setSelectedNode] = useState(null);
-
-  useEffect(() => {
-    if (nodes.length > 0 && !selectedNode) {
-      setSelectedNode(nodes[0]);
-    }
-  }, [nodes, selectedNode]);
+const TextView = ({ 
+  project, 
+  nodes, 
+  onAddNode, 
+  onUpdateNode, 
+  onDeleteNode, 
+  reports, 
+  onAddReport, 
+  onUpdateReport,
+  focusedNodeId,
+  onNodeFocus 
+}) => {
+  const selectedNode = nodes.find(node => node.id === focusedNodeId) || nodes[0];
 
   const handleNodeClick = (node) => {
-    setSelectedNode(node);
+    onNodeFocus(node.id);
   };
 
   const handleContentChange = (e) => {
-    const updatedNode = { ...selectedNode, content: e.target.value };
-    setSelectedNode(updatedNode);
-    onUpdateNode(updatedNode);
+    if (selectedNode) {
+      const updatedNode = { ...selectedNode, content: e.target.value };
+      onUpdateNode(updatedNode);
+    }
   };
 
   return (
@@ -49,7 +55,7 @@ const TextView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode, repor
           <div className="bg-white bg-opacity-80 shadow-lg rounded-lg p-6 relative flex flex-col h-full">
             <h2 className="text-2xl font-bold mb-4">{selectedNode.title}</h2>
             <textarea
-              value={selectedNode.content}
+              value={selectedNode.content || ''}
               onChange={handleContentChange}
               className="flex-grow w-full p-2 border rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
