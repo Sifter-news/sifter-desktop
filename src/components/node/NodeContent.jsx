@@ -24,9 +24,28 @@ const NodeContent = ({ style, isEditing, node, localTitle, localDescription, han
         );
       case 'postit':
         return (
-          <div className="flex flex-col justify-center p-4 bg-yellow-100 rounded-lg">
-            <h3 className="font-medium mb-2">{node.title}</h3>
-            <p className="text-sm">{node.description}</p>
+          <div className="w-[240px] h-[200px] p-4 bg-yellow-100 rounded-sm shadow-md">
+            {isEditing ? (
+              <div className="h-full flex flex-col gap-2">
+                <Input
+                  value={localTitle}
+                  onChange={(e) => setLocalTitle(e.target.value)}
+                  onBlur={handleBlur}
+                  className="bg-transparent border-none focus:ring-0 font-medium"
+                />
+                <Textarea
+                  value={localDescription}
+                  onChange={(e) => setLocalDescription(e.target.value)}
+                  onBlur={handleBlur}
+                  className="flex-1 bg-transparent border-none focus:ring-0 resize-none text-sm"
+                />
+              </div>
+            ) : (
+              <>
+                <h3 className="font-medium mb-2">{node.title}</h3>
+                <p className="text-sm">{node.description}</p>
+              </>
+            )}
           </div>
         );
       default:
