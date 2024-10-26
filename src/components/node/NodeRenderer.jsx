@@ -64,11 +64,7 @@ const NodeRenderer = ({
         className="relative"
       >
         <div 
-          className={`w-full h-full ${
-            isFocused 
-              ? 'ring-2 ring-blue-500 ring-offset-0' 
-              : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-0'
-          } transition-all duration-200 ease-in-out rounded-lg overflow-hidden`}
+          className="w-full h-full rounded-lg overflow-hidden"
           onClick={handleNodeClick}
         >
           <NodeContent
@@ -81,6 +77,7 @@ const NodeRenderer = ({
             setLocalTitle={setLocalTitle}
             setLocalDescription={setLocalDescription}
             handleNodeClick={handleNodeClick}
+            isFocused={isFocused}
           />
         </div>
         <TooltipProvider>
