@@ -22,9 +22,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
   };
 
   const handleNodeClick = () => {
-    if (node.visualType === 'postit') {
-      setIsEditing(true);
-    }
+    setIsEditing(true);
   };
 
   const handleBlur = () => {
@@ -41,46 +39,34 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
   };
 
   const renderNodeContent = () => {
-    if (node.visualType === 'pill') {
-      return (
-        <div className="w-full h-full p-4 bg-white rounded-full flex items-center">
-          <div className="w-8 h-8 rounded-full bg-gray-200 mr-2" />
-          <div className="flex-grow">
-            <h3 className="font-medium">{node.title}</h3>
-            <p className="text-sm text-gray-600">{node.description}</p>
+    const postitStyle = `w-full h-full p-4 ${node.color || 'bg-yellow-200'} shadow-md transform rotate-1 rounded-sm`;
+    
+    return (
+      <div className={postitStyle} onClick={handleNodeClick}>
+        {isEditing ? (
+          <div className="space-y-2">
+            <Input
+              value={localTitle}
+              onChange={(e) => setLocalTitle(e.target.value)}
+              onBlur={handleBlur}
+              className="bg-transparent border-none focus:ring-0"
+              autoFocus
+            />
+            <Textarea
+              value={localDescription}
+              onChange={(e) => setLocalDescription(e.target.value)}
+              onBlur={handleBlur}
+              className="bg-transparent border-none focus:ring-0 resize-none"
+            />
           </div>
-        </div>
-      );
-    } else {
-      const postitStyle = `w-full h-full p-4 ${node.color || 'bg-yellow-200'} shadow-md transform rotate-1`;
-      
-      return (
-        <div className={postitStyle} onClick={handleNodeClick}>
-          {isEditing ? (
-            <div className="space-y-2">
-              <Input
-                value={localTitle}
-                onChange={(e) => setLocalTitle(e.target.value)}
-                onBlur={handleBlur}
-                className="bg-transparent border-none focus:ring-0"
-                autoFocus
-              />
-              <Textarea
-                value={localDescription}
-                onChange={(e) => setLocalDescription(e.target.value)}
-                onBlur={handleBlur}
-                className="bg-transparent border-none focus:ring-0 resize-none"
-              />
-            </div>
-          ) : (
-            <>
-              <h3 className="font-medium mb-2">{node.title}</h3>
-              <p className="text-sm">{node.description}</p>
-            </>
-          )}
-        </div>
-      );
-    }
+        ) : (
+          <>
+            <h3 className="font-medium mb-2">{node.title}</h3>
+            <p className="text-sm">{node.description}</p>
+          </>
+        )}
+      </div>
+    );
   };
 
   return (
