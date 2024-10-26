@@ -21,9 +21,17 @@ const Canvas = React.forwardRef(({
   const canvasRef = useRef(null);
 
   useEffect(() => {
-    if (ref) {
-      ref.current = canvasRef.current;
-    }
+    if (!ref) return;
+
+    // Set the ref's current value
+    ref.current = canvasRef.current;
+
+    // Cleanup function
+    return () => {
+      if (ref) {
+        ref.current = null;
+      }
+    };
   }, [ref]);
 
   const handleDragStart = (e, nodeId) => {
