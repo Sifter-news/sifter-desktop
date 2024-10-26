@@ -40,7 +40,7 @@ const TextView = ({
   useEffect(() => {
     if (selectedNode) {
       setEditedTitle(selectedNode.title || '');
-      setEditedDescription(selectedNode.content || '');
+      setEditedDescription(selectedNode.description || '');
     }
   }, [selectedNode]);
 
@@ -86,11 +86,12 @@ const TextView = ({
 
   const handleSave = () => {
     if (selectedNode) {
-      onUpdateNode({
+      const updatedNode = {
         ...selectedNode,
         title: editedTitle,
-        content: editedDescription
-      });
+        description: editedDescription
+      };
+      onUpdateNode(updatedNode);
       setIsEditing(false);
       toast.success("Node updated successfully");
     }
@@ -112,7 +113,7 @@ const TextView = ({
               id: Date.now().toString(),
               type: 'text',
               title: `New Node ${nodes.length + 1}`,
-              content: '',
+              description: '',
               x: position.x,
               y: position.y
             });
@@ -148,7 +149,7 @@ const TextView = ({
                   </h2>
                   <div className="cursor-pointer hover:bg-gray-50 p-2 rounded-md flex-grow"
                        onClick={() => setIsEditing(true)}>
-                    {selectedNode.content || selectedNode.description}
+                    {selectedNode.description}
                   </div>
                   <Button 
                     variant="outline" 
