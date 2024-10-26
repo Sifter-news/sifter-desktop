@@ -56,7 +56,11 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
         position={{ x: node.x, y: node.y }}
         onDragStart={(e) => onDragStart(e, node.id)}
         scale={zoom}
-        className={`relative transition-all duration-200 ${isFocused ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
+        className={`relative transition-all duration-200 ${
+          isFocused 
+            ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' 
+            : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01]'
+        }`}
       >
         <NodeContent
           style={node.visualStyle}
