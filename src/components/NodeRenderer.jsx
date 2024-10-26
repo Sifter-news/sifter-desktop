@@ -3,13 +3,6 @@ import { Rnd } from 'react-rnd';
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Layout, Type, Trash2 } from 'lucide-react';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -20,8 +13,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import ConnectionDot from './ConnectionDot';
-import NodeContent from './NodeContent';
+import ConnectionDot from '@/components/node/ConnectionDot';
+import NodeContent from '@/components/node/NodeContent';
 
 const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocused, onAIConversation, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
