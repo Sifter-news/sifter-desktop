@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Layout, Type, Trash2, Edit } from 'lucide-react';
+import { MessageCircle, Layout, Type, Trash2, Pencil } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -114,7 +114,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
                 className="text-white hover:bg-gray-800"
                 onClick={() => setShowEditModal(true)}
               >
-                <Edit className="h-4 w-4 mr-2" />
+                <Pencil className="h-4 w-4 mr-2" />
                 Edit
               </Button>
 
