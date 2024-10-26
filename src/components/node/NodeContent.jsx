@@ -7,14 +7,14 @@ const NodeContent = ({ style, isEditing, node, localTitle, localDescription, han
     switch (style) {
       case 'compact':
         return (
-          <div className="flex flex-col items-center p-2 bg-white rounded-lg">
+          <div className="flex flex-col items-center p-2 bg-white rounded-t-[50px] rounded-b-lg">
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full mb-1" />
             <div className="text-sm font-medium text-center">{node.title}</div>
           </div>
         );
       case 'expanded':
         return (
-          <div className="flex items-start p-2 bg-white rounded-lg">
+          <div className="flex items-start p-2 bg-white rounded-t-[50px] rounded-b-lg">
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full mr-2" />
             <div>
               <div className="font-medium">{node.title}</div>
@@ -24,14 +24,14 @@ const NodeContent = ({ style, isEditing, node, localTitle, localDescription, han
         );
       case 'postit':
         return (
-          <div className="p-4 bg-yellow-100 rounded-lg">
+          <div className="p-4 bg-yellow-100 rounded-t-[50px] rounded-b-lg">
             <h3 className="font-medium mb-2">{node.title}</h3>
             <p className="text-sm">{node.description}</p>
           </div>
         );
       default:
         return (
-          <div className="flex items-start p-2 bg-white rounded-lg">
+          <div className="flex items-start p-2 bg-white rounded-t-[50px] rounded-b-lg">
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full mr-2" />
             <div>
               <div className="font-medium">{node.title}</div>
@@ -45,7 +45,7 @@ const NodeContent = ({ style, isEditing, node, localTitle, localDescription, han
   return (
     <div onClick={handleNodeClick} className="p-4">
       {isEditing ? (
-        <div className="space-y-2 p-4 bg-white rounded-lg">
+        <div className="space-y-2 p-4 bg-white rounded-t-[50px] rounded-b-lg">
           <Input
             value={localTitle}
             onChange={(e) => setLocalTitle(e.target.value)}
