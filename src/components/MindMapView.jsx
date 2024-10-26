@@ -7,20 +7,22 @@ import { useZoomPan, findAvailablePosition, snapToGrid } from '../utils/canvasUt
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
 import AISidePanel from './AISidePanel';
-import AIInputSection from './AIInputSection';
 import ReportList from './ReportList';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode, reports, onAddReport, onUpdateReport }) => {
-  const [showAIInput, setShowAIInput] = useState(true);
   const [activeTool, setActiveTool] = useState('select');
   const [focusedNodeId, setFocusedNodeId] = useState(null);
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
-  const [aiInputText, setAIInputText] = useState('');
   const [initialAIMessage, setInitialAIMessage] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const [draggedNodeType, setDraggedNodeType] = useState(null);
   const canvasRef = useRef(null);
-  const aiInputRef = useRef(null);
 
   const {
     zoom,
@@ -35,9 +37,6 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
     const savedNodes = loadProjectState(project.id);
     if (savedNodes.length > 0) {
       setNodes(savedNodes);
-      setShowAIInput(false);
-    } else {
-      aiInputRef.current?.focus();
     }
   }, [project.id, setNodes]);
 
@@ -45,23 +44,11 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
     saveProjectState(project.id, nodes);
   }, [project.id, nodes]);
 
-  const handleAIAsk = () => {
-    if (aiInputText.trim()) {
-      const position = findAvailablePosition(nodes);
-      const newNode = {
-        id: Date.now().toString(),
-        type: 'ai',
-        x: position.x,
-        y: position.y,
-        text: aiInputText,
-        width: 200,
-        height: 200,
-      };
-      onAddNode(newNode);
-      setShowAIInput(false);
+  const handleNodeClick = (nodeId) => {
+    const node = nodes.find(n => n.id === nodeId);
+    if (node && node.type === 'blank') {
       setSidePanelOpen(true);
-      setInitialAIMessage(aiInputText);
-      setAIInputText('');
+      setFocusedNodeId(nodeId);
     }
   };
 
@@ -108,26 +95,39 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
           focusedNodeId={focusedNodeId}
           onNodeFocus={setFocusedNodeId}
           onNodeDelete={onDeleteNode}
+          onNodeClick={handleNodeClick}
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDragEnd}
         />
-        {showAIInput && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div className="relative">
-              <AIInputSection
-                aiInputText={aiInputText}
-                setAIInputText={setAIInputText}
-                handleAIAsk={handleAIAsk}
-                aiInputRef={aiInputRef}
-              />
-            </div>
-          </div>
-        )}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="fixed bottom-6 right-6 rounded-full p-3 bg-white shadow-lg hover:bg-gray-50"
+                onClick={() => {
+                  const position = findAvailablePosition(nodes);
+                  onAddNode({
+                    id: Date.now().toString(),
+                    type: 'blank',
+                    x: position.x,
+                    y: position.y,
+                    width: 200,
+                    height: 200,
+                    color: '#FFFFFF',
+                  });
+                }}
+              >
+                <PlusIcon className="h-6 w-6 text-gray-600" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Add a blank note. Click it to start an AI conversation.</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <Toolbar
           activeTool={activeTool}
           setActiveTool={setActiveTool}
-          handleAIClick={() => setShowAIInput(true)}
-          handleAddNode={onAddNode}
           handleZoom={handleZoom}
           zoom={zoom}
           nodes={nodes}
