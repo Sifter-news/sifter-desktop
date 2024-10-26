@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useEffect, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect } from 'react';
 import NodeRenderer from './NodeRenderer';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
@@ -19,8 +19,8 @@ const Canvas = forwardRef(({
   onDrop,
   onAIConversation
 }, ref) => {
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [nodeToDelete, setNodeToDelete] = useState(null);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = React.useState(false);
+  const [nodeToDelete, setNodeToDelete] = React.useState(null);
 
   const handleDragStart = useCallback((e, nodeId) => {
     if (activeTool === 'select') {
@@ -30,17 +30,21 @@ const Canvas = forwardRef(({
     }
   }, [activeTool, setNodes]);
 
+  const snapToGrid = useCallback((value) => {
+    return Math.round(value / 24) * 24;
+  }, []);
+
   const handleDrag = useCallback((e) => {
     if (activeTool === 'select') {
       setNodes(prevNodes => prevNodes.map(node => 
         node.isDragging ? { 
           ...node, 
-          x: Math.round((e.clientX - ref.current?.offsetLeft || 0) / zoom - position.x), 
-          y: Math.round((e.clientY - ref.current?.offsetTop || 0) / zoom - position.y)
+          x: snapToGrid((e.clientX - ref.current.offsetLeft) / zoom - position.x), 
+          y: snapToGrid((e.clientY - ref.current.offsetTop) / zoom - position.y)
         } : node
       ));
     }
-  }, [activeTool, zoom, position.x, position.y, setNodes, ref]);
+  }, [activeTool, zoom, position.x, position.y, setNodes, snapToGrid, ref]);
 
   const handleDragEnd = useCallback(() => {
     setNodes(prevNodes => prevNodes.map(node => ({ ...node, isDragging: false })));
@@ -69,10 +73,10 @@ const Canvas = forwardRef(({
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Delete' && focusedNodeId) {
       const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
-      if (nodeToDelete?.type === 'ai') {
+      if (nodeToDelete.type === 'ai') {
         setNodeToDelete(nodeToDelete);
         setShowDeleteConfirmation(true);
-      } else if (nodeToDelete) {
+      } else {
         onNodeDelete(focusedNodeId);
       }
     }
@@ -149,7 +153,5 @@ const Canvas = forwardRef(({
     </>
   );
 });
-
-Canvas.displayName = 'Canvas';
 
 export default Canvas;
