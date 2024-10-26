@@ -7,6 +7,7 @@ import ReportList from './ReportList';
 import { findAvailablePosition } from '../utils/canvasUtils';
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/supabase';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -84,16 +85,34 @@ const TextView = ({
     setNodeToDelete(null);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (selectedNode) {
       const updatedNode = {
         ...selectedNode,
         title: editedTitle,
         description: editedDescription
       };
-      onUpdateNode(updatedNode);
-      setIsEditing(false);
-      toast.success("Node updated successfully");
+
+      try {
+        // Update in Supabase
+        const { error } = await supabase
+          .from('node')
+          .update({
+            title: editedTitle,
+            description: editedDescription
+          })
+          .eq('id', selectedNode.id);
+
+        if (error) throw error;
+
+        // Update local state
+        onUpdateNode(updatedNode);
+        setIsEditing(false);
+        toast.success("Node updated successfully");
+      } catch (error) {
+        console.error('Error updating node:', error);
+        toast.error("Failed to update node");
+      }
     }
   };
 
