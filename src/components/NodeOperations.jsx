@@ -12,8 +12,7 @@ export const useNodeOperations = (setNodes) => {
         type: newNode.type,
         investigation_id: projectId,
         x: position.x,
-        y: position.y,
-        width: newNode.width || 200
+        y: position.y
       };
 
       const { data, error } = await supabase
@@ -24,7 +23,13 @@ export const useNodeOperations = (setNodes) => {
 
       if (error) throw error;
 
-      setNodes(prevNodes => [...prevNodes, data]);
+      // Add the width property after fetching from database
+      const nodeWithUI = {
+        ...data,
+        width: newNode.width || 200
+      };
+
+      setNodes(prevNodes => [...prevNodes, nodeWithUI]);
       toast.success('Node added successfully');
     } catch (error) {
       console.error('Error adding node:', error);
@@ -34,17 +39,17 @@ export const useNodeOperations = (setNodes) => {
 
   const handleUpdateNode = async (nodeId, updates) => {
     try {
-      const validUpdates = {
+      // Remove width from database updates
+      const { width, ...databaseUpdates } = {
         title: updates.title,
         description: updates.description,
         x: updates.x,
-        y: updates.y,
-        width: updates.width
+        y: updates.y
       };
 
       const { error } = await supabase
         .from('node')
-        .update(validUpdates)
+        .update(databaseUpdates)
         .eq('id', nodeId);
 
       if (error) throw error;
