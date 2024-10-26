@@ -4,9 +4,18 @@ import { Button } from "@/components/ui/button";
 import UserProfile from './UserProfile';
 import ProjectEditModal from './ProjectEditModal';
 import { useState } from 'react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { User, ChevronDown } from 'lucide-react';
 
 const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpdate, onProjectDelete }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [investigatorType, setInvestigatorType] = useState('private');
 
   return (
     <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
@@ -32,10 +41,22 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
           <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
             Dashboard
           </Link>
-          <div className="flex items-center space-x-2">
-            <span className="text-sm font-normal">{user.name}</span>
-            <UserProfile user={user} onUpdateUser={onUpdateUser} />
-          </div>
+          <Select value={investigatorType} onValueChange={setInvestigatorType}>
+            <SelectTrigger className="w-[180px] bg-white">
+              <div className="flex items-center space-x-2">
+                <User className="h-4 w-4" />
+                <SelectValue placeholder="Select investigator type" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="private">Private Investigator</SelectItem>
+              <SelectItem value="police">Police Detective</SelectItem>
+              <SelectItem value="journalist">Investigative Journalist</SelectItem>
+              <SelectItem value="corporate">Corporate Investigator</SelectItem>
+              <SelectItem value="cyber">Cyber Investigator</SelectItem>
+            </SelectContent>
+          </Select>
+          <UserProfile user={user} onUpdateUser={onUpdateUser} />
         </div>
       </div>
       <ProjectEditModal 
