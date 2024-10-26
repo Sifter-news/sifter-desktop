@@ -3,15 +3,6 @@ import { Rnd } from 'react-rnd';
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Layout, Type, Trash2, Edit } from 'lucide-react';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -24,6 +15,7 @@ import {
 } from "@/components/ui/popover";
 import ConnectionDot from './ConnectionDot';
 import NodeContent from './NodeContent';
+import NodeEditModal from './NodeEditModal';
 
 const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocused, onAIConversation, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -31,7 +23,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
   const [localDescription, setLocalDescription] = useState(node.description);
   const [hoveredDot, setHoveredDot] = useState(null);
   const [showTooltip, setShowTooltip] = useState(false);
-  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const handleStyleChange = (value) => {
     onNodeUpdate(node.id, { visualStyle: value });
@@ -49,12 +41,12 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
     onFocus(node.id);
   };
 
-  const handleEditSave = () => {
+  const handleBlur = () => {
+    setIsEditing(false);
     onNodeUpdate(node.id, {
       title: localTitle,
       description: localDescription
     });
-    setShowEditDialog(false);
   };
 
   const styles = {
@@ -92,7 +84,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
           node={node}
           localTitle={localTitle}
           localDescription={localDescription}
-          handleBlur={handleEditSave}
+          handleBlur={handleBlur}
           setLocalTitle={setLocalTitle}
           setLocalDescription={setLocalDescription}
           handleNodeClick={handleNodeClick}
@@ -120,7 +112,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
                 variant="ghost"
                 size="sm"
                 className="text-white hover:bg-gray-800"
-                onClick={() => setShowEditDialog(true)}
+                onClick={() => setShowEditModal(true)}
               >
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
@@ -193,42 +185,13 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-
-        <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Edit Node</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="title" className="text-right">
-                  Title
-                </label>
-                <Input
-                  id="title"
-                  value={localTitle}
-                  onChange={(e) => setLocalTitle(e.target.value)}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="description" className="text-right">
-                  Description
-                </label>
-                <Textarea
-                  id="description"
-                  value={localDescription}
-                  onChange={(e) => setLocalDescription(e.target.value)}
-                  className="col-span-3"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button onClick={handleEditSave}>Save changes</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </Rnd>
+      <NodeEditModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        node={node}
+        onUpdate={onNodeUpdate}
+      />
     </div>
   );
 };
