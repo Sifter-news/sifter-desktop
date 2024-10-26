@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import Navigator from './Navigator';
 import ReportList from './ReportList';
 import { findAvailablePosition } from '../utils/canvasUtils';
+import { copyNode, pasteNode } from '@/utils/clipboardUtils';
+import { toast } from 'sonner';
 
 const TextView = ({ 
   project, 
@@ -18,16 +20,30 @@ const TextView = ({
 }) => {
   const selectedNode = nodes.find(node => node.id === focusedNodeId) || nodes[0];
 
-  const handleNodeClick = (node) => {
-    onNodeFocus(node.id);
-  };
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (selectedNode) {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'c') {
+          copyNode(selectedNode);
+          toast.success("Node copied to clipboard");
+        } else if ((e.metaKey || e.ctrlKey) && e.key === 'v') {
+          const newNode = pasteNode();
+          if (newNode) {
+            const position = findAvailablePosition(nodes);
+            onAddNode({
+              ...newNode,
+              x: position.x,
+              y: position.y
+            });
+            toast.success("Node pasted from clipboard");
+          }
+        }
+      }
+    };
 
-  const handleContentChange = (e) => {
-    if (selectedNode) {
-      const updatedNode = { ...selectedNode, content: e.target.value };
-      onUpdateNode(updatedNode);
-    }
-  };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedNode, nodes, onAddNode]);
 
   return (
     <div className="flex h-full">

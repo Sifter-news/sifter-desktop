@@ -1,6 +1,8 @@
 import React, { forwardRef, useCallback, useEffect } from 'react';
 import NodeRenderer from './NodeRenderer';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { copyNode, pasteNode } from '@/utils/clipboardUtils';
+import { toast } from 'sonner';
 
 const Canvas = forwardRef(({ 
   nodes, 
@@ -77,16 +79,30 @@ const Canvas = forwardRef(({
   }, [activeTool, handleDragEnd, handlePanEnd]);
 
   const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Delete' && focusedNodeId) {
-      const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
-      if (nodeToDelete.type === 'ai') {
-        setNodeToDelete(nodeToDelete);
-        setShowDeleteConfirmation(true);
-      } else {
-        onNodeDelete(focusedNodeId);
+    if (focusedNodeId) {
+      if (e.key === 'Delete') {
+        const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
+        if (nodeToDelete.type === 'ai') {
+          setNodeToDelete(nodeToDelete);
+          setShowDeleteConfirmation(true);
+        } else {
+          onNodeDelete(focusedNodeId);
+        }
+      } else if ((e.metaKey || e.ctrlKey) && e.key === 'c') {
+        const nodeToCopy = nodes.find(node => node.id === focusedNodeId);
+        if (nodeToCopy) {
+          copyNode(nodeToCopy);
+          toast.success("Node copied to clipboard");
+        }
+      } else if ((e.metaKey || e.ctrlKey) && e.key === 'v') {
+        const newNode = pasteNode();
+        if (newNode) {
+          setNodes(prev => [...prev, newNode]);
+          toast.success("Node pasted from clipboard");
+        }
       }
     }
-  }, [focusedNodeId, nodes, onNodeDelete]);
+  }, [focusedNodeId, nodes, onNodeDelete, setNodes]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
