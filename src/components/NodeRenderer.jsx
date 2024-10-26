@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Type, Database, Palette, MoreVertical, Trash2 } from 'lucide-react';
+import { MessageCircle, Type, Trash2 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocused, onAIConversation, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -22,19 +19,6 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
   const handleVisualTypeChange = (value) => {
     onNodeUpdate(node.id, { visualType: value });
     setIsEditing(false);
-  };
-
-  const handleDataTypeChange = (value) => {
-    onNodeUpdate(node.id, { type: value });
-  };
-
-  const handleColorChange = (value) => {
-    onNodeUpdate(node.id, { color: value });
-  };
-
-  const handleAIClick = () => {
-    onFocus(node.id);
-    onAIConversation(node);
   };
 
   const handleNodeClick = () => {
@@ -100,44 +84,58 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
   };
 
   return (
-    <Rnd
-      size={{ width: node.width, height: node.height }}
-      position={{ x: node.x, y: node.y }}
-      onDragStart={(e) => onDragStart(e, node.id)}
-      scale={zoom}
-      className="group relative"
-    >
-      {renderNodeContent()}
-      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8 bg-white bg-opacity-80 rounded-full hover:bg-opacity-100">
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => handleVisualTypeChange('pill')}>
-                <Type className="mr-2 h-4 w-4" />
-                <span>Pill Style</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleVisualTypeChange('postit')}>
-                <Type className="mr-2 h-4 w-4" />
-                <span>Post-it Style</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleAIClick}>
-                <MessageCircle className="mr-2 h-4 w-4" />
-                <span>AI Conversation</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleDelete} className="text-red-600">
-                <Trash2 className="mr-2 h-4 w-4" />
-                <span>Delete Node</span>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </Rnd>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Rnd
+            size={{ width: node.width, height: node.height }}
+            position={{ x: node.x, y: node.y }}
+            onDragStart={(e) => onDragStart(e, node.id)}
+            scale={zoom}
+            className="group relative"
+          >
+            {renderNodeContent()}
+          </Rnd>
+        </TooltipTrigger>
+        <TooltipContent 
+          side="top" 
+          className="flex gap-2 bg-black text-white border-black"
+        >
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-white hover:bg-gray-800"
+            onClick={() => handleVisualTypeChange('pill')}
+          >
+            <Type className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-white hover:bg-gray-800"
+            onClick={() => handleVisualTypeChange('postit')}
+          >
+            <Type className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-white hover:bg-gray-800"
+            onClick={() => onAIConversation(node)}
+          >
+            <MessageCircle className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-white hover:bg-gray-800"
+            onClick={handleDelete}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
