@@ -54,15 +54,6 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
         onDragStart={(e) => onDragStart(e, node.id)}
         scale={zoom}
         className="relative"
-        dragGrid={[1, 1]}
-        bounds="parent"
-        enableResizing={node.visualStyle === 'postit'}
-        onDrag={(e, d) => {
-          onNodeUpdate(node.id, {
-            x: d.x / zoom,
-            y: d.y / zoom
-          });
-        }}
       >
         <NodeContent
           style={node.visualStyle}
