@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { MessageCircle, Layout, Type, Trash2, Edit } from 'lucide-react';
 import {
   Tooltip,
@@ -15,7 +17,6 @@ import {
 } from "@/components/ui/popover";
 import ConnectionDot from './ConnectionDot';
 import NodeContent from './NodeContent';
-import NodeEditModal from './NodeEditModal';
 
 const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocused, onAIConversation, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -23,7 +24,6 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
   const [localDescription, setLocalDescription] = useState(node.description);
   const [hoveredDot, setHoveredDot] = useState(null);
   const [showTooltip, setShowTooltip] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
 
   const handleStyleChange = (value) => {
     onNodeUpdate(node.id, { visualStyle: value });
@@ -72,11 +72,12 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
         position={{ x: node.x, y: node.y }}
         onDragStart={(e) => onDragStart(e, node.id)}
         scale={zoom}
-        className={`relative rounded-lg ${
+        className={`relative ${
           isFocused 
-            ? 'ring-2 ring-blue-500/20 ring-offset-2 shadow-lg scale-[1.02]' 
-            : 'hover:ring-1 hover:ring-blue-300/20 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01]'
+            ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' 
+            : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01]'
         }`}
+        onClick={handleNodeClick}
       >
         <NodeContent
           style={node.visualStyle}
@@ -99,8 +100,8 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
             onStartConnection={() => console.log(`Starting connection from ${position}`)}
           />
         ))}
-        <TooltipProvider delayDuration={500}>
-          <Tooltip>
+        <TooltipProvider>
+          <Tooltip open={showTooltip}>
             <TooltipTrigger asChild>
               <div className="absolute inset-0 cursor-move" />
             </TooltipTrigger>
@@ -108,21 +109,42 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
               side="top" 
               className="flex gap-2 bg-black text-white border-black p-2"
             >
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-white hover:bg-gray-800"
-                onClick={() => setShowEditModal(true)}
-              >
-                <Edit className="h-4 w-4 mr-2" />
-                Edit
-              </Button>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="grid gap-4">
+                    <div className="space-y-2">
+                      <h4 className="font-medium leading-none">Title</h4>
+                      <Input
+                        id="title"
+                        value={localTitle}
+                        onChange={(e) => setLocalTitle(e.target.value)}
+                        onBlur={handleBlur}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="font-medium leading-none">Description</h4>
+                      <Textarea
+                        id="description"
+                        value={localDescription}
+                        onChange={(e) => setLocalDescription(e.target.value)}
+                        onBlur={handleBlur}
+                      />
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
 
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
                     <Layout className="h-4 w-4 mr-2" />
-                    {styles[node.visualStyle] || "Style"}
+                    Style
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-32">
@@ -145,7 +167,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
                 <PopoverTrigger asChild>
                   <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
                     <Type className="h-4 w-4 mr-2" />
-                    {nodeTypes[node.nodeType] || "Type"}
+                    Type
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-40">
@@ -186,12 +208,6 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
           </Tooltip>
         </TooltipProvider>
       </Rnd>
-      <NodeEditModal
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        node={node}
-        onUpdate={onNodeUpdate}
-      />
     </div>
   );
 };
