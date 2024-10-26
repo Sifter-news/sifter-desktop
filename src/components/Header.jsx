@@ -11,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { User, ChevronDown } from 'lucide-react';
 
 const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpdate, onProjectDelete }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -42,11 +41,8 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
             Dashboard
           </Link>
           <Select value={investigatorType} onValueChange={setInvestigatorType}>
-            <SelectTrigger className="w-[180px] bg-white">
-              <div className="flex items-center space-x-2">
-                <User className="h-4 w-4" />
-                <SelectValue placeholder="Select investigator type" />
-              </div>
+            <SelectTrigger className="w-[180px] bg-white whitespace-nowrap">
+              <SelectValue placeholder="Select investigator type" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="private">Private Investigator</SelectItem>
