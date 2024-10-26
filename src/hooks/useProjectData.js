@@ -34,18 +34,18 @@ export const useProjectData = (id) => {
       try {
         const { data, error } = await supabase
           .from('node')
-          .select('id, title, description, type, investigation_id, position_x, position_y')
+          .select('id, title, description, type, investigation_id')
           .eq('investigation_id', id);
           
         if (error) throw error;
         
         if (data) {
-          // Transform database column names to match frontend expectations
+          // Add default positions for UI purposes
           const transformedNodes = data.map(node => ({
             ...node,
-            x: node.position_x,
-            y: node.position_y,
-            width: 200 // Default width for UI purposes
+            x: 0,
+            y: 0,
+            width: 200
           }));
           setNodes(transformedNodes);
         }

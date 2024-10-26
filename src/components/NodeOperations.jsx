@@ -6,28 +6,26 @@ export const useNodeOperations = (setNodes) => {
   const handleAddNode = async (newNode, projectId) => {
     try {
       const position = findAvailablePosition([]);
-      const nodeWithPosition = {
+      const nodeData = {
         title: newNode.title,
         description: newNode.description,
         type: newNode.type,
-        investigation_id: projectId,
-        position_x: position.x,
-        position_y: position.y
+        investigation_id: projectId
       };
 
       const { data, error } = await supabase
         .from('node')
-        .insert([nodeWithPosition])
+        .insert([nodeData])
         .select()
         .single();
 
       if (error) throw error;
 
-      // Transform database response to match frontend expectations
+      // Add UI-specific properties
       const nodeWithUI = {
         ...data,
-        x: data.position_x,
-        y: data.position_y,
+        x: 0,
+        y: 0,
         width: newNode.width || 200
       };
 
@@ -43,9 +41,7 @@ export const useNodeOperations = (setNodes) => {
     try {
       const databaseUpdates = {
         title: updates.title,
-        description: updates.description,
-        position_x: updates.x,
-        position_y: updates.y
+        description: updates.description
       };
 
       const { error } = await supabase
