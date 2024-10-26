@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 import {
   Tooltip,
@@ -6,10 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import ConnectionDot from './ConnectionDot';
-import ConnectorLine from './ConnectorLine';
 import NodeContent from './NodeContent';
-import NodeEditModal from './NodeEditModal';
 import TooltipButtons from './TooltipButtons';
 
 const NodeRenderer = ({ 
@@ -25,91 +22,51 @@ const NodeRenderer = ({
   const [isEditing, setIsEditing] = useState(false);
   const [localTitle, setLocalTitle] = useState(node.title);
   const [localDescription, setLocalDescription] = useState(node.description);
-  const [hoveredDot, setHoveredDot] = useState(null);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [isDrawingConnection, setIsDrawingConnection] = useState(false);
-  const [connectionStart, setConnectionStart] = useState(null);
-  const [connectionEnd, setConnectionEnd] = useState({ x: 0, y: 0 });
+  const [showTooltip, setShowTooltip] = useState(false);
 
-  const handleStyleChange = useCallback((value) => {
+  const handleStyleChange = (value) => {
     onNodeUpdate(node.id, { visualStyle: value });
     setIsEditing(false);
-  }, [node.id, onNodeUpdate]);
+  };
 
-  const handleTypeChange = useCallback((value) => {
+  const handleTypeChange = (value) => {
     onNodeUpdate(node.id, { nodeType: value });
     setIsEditing(false);
-  }, [node.id, onNodeUpdate]);
+  };
 
-  const handleNodeClick = useCallback((e) => {
+  const handleNodeClick = (e) => {
     e.stopPropagation();
+    setShowTooltip(true);
     onFocus(node.id);
-  }, [node.id, onFocus]);
+  };
 
-  const handleBlur = useCallback(() => {
+  const handleBlur = () => {
     setIsEditing(false);
     onNodeUpdate(node.id, {
       title: localTitle,
       description: localDescription
     });
-  }, [node.id, localTitle, localDescription, onNodeUpdate]);
-
-  const handleStartConnection = (position) => {
-    const rect = document.querySelector(`[data-node-id="${node.id}"]`).getBoundingClientRect();
-    let startX, startY;
-    
-    switch (position) {
-      case 'top':
-        startX = rect.left + rect.width / 2;
-        startY = rect.top;
-        break;
-      case 'bottom':
-        startX = rect.left + rect.width / 2;
-        startY = rect.bottom;
-        break;
-      case 'left':
-        startX = rect.left;
-        startY = rect.top + rect.height / 2;
-        break;
-      case 'right':
-        startX = rect.right;
-        startY = rect.top + rect.height / 2;
-        break;
-    }
-
-    setConnectionStart({ x: startX, y: startY });
-    setConnectionEnd({ x: startX, y: startY });
-    setIsDrawingConnection(true);
-
-    const handleMouseMove = (e) => {
-      setConnectionEnd({ x: e.clientX, y: e.clientY });
-    };
-
-    const handleMouseUp = () => {
-      setIsDrawingConnection(false);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
   };
 
+  React.useEffect(() => {
+    if (!isFocused) {
+      setShowTooltip(false);
+    }
+  }, [isFocused]);
+
   return (
-    <div className="group" data-node-id={node.id}>
+    <div className="group">
       <Rnd
         size={{ width: node.width, height: node.height }}
         position={{ x: node.x, y: node.y }}
         onDragStart={(e) => onDragStart(e, node.id)}
         scale={zoom}
-        style={{
-          position: 'absolute',
-          outline: isFocused ? '2px solid rgb(59, 130, 246)' : 'none',
-          outlineOffset: '2px',
-          borderRadius: '8px',
-          transition: 'outline 0.2s ease-in-out, transform 0.2s ease-in-out',
-          transform: isFocused ? 'scale(1.02)' : 'scale(1)',
-        }}
+        className={`relative ${
+          isFocused 
+            ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' 
+            : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01]'
+        }`}
+        onClick={handleNodeClick}
       >
         <NodeContent
           style={node.visualStyle}
@@ -122,25 +79,41 @@ const NodeRenderer = ({
           setLocalDescription={setLocalDescription}
           handleNodeClick={handleNodeClick}
         />
-        {['top', 'bottom', 'left', 'right'].map(position => (
-          <ConnectionDot
-            key={position}
-            position={position}
-            isHovered={hoveredDot === position}
-            onHover={() => setHoveredDot(position)}
-            onLeaveHover={() => setHoveredDot(null)}
-            onStartConnection={() => handleStartConnection(position)}
-          />
-        ))}
+        <TooltipProvider>
+          <Tooltip open={showTooltip}>
+            <TooltipTrigger asChild>
+              <div className="absolute inset-0 cursor-move" />
+            </TooltipTrigger>
+            <TooltipContent 
+              side="top" 
+              className="bg-black text-white border-black p-2"
+            >
+              <TooltipButtons
+                styles={{
+                  compact: "Compact",
+                  expanded: "Expanded",
+                  postit: "Post-it"
+                }}
+                nodeTypes={{
+                  generic: "Generic Note",
+                  node_person: "Person",
+                  node_organization: "Organization",
+                  node_object: "Object",
+                  node_concept: "Concept",
+                  node_location: "Location",
+                  node_event: "Event"
+                }}
+                handleStyleChange={handleStyleChange}
+                handleTypeChange={handleTypeChange}
+                onAIConversation={onAIConversation}
+                onDelete={onDelete}
+                node={node}
+                onEdit={() => setIsEditing(true)}
+              />
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </Rnd>
-      {isDrawingConnection && connectionStart && (
-        <ConnectorLine
-          startX={connectionStart.x}
-          startY={connectionStart.y}
-          endX={connectionEnd.x}
-          endY={connectionEnd.y}
-        />
-      )}
     </div>
   );
 };
