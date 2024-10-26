@@ -36,7 +36,6 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
 
   const handleNodeClick = () => {
     setIsEditing(true);
-    onFocus(node.id);
   };
 
   const handleBlur = () => {
@@ -48,7 +47,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
   };
 
   return (
-    <div className={`group relative ${isFocused ? 'ring-2 ring-blue-500 ring-offset-2 rounded-lg' : ''}`}>
+    <div className="group">
       <Rnd
         size={{ width: node.width, height: node.height }}
         position={{ x: node.x, y: node.y }}
