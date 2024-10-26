@@ -7,6 +7,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import ConnectionDot from './ConnectionDot';
+import ConnectorLine from './ConnectorLine';
 import NodeContent from './NodeContent';
 import NodeEditModal from './NodeEditModal';
 import TooltipButtons from './TooltipButtons';
@@ -26,6 +27,9 @@ const NodeRenderer = ({
   const [localDescription, setLocalDescription] = useState(node.description);
   const [hoveredDot, setHoveredDot] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [isDrawingConnection, setIsDrawingConnection] = useState(false);
+  const [connectionStart, setConnectionStart] = useState(null);
+  const [connectionEnd, setConnectionEnd] = useState({ x: 0, y: 0 });
 
   const handleStyleChange = useCallback((value) => {
     onNodeUpdate(node.id, { visualStyle: value });
@@ -50,28 +54,49 @@ const NodeRenderer = ({
     });
   }, [node.id, localTitle, localDescription, onNodeUpdate]);
 
-  const handleEdit = useCallback(() => {
-    setShowEditModal(true);
-  }, []);
+  const handleStartConnection = (position) => {
+    const rect = document.querySelector(`[data-node-id="${node.id}"]`).getBoundingClientRect();
+    let startX, startY;
+    
+    switch (position) {
+      case 'top':
+        startX = rect.left + rect.width / 2;
+        startY = rect.top;
+        break;
+      case 'bottom':
+        startX = rect.left + rect.width / 2;
+        startY = rect.bottom;
+        break;
+      case 'left':
+        startX = rect.left;
+        startY = rect.top + rect.height / 2;
+        break;
+      case 'right':
+        startX = rect.right;
+        startY = rect.top + rect.height / 2;
+        break;
+    }
 
-  const styles = {
-    compact: "Compact",
-    expanded: "Expanded",
-    postit: "Post-it"
-  };
+    setConnectionStart({ x: startX, y: startY });
+    setConnectionEnd({ x: startX, y: startY });
+    setIsDrawingConnection(true);
 
-  const nodeTypes = {
-    generic: "Generic Note",
-    node_person: "Person",
-    node_organization: "Organization",
-    node_object: "Object",
-    node_concept: "Concept",
-    node_location: "Location",
-    node_event: "Event"
+    const handleMouseMove = (e) => {
+      setConnectionEnd({ x: e.clientX, y: e.clientY });
+    };
+
+    const handleMouseUp = () => {
+      setIsDrawingConnection(false);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
   };
 
   return (
-    <div className="group">
+    <div className="group" data-node-id={node.id}>
       <Rnd
         size={{ width: node.width, height: node.height }}
         position={{ x: node.x, y: node.y }}
@@ -101,38 +126,18 @@ const NodeRenderer = ({
             isHovered={hoveredDot === position}
             onHover={() => setHoveredDot(position)}
             onLeaveHover={() => setHoveredDot(null)}
-            onStartConnection={() => {}}
+            onStartConnection={handleStartConnection}
           />
         ))}
-        <TooltipProvider delayDuration={500}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="absolute inset-0 cursor-move" />
-            </TooltipTrigger>
-            <TooltipContent 
-              side="top" 
-              className="bg-black text-white border-black p-2"
-            >
-              <TooltipButtons
-                styles={styles}
-                nodeTypes={nodeTypes}
-                handleStyleChange={handleStyleChange}
-                handleTypeChange={handleTypeChange}
-                onAIConversation={onAIConversation}
-                onDelete={onDelete}
-                node={node}
-                onEdit={handleEdit}
-              />
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
       </Rnd>
-      <NodeEditModal
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        node={node}
-        onUpdate={onNodeUpdate}
-      />
+      {isDrawingConnection && connectionStart && (
+        <ConnectorLine
+          startX={connectionStart.x}
+          startY={connectionStart.y}
+          endX={connectionEnd.x}
+          endY={connectionEnd.y}
+        />
+      )}
     </div>
   );
 };
