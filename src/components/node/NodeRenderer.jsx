@@ -54,12 +54,10 @@ const NodeRenderer = ({
     }
   }, [isFocused]);
 
-  const isCompact = node.visualStyle === 'compact';
-
   return (
     <div className="group">
       <Rnd
-        size={{ width: isCompact ? 40 : node.width, height: isCompact ? 40 : node.height }}
+        size={{ width: node.width, height: node.height }}
         position={{ x: node.x, y: node.y }}
         onDragStart={(e) => onDragStart(e, node.id)}
         scale={zoom}
