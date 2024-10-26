@@ -1,16 +1,14 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
+import { Button } from "@/components/ui/button";
+import { MessageCircle, Layout, Type, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import ConnectionDot from './ConnectionDot';
-import ConnectorLine from './ConnectorLine';
-import NodeContent from './NodeContent';
-import NodeEditModal from './NodeEditModal';
-import TooltipButtons from './TooltipButtons';
+import NodeContent from '@/components/node/NodeContent';
 
 const NodeRenderer = ({ 
   node, 
@@ -22,118 +20,73 @@ const NodeRenderer = ({
   onAIConversation, 
   onDelete 
 }) => {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [localTitle, setLocalTitle] = useState(node.title);
   const [localDescription, setLocalDescription] = useState(node.description);
-  const [hoveredDot, setHoveredDot] = useState(null);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [isDrawingConnection, setIsDrawingConnection] = useState(false);
-  const [connectionStart, setConnectionStart] = useState(null);
-  const [connectionEnd, setConnectionEnd] = useState({ x: 0, y: 0 });
+  const [showTooltip, setShowTooltip] = useState(false);
 
-  const handleStyleChange = useCallback((value) => {
-    onNodeUpdate(node.id, { visualStyle: value });
-    setIsEditing(false);
-  }, [node.id, onNodeUpdate]);
-
-  const handleTypeChange = useCallback((value) => {
-    onNodeUpdate(node.id, { nodeType: value });
-    setIsEditing(false);
-  }, [node.id, onNodeUpdate]);
-
-  const handleNodeClick = useCallback((e) => {
+  const handleNodeClick = (e) => {
     e.stopPropagation();
+    setShowTooltip(true);
     onFocus(node.id);
-  }, [node.id, onFocus]);
+  };
 
-  const handleBlur = useCallback(() => {
-    setIsEditing(false);
+  const handleBlur = () => {
     onNodeUpdate(node.id, {
       title: localTitle,
       description: localDescription
     });
-  }, [node.id, localTitle, localDescription, onNodeUpdate]);
+  };
 
-  const handleStartConnection = (position) => {
-    const rect = document.querySelector(`[data-node-id="${node.id}"]`).getBoundingClientRect();
-    let startX, startY;
-    
-    switch (position) {
-      case 'top':
-        startX = rect.left + rect.width / 2;
-        startY = rect.top;
-        break;
-      case 'bottom':
-        startX = rect.left + rect.width / 2;
-        startY = rect.bottom;
-        break;
-      case 'left':
-        startX = rect.left;
-        startY = rect.top + rect.height / 2;
-        break;
-      case 'right':
-        startX = rect.right;
-        startY = rect.top + rect.height / 2;
-        break;
-    }
-
-    setConnectionStart({ x: startX, y: startY });
-    setConnectionEnd({ x: startX, y: startY });
-    setIsDrawingConnection(true);
-
-    const handleMouseMove = (e) => {
-      setConnectionEnd({ x: e.clientX, y: e.clientY });
-    };
-
-    const handleMouseUp = () => {
-      setIsDrawingConnection(false);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+  const toggleExpand = (e) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
+    onNodeUpdate(node.id, {
+      height: !isExpanded ? node.originalHeight || 200 : 40
+    });
   };
 
   return (
-    <div className="group" data-node-id={node.id}>
+    <div className="group">
       <Rnd
         size={{ width: node.width, height: node.height }}
         position={{ x: node.x, y: node.y }}
         onDragStart={(e) => onDragStart(e, node.id)}
         scale={zoom}
-        className="relative"
+        className={`relative transition-all duration-200 ${
+          isFocused 
+            ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg' 
+            : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:shadow-md'
+        }`}
+        onClick={handleNodeClick}
       >
-        <NodeContent
-          style={node.visualStyle}
-          isEditing={isEditing}
-          node={node}
-          localTitle={localTitle}
-          localDescription={localDescription}
-          handleBlur={handleBlur}
-          setLocalTitle={setLocalTitle}
-          setLocalDescription={setLocalDescription}
-          handleNodeClick={handleNodeClick}
-        />
-        {['top', 'bottom', 'left', 'right'].map(position => (
-          <ConnectionDot
-            key={position}
-            position={position}
-            isHovered={hoveredDot === position}
-            onHover={() => setHoveredDot(position)}
-            onLeaveHover={() => setHoveredDot(null)}
-            onStartConnection={handleStartConnection}
+        <div className="relative h-full">
+          <NodeContent
+            style={node.visualStyle}
+            isEditing={false}
+            node={node}
+            localTitle={localTitle}
+            localDescription={localDescription}
+            handleBlur={handleBlur}
+            setLocalTitle={setLocalTitle}
+            setLocalDescription={setLocalDescription}
+            handleNodeClick={handleNodeClick}
+            isExpanded={isExpanded}
           />
-        ))}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="absolute top-1 right-1 p-1 h-6 w-6"
+            onClick={toggleExpand}
+          >
+            {isExpanded ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
       </Rnd>
-      {isDrawingConnection && connectionStart && (
-        <ConnectorLine
-          startX={connectionStart.x}
-          startY={connectionStart.y}
-          endX={connectionEnd.x}
-          endY={connectionEnd.y}
-        />
-      )}
     </div>
   );
 };
