@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Rnd } from 'react-rnd';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import ConnectionDot from './ConnectionDot';
 import NodeContent from './NodeContent';
-import NodeTooltipContent from './NodeTooltipContent';
+import NodeTooltip from './NodeTooltip';
+import ConnectionDot from './ConnectionDot';
 
-const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocused, onAIConversation, onDelete }) => {
+const NodeRenderer = ({ 
+  node, 
+  onDragStart, 
+  onDrag,
+  onDragEnd,
+  zoom, 
+  onNodeUpdate, 
+  onFocus, 
+  isFocused, 
+  onAIConversation, 
+  onDelete,
+  isDragging 
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [localTitle, setLocalTitle] = useState(node.title);
   const [localDescription, setLocalDescription] = useState(node.description);
@@ -18,26 +24,10 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
   const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
-    const handleEsc = (e) => {
-      if (e.key === 'Escape' && isFocused) {
-        onFocus(null);
-        setShowTooltip(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
-  }, [isFocused, onFocus]);
-
-  const handleStyleChange = (value) => {
-    onNodeUpdate(node.id, { visualStyle: value });
-    setIsEditing(false);
-  };
-
-  const handleTypeChange = (value) => {
-    onNodeUpdate(node.id, { nodeType: value });
-    setIsEditing(false);
-  };
+    if (!isFocused) {
+      setShowTooltip(false);
+    }
+  }, [isFocused]);
 
   const handleNodeClick = (e) => {
     e.stopPropagation();
@@ -53,25 +43,23 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
     });
   };
 
-  React.useEffect(() => {
-    if (!isFocused) {
-      setShowTooltip(false);
-    }
-  }, [isFocused]);
-
   return (
     <div className="group">
       <Rnd
         size={{ width: node.width, height: node.height }}
         position={{ x: node.x, y: node.y }}
-        onDragStart={(e) => onDragStart(e, node.id)}
+        onDragStart={onDragStart}
+        onDrag={onDrag}
+        onDragStop={onDragEnd}
         scale={zoom}
         className={`relative ${
           isFocused 
             ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' 
             : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01]'
-        }`}
+        } ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         onClick={handleNodeClick}
+        enableResizing={false}
+        bounds="parent"
       >
         <NodeContent
           style={node.visualStyle}
@@ -83,6 +71,7 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
           setLocalTitle={setLocalTitle}
           setLocalDescription={setLocalDescription}
           handleNodeClick={handleNodeClick}
+          isFocused={isFocused}
         />
         {['top', 'bottom', 'left', 'right'].map(position => (
           <ConnectionDot
@@ -94,22 +83,13 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
             onStartConnection={() => console.log(`Starting connection from ${position}`)}
           />
         ))}
-        <TooltipProvider>
-          <Tooltip open={showTooltip}>
-            <TooltipTrigger asChild>
-              <div className="absolute inset-0 cursor-move" />
-            </TooltipTrigger>
-            <TooltipContent side="top">
-              <NodeTooltipContent
-                node={node}
-                onStyleChange={handleStyleChange}
-                onTypeChange={handleTypeChange}
-                onAIConversation={onAIConversation}
-                onDelete={onDelete}
-              />
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <NodeTooltip
+          node={node}
+          showTooltip={showTooltip}
+          onAIConversation={onAIConversation}
+          onDelete={onDelete}
+          onUpdateNode={onNodeUpdate}
+        />
       </Rnd>
     </div>
   );

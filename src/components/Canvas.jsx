@@ -26,9 +26,10 @@ const Canvas = forwardRef(({
   const [nodeToDelete, setNodeToDelete] = React.useState(null);
   const [isPanning, setIsPanning] = useState(false);
   const [startPanPosition, setStartPanPosition] = useState({ x: 0, y: 0 });
+  const [draggedNode, setDraggedNode] = useState(null);
 
   const handleMouseDown = useCallback((e) => {
-    if (activeTool === 'pan' || e.button === 1) { // Middle mouse button
+    if (activeTool === 'pan' || e.button === 1) {
       setIsPanning(true);
       setStartPanPosition({ x: e.clientX, y: e.clientY });
       handlePanStart();
@@ -50,38 +51,38 @@ const Canvas = forwardRef(({
       setIsPanning(false);
       handlePanEnd();
     }
-  }, [isPanning, handlePanEnd]);
+    if (draggedNode) {
+      setDraggedNode(null);
+    }
+  }, [isPanning, handlePanEnd, draggedNode]);
 
-  const handleDragStart = useCallback((e, nodeId) => {
+  const handleNodeDragStart = useCallback((nodeId) => {
     if (activeTool === 'select') {
+      setDraggedNode(nodeId);
+    }
+  }, [activeTool]);
+
+  const handleNodeDrag = useCallback((e, nodeId) => {
+    if (activeTool === 'select' && draggedNode === nodeId) {
+      const canvasRect = ref.current.getBoundingClientRect();
+      const x = (e.clientX - canvasRect.left) / zoom - position.x;
+      const y = (e.clientY - canvasRect.top) / zoom - position.y;
+
       setNodes(prevNodes => prevNodes.map(node => 
-        node.id === nodeId ? { ...node, isDragging: true } : node
+        node.id === nodeId ? { ...node, x, y } : node
       ));
     }
-  }, [activeTool, setNodes]);
+  }, [activeTool, draggedNode, zoom, position, setNodes, ref]);
 
-  const handleDrag = useCallback((e) => {
-    if (activeTool === 'select') {
-      setNodes(prevNodes => prevNodes.map(node => {
-        if (node.isDragging) {
-          const newX = Math.round((e.clientX - ref.current.offsetLeft) / zoom - position.x);
-          const newY = Math.round((e.clientY - ref.current.offsetTop) / zoom - position.y);
-          return { ...node, x: newX, y: newY };
-        }
-        return node;
-      }));
-    }
-  }, [activeTool, zoom, position, setNodes, ref]);
-
-  const handleDragEnd = useCallback(() => {
-    setNodes(prevNodes => {
-      const draggedNode = prevNodes.find(node => node.isDragging);
-      if (draggedNode) {
-        onNodePositionUpdate(draggedNode.id, draggedNode.x, draggedNode.y);
+  const handleNodeDragEnd = useCallback((nodeId) => {
+    if (draggedNode === nodeId) {
+      const node = nodes.find(n => n.id === nodeId);
+      if (node) {
+        onNodePositionUpdate(nodeId, node.x, node.y);
       }
-      return prevNodes.map(node => ({ ...node, isDragging: false }));
-    });
-  }, [setNodes, onNodePositionUpdate]);
+      setDraggedNode(null);
+    }
+  }, [draggedNode, nodes, onNodePositionUpdate]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -141,13 +142,16 @@ const Canvas = forwardRef(({
             <NodeRenderer
               key={node.id}
               node={node}
-              onDragStart={handleDragStart}
+              onDragStart={() => handleNodeDragStart(node.id)}
+              onDrag={(e) => handleNodeDrag(e, node.id)}
+              onDragEnd={() => handleNodeDragEnd(node.id)}
               zoom={zoom}
               onNodeUpdate={onNodeUpdate}
               onFocus={onNodeFocus}
               isFocused={focusedNodeId === node.id}
               onDelete={onNodeDelete}
               onAIConversation={onAIConversation}
+              isDragging={draggedNode === node.id}
             />
           ))}
         </div>

@@ -1,30 +1,26 @@
 import React from 'react';
-import { Eye } from 'lucide-react';
-import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import TooltipButtons from './TooltipButtons';
 
-const NodeTooltip = ({ node, onView, children }) => {
+const NodeTooltip = ({ node, showTooltip, onAIConversation, onDelete, onUpdateNode }) => {
   return (
     <TooltipProvider>
-      <Tooltip>
+      <Tooltip open={showTooltip}>
         <TooltipTrigger asChild>
-          {children}
+          <div className="absolute inset-0" />
         </TooltipTrigger>
-        <TooltipContent side="top" className="flex gap-2 bg-black text-white border-black p-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-white hover:bg-white/20"
-            onClick={() => onView(node)}
-          >
-            <Eye className="h-4 w-4 mr-2" />
-            View Node
-          </Button>
+        <TooltipContent side="top">
+          <TooltipButtons
+            node={node}
+            onAIConversation={onAIConversation}
+            onDelete={onDelete}
+            onUpdateNode={onUpdateNode}
+          />
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
