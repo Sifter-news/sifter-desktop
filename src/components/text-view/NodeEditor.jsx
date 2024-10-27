@@ -19,6 +19,7 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
   const [editedDescription, setEditedDescription] = useState(selectedNode?.description || '');
   const [nodeType, setNodeType] = useState(selectedNode?.nodeType || 'generic');
   const [metadata, setMetadata] = useState(selectedNode?.metadata || {});
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   React.useEffect(() => {
     if (selectedNode) {
@@ -26,6 +27,7 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
       setEditedDescription(selectedNode.description || '');
       setNodeType(selectedNode.nodeType || 'generic');
       setMetadata(selectedNode.metadata || {});
+      setHasUnsavedChanges(false);
     }
   }, [selectedNode]);
 
@@ -49,6 +51,43 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
       ...prev,
       [field]: value
     }));
+    setHasUnsavedChanges(true);
+    
+    // Update the node in real-time for the navigator
+    const updatedNode = {
+      ...selectedNode,
+      metadata: {
+        ...metadata,
+        [field]: value
+      }
+    };
+    onUpdateNode(updatedNode);
+  };
+
+  const handleTitleChange = (e) => {
+    const newTitle = e.target.value;
+    setEditedTitle(newTitle);
+    setHasUnsavedChanges(true);
+    
+    // Update the node in real-time for the navigator
+    const updatedNode = {
+      ...selectedNode,
+      title: newTitle
+    };
+    onUpdateNode(updatedNode);
+  };
+
+  const handleDescriptionChange = (e) => {
+    const newDescription = e.target.value;
+    setEditedDescription(newDescription);
+    setHasUnsavedChanges(true);
+    
+    // Update the node in real-time for the navigator
+    const updatedNode = {
+      ...selectedNode,
+      description: newDescription
+    };
+    onUpdateNode(updatedNode);
   };
 
   const handleSave = async () => {
@@ -71,7 +110,7 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
       };
 
       onUpdateNode(updatedNode);
-      setIsEditing(false);
+      setHasUnsavedChanges(false);
       toast.success("Node updated successfully");
     } catch (error) {
       toast.error("Failed to update node");
@@ -181,47 +220,27 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
           </SelectContent>
         </Select>
 
-        {isEditing ? (
-          <>
-            <Input
-              value={editedTitle}
-              onChange={(e) => setEditedTitle(e.target.value)}
-              className="text-2xl font-bold"
-              placeholder="Enter title..."
-            />
-            <Textarea
-              value={editedDescription}
-              onChange={(e) => setEditedDescription(e.target.value)}
-              className="flex-grow w-full p-2 border rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter description..."
-            />
-            {renderMetadataFields()}
-            <div className="flex justify-end gap-2 mt-4">
-              <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
-              <Button onClick={handleSave}>Save</Button>
-            </div>
-          </>
-        ) : (
-          <>
-            <h2 className="text-2xl font-bold mb-4 cursor-pointer hover:text-blue-500" 
-                onClick={() => setIsEditing(true)}>
-              {selectedNode.title}
-            </h2>
-            <div className="flex-grow cursor-pointer hover:bg-gray-50 p-2 rounded-md"
-                 onClick={() => setIsEditing(true)}>
-              {selectedNode.description}
-            </div>
-            {renderMetadataFields()}
-            <Button 
-              variant="outline" 
-              onClick={() => setIsEditing(true)}
-              className="mt-4"
-            >
-              Edit
-            </Button>
-          </>
-        )}
+        <Input
+          value={editedTitle}
+          onChange={handleTitleChange}
+          className="text-2xl font-bold"
+          placeholder="Enter title..."
+        />
+        <Textarea
+          value={editedDescription}
+          onChange={handleDescriptionChange}
+          className="flex-grow w-full p-2 border rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Enter description..."
+        />
+        {renderMetadataFields()}
       </div>
+      {hasUnsavedChanges && (
+        <div className="mt-4 flex justify-end">
+          <Button onClick={handleSave} className="bg-blue-500 hover:bg-blue-600 text-white">
+            Save Changes
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
