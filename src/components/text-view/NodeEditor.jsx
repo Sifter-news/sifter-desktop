@@ -14,6 +14,7 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
   const [nodeType, setNodeType] = useState('generic');
   const [metadata, setMetadata] = useState({});
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (selectedNode) {
@@ -25,42 +26,32 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
     }
   }, [selectedNode]);
 
+  const updateNodeState = (updates) => {
+    if (selectedNode) {
+      const updatedNode = {
+        ...selectedNode,
+        ...updates
+      };
+      onUpdateNode(updatedNode);
+      setHasUnsavedChanges(true);
+    }
+  };
+
   const handleTitleChange = (e) => {
     const newTitle = e.target.value;
     setEditedTitle(newTitle);
-    setHasUnsavedChanges(true);
-    
-    if (selectedNode) {
-      onUpdateNode({
-        ...selectedNode,
-        title: newTitle
-      });
-    }
+    updateNodeState({ title: newTitle });
   };
 
   const handleDescriptionChange = (e) => {
     const newDescription = e.target.value;
     setEditedDescription(newDescription);
-    setHasUnsavedChanges(true);
-    
-    if (selectedNode) {
-      onUpdateNode({
-        ...selectedNode,
-        description: newDescription
-      });
-    }
+    updateNodeState({ description: newDescription });
   };
 
   const handleTypeChange = (newType) => {
     setNodeType(newType);
-    setHasUnsavedChanges(true);
-    
-    if (selectedNode) {
-      onUpdateNode({
-        ...selectedNode,
-        type: newType
-      });
-    }
+    updateNodeState({ type: newType });
   };
 
   const handleMetadataChange = (field, value) => {
@@ -69,19 +60,13 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
       [field]: value
     };
     setMetadata(newMetadata);
-    setHasUnsavedChanges(true);
-    
-    if (selectedNode) {
-      onUpdateNode({
-        ...selectedNode,
-        metadata: newMetadata
-      });
-    }
+    updateNodeState({ metadata: newMetadata });
   };
 
   const handleSave = async () => {
     if (!selectedNode) return;
 
+    setIsSaving(true);
     try {
       const updates = {
         title: editedTitle,
@@ -90,18 +75,28 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
         metadata: metadata
       };
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('node')
         .update(updates)
-        .eq('id', selectedNode.id);
+        .eq('id', selectedNode.id)
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Update the node in the navigator and local state
+      onUpdateNode({
+        ...selectedNode,
+        ...data
+      });
 
       setHasUnsavedChanges(false);
       toast.success("Node updated successfully");
     } catch (error) {
       console.error('Error updating node:', error);
       toast.error("Failed to update node");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -145,8 +140,12 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
 
       {hasUnsavedChanges && (
         <div className="mt-4 flex justify-end">
-          <Button onClick={handleSave} className="bg-blue-500 hover:bg-blue-600 text-white">
-            Save Changes
+          <Button 
+            onClick={handleSave} 
+            className="bg-blue-500 hover:bg-blue-600 text-white"
+            disabled={isSaving}
+          >
+            {isSaving ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       )}

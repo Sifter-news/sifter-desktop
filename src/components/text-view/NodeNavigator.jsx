@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import Navigator from '../Navigator';
 import { MoreVertical } from 'lucide-react';
@@ -19,6 +19,11 @@ import {
 
 const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNode }) => {
   const [selectedType, setSelectedType] = useState('all');
+  const [navigatorNodes, setNavigatorNodes] = useState(nodes);
+
+  useEffect(() => {
+    setNavigatorNodes(nodes);
+  }, [nodes]);
 
   const handleAddNode = () => {
     const position = {
@@ -36,9 +41,15 @@ const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNo
     });
   };
 
+  const handleNodeUpdate = (updatedNodes) => {
+    setNavigatorNodes(updatedNodes);
+    // Pass the update to the parent component
+    onUpdateNode(updatedNodes);
+  };
+
   const filteredNodes = selectedType === 'all' 
-    ? nodes 
-    : nodes.filter(node => node.nodeType === selectedType);
+    ? navigatorNodes 
+    : navigatorNodes.filter(node => node.nodeType === selectedType);
 
   return (
     <div className="w-full h-full flex flex-col p-4">
@@ -79,7 +90,7 @@ const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNo
       <div className="flex-grow overflow-y-auto">
         <Navigator 
           items={filteredNodes} 
-          setItems={onUpdateNode} 
+          setItems={handleNodeUpdate}
           onDocumentClick={(node) => onNodeFocus(node.id)}
           focusedDocument={selectedNode}
         />
