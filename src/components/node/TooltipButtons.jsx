@@ -33,8 +33,7 @@ const TooltipButtons = ({
   handleTypeChange, 
   onAIConversation, 
   onDelete, 
-  node,
-  onUpdate
+  node
 }) => {
   const [showEditDialog, setShowEditDialog] = React.useState(false);
   const currentStyle = node?.visualStyle || 'default';
@@ -46,16 +45,6 @@ const TooltipButtons = ({
   // Ensure we have valid objects to iterate over
   const styleEntries = Object.entries(styles || defaultStyles);
   const typeEntries = Object.entries(nodeTypes || defaultNodeTypes);
-
-  const handleStyleSelect = (style) => {
-    handleStyleChange?.(style);
-    onUpdate(node.id, { visualStyle: style });
-  };
-
-  const handleTypeSelect = (type) => {
-    handleTypeChange?.(type);
-    onUpdate(node.id, { nodeType: type });
-  };
 
   return (
     <>
@@ -86,7 +75,7 @@ const TooltipButtons = ({
                   key={value}
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleStyleSelect(value)}
+                  onClick={() => handleStyleChange?.(value)}
                   className={`justify-start ${currentStyle === value ? 'bg-accent' : ''}`}
                 >
                   {label}
@@ -112,7 +101,7 @@ const TooltipButtons = ({
                   key={value}
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleTypeSelect(value)}
+                  onClick={() => handleTypeChange?.(value)}
                   className={`justify-start ${currentType === value ? 'bg-accent' : ''}`}
                 >
                   <Icon className="h-4 w-4 mr-2" />
@@ -150,7 +139,7 @@ const TooltipButtons = ({
         isOpen={showEditDialog}
         onClose={() => setShowEditDialog(false)}
         node={node}
-        onUpdate={onUpdate}
+        onUpdate={handleStyleChange}
       />
     </>
   );
