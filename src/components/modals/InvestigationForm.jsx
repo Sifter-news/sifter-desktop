@@ -19,10 +19,10 @@ const InvestigationForm = ({ formData, setFormData, isLoading }) => {
         />
       </div>
       <div className="grid gap-2">
-        <label htmlFor="type">Investigation Type</label>
+        <label htmlFor="type">Type</label>
         <Select value={type} onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))} disabled={isLoading}>
           <SelectTrigger>
-            <SelectValue placeholder="Select investigation type" />
+            <SelectValue placeholder="Select type" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
@@ -47,10 +47,10 @@ const InvestigationForm = ({ formData, setFormData, isLoading }) => {
         </Select>
       </div>
       <div className="grid gap-2">
-        <label htmlFor="focus">Investigation Focus</label>
+        <label htmlFor="focus">Focus</label>
         <Select value={focus} onValueChange={(value) => setFormData(prev => ({ ...prev, focus: value }))} disabled={isLoading}>
           <SelectTrigger>
-            <SelectValue placeholder="Select investigation focus" />
+            <SelectValue placeholder="Select focus" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
