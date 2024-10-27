@@ -102,7 +102,7 @@ const ProfileDialog = ({ user }) => {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" className="text-sm pr-0">
-          {username || 'Profile'}
+          {username || user?.email?.split('@')[0] || 'Guest'}
           <Avatar className="h-8 w-8 ml-2">
             <AvatarImage src={avatar} alt={username} />
             <AvatarFallback><UserIcon className="h-4 w-4" /></AvatarFallback>
