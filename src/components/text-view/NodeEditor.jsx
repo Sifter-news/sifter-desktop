@@ -6,12 +6,21 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/supabase';
 import NodeTypeSelect from './NodeTypeSelect';
 import NodeMetadataForm from './NodeMetadataForm';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const NodeEditor = ({ selectedNode, onUpdateNode }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState('');
   const [editedDescription, setEditedDescription] = useState('');
   const [nodeType, setNodeType] = useState('generic');
+  const [nodeStyle, setNodeStyle] = useState('default');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -20,6 +29,7 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
       setEditedTitle(selectedNode.title || '');
       setEditedDescription(selectedNode.description || '');
       setNodeType(selectedNode.type || 'generic');
+      setNodeStyle(selectedNode.visualStyle || 'default');
       setHasUnsavedChanges(false);
     }
   }, [selectedNode]);
@@ -52,6 +62,11 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
     updateNodeState({ type: newType });
   };
 
+  const handleStyleChange = (newStyle) => {
+    setNodeStyle(newStyle);
+    updateNodeState({ visualStyle: newStyle });
+  };
+
   const handleSave = async () => {
     if (!selectedNode) return;
 
@@ -60,7 +75,8 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
       const updates = {
         title: editedTitle,
         description: editedDescription,
-        type: nodeType
+        type: nodeType,
+        visual_style: nodeStyle
       };
 
       const { data, error } = await supabase
@@ -102,7 +118,26 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
     <div className="h-full flex flex-col bg-white bg-opacity-80 shadow-lg rounded-lg p-6">
       <h2 className="text-lg font-semibold mb-4 opacity-15">Node Editor</h2>
       <div className="flex-grow flex flex-col space-y-4">
-        <NodeTypeSelect value={nodeType} onChange={handleTypeChange} />
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <NodeTypeSelect value={nodeType} onChange={handleTypeChange} />
+          </div>
+          <div className="flex-1">
+            <Select value={nodeStyle} onValueChange={handleStyleChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select style" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="default">Default</SelectItem>
+                  <SelectItem value="compact">Compact</SelectItem>
+                  <SelectItem value="expanded">Expanded</SelectItem>
+                  <SelectItem value="postit">Post-it</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
         <Input
           value={editedTitle}
