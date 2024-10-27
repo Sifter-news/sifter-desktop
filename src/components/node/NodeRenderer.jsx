@@ -8,7 +8,6 @@ const NodeRenderer = ({
   node, 
   onDragStart, 
   onDrag,
-  onDragEnd,
   zoom, 
   onNodeUpdate, 
   onFocus, 
@@ -50,7 +49,6 @@ const NodeRenderer = ({
         position={{ x: node.x, y: node.y }}
         onDragStart={onDragStart}
         onDrag={onDrag}
-        onDragStop={onDragEnd}
         scale={zoom}
         className={`relative ${
           isFocused 

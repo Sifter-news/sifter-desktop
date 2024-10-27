@@ -26,7 +26,8 @@ const Canvas = forwardRef(({
   const [nodeToDelete, setNodeToDelete] = React.useState(null);
   const [isPanning, setIsPanning] = useState(false);
   const [startPanPosition, setStartPanPosition] = useState({ x: 0, y: 0 });
-  const [draggedNode, setDraggedNode] = useState(null);
+  const [draggedNodeId, setDraggedNodeId] = useState(null);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   const handleMouseDown = useCallback((e) => {
     if (activeTool === 'pan' || e.button === 1) {
@@ -39,50 +40,50 @@ const Canvas = forwardRef(({
 
   const handleMouseMove = useCallback((e) => {
     if (isPanning) {
-      const dx = e.clientX - startPanPosition.x;
-      const dy = e.clientY - startPanPosition.y;
-      handlePanMove({ movementX: dx, movementY: dy });
-      setStartPanPosition({ x: e.clientX, y: e.clientY });
+      handlePanMove({ movementX: e.movementX, movementY: e.movementY });
     }
-  }, [isPanning, startPanPosition, handlePanMove]);
+  }, [isPanning, handlePanMove]);
 
   const handleMouseUp = useCallback(() => {
     if (isPanning) {
       setIsPanning(false);
       handlePanEnd();
     }
-    if (draggedNode) {
-      setDraggedNode(null);
+    if (draggedNodeId) {
+      const node = nodes.find(n => n.id === draggedNodeId);
+      if (node) {
+        onNodePositionUpdate(draggedNodeId, node.x, node.y);
+      }
+      setDraggedNodeId(null);
+      setDragOffset({ x: 0, y: 0 });
     }
-  }, [isPanning, handlePanEnd, draggedNode]);
+  }, [isPanning, handlePanEnd, draggedNodeId, nodes, onNodePositionUpdate]);
 
-  const handleNodeDragStart = useCallback((nodeId) => {
+  const handleNodeDragStart = useCallback((e, nodeId) => {
     if (activeTool === 'select') {
-      setDraggedNode(nodeId);
+      const node = nodes.find(n => n.id === nodeId);
+      if (node) {
+        const rect = ref.current.getBoundingClientRect();
+        setDragOffset({
+          x: (e.clientX - rect.left) / zoom - node.x - position.x,
+          y: (e.clientY - rect.top) / zoom - node.y - position.y
+        });
+        setDraggedNodeId(nodeId);
+      }
     }
-  }, [activeTool]);
+  }, [activeTool, nodes, zoom, position]);
 
   const handleNodeDrag = useCallback((e, nodeId) => {
-    if (activeTool === 'select' && draggedNode === nodeId) {
-      const canvasRect = ref.current.getBoundingClientRect();
-      const x = (e.clientX - canvasRect.left) / zoom - position.x;
-      const y = (e.clientY - canvasRect.top) / zoom - position.y;
+    if (activeTool === 'select' && draggedNodeId === nodeId) {
+      const rect = ref.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / zoom - dragOffset.x - position.x;
+      const y = (e.clientY - rect.top) / zoom - dragOffset.y - position.y;
 
       setNodes(prevNodes => prevNodes.map(node => 
         node.id === nodeId ? { ...node, x, y } : node
       ));
     }
-  }, [activeTool, draggedNode, zoom, position, setNodes, ref]);
-
-  const handleNodeDragEnd = useCallback((nodeId) => {
-    if (draggedNode === nodeId) {
-      const node = nodes.find(n => n.id === nodeId);
-      if (node) {
-        onNodePositionUpdate(nodeId, node.x, node.y);
-      }
-      setDraggedNode(null);
-    }
-  }, [draggedNode, nodes, onNodePositionUpdate]);
+  }, [activeTool, draggedNodeId, zoom, position, dragOffset, setNodes]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -142,16 +143,15 @@ const Canvas = forwardRef(({
             <NodeRenderer
               key={node.id}
               node={node}
-              onDragStart={() => handleNodeDragStart(node.id)}
+              onDragStart={(e) => handleNodeDragStart(e, node.id)}
               onDrag={(e) => handleNodeDrag(e, node.id)}
-              onDragEnd={() => handleNodeDragEnd(node.id)}
               zoom={zoom}
               onNodeUpdate={onNodeUpdate}
               onFocus={onNodeFocus}
               isFocused={focusedNodeId === node.id}
               onDelete={onNodeDelete}
               onAIConversation={onAIConversation}
-              isDragging={draggedNode === node.id}
+              isDragging={draggedNodeId === node.id}
             />
           ))}
         </div>
