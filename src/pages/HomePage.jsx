@@ -5,7 +5,7 @@ import Header from '../components/Header';
 import InvestigationList from '../components/InvestigationList';
 import { Button } from "@/components/ui/button";
 import { PlusIcon, FileSearchIcon } from 'lucide-react';
-import ReportModal from '../components/ReportModal';
+import ContentModal from '../components/ContentModal';
 import ProjectEditModal from '../components/ProjectEditModal';
 import { useInvestigations, useAddInvestigation, useUpdateInvestigation, useDeleteInvestigation } from '@/integrations/supabase/index';
 import { supabase } from '@/integrations/supabase/supabase';
@@ -13,7 +13,7 @@ import { supabase } from '@/integrations/supabase/supabase';
 const HomePage = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isContentModalOpen, setIsContentModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
 
   const { data: investigations, isLoading, error } = useInvestigations({
@@ -72,7 +72,7 @@ const HomePage = () => {
       owner_id: user.id,
       visibility: 'private',
       view_type: 'mind',
-      investigation_type: 'generic'  // Set default investigation type to 'generic'
+      investigation_type: 'generic'
     };
 
     addInvestigation(newProject, {
