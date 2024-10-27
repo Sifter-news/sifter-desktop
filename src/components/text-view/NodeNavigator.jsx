@@ -19,7 +19,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNode }) => {
+const NodeNavigator = ({ 
+  nodes, 
+  onUpdateNode, 
+  onNodeFocus, 
+  selectedNode, 
+  onAddNode,
+  onAIConversation 
+}) => {
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [navigatorNodes, setNavigatorNodes] = useState(nodes);
@@ -101,7 +108,7 @@ const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNo
 
       <div className="flex-grow overflow-y-auto">
         {filteredNodes.map(node => (
-          <div key={node.id} className="flex items-center justify-between p-2 hover:bg-gray-100 rounded-lg">
+          <div key={node.id} className="group flex items-center justify-between p-2 hover:bg-gray-100 rounded-lg">
             <div 
               className="flex-grow cursor-pointer"
               onClick={() => onNodeFocus(node.id)}
@@ -109,7 +116,11 @@ const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNo
               <div className="font-medium">{node.title}</div>
               <div className="text-sm text-gray-500">{node.description}</div>
             </div>
-            <NodeActions node={node} onUpdateNode={onUpdateNode} />
+            <NodeActions 
+              node={node} 
+              onUpdateNode={onUpdateNode}
+              onAIConversation={onAIConversation}
+            />
           </div>
         ))}
       </div>

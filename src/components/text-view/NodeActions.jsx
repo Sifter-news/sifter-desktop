@@ -9,7 +9,9 @@ import {
   Brain, 
   MapPin, 
   Calendar,
-  FileText
+  FileText,
+  MoreVertical,
+  MessageCircle
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -19,7 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import NodeEditModal from '../node/NodeEditModal';
 
-const NodeActions = ({ node, onUpdateNode }) => {
+const NodeActions = ({ node, onUpdateNode, onAIConversation }) => {
   const [showEditModal, setShowEditModal] = React.useState(false);
 
   const styles = {
@@ -49,62 +51,71 @@ const NodeActions = ({ node, onUpdateNode }) => {
 
   return (
     <>
-      <div className="flex gap-2">
+      <div className="opacity-0 group-hover:opacity-100 transition-opacity">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Layout className="h-4 w-4" />
+              <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            {Object.entries(styles).map(([value, label]) => (
-              <DropdownMenuItem
-                key={value}
-                onClick={() => handleStyleChange(value)}
-              >
-                {label}
-              </DropdownMenuItem>
-            ))}
+            <DropdownMenuItem onClick={() => setShowEditModal(true)}>
+              <Search className="h-4 w-4 mr-2" />
+              Edit Node
+            </DropdownMenuItem>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger className="w-full">
+                <div className="flex items-center px-2 py-1.5">
+                  <Layout className="h-4 w-4 mr-2" />
+                  Change Style
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {Object.entries(styles).map(([value, label]) => (
+                  <DropdownMenuItem
+                    key={value}
+                    onClick={() => handleStyleChange(value)}
+                  >
+                    {label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger className="w-full">
+                <div className="flex items-center px-2 py-1.5">
+                  <Search className="h-4 w-4 mr-2" />
+                  Change Type
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {Object.entries(nodeTypes).map(([value, { label, icon: Icon }]) => (
+                  <DropdownMenuItem
+                    key={value}
+                    onClick={() => handleTypeChange(value)}
+                  >
+                    <Icon className="h-4 w-4 mr-2" />
+                    {label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenuItem onClick={() => onAIConversation(node)}>
+              <MessageCircle className="h-4 w-4 mr-2" />
+              AI Conversation
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Search className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {Object.entries(nodeTypes).map(([value, { label, icon: Icon }]) => (
-              <DropdownMenuItem
-                key={value}
-                onClick={() => handleTypeChange(value)}
-              >
-                <Icon className="h-4 w-4 mr-2" />
-                {label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0"
-          onClick={() => setShowEditModal(true)}
-        >
-          <Search className="h-4 w-4" />
-        </Button>
       </div>
 
-      <NodeEditModal
+      <NodeEditModal 
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
         node={node}
-        onUpdate={(updates) => {
-          onUpdateNode(node.id, updates);
-          setShowEditModal(false);
-        }}
+        onUpdate={onUpdateNode}
       />
     </>
   );
