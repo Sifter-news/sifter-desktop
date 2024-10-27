@@ -63,7 +63,8 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
     }
   }, [isOpen, projectId, investigationType]);
 
-  const handleSave = async () => {
+  const handleSave = async (e) => {
+    e.preventDefault();
     if (!title.trim()) {
       toast.error("Title is required");
       return;
@@ -94,7 +95,8 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (e) => {
+    e.preventDefault();
     setIsLoading(true);
     try {
       const { error } = await supabase
@@ -121,7 +123,7 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
         <DialogHeader>
           <DialogTitle>Edit Investigation Details</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <form onSubmit={handleSave} className="grid gap-4 py-4">
           <div className="grid gap-2">
             <label htmlFor="title">Title</label>
             <Input
@@ -171,11 +173,11 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
               disabled={isLoading}
             />
           </div>
-        </div>
+        </form>
         <DialogFooter className="flex justify-between">
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive" disabled={isLoading}>Delete Investigation</Button>
+              <Button variant="destructive" disabled={isLoading}>Delete</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
@@ -188,7 +190,7 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction onClick={handleDelete} disabled={isLoading}>
-                  Delete Investigation
+                  Delete
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
