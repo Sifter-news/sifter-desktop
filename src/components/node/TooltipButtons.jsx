@@ -23,7 +23,7 @@ const TooltipButtons = ({
 
   return (
     <>
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2 px-2">
         <Button
           variant="ghost"
           size="sm"
@@ -34,7 +34,7 @@ const TooltipButtons = ({
           Edit
         </Button>
 
-        <Separator orientation="vertical" className="bg-white/20" />
+        <Separator orientation="vertical" className="bg-white/20 h-4" />
 
         <Popover>
           <PopoverTrigger asChild>
@@ -59,7 +59,7 @@ const TooltipButtons = ({
           </PopoverContent>
         </Popover>
 
-        <Separator orientation="vertical" className="bg-white/20" />
+        <Separator orientation="vertical" className="bg-white/20 h-4" />
 
         <Popover>
           <PopoverTrigger asChild>
@@ -84,7 +84,7 @@ const TooltipButtons = ({
           </PopoverContent>
         </Popover>
 
-        <Separator orientation="vertical" className="bg-white/20" />
+        <Separator orientation="vertical" className="bg-white/20 h-4" />
 
         <Button
           variant="ghost"
@@ -95,10 +95,11 @@ const TooltipButtons = ({
           <MessageCircle className="h-4 w-4 mr-2" />
           AI
         </Button>
+
         <Button
           variant="ghost"
           size="sm"
-          className="text-white hover:bg-gray-800"
+          className="text-white hover:bg-red-700"
           onClick={() => onDelete(node.id)}
         >
           <Trash2 className="h-4 w-4 mr-2" />
