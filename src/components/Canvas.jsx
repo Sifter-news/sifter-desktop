@@ -19,7 +19,8 @@ const Canvas = forwardRef(({
   onNodeDelete,
   onDragOver,
   onDrop,
-  onAIConversation
+  onAIConversation,
+  onNodePositionUpdate
 }, ref) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = React.useState(false);
   const [nodeToDelete, setNodeToDelete] = React.useState(null);
@@ -40,19 +41,30 @@ const Canvas = forwardRef(({
 
   const handleDrag = useCallback((e) => {
     if (activeTool === 'select') {
-      setNodes(prevNodes => prevNodes.map(node => 
-        node.isDragging ? { 
-          ...node, 
-          x: snapToGrid((e.clientX - ref.current.offsetLeft) / zoom - position.x), 
-          y: snapToGrid((e.clientY - ref.current.offsetTop) / zoom - position.y)
-        } : node
-      ));
+      setNodes(prevNodes => prevNodes.map(node => {
+        if (node.isDragging) {
+          const newX = snapToGrid((e.clientX - ref.current.offsetLeft) / zoom - position.x);
+          const newY = snapToGrid((e.clientY - ref.current.offsetTop) / zoom - position.y);
+          return { 
+            ...node, 
+            x: newX, 
+            y: newY
+          };
+        }
+        return node;
+      }));
     }
   }, [activeTool, zoom, position.x, position.y, setNodes, snapToGrid, ref]);
 
   const handleDragEnd = useCallback(() => {
-    setNodes(prevNodes => prevNodes.map(node => ({ ...node, isDragging: false })));
-  }, [setNodes]);
+    setNodes(prevNodes => {
+      const draggedNode = prevNodes.find(node => node.isDragging);
+      if (draggedNode) {
+        onNodePositionUpdate(draggedNode.id, draggedNode.x, draggedNode.y);
+      }
+      return prevNodes.map(node => ({ ...node, isDragging: false }));
+    });
+  }, [setNodes, onNodePositionUpdate]);
 
   const handleCanvasClick = useCallback((e) => {
     if (e.target === e.currentTarget) {

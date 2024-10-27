@@ -4,6 +4,8 @@ import Canvas from './Canvas';
 import Toolbar from './Toolbar';
 import AISidePanel from './AISidePanel';
 import ReportList from './ReportList';
+import { supabase } from '@/integrations/supabase/supabase';
+import { toast } from 'sonner';
 
 const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode, reports, onAddReport, onUpdateReport }) => {
   const [activeTool, setActiveTool] = useState('select');
@@ -20,6 +22,31 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
     handlePanMove,
     handlePanEnd,
   } = useZoomPan();
+
+  const handleNodePositionUpdate = async (nodeId, x, y) => {
+    try {
+      const { error } = await supabase
+        .from('node')
+        .update({
+          position_x: x,
+          position_y: y,
+        })
+        .eq('id', nodeId);
+
+      if (error) throw error;
+
+      setNodes(prevNodes =>
+        prevNodes.map(node =>
+          node.id === nodeId
+            ? { ...node, x, y }
+            : node
+        )
+      );
+    } catch (error) {
+      console.error('Error updating node position:', error);
+      toast.error('Failed to save node position');
+    }
+  };
 
   const handleAddGenericNode = () => {
     const canvasRect = canvasRef.current.getBoundingClientRect();
@@ -66,6 +93,7 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
           onNodeFocus={setFocusedNodeId}
           onNodeDelete={onDeleteNode}
           onAIConversation={handleAIConversation}
+          onNodePositionUpdate={handleNodePositionUpdate}
         />
         <Toolbar
           activeTool={activeTool}
