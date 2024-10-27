@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Layout, Type, Trash2, Pencil } from 'lucide-react';
+import { MessageCircle, Layout, Type, Trash2, Pencil, FileText, User, Building2, Package, Brain, MapPin, Calendar } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import {
   Popover,
@@ -17,13 +17,13 @@ const defaultStyles = {
 };
 
 const defaultNodeTypes = {
-  generic: "Generic Note",
-  node_person: "Person",
-  node_organization: "Organization",
-  node_object: "Object",
-  node_concept: "Concept",
-  node_location: "Location",
-  node_event: "Event"
+  generic: { label: "Generic Note", icon: FileText },
+  node_person: { label: "Person", icon: User },
+  node_organization: { label: "Organization", icon: Building2 },
+  node_object: { label: "Object", icon: Package },
+  node_concept: { label: "Concept", icon: Brain },
+  node_location: { label: "Location", icon: MapPin },
+  node_event: { label: "Event", icon: Calendar }
 };
 
 const TooltipButtons = ({ 
@@ -37,6 +37,11 @@ const TooltipButtons = ({
   onUpdate
 }) => {
   const [showEditDialog, setShowEditDialog] = React.useState(false);
+  const currentStyle = node?.visualStyle || 'default';
+  const currentType = node?.nodeType || 'generic';
+
+  // Get current node type icon component
+  const CurrentTypeIcon = defaultNodeTypes[currentType]?.icon || FileText;
 
   // Ensure we have valid objects to iterate over
   const styleEntries = Object.entries(styles || defaultStyles);
@@ -61,7 +66,7 @@ const TooltipButtons = ({
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
               <Layout className="h-4 w-4 mr-2" />
-              Style
+              {defaultStyles[currentStyle]}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-32">
@@ -85,19 +90,21 @@ const TooltipButtons = ({
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-              <Type className="h-4 w-4 mr-2" />
-              Type
+              <CurrentTypeIcon className="h-4 w-4 mr-2" />
+              {defaultNodeTypes[currentType]?.label || "Generic Note"}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-40">
             <div className="flex flex-col space-y-1">
-              {typeEntries.map(([value, label]) => (
+              {Object.entries(defaultNodeTypes).map(([value, { label, icon: Icon }]) => (
                 <Button
                   key={value}
                   variant="ghost"
                   size="sm"
                   onClick={() => handleTypeChange?.(value)}
+                  className="justify-start"
                 >
+                  <Icon className="h-4 w-4 mr-2" />
                   {label}
                 </Button>
               ))}
