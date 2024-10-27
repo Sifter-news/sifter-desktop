@@ -23,7 +23,6 @@ const Canvas = forwardRef(({
 }, ref) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = React.useState(false);
   const [nodeToDelete, setNodeToDelete] = React.useState(null);
-  const [isDragging, setIsDragging] = React.useState(false);
 
   const handleDragStart = useCallback((e, nodeId) => {
     if (activeTool === 'select') {
@@ -32,6 +31,10 @@ const Canvas = forwardRef(({
       ));
     }
   }, [activeTool, setNodes]);
+
+  const snapToGrid = useCallback((value) => {
+    return Math.round(value / 24) * 24;
+  }, []);
 
   const handleDrag = useCallback((e) => {
     if (activeTool === 'select') {
@@ -43,11 +46,10 @@ const Canvas = forwardRef(({
         } : node
       ));
     }
-  }, [activeTool, zoom, position.x, position.y, setNodes, ref]);
+  }, [activeTool, zoom, position.x, position.y, setNodes, snapToGrid, ref]);
 
   const handleDragEnd = useCallback(() => {
     setNodes(prevNodes => prevNodes.map(node => ({ ...node, isDragging: false })));
-    setIsDragging(false);
   }, [setNodes]);
 
   const handleCanvasClick = useCallback((e) => {
@@ -58,17 +60,16 @@ const Canvas = forwardRef(({
 
   const handleCanvasMouseDown = useCallback((e) => {
     if (activeTool === 'pan') {
-      setIsDragging(true);
       handlePanStart();
     }
   }, [activeTool, handlePanStart]);
 
   const handleCanvasMouseMove = useCallback((e) => {
     handleDrag(e);
-    if (activeTool === 'pan' && isDragging) {
+    if (activeTool === 'pan') {
       handlePanMove(e);
     }
-  }, [activeTool, handleDrag, handlePanMove, isDragging]);
+  }, [activeTool, handleDrag, handlePanMove]);
 
   const handleCanvasMouseUp = useCallback(() => {
     handleDragEnd();
@@ -121,11 +122,10 @@ const Canvas = forwardRef(({
   return (
     <>
       <div 
-        className={`w-screen h-full bg-[#594BFF] overflow-hidden ${activeTool === 'pan' ? 'cursor-grab active:cursor-grabbing' : ''}`}
+        className="w-screen h-full bg-[#594BFF] overflow-hidden"
         onMouseDown={handleCanvasMouseDown}
         onMouseMove={handleCanvasMouseMove}
         onMouseUp={handleCanvasMouseUp}
-        onMouseLeave={handleCanvasMouseUp}
         onClick={handleCanvasClick}
         onDragOver={onDragOver}
         onDrop={onDrop}
