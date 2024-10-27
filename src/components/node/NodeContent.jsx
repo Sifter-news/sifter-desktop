@@ -16,7 +16,7 @@ const NodeContent = ({
 }) => {
   const getNodeStyle = () => {
     const focusClasses = isFocused 
-      ? 'ring-2 ring-blue-500 ring-offset-2 scale-[1.02]' 
+      ? 'ring-2 ring-white p-2 scale-[1.02]' 
       : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:scale-[1.01]';
 
     switch (style) {
