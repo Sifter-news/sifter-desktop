@@ -93,7 +93,7 @@ const NodeActions = ({ node, onUpdateNode, onAIConversation }) => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <DropdownMenuItem onClick={() => onAIConversation(node)}>
+          <DropdownMenuItem onClick={() => onAIConversation(node)} className="bg-purple-600 hover:bg-purple-700 text-white focus:bg-purple-700 focus:text-white">
             <MessageCircle className="h-4 w-4 mr-2" />
             AI Conversation
           </DropdownMenuItem>

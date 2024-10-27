@@ -14,6 +14,19 @@ const NodeListItem = ({
 }) => {
   if (!node) return null;
 
+  const getNodeTypeLabel = (type) => {
+    const types = {
+      generic: "Generic Note",
+      node_person: "Person",
+      node_organization: "Organization",
+      node_object: "Object",
+      node_concept: "Concept",
+      node_location: "Location",
+      node_event: "Event"
+    };
+    return types[type] || "Generic Note";
+  };
+
   return (
     <div 
       className={`group flex items-center justify-between p-1 hover:bg-gray-100 rounded-lg ${
@@ -34,6 +47,7 @@ const NodeListItem = ({
         </Avatar>
         <div>
           <div className="font-medium text-sm">{node.title}</div>
+          <div className="text-xs text-gray-500">{getNodeTypeLabel(node.nodeType)}</div>
           <div className="text-sm text-gray-500">
             {node.description}
             {node.type === 'group' && node.children && ` (${node.children.length} nodes)`}
