@@ -65,11 +65,11 @@ const Toolbar = ({ activeTool, setActiveTool, handleZoom, zoom, nodes, onAddNode
             <TooltipTrigger asChild>
               <Button 
                 variant="ghost" 
-                className="rounded-full px-4 bg-white bg-opacity-20"
+                size="icon"
+                className="rounded-full bg-white bg-opacity-20"
                 onClick={() => setIsExportDialogOpen(true)}
               >
-                <Download className="h-4 w-4 mr-2" />
-                Export
+                <Download className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
