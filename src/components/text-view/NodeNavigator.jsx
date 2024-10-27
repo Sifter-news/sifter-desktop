@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Plus } from 'lucide-react';
 import SearchInput from './SearchInput';
@@ -27,10 +27,21 @@ const NodeNavigator = ({
   const [navigatorNodes, setNavigatorNodes] = useState([]);
   const [selectedNodes, setSelectedNodes] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
+  const nodeRefs = useRef({});
 
   useEffect(() => {
     setNavigatorNodes(nodes);
   }, [nodes]);
+
+  useEffect(() => {
+    if (focusedNodeId && nodeRefs.current[focusedNodeId]) {
+      nodeRefs.current[focusedNodeId].scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest'
+      });
+      setSelectedNodes([focusedNodeId]);
+    }
+  }, [focusedNodeId]);
 
   const filteredNodes = navigatorNodes.filter(node => {
     if (!node) return false;
@@ -164,16 +175,20 @@ const NodeNavigator = ({
 
       <div className="flex-grow overflow-y-auto">
         {filteredNodes.map((node, index) => node && (
-          <NodeListItem
+          <div 
             key={node.id}
-            node={node}
-            isSelected={selectedNodes.includes(node.id)}
-            onSelect={(nodeId) => handleNodeSelect(nodeId, window.event)}
-            onFocus={onNodeFocus}
-            onUpdateNode={onUpdateNode}
-            onAIConversation={onAIConversation}
-            isFocused={focusedNodeId === node.id || index === currentIndex}
-          />
+            ref={el => nodeRefs.current[node.id] = el}
+          >
+            <NodeListItem
+              node={node}
+              isSelected={selectedNodes.includes(node.id)}
+              onSelect={(nodeId) => handleNodeSelect(nodeId, window.event)}
+              onFocus={onNodeFocus}
+              onUpdateNode={onUpdateNode}
+              onAIConversation={onAIConversation}
+              isFocused={focusedNodeId === node.id || index === currentIndex}
+            />
+          </div>
         ))}
       </div>
       
