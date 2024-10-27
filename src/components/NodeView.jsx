@@ -6,7 +6,7 @@ import ReportList from './ReportList';
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 import { toast } from 'sonner';
 
-const TextView = ({ 
+const NodeView = ({ 
   project, 
   nodes, 
   onAddNode, 
@@ -73,11 +73,13 @@ const TextView = ({
             onAddNode={onAddNode}
           />
         </div>
-        <div className="flex-1 h-full overflow-y-auto">
-          <NodeEditor
-            selectedNode={selectedNode}
-            onUpdateNode={onUpdateNode}
-          />
+        <div className="flex-1 h-full overflow-y-auto flex justify-center">
+          <div className="max-w-[640px] w-full">
+            <NodeEditor
+              selectedNode={selectedNode}
+              onUpdateNode={onUpdateNode}
+            />
+          </div>
         </div>
         <div className="fixed bottom-12 right-12 z-50">
           <ReportList
@@ -96,4 +98,4 @@ const TextView = ({
   );
 };
 
-export default TextView;
+export default NodeView;
