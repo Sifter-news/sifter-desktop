@@ -4,7 +4,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { Button } from "@/components/ui/button";
 import ReportList from './ReportList';
 
-mapboxgl.accessToken = 'YOUR_MAPBOX_ACCESS_TOKEN_HERE';
+// Use the token from environment variables
+mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
 const MapView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode, reports, onAddReport, onUpdateReport }) => {
   const mapContainer = useRef(null);
@@ -14,32 +15,42 @@ const MapView = ({ project, nodes, onAddNode, onUpdateNode, onDeleteNode, report
   const [zoom, setZoom] = useState(2);
 
   useEffect(() => {
+    if (!mapboxgl.accessToken || mapboxgl.accessToken === 'your_mapbox_token_here') {
+      console.error('Please set your Mapbox access token in the .env file');
+      return;
+    }
+
     if (map.current) return;
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v11',
-      center: [lng, lat],
-      zoom: zoom
-    });
-
-    map.current.on('move', () => {
-      setLng(map.current.getCenter().lng.toFixed(4));
-      setLat(map.current.getCenter().lat.toFixed(4));
-      setZoom(map.current.getZoom().toFixed(2));
-    });
-
-    map.current.on('click', (e) => {
-      const { lng, lat } = e.lngLat;
-      onAddNode({
-        id: Date.now(),
-        type: 'map',
-        title: `Location at ${lng.toFixed(2)}, ${lat.toFixed(2)}`,
-        content: '',
-        longitude: lng,
-        latitude: lat,
+    
+    try {
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [lng, lat],
+        zoom: zoom
       });
-    });
-  }, [onAddNode]);
+
+      map.current.on('move', () => {
+        setLng(map.current.getCenter().lng.toFixed(4));
+        setLat(map.current.getCenter().lat.toFixed(4));
+        setZoom(map.current.getZoom().toFixed(2));
+      });
+
+      map.current.on('click', (e) => {
+        const { lng, lat } = e.lngLat;
+        onAddNode({
+          id: Date.now(),
+          type: 'map',
+          title: `Location at ${lng.toFixed(2)}, ${lat.toFixed(2)}`,
+          content: '',
+          longitude: lng,
+          latitude: lat,
+        });
+      });
+    } catch (error) {
+      console.error('Error initializing Mapbox map:', error);
+    }
+  }, [lng, lat, zoom, onAddNode]);
 
   useEffect(() => {
     if (!map.current) return;
