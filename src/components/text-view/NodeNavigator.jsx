@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import Navigator from '../Navigator';
 import { MoreVertical } from 'lucide-react';
 import SearchInput from './SearchInput';
+import NodeActions from './NodeActions';
 import {
   Select,
   SelectContent,
@@ -99,12 +100,18 @@ const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNo
       </div>
 
       <div className="flex-grow overflow-y-auto">
-        <Navigator 
-          items={filteredNodes} 
-          setItems={handleNodeUpdate}
-          onDocumentClick={(node) => onNodeFocus(node.id)}
-          focusedDocument={selectedNode}
-        />
+        {filteredNodes.map(node => (
+          <div key={node.id} className="flex items-center justify-between p-2 hover:bg-gray-100 rounded-lg">
+            <div 
+              className="flex-grow cursor-pointer"
+              onClick={() => onNodeFocus(node.id)}
+            >
+              <div className="font-medium">{node.title}</div>
+              <div className="text-sm text-gray-500">{node.description}</div>
+            </div>
+            <NodeActions node={node} onUpdateNode={onUpdateNode} />
+          </div>
+        ))}
       </div>
       <Button onClick={handleAddNode} className="mt-4 w-full">Add Node</Button>
     </div>
