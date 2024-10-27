@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Plus, FolderPlus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import SearchInput from './SearchInput';
 import NodeListItem from './NodeListItem';
 import {
@@ -47,39 +47,18 @@ const NodeNavigator = ({
     });
   };
 
-  const handleNodeSelect = (nodeId) => {
+  const handleNodeSelect = (nodeId, event) => {
     setSelectedNodes(prev => {
-      if (prev.includes(nodeId)) {
-        return prev.filter(id => id !== nodeId);
+      // If Option/Alt key is held, allow multiple selections
+      if (event.altKey) {
+        if (prev.includes(nodeId)) {
+          return prev.filter(id => id !== nodeId);
+        }
+        return [...prev, nodeId];
       }
-      return [...prev, nodeId];
+      // Otherwise, only select the clicked node
+      return [nodeId];
     });
-  };
-
-  const handleCreateGroup = () => {
-    if (selectedNodes.length < 2) {
-      toast.error('Select at least 2 nodes to create a group');
-      return;
-    }
-
-    const groupPosition = {
-      x: Math.random() * 500,
-      y: Math.random() * 500
-    };
-
-    const groupNode = {
-      id: Date.now().toString(),
-      type: 'group',
-      title: `Group (${selectedNodes.length} nodes)`,
-      description: 'Grouped nodes',
-      x: groupPosition.x,
-      y: groupPosition.y,
-      children: selectedNodes
-    };
-
-    onAddNode(groupNode);
-    setSelectedNodes([]);
-    toast.success('Group created successfully');
   };
 
   const filteredNodes = navigatorNodes.filter(node => {
@@ -123,7 +102,7 @@ const NodeNavigator = ({
             key={node.id}
             node={node}
             isSelected={selectedNodes.includes(node.id)}
-            onSelect={handleNodeSelect}
+            onSelect={(nodeId) => handleNodeSelect(nodeId, window.event)}
             onFocus={onNodeFocus}
             onUpdateNode={onUpdateNode}
             onAIConversation={onAIConversation}
