@@ -27,7 +27,7 @@ const TooltipButtons = ({
         <Button
           variant="ghost"
           size="sm"
-          className="text-white hover:bg-white/20"
+          className="text-white hover:bg-blue-500/50 font-medium"
           onClick={() => setShowEditDialog(true)}
         >
           <Pencil className="h-4 w-4 mr-2" />
