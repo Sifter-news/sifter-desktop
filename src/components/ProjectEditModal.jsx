@@ -6,16 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { supabase } from '@/integrations/supabase/supabase';
 
 const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    title: '',
-    description: ''
+    title: project?.title || '',
+    description: project?.description || ''
   });
   const [errors, setErrors] = useState({ title: '', description: '' });
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Reset form data when modal opens or project changes
   useEffect(() => {
     if (project && isOpen) {
       setFormData({
@@ -50,19 +51,29 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
       return;
     }
     
+    setIsLoading(true);
     try {
-      const updatedProject = {
-        ...project,
-        title: formData.title.trim(),
-        description: formData.description.trim()
-      };
+      const { data, error } = await supabase
+        .from('investigations')
+        .update({
+          title: formData.title.trim(),
+          description: formData.description.trim(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', project.id)
+        .select()
+        .single();
+
+      if (error) throw error;
       
-      await onUpdate(updatedProject);
       toast.success("Project updated successfully");
+      onUpdate(data);
       onClose();
     } catch (error) {
+      console.error('Error updating project:', error);
       toast.error("Failed to update project");
-      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -73,14 +84,23 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
       return;
     }
     
+    setIsLoading(true);
     try {
-      await onDelete(project.id);
+      const { error } = await supabase
+        .from('investigations')
+        .delete()
+        .eq('id', project.id);
+
+      if (error) throw error;
+      
       toast.success("Project deleted successfully");
       onClose();
       navigate('/');
     } catch (error) {
+      console.error('Error deleting project:', error);
       toast.error("Failed to delete project");
-      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -102,6 +122,7 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                 className={errors.title ? "border-red-500" : ""}
                 placeholder="Enter project title"
+                disabled={isLoading}
               />
               {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
             </div>
@@ -117,6 +138,7 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 className={errors.description ? "border-red-500" : ""}
                 placeholder="Add a project description..."
+                disabled={isLoading}
               />
               {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
             </div>
@@ -125,7 +147,7 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
         <DialogFooter className="flex justify-between">
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive">Delete Project</Button>
+              <Button variant="destructive" disabled={isLoading}>Delete Project</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
@@ -137,13 +159,15 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete}>
+                <AlertDialogAction onClick={handleDelete} disabled={isLoading}>
                   Delete Project
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-          <Button onClick={handleSave}>Save changes</Button>
+          <Button onClick={handleSave} disabled={isLoading}>
+            {isLoading ? "Saving..." : "Save changes"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
