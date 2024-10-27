@@ -19,7 +19,8 @@ const NodeNavigator = ({
   onNodeFocus, 
   selectedNode, 
   onAddNode,
-  onAIConversation 
+  onAIConversation,
+  focusedNodeId 
 }) => {
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -91,22 +92,6 @@ const NodeNavigator = ({
 
   return (
     <div className="w-full h-full flex flex-col p-4">
-      <div className="flex justify-end items-center mb-4">
-        <div className="flex gap-2">
-          {selectedNodes.length > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleCreateGroup}
-              className="flex items-center gap-2"
-            >
-              <FolderPlus className="h-4 w-4" />
-              Create Group ({selectedNodes.length})
-            </Button>
-          )}
-        </div>
-      </div>
-      
       <div className="space-y-4 mb-4">
         <SearchInput value={searchQuery} onChange={setSearchQuery} />
         
@@ -142,6 +127,7 @@ const NodeNavigator = ({
             onFocus={onNodeFocus}
             onUpdateNode={onUpdateNode}
             onAIConversation={onAIConversation}
+            isFocused={focusedNodeId === node.id}
           />
         ))}
       </div>

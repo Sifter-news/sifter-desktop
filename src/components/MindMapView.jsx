@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useZoomPan, findAvailablePosition, snapToGrid } from '../utils/canvasUtils';
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
@@ -8,9 +8,19 @@ import NodeEditorModal from './node/NodeEditorModal';
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
 
-const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDeleteNode, reports, onAddReport, onUpdateReport }) => {
-  const [activeTool, setActiveTool] = useState('select');
-  const [focusedNodeId, setFocusedNodeId] = useState(null);
+const MindMapView = ({ 
+  project, 
+  nodes, 
+  setNodes, 
+  onAddNode, 
+  onUpdateNode, 
+  onDeleteNode, 
+  reports, 
+  onAddReport, 
+  onUpdateReport,
+  focusedNodeId,
+  onNodeFocus 
+}) => {
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
   const [initialAIMessage, setInitialAIMessage] = useState('');
   const [selectedNode, setSelectedNode] = useState(null);
@@ -24,6 +34,28 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
     handlePanMove,
     handlePanEnd,
   } = useZoomPan();
+
+  // Effect to center the focused node
+  useEffect(() => {
+    if (focusedNodeId && canvasRef.current) {
+      const focusedNode = nodes.find(node => node.id === focusedNodeId);
+      if (focusedNode) {
+        const rect = canvasRef.current.getBoundingClientRect();
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        // Calculate the position to center the node
+        const newX = centerX - (focusedNode.x * zoom);
+        const newY = centerY - (focusedNode.y * zoom);
+        
+        // Update the position
+        handlePanMove({ 
+          movementX: newX - position.x, 
+          movementY: newY - position.y 
+        });
+      }
+    }
+  }, [focusedNodeId]);
 
   const handleNodePositionUpdate = async (nodeId, x, y) => {
     try {
@@ -90,21 +122,18 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
           setNodes={setNodes}
           zoom={zoom}
           position={position}
-          activeTool={activeTool}
           handlePanStart={handlePanStart}
           handlePanMove={handlePanMove}
           handlePanEnd={handlePanEnd}
           onNodeUpdate={onUpdateNode}
           focusedNodeId={focusedNodeId}
-          onNodeFocus={setFocusedNodeId}
+          onNodeFocus={onNodeFocus}
           onNodeDelete={onDeleteNode}
           onAIConversation={handleAIConversation}
           onNodePositionUpdate={handleNodePositionUpdate}
           onNodeClick={handleNodeClick}
         />
         <Toolbar
-          activeTool={activeTool}
-          setActiveTool={setActiveTool}
           handleZoom={handleZoom}
           zoom={zoom}
           nodes={nodes}
