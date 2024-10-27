@@ -14,11 +14,20 @@ const SidePanel = ({
 
   return (
     <div 
-      className={`fixed top-16 left-0 h-[calc(100vh-64px)] bg-white shadow-lg transition-all duration-300 z-50 flex ${
+      className={`fixed top-16 left-0 h-[calc(100vh-64px)] bg-white shadow-lg transition-all duration-300 z-50 ${
         isExpanded ? 'w-[250px]' : 'w-[48px]'
       }`}
     >
-      <div className={`flex-grow overflow-hidden ${isExpanded ? 'opacity-100' : 'opacity-0 w-0'}`}>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-2 right-2 bg-white hover:bg-gray-100 rounded-full z-50"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        {isExpanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+      </Button>
+
+      <div className={`mt-12 flex-grow overflow-hidden ${isExpanded ? 'opacity-100' : 'opacity-0 w-0'}`}>
         <NodeNavigator
           nodes={nodes}
           onUpdateNode={onUpdateNode}
@@ -27,15 +36,6 @@ const SidePanel = ({
           onAddNode={onAddNode}
         />
       </div>
-      
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute -right-4 top-1/2 transform -translate-y-1/2 bg-white shadow-md rounded-full z-50"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        {isExpanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-      </Button>
     </div>
   );
 };
