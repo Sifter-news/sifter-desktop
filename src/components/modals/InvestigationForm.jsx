@@ -58,11 +58,20 @@ const InvestigationForm = ({ formData, setFormData, isLoading }) => {
       <div className="grid grid-cols-2 gap-4">
         <div className="grid gap-2">
           <label htmlFor="type">Type</label>
-          <Select value={type} onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))} disabled={isLoading}>
-            <SelectTrigger>
+          <Select 
+            value={type} 
+            onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))} 
+            disabled={isLoading}
+          >
+            <SelectTrigger className="w-full [&>span]:flex [&>span]:flex-1 [&>svg]:hidden">
               <SelectValue placeholder="Select type" />
             </SelectTrigger>
             <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Generic</SelectLabel>
+                <SelectItem value="generic">Generic Investigation</SelectItem>
+                <SelectItem value="research">Research</SelectItem>
+              </SelectGroup>
               <SelectGroup>
                 <SelectLabel>Due Diligence</SelectLabel>
                 <SelectItem value="pre-deal">Pre-Deal Due Diligence Investigation</SelectItem>
@@ -79,7 +88,6 @@ const InvestigationForm = ({ formData, setFormData, isLoading }) => {
                 <SelectItem value="fraud">Fraud Investigation</SelectItem>
                 <SelectItem value="background">Background Check Investigation</SelectItem>
                 <SelectItem value="asset">Asset Tracing Investigation</SelectItem>
-                <SelectItem value="generic">Generic Investigation</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
