@@ -23,11 +23,11 @@ const TooltipButtons = ({
 
   return (
     <>
-      <div className="flex items-center gap-2 px-2">
+      <div className="flex items-center gap-2 p-2 bg-black/90 rounded-lg shadow-lg">
         <Button
           variant="ghost"
           size="sm"
-          className="text-white hover:bg-gray-800"
+          className="text-white hover:bg-white/20"
           onClick={() => setShowEditDialog(true)}
         >
           <Pencil className="h-4 w-4 mr-2" />
@@ -38,7 +38,7 @@ const TooltipButtons = ({
 
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
+            <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
               <Layout className="h-4 w-4 mr-2" />
               Style
             </Button>
@@ -63,7 +63,7 @@ const TooltipButtons = ({
 
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
+            <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
               <Type className="h-4 w-4 mr-2" />
               Type
             </Button>
@@ -108,10 +108,10 @@ const TooltipButtons = ({
       </div>
 
       <NodeEditDialog 
-        node={node}
-        onClose={() => setShowEditDialog(false)}
-        onUpdate={onUpdate}
         isOpen={showEditDialog}
+        onClose={() => setShowEditDialog(false)}
+        node={node}
+        onUpdate={onUpdate}
       />
     </>
   );

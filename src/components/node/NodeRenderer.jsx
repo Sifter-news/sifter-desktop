@@ -40,7 +40,9 @@ const NodeRenderer = ({
         position={{ x: node.x, y: node.y }}
         onDragStart={(e) => onDragStart(e, node.id)}
         scale={zoom}
-        className="relative"
+        className={`relative ${
+          isFocused ? 'ring-2 ring-blue-500' : ''
+        }`}
       >
         <div 
           className="w-full h-full rounded-lg overflow-hidden"
@@ -60,7 +62,8 @@ const NodeRenderer = ({
             </TooltipTrigger>
             <TooltipContent 
               side="top" 
-              className="bg-black text-white border-black p-2"
+              className="p-0 border-0 bg-transparent"
+              sideOffset={5}
             >
               <TooltipButtons
                 styles={{
@@ -79,7 +82,7 @@ const NodeRenderer = ({
                 }}
                 handleStyleChange={(style) => onNodeUpdate(node.id, { visualStyle: style })}
                 handleTypeChange={(type) => onNodeUpdate(node.id, { nodeType: type })}
-                onAIConversation={onAIConversation}
+                onAIConversation={() => onAIConversation(node)}
                 onDelete={onDelete}
                 node={node}
                 onUpdate={onNodeUpdate}
