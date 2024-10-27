@@ -91,25 +91,25 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
                 <SelectContent className="w-[240px]">
                   <SelectGroup>
                     <SelectLabel>Generic</SelectLabel>
-                    <SelectItem value="generic" className="pl-2">Generic Investigation</SelectItem>
-                    <SelectItem value="research" className="pl-2">Research</SelectItem>
+                    <SelectItem value="generic">Generic Investigation</SelectItem>
+                    <SelectItem value="research">Research</SelectItem>
                   </SelectGroup>
                   <SelectGroup>
                     <SelectLabel>Due Diligence</SelectLabel>
-                    <SelectItem value="pre-deal" className="pl-2">Pre-Deal Due Diligence Investigation</SelectItem>
-                    <SelectItem value="post-deal" className="pl-2">Post-Deal Due Diligence Investigation</SelectItem>
+                    <SelectItem value="pre-deal">Pre-Deal Due Diligence Investigation</SelectItem>
+                    <SelectItem value="post-deal">Post-Deal Due Diligence Investigation</SelectItem>
                   </SelectGroup>
                   <SelectGroup>
                     <SelectLabel>Compliance</SelectLabel>
-                    <SelectItem value="aml" className="pl-2">Anti-Money Laundering Investigation</SelectItem>
-                    <SelectItem value="kyc" className="pl-2">Know Your Customer Investigation</SelectItem>
-                    <SelectItem value="regulatory" className="pl-2">Regulatory Compliance Investigation</SelectItem>
+                    <SelectItem value="aml">Anti-Money Laundering Investigation</SelectItem>
+                    <SelectItem value="kyc">Know Your Customer Investigation</SelectItem>
+                    <SelectItem value="regulatory">Regulatory Compliance Investigation</SelectItem>
                   </SelectGroup>
                   <SelectGroup>
                     <SelectLabel>Corporate</SelectLabel>
-                    <SelectItem value="fraud" className="pl-2">Fraud Investigation</SelectItem>
-                    <SelectItem value="background" className="pl-2">Background Check Investigation</SelectItem>
-                    <SelectItem value="asset" className="pl-2">Asset Tracing Investigation</SelectItem>
+                    <SelectItem value="fraud">Fraud Investigation</SelectItem>
+                    <SelectItem value="background">Background Check Investigation</SelectItem>
+                    <SelectItem value="asset">Asset Tracing Investigation</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
