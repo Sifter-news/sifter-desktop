@@ -6,7 +6,7 @@ import ReportList from './ReportList';
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 import { toast } from 'sonner';
 
-const TextView = ({ 
+const NodeView = ({ 
   project, 
   nodes, 
   onAddNode, 
@@ -61,10 +61,13 @@ const TextView = ({
     setNodeToDelete(null);
   };
 
+  const sideColumnWidth = 'w-[250px]';
+
   return (
     <>
       <div className="flex h-[calc(100vh-64px)]">
-        <div className="w-1/4 min-w-[250px] border-r border-gray-200 overflow-y-auto h-full">
+        {/* Left Column - Navigator (Fixed width) */}
+        <div className={`${sideColumnWidth} min-w-[250px] border-r border-gray-200 overflow-y-auto h-full flex-shrink-0`}>
           <NodeNavigator
             nodes={nodes}
             onUpdateNode={onUpdateNode}
@@ -73,12 +76,22 @@ const TextView = ({
             onAddNode={onAddNode}
           />
         </div>
-        <div className="flex-1 h-full overflow-y-auto">
-          <NodeEditor
-            selectedNode={selectedNode}
-            onUpdateNode={onUpdateNode}
-          />
+
+        {/* Middle Column - Editor (Auto width) */}
+        <div className="flex-1 h-full overflow-y-auto flex justify-center">
+          <div className="w-full max-w-3xl px-8">
+            <NodeEditor
+              selectedNode={selectedNode}
+              onUpdateNode={onUpdateNode}
+            />
+          </div>
         </div>
+
+        {/* Right Column - Blank (Fixed width) */}
+        <div className={`${sideColumnWidth} border-l border-gray-200 h-full flex-shrink-0`}>
+          {/* This column is intentionally left blank */}
+        </div>
+
         <div className="fixed bottom-12 right-12 z-50">
           <ReportList
             reports={reports}
@@ -96,4 +109,4 @@ const TextView = ({
   );
 };
 
-export default TextView;
+export default NodeView;
