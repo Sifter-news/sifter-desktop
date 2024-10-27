@@ -1,16 +1,37 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
+import { Plus } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 import ReportList from './ReportList';
 import NodeTooltip from './node/NodeTooltip';
 import NodeEditorModal from './node/NodeEditorModal';
+import { toast } from 'sonner';
 
-const TimeView = ({ project, nodes, reports, onAddReport, onUpdateReport, onUpdateNode, focusedNodeId, onNodeFocus }) => {
+const TimeView = ({ project, nodes, reports, onAddReport, onUpdateReport, onUpdateNode, focusedNodeId, onNodeFocus, onAddNode }) => {
   const [selectedNode, setSelectedNode] = useState(null);
   const sortedNodes = [...nodes].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
   const handleNodeClick = (node) => {
     onNodeFocus(node.id);
     setSelectedNode(node);
+  };
+
+  const handleAddEventNode = (x) => {
+    const newNode = {
+      id: Date.now().toString(),
+      title: 'New Event',
+      description: '',
+      type: 'node_event',
+      nodeType: 'node_event',
+      x: x,
+      y: 200, // Fixed vertical position for timeline
+      width: 200,
+      height: 100,
+      timestamp: new Date().toISOString()
+    };
+
+    onAddNode(newNode);
+    toast.success('Event node added');
   };
 
   return (
@@ -49,6 +70,17 @@ const TimeView = ({ project, nodes, reports, onAddReport, onUpdateReport, onUpda
               </NodeTooltip>
             ))}
           </div>
+          
+          {/* Add Event Node Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 flex items-center gap-2"
+            onClick={() => handleAddEventNode(sortedNodes.length * 250)} // Space nodes horizontally
+          >
+            <Plus className="h-4 w-4" />
+            Add Event
+          </Button>
         </div>
       </div>
       <NodeEditorModal 
