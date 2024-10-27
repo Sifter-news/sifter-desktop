@@ -14,8 +14,8 @@ CREATE TABLE public.node (
     owner_id UUID REFERENCES public.profiles(id),
     investigation_id UUID REFERENCES public.investigations(id),
     parent_node_id UUID REFERENCES public.node(id) ON DELETE SET NULL,
-    x NUMERIC(10,2) DEFAULT 0,
-    y NUMERIC(10,2) DEFAULT 0,
+    x DOUBLE PRECISION DEFAULT 0,
+    y DOUBLE PRECISION DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
