@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Rnd } from 'react-rnd';
 import NodeContent from './NodeContent';
 import NodeTooltip from './NodeTooltip';
-import ConnectionDot from './ConnectionDot';
 
 const NodeRenderer = ({ 
   node, 
@@ -19,7 +18,6 @@ const NodeRenderer = ({
   const [isEditing, setIsEditing] = useState(false);
   const [localTitle, setLocalTitle] = useState(node.title);
   const [localDescription, setLocalDescription] = useState(node.description);
-  const [hoveredDot, setHoveredDot] = useState(null);
   const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
@@ -71,16 +69,6 @@ const NodeRenderer = ({
           handleNodeClick={handleNodeClick}
           isFocused={isFocused}
         />
-        {['top', 'bottom', 'left', 'right'].map(position => (
-          <ConnectionDot
-            key={position}
-            position={position}
-            isHovered={hoveredDot === position}
-            onHover={() => setHoveredDot(position)}
-            onLeaveHover={() => setHoveredDot(null)}
-            onStartConnection={() => console.log(`Starting connection from ${position}`)}
-          />
-        ))}
         <NodeTooltip
           node={node}
           showTooltip={showTooltip}
