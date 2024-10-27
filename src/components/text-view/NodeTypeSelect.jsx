@@ -16,7 +16,9 @@ const NodeTypeSelect = ({ value, onChange }) => {
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectItem value="generic">Generic Note</SelectItem>
+          <SelectItem value="generic">Generic Node</SelectItem>
+        </SelectGroup>
+        <SelectGroup>
           <SelectItem value="node_person">Person</SelectItem>
           <SelectItem value="node_organization">Organization</SelectItem>
           <SelectItem value="node_object">Object</SelectItem>

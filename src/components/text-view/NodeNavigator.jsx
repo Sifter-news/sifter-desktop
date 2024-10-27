@@ -43,7 +43,6 @@ const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNo
 
   const handleNodeUpdate = (updatedNodes) => {
     setNavigatorNodes(updatedNodes);
-    // Pass the update to the parent component
     onUpdateNode(updatedNodes);
   };
 
@@ -76,7 +75,9 @@ const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNo
           <SelectContent>
             <SelectGroup>
               <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="generic">Generic Note</SelectItem>
+              <SelectItem value="generic">Generic Node</SelectItem>
+            </SelectGroup>
+            <SelectGroup>
               <SelectItem value="node_person">Person</SelectItem>
               <SelectItem value="node_organization">Organization</SelectItem>
               <SelectItem value="node_object">Object</SelectItem>
