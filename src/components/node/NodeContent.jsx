@@ -57,7 +57,17 @@ const NodeContent = ({
             ) : (
               <>
                 <h3 className="font-medium mb-2">{node.title}</h3>
-                <p className="text-sm">{node.description}</p>
+                <p 
+                  className="text-sm cursor-text" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLocalDescription(node.description);
+                    setLocalTitle(node.title);
+                    handleNodeClick(e);
+                  }}
+                >
+                  {node.description}
+                </p>
               </>
             )}
           </div>
