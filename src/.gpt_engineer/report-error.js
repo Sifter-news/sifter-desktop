@@ -38,9 +38,9 @@ window.fetch = async (...args) => {
       safeRequestInfo = {
         url: typeof requestInfo === 'string' 
           ? requestInfo 
-          : JSON.stringify(requestInfo?.url || ''),
+          : (requestInfo?.url ? String(requestInfo.url) : ''),
         method: typeof requestInfo === 'object' 
-          ? JSON.stringify(requestInfo?.method || 'GET') 
+          ? String(requestInfo?.method || 'GET')
           : 'GET',
         timestamp: new Date().toISOString()
       };
