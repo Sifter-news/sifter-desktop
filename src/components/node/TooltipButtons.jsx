@@ -47,6 +47,16 @@ const TooltipButtons = ({
   const styleEntries = Object.entries(styles || defaultStyles);
   const typeEntries = Object.entries(nodeTypes || defaultNodeTypes);
 
+  const handleStyleSelect = (style) => {
+    handleStyleChange?.(style);
+    onUpdate(node.id, { visualStyle: style });
+  };
+
+  const handleTypeSelect = (type) => {
+    handleTypeChange?.(type);
+    onUpdate(node.id, { nodeType: type });
+  };
+
   return (
     <>
       <div className="flex items-center gap-2 p-2 bg-black/50 backdrop-blur-sm rounded-lg shadow-lg">
@@ -76,7 +86,8 @@ const TooltipButtons = ({
                   key={value}
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleStyleChange?.(value)}
+                  onClick={() => handleStyleSelect(value)}
+                  className={`justify-start ${currentStyle === value ? 'bg-accent' : ''}`}
                 >
                   {label}
                 </Button>
@@ -101,8 +112,8 @@ const TooltipButtons = ({
                   key={value}
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleTypeChange?.(value)}
-                  className="justify-start"
+                  onClick={() => handleTypeSelect(value)}
+                  className={`justify-start ${currentType === value ? 'bg-accent' : ''}`}
                 >
                   <Icon className="h-4 w-4 mr-2" />
                   {label}
