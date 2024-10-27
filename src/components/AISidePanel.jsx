@@ -1,9 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SendIcon, PlusIcon } from 'lucide-react';
+import { PlusIcon, SendIcon } from 'lucide-react';
 
-const AISidePanel = ({ isOpen, onClose, initialQuestion, onSendMessage }) => {
+const AISidePanel = ({ 
+  isOpen, 
+  onClose, 
+  initialQuestion, 
+  onSendMessage,
+  title = "AI Conversation",
+  placeholder = "Type your message...",
+  showAIControls = true,
+  children
+}) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef(null);
@@ -25,12 +34,15 @@ const AISidePanel = ({ isOpen, onClose, initialQuestion, onSendMessage }) => {
   const handleSend = () => {
     if (newMessage.trim()) {
       setMessages(prevMessages => [...prevMessages, { type: 'user', content: newMessage }]);
-      onSendMessage(newMessage);
+      onSendMessage?.(newMessage);
       setNewMessage('');
-      // Simulate AI response (replace with actual API call in production)
-      setTimeout(() => {
-        setMessages(prevMessages => [...prevMessages, { type: 'ai', content: `Here's a response to "${newMessage}"` }]);
-      }, 1000);
+      
+      if (showAIControls) {
+        // Simulate AI response (replace with actual API call in production)
+        setTimeout(() => {
+          setMessages(prevMessages => [...prevMessages, { type: 'ai', content: `Here's a response to "${newMessage}"` }]);
+        }, 1000);
+      }
     }
   };
 
@@ -39,36 +51,46 @@ const AISidePanel = ({ isOpen, onClose, initialQuestion, onSendMessage }) => {
   return (
     <div className="fixed top-16 right-4 bottom-4 w-[480px] bg-white shadow-lg flex flex-col z-20 rounded-t-[24px] rounded-b-[48px] my-6">
       <div className="flex justify-between items-center p-4 border-b">
-        <h2 className="text-lg font-semibold">AI Conversation</h2>
+        <h2 className="text-lg font-semibold">{title}</h2>
         <Button variant="ghost" onClick={onClose}>Close</Button>
       </div>
+      
       <div className="flex-grow overflow-hidden py-6 px-4">
         <div className="bg-gray-100 h-full rounded-2xl p-4 overflow-y-auto">
-          <div className="space-y-4">
-            {messages.map((message, index) => (
-              <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`p-3 rounded-lg max-w-[80%] ${
-                  message.type === 'user' 
-                    ? 'bg-blue-500 text-white' 
-                    : 'bg-white text-gray-800 border border-gray-300'
-                }`}>
-                  {message.content}
+          {children || (
+            <div className="space-y-4">
+              {messages.map((message, index) => (
+                <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`p-3 rounded-lg max-w-[80%] ${
+                    message.type === 'user' 
+                      ? 'bg-blue-500 text-white' 
+                      : 'bg-white text-gray-800 border border-gray-300'
+                  }`}>
+                    {message.content}
+                  </div>
                 </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
         </div>
       </div>
+
       <div className="p-4 border-t">
         <div className="flex items-center space-x-2">
           <div className="bg-white rounded-full shadow-lg p-2 flex items-center space-x-2 flex-grow">
-            <Button size="icon" className="rounded-full flex-shrink-0 bg-[#594BFF1A] hover:bg-[#594BFF33]">
-              <PlusIcon className="h-6 w-6 text-[#594BFF]" />
-            </Button>
+            {showAIControls && (
+              <Button 
+                size="icon" 
+                className="rounded-full flex-shrink-0 bg-[#594BFF1A] hover:bg-[#594BFF33]"
+                onClick={() => setNewMessage('')}
+              >
+                <PlusIcon className="h-6 w-6 text-[#594BFF]" />
+              </Button>
+            )}
             <Input 
               type="text" 
-              placeholder="Type your message..." 
+              placeholder={placeholder}
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
@@ -78,7 +100,7 @@ const AISidePanel = ({ isOpen, onClose, initialQuestion, onSendMessage }) => {
               className="bg-[#594BFF] hover:bg-[#4B3FD9] text-white rounded-full px-6"
               onClick={handleSend}
             >
-              Ask
+              {showAIControls ? 'Ask' : 'Send'}
             </Button>
           </div>
         </div>
