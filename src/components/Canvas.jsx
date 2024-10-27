@@ -3,8 +3,6 @@ import NodeRenderer from './NodeRenderer';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 import { toast } from 'sonner';
-import { useDarkMode } from '@/contexts/DarkModeContext';
-import { cn } from '@/lib/utils';
 
 const Canvas = forwardRef(({ 
   nodes, 
@@ -24,7 +22,6 @@ const Canvas = forwardRef(({
   onAIConversation,
   onNodePositionUpdate
 }, ref) => {
-  const { isDarkMode } = useDarkMode();
   const [showDeleteConfirmation, setShowDeleteConfirmation] = React.useState(false);
   const [nodeToDelete, setNodeToDelete] = React.useState(null);
   const [isPanning, setIsPanning] = useState(false);
@@ -146,11 +143,7 @@ const Canvas = forwardRef(({
   return (
     <>
       <div 
-        className={cn(
-          "w-screen h-full overflow-hidden",
-          isDarkMode ? "bg-slate-900" : "bg-[#594BFF]",
-          isCanvasGrabbed ? 'cursor-grabbing' : 'cursor-grab'
-        )}
+        className={`w-screen h-full bg-[#594BFF] overflow-hidden ${isCanvasGrabbed ? 'cursor-grabbing' : 'cursor-grab'}`}
         onMouseDown={handleCanvasMouseDown}
         onMouseMove={handleCanvasMouseMove}
         onMouseUp={handleCanvasMouseUp}
@@ -164,9 +157,9 @@ const Canvas = forwardRef(({
           className="absolute inset-0" 
           style={{
             backgroundImage: `
-              radial-gradient(circle, ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.3)'} 1px, transparent 1px),
-              linear-gradient(to right, ${isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)'} 1px, transparent 1px),
-              linear-gradient(to bottom, ${isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)'} 1px, transparent 1px)
+              radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px),
+              linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
             `,
             backgroundSize: '24px 24px, 24px 24px, 24px 24px',
             backgroundPosition: '0 0, 12px 12px, 12px 12px',
@@ -189,16 +182,22 @@ const Canvas = forwardRef(({
         </div>
       </div>
       <AlertDialog open={showDeleteConfirmation} onOpenChange={setShowDeleteConfirmation}>
-        <AlertDialogContent className={isDarkMode ? "dark:bg-slate-800 dark:text-white" : ""}>
+        <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure you want to delete this AI node?</AlertDialogTitle>
-            <AlertDialogDescription className={isDarkMode ? "dark:text-slate-300" : ""}>
+            <AlertDialogDescription>
               This action cannot be undone. This will permanently delete the AI node and its associated data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete}>
+            <AlertDialogCancel onClick={() => setShowDeleteConfirmation(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => {
+              if (nodeToDelete) {
+                onNodeDelete(nodeToDelete.id);
+              }
+              setShowDeleteConfirmation(false);
+              setNodeToDelete(null);
+            }}>
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
