@@ -15,7 +15,7 @@ import {
 
 const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpdate, onProjectDelete }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [investigatorType, setInvestigatorType] = useState('private');
+  const [investigatorType, setInvestigatorType] = useState('investigator');
 
   return (
     <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
@@ -47,11 +47,7 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
               <SelectValue placeholder="Select investigator type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="private">Private Investigator</SelectItem>
-              <SelectItem value="police">Police Detective</SelectItem>
-              <SelectItem value="journalist">Investigative Journalist</SelectItem>
-              <SelectItem value="corporate">Corporate Investigator</SelectItem>
-              <SelectItem value="cyber">Cyber Investigator</SelectItem>
+              <SelectItem value="investigator">Investigator</SelectItem>
             </SelectContent>
           </Select>
           <UserProfile user={user} onUpdateUser={onUpdateUser} />
