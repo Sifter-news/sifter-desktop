@@ -1,3 +1,22 @@
+const getCircularReplacer = () => {
+  const seen = new WeakSet();
+  return (key, value) => {
+    // Don't serialize DOM nodes, React fiber nodes, or Request objects
+    if (value instanceof Node || 
+        key.startsWith('__react') || 
+        value instanceof Request) {
+      return undefined;
+    }
+    if (typeof value === 'object' && value !== null) {
+      if (seen.has(value)) {
+        return undefined;
+      }
+      seen.add(value);
+    }
+    return value;
+  };
+};
+
 const postMessage = (message) => {
   try {
     // Create a simplified version of the message that's guaranteed to be cloneable
@@ -23,8 +42,26 @@ const postMessage = (message) => {
   }
 };
 
-const originalFetch = window.fetch;
+const reportHTTPError = (error, requestInfo) => {
+  // Ensure requestInfo is serializable
+  const safeRequestInfo = {
+    url: requestInfo?.url || 'unknown',
+    method: requestInfo?.method || 'unknown',
+    timestamp: new Date().toISOString()
+  };
 
+  const errorData = {
+    message: error?.message || String(error) || 'HTTP Error',
+    error_type: 'http',
+    timestamp: new Date().toISOString(),
+    request: safeRequestInfo
+  };
+  
+  postMessage(errorData);
+};
+
+// Wrap fetch to catch and report errors
+const originalFetch = window.fetch;
 window.fetch = async (...args) => {
   try {
     const response = await originalFetch(...args);
@@ -38,16 +75,20 @@ window.fetch = async (...args) => {
       safeRequestInfo = {
         url: typeof requestInfo === 'string' 
           ? requestInfo 
-          : (requestInfo?.url ? String(requestInfo.url) : ''),
-        method: typeof requestInfo === 'object' 
-          ? String(requestInfo?.method || 'GET')
-          : 'GET',
+          : (requestInfo instanceof Request 
+              ? requestInfo.url 
+              : requestInfo?.url || 'unknown'),
+        method: requestInfo instanceof Request 
+          ? requestInfo.method 
+          : (typeof requestInfo === 'object' 
+              ? String(requestInfo?.method || 'GET')
+              : 'GET'),
         timestamp: new Date().toISOString()
       };
     } catch (e) {
       safeRequestInfo = {
         url: 'URL not serializable',
-        method: 'GET',
+        method: 'unknown',
         timestamp: new Date().toISOString()
       };
     }
@@ -57,17 +98,7 @@ window.fetch = async (...args) => {
   }
 };
 
-const reportHTTPError = (error, requestInfo) => {
-  const errorData = {
-    message: error?.message || String(error) || 'HTTP Error',
-    error_type: 'http',
-    timestamp: new Date().toISOString(),
-    request: requestInfo
-  };
-  
-  postMessage(errorData);
-};
-
+// Handle runtime errors
 window.addEventListener('error', (event) => {
   const errorData = {
     message: event.message || 'Unknown error',
@@ -82,6 +113,7 @@ window.addEventListener('error', (event) => {
   postMessage(errorData);
 });
 
+// Handle unhandled promise rejections
 window.addEventListener('unhandledrejection', (event) => {
   const errorData = {
     message: event.reason?.message || 'Unhandled Promise Rejection',
