@@ -16,7 +16,7 @@ const NodeContent = ({
 }) => {
   const getNodeStyle = () => {
     const focusClasses = isFocused 
-      ? 'ring-2 ring-blue-500 ring-offset-2 scale-[1.02]' 
+      ? 'ring-2 ring-blue-500 ring-offset-[30px] ring-offset-transparent translate-y-[45%] scale-[1.02]' 
       : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:scale-[1.01]';
 
     switch (style) {
@@ -79,7 +79,7 @@ const NodeContent = ({
     <div onClick={handleNodeClick} className="p-4">
       {isEditing ? (
         <div className={`space-y-2 p-4 bg-white rounded-lg m-1 transition-all duration-200 ${
-          isFocused ? 'ring-2 ring-blue-500 ring-offset-2' : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1'
+          isFocused ? 'ring-2 ring-blue-500 ring-offset-[30px] ring-offset-transparent translate-y-[45%]' : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1'
         }`}>
           <Input
             value={localTitle}
