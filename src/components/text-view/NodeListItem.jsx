@@ -25,7 +25,7 @@ const NodeListItem = ({ node, isSelected, onSelect, onFocus, onUpdateNode, onAIC
           <AvatarFallback>{getNodeTypeIcon(node.nodeType)}</AvatarFallback>
         </Avatar>
         <div>
-          <div className="font-medium">{node.title}</div>
+          <div className="font-medium text-sm">{node.title}</div>
           <div className="text-sm text-gray-500">
             {node.description}
             {node.type === 'group' && node.children && ` (${node.children.length} nodes)`}
