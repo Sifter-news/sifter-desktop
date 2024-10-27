@@ -27,10 +27,6 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
             <img src="/favicon.ico" alt="Sifter Logo" className="h-8 w-8" />
             <span className="text-sm font-normal">Sifter</span>
             <span className="text-sm font-normal text-gray-400">Beta</span>
-            <Separator orientation="vertical" className="h-4 mx-2" />
-            <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
-              Dashboard
-            </Link>
           </div>
         </div>
 
@@ -75,8 +71,12 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
           )}
         </div>
 
-        <div className="min-w-[200px] flex justify-end">
+        <div className="min-w-[200px] flex justify-end items-center space-x-2">
           <UserProfile user={user} onUpdateUser={onUpdateUser} />
+          <Separator orientation="vertical" className="h-4 mx-2" />
+          <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
+            Dashboard
+          </Link>
         </div>
       </div>
       <ProjectEditModal 
