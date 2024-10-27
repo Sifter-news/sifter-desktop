@@ -32,11 +32,25 @@ window.fetch = async (...args) => {
   } catch (error) {
     // Create a safe serializable version of the request info
     const requestInfo = args[0];
-    const safeRequestInfo = {
-      url: typeof requestInfo === 'string' ? requestInfo : requestInfo?.url || '',
-      method: typeof requestInfo === 'object' ? requestInfo?.method || 'GET' : 'GET',
-      timestamp: new Date().toISOString()
-    };
+    let safeRequestInfo;
+    
+    try {
+      safeRequestInfo = {
+        url: typeof requestInfo === 'string' 
+          ? requestInfo 
+          : JSON.stringify(requestInfo?.url || ''),
+        method: typeof requestInfo === 'object' 
+          ? JSON.stringify(requestInfo?.method || 'GET') 
+          : 'GET',
+        timestamp: new Date().toISOString()
+      };
+    } catch (e) {
+      safeRequestInfo = {
+        url: 'URL not serializable',
+        method: 'GET',
+        timestamp: new Date().toISOString()
+      };
+    }
     
     reportHTTPError(error, safeRequestInfo);
     throw error;
