@@ -3,7 +3,6 @@ import NodeRenderer from './NodeRenderer';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 import { toast } from 'sonner';
-import { useCanvasControls } from '@/hooks/useCanvasControls';
 
 const Canvas = forwardRef(({ 
   nodes, 
@@ -25,22 +24,12 @@ const Canvas = forwardRef(({
 }, ref) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = React.useState(false);
   const [nodeToDelete, setNodeToDelete] = React.useState(null);
-  const [isDraggingNode, setIsDraggingNode] = useState(false);
-
-  const {
-    isCanvasGrabbed,
-    handleCanvasMouseDown,
-    handleCanvasMouseMove,
-    handleCanvasMouseUp,
-    handleCanvasMouseLeave,
-    handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
-  } = useCanvasControls(activeTool, handlePanMove);
+  const [isPanning, setIsPanning] = useState(false);
+  const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
+  const [isCanvasGrabbed, setIsCanvasGrabbed] = useState(false);
 
   const handleDragStart = useCallback((e, nodeId) => {
     if (activeTool === 'select') {
-      setIsDraggingNode(true);
       setNodes(prevNodes => prevNodes.map(node => 
         node.id === nodeId ? { ...node, isDragging: true } : node
       ));
@@ -48,7 +37,7 @@ const Canvas = forwardRef(({
   }, [activeTool, setNodes]);
 
   const handleDrag = useCallback((e) => {
-    if (activeTool === 'select' && isDraggingNode) {
+    if (activeTool === 'select') {
       setNodes(prevNodes => prevNodes.map(node => {
         if (node.isDragging) {
           const newX = Math.round((e.clientX - ref.current.offsetLeft) / zoom - position.x);
@@ -62,26 +51,53 @@ const Canvas = forwardRef(({
         return node;
       }));
     }
-  }, [activeTool, zoom, position.x, position.y, setNodes, ref, isDraggingNode]);
+  }, [activeTool, zoom, position.x, position.y, setNodes, ref]);
 
   const handleDragEnd = useCallback(() => {
-    if (isDraggingNode) {
-      setNodes(prevNodes => {
-        const draggedNode = prevNodes.find(node => node.isDragging);
-        if (draggedNode) {
-          onNodePositionUpdate(draggedNode.id, draggedNode.x, draggedNode.y);
-        }
-        return prevNodes.map(node => ({ ...node, isDragging: false }));
-      });
-      setIsDraggingNode(false);
-    }
-  }, [setNodes, onNodePositionUpdate, isDraggingNode]);
+    setNodes(prevNodes => {
+      const draggedNode = prevNodes.find(node => node.isDragging);
+      if (draggedNode) {
+        onNodePositionUpdate(draggedNode.id, draggedNode.x, draggedNode.y);
+      }
+      return prevNodes.map(node => ({ ...node, isDragging: false }));
+    });
+  }, [setNodes, onNodePositionUpdate]);
 
   const handleCanvasClick = useCallback((e) => {
     if (e.target === e.currentTarget) {
       onNodeFocus(null);
     }
   }, [onNodeFocus]);
+
+  const handleCanvasMouseDown = useCallback((e) => {
+    if (e.target === e.currentTarget) {
+      setIsCanvasGrabbed(true);
+      setLastMousePosition({ x: e.clientX, y: e.clientY });
+      document.body.style.cursor = 'grabbing';
+    }
+  }, []);
+
+  const handleCanvasMouseMove = useCallback((e) => {
+    handleDrag(e);
+    if (isCanvasGrabbed) {
+      const dx = e.clientX - lastMousePosition.x;
+      const dy = e.clientY - lastMousePosition.y;
+      handlePanMove({ movementX: dx, movementY: dy });
+      setLastMousePosition({ x: e.clientX, y: e.clientY });
+    }
+  }, [handleDrag, isCanvasGrabbed, lastMousePosition, handlePanMove]);
+
+  const handleCanvasMouseUp = useCallback(() => {
+    handleDragEnd();
+    setIsCanvasGrabbed(false);
+    document.body.style.cursor = 'default';
+  }, [handleDragEnd]);
+
+  const handleCanvasMouseLeave = useCallback(() => {
+    handleDragEnd();
+    setIsCanvasGrabbed(false);
+    document.body.style.cursor = 'default';
+  }, [handleDragEnd]);
 
   const handleKeyDown = useCallback((e) => {
     if (focusedNodeId) {
@@ -127,34 +143,12 @@ const Canvas = forwardRef(({
   return (
     <>
       <div 
-        className={`w-[1000vw] h-[1000vh] bg-[#594BFF] overflow-hidden ${
-          isCanvasGrabbed ? 'cursor-grabbing' : 
-          activeTool === 'pan' ? 'cursor-grab' : 
-          'cursor-default'
-        }`}
-        style={{
-          position: 'absolute',
-          left: '-450vw',
-          top: '-450vh',
-          touchAction: 'none' // Prevent default touch behaviors
-        }}
+        className={`w-screen h-full bg-[#594BFF] overflow-hidden ${isCanvasGrabbed ? 'cursor-grabbing' : 'cursor-grab'}`}
         onMouseDown={handleCanvasMouseDown}
-        onMouseMove={(e) => {
-          handleCanvasMouseMove(e);
-          handleDrag(e);
-        }}
-        onMouseUp={(e) => {
-          handleCanvasMouseUp(e);
-          handleDragEnd();
-        }}
-        onMouseLeave={(e) => {
-          handleCanvasMouseLeave(e);
-          handleDragEnd();
-        }}
+        onMouseMove={handleCanvasMouseMove}
+        onMouseUp={handleCanvasMouseUp}
+        onMouseLeave={handleCanvasMouseLeave}
         onClick={handleCanvasClick}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
         onDragOver={onDragOver}
         onDrop={onDrop}
         ref={ref}
