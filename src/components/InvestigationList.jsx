@@ -38,7 +38,7 @@ const InvestigationList = ({
                   <DropdownMenuContent>
                     <DropdownMenuItem onClick={() => onEditProject(investigation)}>
                       <Pencil className="mr-2 h-4 w-4" />
-                      <span>Rename</span>
+                      <span>Edit</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       className="text-red-600"

@@ -119,21 +119,6 @@ const HomePage = () => {
         </div>
       </div>
 
-      <ReportModal
-        isOpen={isReportModalOpen}
-        onClose={() => setIsReportModalOpen(false)}
-        onSave={(newReport) => {
-          if (investigations?.length > 0) {
-            const updatedInvestigation = {
-              ...investigations[0],
-              reports: [...(investigations[0].reports || []), newReport]
-            };
-            handleUpdateInvestigation(updatedInvestigation);
-          }
-          setIsReportModalOpen(false);
-        }}
-      />
-
       {editingProject && (
         <ProjectEditModal
           isOpen={!!editingProject}
