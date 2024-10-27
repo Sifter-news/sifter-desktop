@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Plus, FolderPlus } from 'lucide-react';
 import SearchInput from './SearchInput';
-import NodeActions from './NodeActions';
+import NodeListItem from './NodeListItem';
 import {
   Select,
   SelectContent,
@@ -21,7 +20,7 @@ import {
 import { toast } from 'sonner';
 
 const NodeNavigator = ({ 
-  nodes, 
+  nodes = [], // Provide default empty array
   onUpdateNode, 
   onNodeFocus, 
   selectedNode, 
@@ -30,7 +29,7 @@ const NodeNavigator = ({
 }) => {
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [navigatorNodes, setNavigatorNodes] = useState(nodes);
+  const [navigatorNodes, setNavigatorNodes] = useState([]);
   const [selectedNodes, setSelectedNodes] = useState([]);
 
   useEffect(() => {
@@ -51,11 +50,6 @@ const NodeNavigator = ({
       x: position.x,
       y: position.y
     });
-  };
-
-  const handleNodeUpdate = (updatedNodes) => {
-    setNavigatorNodes(updatedNodes);
-    onUpdateNode(updatedNodes);
   };
 
   const handleNodeSelect = (nodeId) => {
@@ -93,27 +87,13 @@ const NodeNavigator = ({
     toast.success('Group created successfully');
   };
 
-  const getNodeTypeIcon = (nodeType) => {
-    const types = {
-      node_person: '👤',
-      node_organization: '🏢',
-      node_object: '📦',
-      node_concept: '💡',
-      node_location: '📍',
-      node_event: '📅',
-      group: '📁',
-      generic: '📝'
-    };
-    return types[nodeType] || '📝';
-  };
-
-  const filteredNodes = navigatorNodes
-    .filter(node => {
-      const matchesType = selectedType === 'all' || node.nodeType === selectedType;
-      const matchesSearch = node.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          node.description?.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesType && matchesSearch;
-    });
+  const filteredNodes = navigatorNodes.filter(node => {
+    if (!node) return false;
+    const matchesType = selectedType === 'all' || node.nodeType === selectedType;
+    const matchesSearch = (node.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        (node.description || '').toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesType && matchesSearch;
+  });
 
   return (
     <div className="w-full h-full flex flex-col p-4">
@@ -175,39 +155,16 @@ const NodeNavigator = ({
       </div>
 
       <div className="flex-grow overflow-y-auto">
-        {filteredNodes.map(node => (
-          <div 
-            key={node.id} 
-            className={`group flex items-center justify-between p-2 hover:bg-gray-100 rounded-lg ${
-              selectedNodes.includes(node.id) ? 'bg-blue-50 ring-2 ring-blue-500' : ''
-            }`}
-            onClick={() => handleNodeSelect(node.id)}
-          >
-            <div 
-              className="flex items-center flex-grow cursor-pointer gap-3"
-              onClick={(e) => {
-                e.stopPropagation();
-                onNodeFocus(node.id);
-              }}
-            >
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="/default-image.png" alt={node.title} />
-                <AvatarFallback>{getNodeTypeIcon(node.nodeType)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <div className="font-medium">{node.title}</div>
-                <div className="text-sm text-gray-500">
-                  {node.description}
-                  {node.type === 'group' && ` (${node.children?.length || 0} nodes)`}
-                </div>
-              </div>
-            </div>
-            <NodeActions 
-              node={node} 
-              onUpdateNode={onUpdateNode}
-              onAIConversation={onAIConversation}
-            />
-          </div>
+        {filteredNodes.map(node => node && (
+          <NodeListItem
+            key={node.id}
+            node={node}
+            isSelected={selectedNodes.includes(node.id)}
+            onSelect={handleNodeSelect}
+            onFocus={onNodeFocus}
+            onUpdateNode={onUpdateNode}
+            onAIConversation={onAIConversation}
+          />
         ))}
       </div>
       
