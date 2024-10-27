@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Rnd } from 'react-rnd';
-import NodeContent from './NodeContent';
+import NodeContent from './node/NodeContent';
 import NodeTooltip from './NodeTooltip';
 import ConnectionDot from './ConnectionDot';
 
