@@ -46,6 +46,13 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSave();
+    }
+  };
+
   if (!selectedNode) {
     return (
       <div className="h-screen flex items-center justify-center text-center text-gray-500">
@@ -66,12 +73,14 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
             <Input
               value={editedTitle}
               onChange={(e) => setEditedTitle(e.target.value)}
+              onKeyDown={handleKeyDown}
               className="text-2xl font-bold mb-4"
               placeholder="Enter title..."
             />
             <Textarea
               value={editedDescription}
               onChange={(e) => setEditedDescription(e.target.value)}
+              onKeyDown={handleKeyDown}
               className="flex-grow w-full p-2 border rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter description..."
             />
