@@ -5,16 +5,18 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import NodeMetadataFields from './NodeMetadataFields';
 
-const NodeEditDialog = ({ isOpen, onClose, node, onUpdate }) => {
+const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     nodeType: '',
     metadata: {}
   });
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   useEffect(() => {
     if (node) {
@@ -44,6 +46,16 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate }) => {
       onClose();
     } catch (error) {
       toast.error("Failed to update node");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await onDelete(node.id);
+      toast.success("Node deleted successfully");
+      onClose();
+    } catch (error) {
+      toast.error("Failed to delete node");
     }
   };
 
@@ -93,9 +105,31 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate }) => {
             onMetadataChange={handleMetadataChange}
           />
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>Save changes</Button>
+        <DialogFooter className="flex justify-between">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive">Delete</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete this node
+                  and remove all associated data.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete}>
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          <div className="space-x-2">
+            <Button variant="outline" onClick={onClose}>Cancel</Button>
+            <Button onClick={handleSubmit}>Save changes</Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
