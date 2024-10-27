@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import UserProfile from './UserProfile';
-import ProjectEditModal from './ProjectEditModal';
 import { Separator } from "@/components/ui/separator";
 import {
   Select,
@@ -16,7 +15,6 @@ import {
 import { User } from 'lucide-react';
 
 const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpdate, onProjectDelete }) => {
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [investigatorType, setInvestigatorType] = useState('pre-deal');
 
   return (
@@ -33,10 +31,7 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
         <div className="flex-grow flex justify-center items-center space-x-4">
           {projectName && (
             <div className="flex items-center space-x-4">
-              <span 
-                className="text-sm font-normal text-[#4B25F3] cursor-pointer hover:underline" 
-                onClick={() => setIsEditModalOpen(true)}
-              >
+              <span className="text-sm font-normal text-[#4B25F3]">
                 {projectName}
               </span>
               <Separator orientation="vertical" className="h-4" />
@@ -76,13 +71,6 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
           <UserProfile user={user} onUpdateUser={onUpdateUser} />
         </div>
       </div>
-      <ProjectEditModal 
-        isOpen={isEditModalOpen} 
-        onClose={() => setIsEditModalOpen(false)}
-        projectName={projectName}
-        onUpdate={onProjectUpdate}
-        onDelete={onProjectDelete}
-      />
     </header>
   );
 };
