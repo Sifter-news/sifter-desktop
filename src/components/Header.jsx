@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import UserProfile from './UserProfile';
 import { Separator } from "@/components/ui/separator";
-import ProjectDetailsModal from './ProjectDetailsModal';
+import InvestigationModal from './modals/InvestigationModal';
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
 import {
@@ -122,11 +122,10 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
         </div>
       </div>
 
-      <ProjectDetailsModal 
+      <InvestigationModal 
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        projectName={projectName}
-        investigationType={investigatorType}
+        investigation={projectName}
         onUpdate={onProjectUpdate}
       />
     </header>
