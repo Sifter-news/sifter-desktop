@@ -11,8 +11,8 @@ import { supabase } from '@/integrations/supabase/supabase';
 const ProjectEditModal = ({ isOpen, onClose, project, onUpdate }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    title: project?.title || '',
-    description: project?.description || ''
+    title: '',
+    description: ''
   });
   const [errors, setErrors] = useState({ title: '', description: '' });
   const [isLoading, setIsLoading] = useState(false);
@@ -53,12 +53,14 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate }) => {
     
     setIsLoading(true);
     try {
+      const updates = {
+        title: formData.title.trim(),
+        description: formData.description.trim()
+      };
+
       const { data, error } = await supabase
         .from('investigations')
-        .update({
-          title: formData.title.trim(),
-          description: formData.description.trim()
-        })
+        .update(updates)
         .eq('id', project.id)
         .select()
         .single();
