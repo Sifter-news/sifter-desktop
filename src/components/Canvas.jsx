@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useEffect } from 'react';
+import React, { forwardRef, useCallback, useEffect, useState } from 'react';
 import NodeRenderer from './NodeRenderer';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
@@ -23,6 +23,8 @@ const Canvas = forwardRef(({
 }, ref) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = React.useState(false);
   const [nodeToDelete, setNodeToDelete] = React.useState(null);
+  const [isPanning, setIsPanning] = useState(false);
+  const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
 
   const handleDragStart = useCallback((e, nodeId) => {
     if (activeTool === 'select') {
@@ -59,24 +61,26 @@ const Canvas = forwardRef(({
   }, [onNodeFocus]);
 
   const handleCanvasMouseDown = useCallback((e) => {
-    if (activeTool === 'pan') {
-      handlePanStart();
+    if (e.target === e.currentTarget) {
+      setIsPanning(true);
+      setLastMousePosition({ x: e.clientX, y: e.clientY });
     }
-  }, [activeTool, handlePanStart]);
+  }, []);
 
   const handleCanvasMouseMove = useCallback((e) => {
     handleDrag(e);
-    if (activeTool === 'pan') {
-      handlePanMove(e);
+    if (isPanning) {
+      const dx = e.clientX - lastMousePosition.x;
+      const dy = e.clientY - lastMousePosition.y;
+      handlePanMove({ movementX: dx, movementY: dy });
+      setLastMousePosition({ x: e.clientX, y: e.clientY });
     }
-  }, [activeTool, handleDrag, handlePanMove]);
+  }, [handleDrag, isPanning, lastMousePosition, handlePanMove]);
 
   const handleCanvasMouseUp = useCallback(() => {
     handleDragEnd();
-    if (activeTool === 'pan') {
-      handlePanEnd();
-    }
-  }, [activeTool, handleDragEnd, handlePanEnd]);
+    setIsPanning(false);
+  }, [handleDragEnd]);
 
   const handleKeyDown = useCallback((e) => {
     if (focusedNodeId) {
@@ -126,10 +130,12 @@ const Canvas = forwardRef(({
         onMouseDown={handleCanvasMouseDown}
         onMouseMove={handleCanvasMouseMove}
         onMouseUp={handleCanvasMouseUp}
+        onMouseLeave={handleCanvasMouseUp}
         onClick={handleCanvasClick}
         onDragOver={onDragOver}
         onDrop={onDrop}
         ref={ref}
+        style={{ cursor: isPanning ? 'grabbing' : 'grab' }}
       >
         <div 
           className="absolute inset-0" 
