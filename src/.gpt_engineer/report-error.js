@@ -33,8 +33,8 @@ window.fetch = async (...args) => {
     // Create a safe serializable version of the request info
     const requestInfo = args[0];
     const safeRequestInfo = {
-      url: typeof requestInfo === 'string' ? requestInfo : String(requestInfo?.url || ''),
-      method: typeof requestInfo === 'string' ? 'GET' : String(requestInfo?.method || 'GET'),
+      url: typeof requestInfo === 'string' ? requestInfo : requestInfo?.url || '',
+      method: typeof requestInfo === 'object' ? requestInfo?.method || 'GET' : 'GET',
       timestamp: new Date().toISOString()
     };
     
