@@ -1,9 +1,6 @@
 import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
-
-const DEFAULT_DIMENSIONS = { width: 200, height: 150 };
 
 const NodeContent = ({ 
   style, 
@@ -15,41 +12,23 @@ const NodeContent = ({
   setLocalTitle, 
   setLocalDescription, 
   handleNodeClick,
-  isFocused,
-  dimensions = DEFAULT_DIMENSIONS // Provide default dimensions
+  isFocused 
 }) => {
   const getNodeStyle = () => {
     const focusClasses = isFocused 
-      ? 'ring-2 ring-blue-500 ring-offset-[-2px] scale-[1.02]' 
-      : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-[-1px] hover:scale-[1.01]';
-
-    const currentDimensions = {
-      width: dimensions?.width || DEFAULT_DIMENSIONS.width,
-      height: dimensions?.height || DEFAULT_DIMENSIONS.height
-    };
+      ? 'ring-2 ring-blue-500 ring-offset-2 scale-[1.02]' 
+      : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:scale-[1.01]';
 
     switch (style) {
       case 'compact':
         return (
-          <div 
-            className={cn(
-              "w-10 h-10 p-1 bg-white rounded-full m-1 transition-all duration-200",
-              focusClasses
-            )}
-            style={currentDimensions}
-          >
+          <div className={`w-10 h-10 p-1 bg-white rounded-full m-1 transition-all duration-200 ${focusClasses}`}>
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full" />
           </div>
         );
       case 'expanded':
         return (
-          <div 
-            className={cn(
-              "flex items-center p-2 bg-white rounded-lg m-1 transition-all duration-200",
-              focusClasses
-            )}
-            style={currentDimensions}
-          >
+          <div className={`flex items-center p-2 bg-white rounded-lg m-1 transition-all duration-200 ${focusClasses}`}>
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full mr-2" />
             <div>
               <div className="font-medium">{node.title}</div>
@@ -59,13 +38,7 @@ const NodeContent = ({
         );
       case 'postit':
         return (
-          <div 
-            className={cn(
-              "p-4 bg-yellow-100 rounded-sm shadow-md m-1 transition-all duration-200",
-              focusClasses
-            )}
-            style={currentDimensions}
-          >
+          <div className={`w-[240px] h-[200px] p-4 bg-yellow-100 rounded-sm shadow-md m-1 transition-all duration-200 ${focusClasses}`}>
             {isEditing ? (
               <div className="h-full flex flex-col gap-2">
                 <Input
@@ -91,13 +64,7 @@ const NodeContent = ({
         );
       default:
         return (
-          <div 
-            className={cn(
-              "flex items-center p-2 bg-white rounded-lg m-1 transition-all duration-200",
-              focusClasses
-            )}
-            style={currentDimensions}
-          >
+          <div className={`flex items-center p-2 bg-white rounded-lg m-1 transition-all duration-200 ${focusClasses}`}>
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full mr-2" />
             <div>
               <div className="font-medium">{node.title}</div>
@@ -111,10 +78,9 @@ const NodeContent = ({
   return (
     <div onClick={handleNodeClick} className="p-4">
       {isEditing ? (
-        <div className={cn(
-          "space-y-2 p-4 bg-white rounded-lg m-1 transition-all duration-200",
-          isFocused ? 'ring-2 ring-blue-500 ring-offset-[-2px]' : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-[-1px]'
-        )}>
+        <div className={`space-y-2 p-4 bg-white rounded-lg m-1 transition-all duration-200 ${
+          isFocused ? 'ring-2 ring-blue-500 ring-offset-2' : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1'
+        }`}>
           <Input
             value={localTitle}
             onChange={(e) => setLocalTitle(e.target.value)}
