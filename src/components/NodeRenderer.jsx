@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Rnd } from 'react-rnd';
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Layout, Type, Trash2 } from 'lucide-react';
@@ -22,6 +22,20 @@ const NodeRenderer = ({ node, onDragStart, zoom, onNodeUpdate, onFocus, isFocuse
   const [localDescription, setLocalDescription] = useState(node.description);
   const [hoveredDot, setHoveredDot] = useState(null);
   const [showTooltip, setShowTooltip] = useState(false);
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') {
+        if (isFocused) {
+          onFocus(null);
+          setShowTooltip(false);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [isFocused, onFocus]);
 
   const handleStyleChange = (value) => {
     onNodeUpdate(node.id, { visualStyle: value });

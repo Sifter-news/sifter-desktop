@@ -18,6 +18,17 @@ const AISidePanel = ({
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
     if (initialQuestion) {
       setMessages([{ type: 'user', content: initialQuestion }]);
       // Simulate AI response (replace with actual API call in production)
