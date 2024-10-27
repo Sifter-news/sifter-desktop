@@ -41,10 +41,10 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
               </span>
               <Separator orientation="vertical" className="h-4" />
               <Select value={investigatorType} onValueChange={setInvestigatorType}>
-                <SelectTrigger className="w-[180px] whitespace-nowrap border-none focus:ring-0">
+                <SelectTrigger className="w-[240px] whitespace-normal border-none focus:ring-0">
                   <SelectValue placeholder="Select investigation type" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="w-[240px]">
                   <SelectGroup>
                     <SelectLabel>Due Diligence</SelectLabel>
                     <SelectItem value="pre-deal">Pre-Deal Due Diligence</SelectItem>
