@@ -1,37 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from "sonner";
 import { useNavigate } from 'react-router-dom';
+import InvestigationForm from './modals/InvestigationForm';
+import DeleteConfirmation from './modals/DeleteConfirmation';
 
 const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, projectId, onUpdate }) => {
   const navigate = useNavigate();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [type, setType] = useState('generic');
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    type: 'generic'
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -48,9 +30,11 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
         if (error) throw error;
         
         if (data) {
-          setTitle(data.title || '');
-          setDescription(data.description || '');
-          setType(investigationType || 'generic');
+          setFormData({
+            title: data.title || '',
+            description: data.description || '',
+            type: investigationType || 'generic'
+          });
         }
       } catch (error) {
         console.error('Error fetching project:', error);
@@ -65,42 +49,39 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
 
   const handleSave = async (e) => {
     e.preventDefault();
-    if (!title.trim()) {
+    if (!formData.title.trim()) {
       toast.error("Title is required");
-      return;
-    }
-
-    if (!projectId) {
-      toast.error("Invalid project ID");
       return;
     }
 
     setIsLoading(true);
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('investigations')
         .update({
-          title: title.trim(),
-          description: description.trim(),
+          title: formData.title.trim(),
+          description: formData.description.trim(),
+          investigation_type: formData.type,
           updated_at: new Date().toISOString()
         })
-        .eq('id', projectId);
+        .eq('id', projectId)
+        .select()
+        .single();
 
       if (error) throw error;
 
-      toast.success("Project updated successfully");
-      onUpdate({ title: title.trim(), description: description.trim(), type });
+      toast.success("Investigation updated successfully");
+      onUpdate(data);
       onClose();
     } catch (error) {
-      console.error('Error updating project:', error);
-      toast.error("Failed to update project");
+      console.error('Error updating investigation:', error);
+      toast.error("Failed to update investigation");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleDelete = async (e) => {
-    e.preventDefault();
+  const handleDelete = async () => {
     if (!projectId) {
       toast.error("Invalid project ID");
       return;
@@ -115,12 +96,12 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
 
       if (error) throw error;
 
-      toast.success("Project deleted successfully");
+      toast.success("Investigation deleted successfully");
       onClose();
       navigate('/');
     } catch (error) {
-      console.error('Error deleting project:', error);
-      toast.error("Failed to delete project");
+      console.error('Error deleting investigation:', error);
+      toast.error("Failed to delete investigation");
     } finally {
       setIsLoading(false);
     }
@@ -132,78 +113,13 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
         <DialogHeader>
           <DialogTitle>Edit Investigation Details</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSave} className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <label htmlFor="title">Title</label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Investigation title"
-              disabled={isLoading}
-            />
-          </div>
-          <div className="grid gap-2">
-            <label htmlFor="type">Investigation Type</label>
-            <Select value={type} onValueChange={setType} disabled={isLoading}>
-              <SelectTrigger className="p-0">
-                <SelectValue placeholder="Select investigation type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Due Diligence</SelectLabel>
-                  <SelectItem value="pre-deal">Pre-Deal Due Diligence Investigation</SelectItem>
-                  <SelectItem value="post-deal">Post-Deal Due Diligence Investigation</SelectItem>
-                </SelectGroup>
-                <SelectGroup>
-                  <SelectLabel>Compliance</SelectLabel>
-                  <SelectItem value="aml">Anti-Money Laundering Investigation</SelectItem>
-                  <SelectItem value="kyc">Know Your Customer Investigation</SelectItem>
-                  <SelectItem value="regulatory">Regulatory Compliance Investigation</SelectItem>
-                </SelectGroup>
-                <SelectGroup>
-                  <SelectLabel>Corporate</SelectLabel>
-                  <SelectItem value="fraud">Fraud Investigation</SelectItem>
-                  <SelectItem value="background">Background Check Investigation</SelectItem>
-                  <SelectItem value="asset">Asset Tracing Investigation</SelectItem>
-                  <SelectItem value="generic">Generic Investigation</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid gap-2">
-            <label htmlFor="description">Description</label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Investigation description"
-              className="min-h-[100px]"
-              disabled={isLoading}
-            />
-          </div>
-        </form>
+        <InvestigationForm 
+          formData={formData}
+          setFormData={setFormData}
+          isLoading={isLoading}
+        />
         <DialogFooter className="flex justify-between">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" disabled={isLoading}>Delete</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete your
-                  investigation and remove all associated data.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete} disabled={isLoading}>
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <DeleteConfirmation onDelete={handleDelete} isLoading={isLoading} />
           <div className="space-x-2">
             <Button variant="outline" onClick={onClose} disabled={isLoading}>Cancel</Button>
             <Button onClick={handleSave} disabled={isLoading}>
