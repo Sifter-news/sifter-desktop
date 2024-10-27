@@ -19,7 +19,6 @@ export const useProjectData = (id) => {
         if (error) throw error;
         
         if (data) {
-          // Ensure we only store serializable data
           const serializedProject = {
             id: data.id,
             title: data.title || '',
@@ -47,15 +46,11 @@ export const useProjectData = (id) => {
         if (error) throw error;
         
         if (data) {
-          // Ensure we only store serializable data and center nodes
-          const serializedNodes = data.map(node => ({
-            id: node.id,
-            title: node.title || '',
-            description: node.description || '',
-            type: node.type || 'generic',
-            investigation_id: node.investigation_id,
-            x: window.innerWidth / 2,
-            y: window.innerHeight / 2,
+          // Generate random positions for nodes in the viewport
+          const serializedNodes = data.map((node, index) => ({
+            ...node,
+            x: (index % 3) * 250 + 100,  // Arrange in a grid, 3 columns
+            y: Math.floor(index / 3) * 250 + 100,  // New row every 3 nodes
             width: 200,
             color: 'bg-yellow-200'
           }));

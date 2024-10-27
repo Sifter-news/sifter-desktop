@@ -5,7 +5,6 @@ import { findAvailablePosition } from '@/utils/canvasUtils';
 export const useNodeOperations = (setNodes) => {
   const handleAddNode = async (newNode, projectId) => {
     try {
-      const position = findAvailablePosition([]);
       const nodeData = {
         title: newNode.title,
         description: newNode.description,
@@ -21,11 +20,10 @@ export const useNodeOperations = (setNodes) => {
 
       if (error) throw error;
 
-      // Add UI-specific properties
       const nodeWithUI = {
         ...data,
-        x: 0,
-        y: 0,
+        x: newNode.x || 0,
+        y: newNode.y || 0,
         width: newNode.width || 200
       };
 
@@ -39,9 +37,11 @@ export const useNodeOperations = (setNodes) => {
 
   const handleUpdateNode = async (nodeId, updates) => {
     try {
+      // Only send database columns to Supabase
       const databaseUpdates = {
         title: updates.title,
-        description: updates.description
+        description: updates.description,
+        type: updates.type
       };
 
       const { error } = await supabase
@@ -51,6 +51,7 @@ export const useNodeOperations = (setNodes) => {
 
       if (error) throw error;
 
+      // Update all properties in the frontend state
       setNodes(prevNodes => prevNodes.map(node => 
         node.id === nodeId ? { ...node, ...updates } : node
       ));
