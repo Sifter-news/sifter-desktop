@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import UserProfile from './UserProfile';
 import { Separator } from "@/components/ui/separator";
+import ProjectDetailsModal from './ProjectDetailsModal';
 import {
   Select,
   SelectContent,
@@ -15,6 +16,7 @@ import {
 import { User } from 'lucide-react';
 
 const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpdate, onProjectDelete }) => {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [investigatorType, setInvestigatorType] = useState('pre-deal');
 
   return (
@@ -31,7 +33,10 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
         <div className="flex-grow flex justify-center items-center space-x-4">
           {projectName && (
             <div className="flex items-center space-x-4">
-              <span className="text-sm font-normal text-[#4B25F3]">
+              <span 
+                className="text-sm font-normal text-[#4B25F3] cursor-pointer hover:underline"
+                onClick={() => setIsEditModalOpen(true)}
+              >
                 {projectName}
               </span>
               <Separator orientation="vertical" className="h-4" />
@@ -42,20 +47,21 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
                 <SelectContent className="w-[240px]">
                   <SelectGroup>
                     <SelectLabel>Due Diligence</SelectLabel>
-                    <SelectItem value="pre-deal">Pre-Deal Due Diligence</SelectItem>
-                    <SelectItem value="post-deal">Post-Deal Due Diligence</SelectItem>
+                    <SelectItem value="pre-deal">Pre-Deal Due Diligence Investigation</SelectItem>
+                    <SelectItem value="post-deal">Post-Deal Due Diligence Investigation</SelectItem>
                   </SelectGroup>
                   <SelectGroup>
                     <SelectLabel>Compliance</SelectLabel>
-                    <SelectItem value="aml">Anti-Money Laundering</SelectItem>
-                    <SelectItem value="kyc">Know Your Customer</SelectItem>
-                    <SelectItem value="regulatory">Regulatory Compliance</SelectItem>
+                    <SelectItem value="aml">Anti-Money Laundering Investigation</SelectItem>
+                    <SelectItem value="kyc">Know Your Customer Investigation</SelectItem>
+                    <SelectItem value="regulatory">Regulatory Compliance Investigation</SelectItem>
                   </SelectGroup>
                   <SelectGroup>
                     <SelectLabel>Corporate</SelectLabel>
                     <SelectItem value="fraud">Fraud Investigation</SelectItem>
-                    <SelectItem value="background">Background Check</SelectItem>
-                    <SelectItem value="asset">Asset Tracing</SelectItem>
+                    <SelectItem value="background">Background Check Investigation</SelectItem>
+                    <SelectItem value="asset">Asset Tracing Investigation</SelectItem>
+                    <SelectItem value="generic">Generic Investigation</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -71,6 +77,14 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
           <UserProfile user={user} onUpdateUser={onUpdateUser} />
         </div>
       </div>
+
+      <ProjectDetailsModal 
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        projectName={projectName}
+        investigationType={investigatorType}
+        onUpdate={onProjectUpdate}
+      />
     </header>
   );
 };
