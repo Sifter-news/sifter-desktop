@@ -20,7 +20,25 @@ const NodeView = ({
 }) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [nodeToDelete, setNodeToDelete] = useState(null);
-  const selectedNode = nodes.find(node => node.id === focusedNodeId);
+  const [localNodes, setLocalNodes] = useState(nodes);
+  const selectedNode = localNodes.find(node => node.id === focusedNodeId);
+
+  // Keep local nodes in sync with prop updates
+  useEffect(() => {
+    setLocalNodes(nodes);
+  }, [nodes]);
+
+  const handleLocalNodeUpdate = async (nodeId, updates) => {
+    // Update local state immediately
+    setLocalNodes(prevNodes => 
+      prevNodes.map(node => 
+        node.id === nodeId ? { ...node, ...updates } : node
+      )
+    );
+    
+    // Propagate update to parent
+    await onUpdateNode(nodeId, updates);
+  };
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -51,7 +69,7 @@ const NodeView = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedNode, nodes, onAddNode, onDeleteNode]);
+  }, [selectedNode, localNodes, onAddNode, onDeleteNode]);
 
   const handleConfirmDelete = () => {
     if (nodeToDelete) {
@@ -66,30 +84,26 @@ const NodeView = ({
   return (
     <>
       <div className="flex h-[calc(100vh-64px)]">
-        {/* Left Column - Navigator (Fixed width) */}
         <div className={`${sideColumnWidth} min-w-[250px] border-r border-gray-200 overflow-y-auto h-full flex-shrink-0`}>
           <NodeNavigator
-            nodes={nodes}
-            onUpdateNode={onUpdateNode}
+            nodes={localNodes}
+            onUpdateNode={handleLocalNodeUpdate}
             onNodeFocus={onNodeFocus}
             selectedNode={selectedNode}
             onAddNode={onAddNode}
           />
         </div>
 
-        {/* Middle Column - Editor (Auto width) */}
         <div className="flex-1 h-full overflow-y-auto flex justify-center">
           <div className="w-full max-w-3xl px-8 py-6">
             <NodeEditor
               selectedNode={selectedNode}
-              onUpdateNode={onUpdateNode}
+              onUpdateNode={handleLocalNodeUpdate}
             />
           </div>
         </div>
 
-        {/* Right Column - Blank (Fixed width) */}
         <div className={`${sideColumnWidth} min-w-[250px] border-l border-gray-200 h-full flex-shrink-0`}>
-          {/* This column is intentionally left blank */}
         </div>
 
         <div className="fixed bottom-12 right-12 z-50">
