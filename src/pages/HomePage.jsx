@@ -6,7 +6,7 @@ import InvestigationList from '../components/InvestigationList';
 import { Button } from "@/components/ui/button";
 import { PlusIcon, FileSearchIcon } from 'lucide-react';
 import ContentModal from '../components/ContentModal';
-import ProjectEditModal from '../components/ProjectEditModal';
+import InvestigationModal from '../components/modals/InvestigationModal';
 import { useInvestigations, useAddInvestigation, useUpdateInvestigation, useDeleteInvestigation } from '@/integrations/supabase/index';
 import { supabase } from '@/integrations/supabase/supabase';
 
@@ -121,10 +121,10 @@ const HomePage = () => {
       </div>
 
       {editingProject && (
-        <ProjectEditModal
+        <InvestigationModal
           isOpen={!!editingProject}
           onClose={() => setEditingProject(null)}
-          project={editingProject}
+          investigation={editingProject}
           onUpdate={handleUpdateInvestigation}
           onDelete={handleDeleteInvestigation}
         />
