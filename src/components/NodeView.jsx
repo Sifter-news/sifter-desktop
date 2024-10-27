@@ -79,7 +79,7 @@ const NodeView = ({
 
         {/* Middle Column - Editor (Auto width) */}
         <div className="flex-1 h-full overflow-y-auto flex justify-center">
-          <div className="w-full max-w-3xl px-8">
+          <div className="w-full max-w-3xl px-8 py-6">
             <NodeEditor
               selectedNode={selectedNode}
               onUpdateNode={onUpdateNode}
@@ -88,7 +88,7 @@ const NodeView = ({
         </div>
 
         {/* Right Column - Blank (Fixed width) */}
-        <div className={`${sideColumnWidth} border-l border-gray-200 h-full flex-shrink-0`}>
+        <div className={`${sideColumnWidth} min-w-[250px] border-l border-gray-200 h-full flex-shrink-0`}>
           {/* This column is intentionally left blank */}
         </div>
 
