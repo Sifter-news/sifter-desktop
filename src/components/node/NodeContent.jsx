@@ -38,7 +38,7 @@ const NodeContent = ({
         );
       case 'postit':
         return (
-          <div className={`w-[240px] h-[200px] p-4 bg-yellow-100 rounded-sm shadow-md m-1 transition-all duration-200 ${focusClasses}`}>
+          <div className={`w-[256px] h-[256px] p-4 bg-yellow-100 rounded-sm shadow-md m-1 transition-all duration-200 ${focusClasses}`}>
             {isEditing ? (
               <div className="h-full flex flex-col gap-2">
                 <Input
