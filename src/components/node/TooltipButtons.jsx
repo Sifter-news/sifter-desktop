@@ -90,7 +90,7 @@ const TooltipButtons = ({
           variant="ghost"
           size="sm"
           className="text-white hover:bg-purple-700 bg-purple-600"
-          onClick={() => onAIConversation(node)}
+          onClick={onAIConversation}
         >
           <MessageCircle className="h-4 w-4 mr-2" />
           AI
@@ -100,7 +100,7 @@ const TooltipButtons = ({
           variant="ghost"
           size="sm"
           className="text-white hover:bg-red-700"
-          onClick={() => onDelete(node.id)}
+          onClick={onDelete}
         >
           <Trash2 className="h-4 w-4 mr-2" />
           Delete

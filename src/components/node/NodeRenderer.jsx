@@ -56,7 +56,7 @@ const NodeRenderer = ({
           />
         </div>
         <TooltipProvider>
-          <Tooltip open={showTooltip}>
+          <Tooltip open={showTooltip && isFocused}>
             <TooltipTrigger asChild>
               <div className="absolute inset-0 cursor-move" />
             </TooltipTrigger>
@@ -83,7 +83,7 @@ const NodeRenderer = ({
                 handleStyleChange={(style) => onNodeUpdate(node.id, { visualStyle: style })}
                 handleTypeChange={(type) => onNodeUpdate(node.id, { nodeType: type })}
                 onAIConversation={() => onAIConversation(node)}
-                onDelete={onDelete}
+                onDelete={() => onDelete(node.id)}
                 node={node}
                 onUpdate={onNodeUpdate}
               />
