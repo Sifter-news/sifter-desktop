@@ -18,43 +18,63 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
   const [editedTitle, setEditedTitle] = useState(selectedNode?.title || '');
   const [editedDescription, setEditedDescription] = useState(selectedNode?.description || '');
   const [nodeType, setNodeType] = useState(selectedNode?.nodeType || 'generic');
+  const [metadata, setMetadata] = useState(selectedNode?.metadata || {});
 
   React.useEffect(() => {
     if (selectedNode) {
       setEditedTitle(selectedNode.title || '');
       setEditedDescription(selectedNode.description || '');
       setNodeType(selectedNode.nodeType || 'generic');
+      setMetadata(selectedNode.metadata || {});
     }
   }, [selectedNode]);
 
+  const updateNodeInDatabase = async (updates) => {
+    try {
+      const { error } = await supabase
+        .from('node')
+        .update(updates)
+        .eq('id', selectedNode.id);
+
+      if (error) throw error;
+      return true;
+    } catch (error) {
+      console.error('Error updating node:', error);
+      throw error;
+    }
+  };
+
+  const handleMetadataChange = (field, value) => {
+    setMetadata(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   const handleSave = async () => {
-    if (selectedNode) {
-      const updatedNode = {
-        ...selectedNode,
+    if (!selectedNode) return;
+
+    try {
+      const updates = {
         title: editedTitle,
         description: editedDescription,
-        nodeType: nodeType
+        type: nodeType,
+        metadata: metadata,
+        updated_at: new Date().toISOString()
       };
 
-      try {
-        const { error } = await supabase
-          .from('node')
-          .update({
-            title: editedTitle,
-            description: editedDescription,
-            type: nodeType
-          })
-          .eq('id', selectedNode.id);
+      await updateNodeInDatabase(updates);
 
-        if (error) throw error;
+      const updatedNode = {
+        ...selectedNode,
+        ...updates
+      };
 
-        onUpdateNode(updatedNode);
-        setIsEditing(false);
-        toast.success("Node updated successfully");
-      } catch (error) {
-        console.error('Error updating node:', error);
-        toast.error("Failed to update node");
-      }
+      onUpdateNode(updatedNode);
+      setIsEditing(false);
+      toast.success("Node updated successfully");
+    } catch (error) {
+      toast.error("Failed to update node");
     }
   };
 
@@ -63,17 +83,49 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
       case 'node_person':
         return (
           <div className="space-y-2">
-            <Input placeholder="Full Name" className="w-full" />
-            <Input placeholder="Age" type="number" className="w-full" />
-            <Input placeholder="Occupation" className="w-full" />
+            <Input
+              placeholder="Full Name"
+              value={metadata.fullName || ''}
+              onChange={(e) => handleMetadataChange('fullName', e.target.value)}
+              className="w-full"
+            />
+            <Input
+              placeholder="Age"
+              type="number"
+              value={metadata.age || ''}
+              onChange={(e) => handleMetadataChange('age', e.target.value)}
+              className="w-full"
+            />
+            <Input
+              placeholder="Occupation"
+              value={metadata.occupation || ''}
+              onChange={(e) => handleMetadataChange('occupation', e.target.value)}
+              className="w-full"
+            />
           </div>
         );
       case 'node_organization':
         return (
           <div className="space-y-2">
-            <Input placeholder="Organization Name" className="w-full" />
-            <Input placeholder="Founded Date" type="date" className="w-full" />
-            <Input placeholder="Industry" className="w-full" />
+            <Input
+              placeholder="Organization Name"
+              value={metadata.organizationName || ''}
+              onChange={(e) => handleMetadataChange('organizationName', e.target.value)}
+              className="w-full"
+            />
+            <Input
+              placeholder="Founded Date"
+              type="date"
+              value={metadata.foundedDate || ''}
+              onChange={(e) => handleMetadataChange('foundedDate', e.target.value)}
+              className="w-full"
+            />
+            <Input
+              placeholder="Industry"
+              value={metadata.industry || ''}
+              onChange={(e) => handleMetadataChange('industry', e.target.value)}
+              className="w-full"
+            />
           </div>
         );
       case 'node_event':
