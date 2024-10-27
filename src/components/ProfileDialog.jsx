@@ -102,11 +102,11 @@ const ProfileDialog = ({ user }) => {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" className="text-sm">
-          <Avatar className="h-8 w-8 mr-2">
+          {username || 'Profile'}
+          <Avatar className="h-8 w-8 ml-2">
             <AvatarImage src={avatar} alt={username} />
             <AvatarFallback><UserIcon className="h-4 w-4" /></AvatarFallback>
           </Avatar>
-          {username || 'Profile'}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
