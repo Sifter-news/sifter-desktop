@@ -1,43 +1,10 @@
 import React, { useState } from 'react';
-import { MoreVertical, Trash, FolderInput, FolderPlus, FilePlus, Users } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import NavigatorItem from './NavigatorItem';
 
 const Navigator = ({ items, setItems, onDocumentClick, focusedDocument }) => {
   const [dragOverFolder, setDragOverFolder] = useState(null);
   const [dragTimer, setDragTimer] = useState(null);
-
-  const handleAddFolder = () => {
-    const newFolder = {
-      id: Date.now().toString(),
-      type: 'folder',
-      title: `New Folder ${items.filter(item => item.type === 'folder').length + 1}`,
-      children: [],
-      x: window.innerWidth / 2,
-      y: window.innerHeight / 2
-    };
-    setItems([...items, newFolder]);
-  };
-
-  const handleCreateDocument = () => {
-    const newDocument = {
-      id: Date.now().toString(),
-      type: 'document',
-      title: `New Document ${items.filter(item => item.type === 'document').length + 1}`,
-      content: 'This is a new document.',
-      children: [],
-      x: window.innerWidth / 2,
-      y: window.innerHeight / 2
-    };
-    setItems([...items, newDocument]);
-  };
 
   const onDragStart = () => {
     if (dragTimer) clearTimeout(dragTimer);
@@ -116,26 +83,6 @@ const Navigator = ({ items, setItems, onDocumentClick, focusedDocument }) => {
 
   return (
     <div className="w-full flex flex-col items-center">
-      <div className="w-full flex justify-between items-center mb-4">
-        <h3 className="font-bold">Navigator</h3>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-200">
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={handleAddFolder}>
-              <FolderPlus className="mr-2 h-4 w-4" />
-              <span>Add Folder</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleCreateDocument}>
-              <FilePlus className="mr-2 h-4 w-4" />
-              <span>Create Document</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
       <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
         {renderItems(items)}
       </DragDropContext>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import Navigator from '../Navigator';
+import { MoreVertical } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -9,6 +10,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNode }) => {
   const [selectedType, setSelectedType] = useState('all');
@@ -35,7 +42,21 @@ const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNo
 
   return (
     <div className="w-full h-full flex flex-col p-4">
-      <h2 className="text-lg font-semibold mb-4">Node Navigator</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-semibold">Node Navigator</h2>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-200">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={handleAddNode}>
+              Add Node
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
       <div className="mb-4">
         <Select value={selectedType} onValueChange={setSelectedType}>
           <SelectTrigger>
