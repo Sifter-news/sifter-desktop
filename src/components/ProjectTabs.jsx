@@ -1,11 +1,9 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Brain, FileText, Clock, Map } from 'lucide-react';
 import MindMapView from './MindMapView';
-import NodeView from './NodeView';
 import TimeView from './TimeView';
 import MapView from './MapView';
-import ReportList from './ReportList';
+import SidePanel from './SidePanel';
 
 const ProjectTabs = ({ 
   project, 
@@ -13,91 +11,51 @@ const ProjectTabs = ({
   setNodes, 
   onAddNode, 
   onUpdateNode, 
-  onDeleteNode,
-  onAddReport,
-  onUpdateReport,
-  onDeleteReport,
+  onDeleteNode, 
+  onAddReport, 
+  onUpdateReport, 
   focusedNodeId,
-  onNodeFocus
+  onNodeFocus 
 }) => {
+  const selectedNode = nodes.find(node => node.id === focusedNodeId);
+
   return (
-    <div className="relative h-full">
-      <Tabs defaultValue="mind" className="w-full flex flex-col flex-grow">
-        <TabsList className="max-w-[340px] mx-auto justify-center fixed top-16 left-0 right-0 bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex">
-          <TabsTrigger value="mind" className="flex items-center">
-            <Brain className="w-4 h-4 mr-2" />
-            Mind
-          </TabsTrigger>
-          <TabsTrigger value="node" className="flex items-center">
-            <FileText className="w-4 h-4 mr-2" />
-            Node
-          </TabsTrigger>
-          <TabsTrigger value="time" className="flex items-center">
-            <Clock className="w-4 h-4 mr-2" />
-            Time
-          </TabsTrigger>
-          <TabsTrigger value="map" className="flex items-center">
-            <Map className="w-4 h-4 mr-2" />
-            Map
-          </TabsTrigger>
-        </TabsList>
-        <div className="flex-grow mt-12">
-          <TabsContent value="mind" className="h-full">
-            <MindMapView 
-              project={project} 
-              nodes={nodes}
-              setNodes={setNodes}
-              onAddNode={onAddNode}
-              onUpdateNode={onUpdateNode}
-              onDeleteNode={onDeleteNode}
-              focusedNodeId={focusedNodeId}
-              onNodeFocus={onNodeFocus}
-            />
-          </TabsContent>
-          <TabsContent value="node" className="h-full">
-            <NodeView 
-              project={project} 
-              nodes={nodes}
-              onAddNode={onAddNode}
-              onUpdateNode={onUpdateNode}
-              onDeleteNode={onDeleteNode}
-              focusedNodeId={focusedNodeId}
-              onNodeFocus={onNodeFocus}
-            />
-          </TabsContent>
-          <TabsContent value="time" className="h-full">
-            <TimeView 
-              project={project} 
-              nodes={nodes}
-              onAddNode={onAddNode}
-              onUpdateNode={onUpdateNode}
-              onDeleteNode={onDeleteNode}
-              focusedNodeId={focusedNodeId}
-              onNodeFocus={onNodeFocus}
-            />
-          </TabsContent>
-          <TabsContent value="map" className="h-full">
-            <MapView 
-              project={project} 
-              nodes={nodes}
-              onAddNode={onAddNode}
-              onUpdateNode={onUpdateNode}
-              onDeleteNode={onDeleteNode}
-              focusedNodeId={focusedNodeId}
-              onNodeFocus={onNodeFocus}
-            />
-          </TabsContent>
-        </div>
-      </Tabs>
+    <div className="relative flex-grow">
+      <SidePanel
+        nodes={nodes}
+        onUpdateNode={onUpdateNode}
+        onNodeFocus={onNodeFocus}
+        selectedNode={selectedNode}
+        onAddNode={onAddNode}
+      />
       
-      <div className="fixed bottom-[calc(12px+480px)] right-12 z-50">
-        <ReportList
-          reports={project.reports}
-          onAddReport={onAddReport}
-          onEditReport={onUpdateReport}
-          onDeleteReport={onDeleteReport}
-        />
-      </div>
+      <Tabs defaultValue="mindmap" className="w-full h-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="mindmap">Mind Map</TabsTrigger>
+          <TabsTrigger value="timeline">Timeline</TabsTrigger>
+          <TabsTrigger value="map">Map</TabsTrigger>
+        </TabsList>
+        <TabsContent value="mindmap" className="h-[calc(100vh-128px)]">
+          <MindMapView
+            project={project}
+            nodes={nodes}
+            setNodes={setNodes}
+            onAddNode={onAddNode}
+            onUpdateNode={onUpdateNode}
+            onDeleteNode={onDeleteNode}
+            onAddReport={onAddReport}
+            onUpdateReport={onUpdateReport}
+            focusedNodeId={focusedNodeId}
+            onNodeFocus={onNodeFocus}
+          />
+        </TabsContent>
+        <TabsContent value="timeline">
+          <TimeView nodes={nodes} />
+        </TabsContent>
+        <TabsContent value="map">
+          <MapView nodes={nodes} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
