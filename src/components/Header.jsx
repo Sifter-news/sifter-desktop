@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import InvestigationModal from './modals/InvestigationModal';
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -77,6 +78,10 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
         <div className="flex-grow flex justify-center items-center space-x-4">
           {projectName && (
             <div className="flex items-center space-x-4">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src="/default-image.png" alt="Project Avatar" />
+                <AvatarFallback>P</AvatarFallback>
+              </Avatar>
               <span 
                 className="text-sm font-normal text-[#4B25F3] cursor-pointer hover:underline"
                 onClick={() => setIsEditModalOpen(true)}
