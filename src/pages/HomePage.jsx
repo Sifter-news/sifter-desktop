@@ -71,7 +71,8 @@ const HomePage = () => {
       description: '',
       owner_id: user.id,
       visibility: 'private',
-      view_type: 'mind'
+      view_type: 'mind',
+      investigation_type: 'generic'  // Set default investigation type to 'generic'
     };
 
     addInvestigation(newProject, {

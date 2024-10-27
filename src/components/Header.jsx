@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import UserProfile from './UserProfile';
 import { Separator } from "@/components/ui/separator";
 import ProjectDetailsModal from './ProjectDetailsModal';
+import { supabase } from '@/integrations/supabase/supabase';
+import { toast } from 'sonner';
 import {
   Select,
   SelectContent,
@@ -17,7 +19,49 @@ import { User } from 'lucide-react';
 
 const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpdate, onProjectDelete }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [investigatorType, setInvestigatorType] = useState('pre-deal');
+  const [investigatorType, setInvestigatorType] = useState('generic');
+
+  useEffect(() => {
+    // Fetch the current investigation type when project changes
+    const fetchInvestigationType = async () => {
+      if (!projectName) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('investigations')
+          .select('investigation_type')
+          .single();
+          
+        if (error) throw error;
+        
+        if (data?.investigation_type) {
+          setInvestigatorType(data.investigation_type);
+        }
+      } catch (error) {
+        console.error('Error fetching investigation type:', error);
+      }
+    };
+
+    fetchInvestigationType();
+  }, [projectName]);
+
+  const handleTypeChange = async (value) => {
+    setInvestigatorType(value);
+    
+    try {
+      const { error } = await supabase
+        .from('investigations')
+        .update({ investigation_type: value })
+        .eq('title', projectName);
+        
+      if (error) throw error;
+      
+      toast.success('Investigation type updated successfully');
+    } catch (error) {
+      console.error('Error updating investigation type:', error);
+      toast.error('Failed to update investigation type');
+    }
+  };
 
   return (
     <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
@@ -40,7 +84,7 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
                 {projectName}
               </span>
               <Separator orientation="vertical" className="h-4" />
-              <Select value={investigatorType} onValueChange={setInvestigatorType}>
+              <Select value={investigatorType} onValueChange={handleTypeChange}>
                 <SelectTrigger className="w-[240px] whitespace-normal border-none focus:ring-0">
                   <SelectValue placeholder="Select investigation type" />
                 </SelectTrigger>
