@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/supabase';
 import NodeTypeSelect from './NodeTypeSelect';
@@ -13,7 +12,6 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
   const [editedTitle, setEditedTitle] = useState('');
   const [editedDescription, setEditedDescription] = useState('');
   const [nodeType, setNodeType] = useState('generic');
-  const [step, setStep] = useState(1);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -22,7 +20,6 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
       setEditedTitle(selectedNode.title || '');
       setEditedDescription(selectedNode.description || '');
       setNodeType(selectedNode.type || 'generic');
-      setStep(selectedNode.step || 1);
       setHasUnsavedChanges(false);
     }
   }, [selectedNode]);
@@ -55,11 +52,6 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
     updateNodeState({ type: newType });
   };
 
-  const handleStepChange = (newStep) => {
-    setStep(parseInt(newStep));
-    updateNodeState({ step: parseInt(newStep) });
-  };
-
   const handleSave = async () => {
     if (!selectedNode) return;
 
@@ -68,8 +60,7 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
       const updates = {
         title: editedTitle,
         description: editedDescription,
-        type: nodeType,
-        step: step
+        type: nodeType
       };
 
       const { data, error } = await supabase
@@ -111,22 +102,7 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
     <div className="h-full flex flex-col bg-white bg-opacity-80 shadow-lg rounded-lg p-6">
       <h2 className="text-lg font-semibold mb-4 opacity-15">Node Editor</h2>
       <div className="flex-grow flex flex-col space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <NodeTypeSelect value={nodeType} onChange={handleTypeChange} />
-          
-          <Select value={step.toString()} onValueChange={handleStepChange}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select step" />
-            </SelectTrigger>
-            <SelectContent>
-              {[1, 2, 3, 4, 5].map(stepNum => (
-                <SelectItem key={stepNum} value={stepNum.toString()}>
-                  Step {stepNum}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <NodeTypeSelect value={nodeType} onChange={handleTypeChange} />
 
         <Input
           value={editedTitle}

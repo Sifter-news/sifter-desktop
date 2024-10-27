@@ -76,10 +76,7 @@ const NavigatorItem = ({ item, index, onDocumentClick, dragOverFolder, setDragOv
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className="text-sm text-gray-500 ml-6 flex items-center space-x-2">
-            <span>{getNodeTypeDisplay(item.nodeType || 'node')}</span>
-            {item.step && <span className="text-blue-500">• Step {item.step}</span>}
-          </div>
+          <span className="text-sm text-gray-500 ml-6">{getNodeTypeDisplay(item.nodeType || 'node')}</span>
         </li>
       )}
     </Draggable>
