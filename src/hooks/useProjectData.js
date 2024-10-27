@@ -19,7 +19,7 @@ export const useProjectData = (id) => {
         if (error) throw error;
         
         if (data) {
-          const serializedProject = {
+          const serializedProject = JSON.parse(JSON.stringify({
             id: data.id,
             title: data.title || '',
             description: data.description || '',
@@ -27,7 +27,7 @@ export const useProjectData = (id) => {
             updated_at: data.updated_at || new Date().toISOString(),
             user_id: data.user_id || '',
             reports: []
-          };
+          }));
           setProject(serializedProject);
         }
       } catch (error) {
@@ -46,14 +46,17 @@ export const useProjectData = (id) => {
         if (error) throw error;
         
         if (data) {
-          // Generate random positions for nodes in the viewport
-          const serializedNodes = data.map((node, index) => ({
-            ...node,
-            x: (index % 3) * 250 + 100,  // Arrange in a grid, 3 columns
-            y: Math.floor(index / 3) * 250 + 100,  // New row every 3 nodes
+          const serializedNodes = data.map((node, index) => JSON.parse(JSON.stringify({
+            id: node.id,
+            title: node.title || '',
+            description: node.description || '',
+            type: node.type || 'generic',
+            investigation_id: node.investigation_id,
+            x: (index % 3) * 250 + 100,
+            y: Math.floor(index / 3) * 250 + 100,
             width: 200,
             color: 'bg-yellow-200'
-          }));
+          })));
           setNodes(serializedNodes);
         }
       } catch (error) {

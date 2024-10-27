@@ -1,6 +1,5 @@
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
-import { findAvailablePosition } from '@/utils/canvasUtils';
 
 export const useNodeOperations = (setNodes) => {
   const handleAddNode = async (newNode, projectId) => {
@@ -20,12 +19,12 @@ export const useNodeOperations = (setNodes) => {
 
       if (error) throw error;
 
-      const nodeWithUI = {
+      const nodeWithUI = JSON.parse(JSON.stringify({
         ...data,
         x: newNode.x || 0,
         y: newNode.y || 0,
         width: newNode.width || 200
-      };
+      }));
 
       setNodes(prevNodes => [...prevNodes, nodeWithUI]);
       toast.success('Node added successfully');
@@ -37,7 +36,6 @@ export const useNodeOperations = (setNodes) => {
 
   const handleUpdateNode = async (nodeId, updates) => {
     try {
-      // Only send database columns to Supabase
       const databaseUpdates = {
         title: updates.title,
         description: updates.description,
@@ -51,9 +49,9 @@ export const useNodeOperations = (setNodes) => {
 
       if (error) throw error;
 
-      // Update all properties in the frontend state
+      const serializedUpdates = JSON.parse(JSON.stringify(updates));
       setNodes(prevNodes => prevNodes.map(node => 
-        node.id === nodeId ? { ...node, ...updates } : node
+        node.id === nodeId ? { ...node, ...serializedUpdates } : node
       ));
     } catch (error) {
       console.error('Error updating node:', error);
