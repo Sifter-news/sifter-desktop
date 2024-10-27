@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Rnd } from 'react-rnd';
 import {
   Tooltip,
@@ -8,6 +8,16 @@ import {
 } from "@/components/ui/tooltip";
 import NodeContent from './NodeContent';
 import TooltipButtons from './TooltipButtons';
+import { cn } from "@/lib/utils";
+
+const getNodeDimensions = (type) => {
+  switch(type) {
+    case 'compact': return { width: 150, height: 100 };
+    case 'expanded': return { width: 300, height: 150 };
+    case 'postit': return { width: 240, height: 200 };
+    default: return { width: 200, height: 150 };
+  }
+};
 
 const NodeRenderer = ({ 
   node, 
@@ -19,13 +29,21 @@ const NodeRenderer = ({
   onAIConversation, 
   onDelete 
 }) => {
+  const initialDimensions = getNodeDimensions(node.visualStyle);
+  const [dimensions, setDimensions] = useState(initialDimensions);
   const [isEditing, setIsEditing] = useState(false);
   const [localTitle, setLocalTitle] = useState(node.title);
   const [localDescription, setLocalDescription] = useState(node.description);
   const [showTooltip, setShowTooltip] = useState(false);
 
   const handleStyleChange = (value) => {
-    onNodeUpdate(node.id, { visualStyle: value });
+    const newDimensions = getNodeDimensions(value);
+    setDimensions(newDimensions);
+    onNodeUpdate(node.id, { 
+      visualStyle: value,
+      width: newDimensions.width,
+      height: newDimensions.height
+    });
     setIsEditing(false);
   };
 
@@ -48,6 +66,19 @@ const NodeRenderer = ({
     });
   };
 
+  const handleResize = (e, direction, ref, delta, position) => {
+    const newWidth = Math.max(dimensions.width + delta.width, initialDimensions.width);
+    const newHeight = Math.max(dimensions.height + delta.height, initialDimensions.height);
+    
+    setDimensions({ width: newWidth, height: newHeight });
+    onNodeUpdate(node.id, { 
+      width: newWidth,
+      height: newHeight,
+      x: position.x,
+      y: position.y
+    });
+  };
+
   React.useEffect(() => {
     if (!isFocused) {
       setShowTooltip(false);
@@ -57,14 +88,23 @@ const NodeRenderer = ({
   return (
     <div className="group">
       <Rnd
-        size={{ width: node.width, height: node.height }}
+        size={{ width: dimensions.width, height: dimensions.height }}
         position={{ x: node.x, y: node.y }}
         onDragStart={(e) => onDragStart(e, node.id)}
+        onResize={handleResize}
         scale={zoom}
-        className="relative"
+        minWidth={initialDimensions.width}
+        minHeight={initialDimensions.height}
+        className={cn(
+          "relative transition-all duration-200",
+          isFocused && "ring-2 ring-blue-500 ring-offset-[-2px] shadow-lg"
+        )}
       >
         <div 
-          className="w-full h-full rounded-lg overflow-hidden"
+          className={cn(
+            "w-full h-full rounded-lg overflow-hidden",
+            isFocused && "transform scale-[1.02]"
+          )}
           onClick={handleNodeClick}
         >
           <NodeContent
@@ -78,6 +118,7 @@ const NodeRenderer = ({
             setLocalDescription={setLocalDescription}
             handleNodeClick={handleNodeClick}
             isFocused={isFocused}
+            dimensions={dimensions}
           />
         </div>
         <TooltipProvider>
