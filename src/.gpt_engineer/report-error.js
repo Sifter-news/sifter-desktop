@@ -8,7 +8,7 @@ const postMessage = (message) => {
       timestamp: new Date().toISOString(),
       // Only include stack if it exists and is a string
       ...(message.stack && typeof message.stack === 'string' && { stack: message.stack }),
-      // For HTTP errors, include simplified request info
+      // For HTTP errors, include simplified request info if available
       ...(message.url && { url: String(message.url) }),
       ...(message.method && { method: String(message.method) })
     };
@@ -33,7 +33,16 @@ window.fetch = async (...args) => {
     const response = await originalFetch(...args);
     return response;
   } catch (error) {
-    reportHTTPError(error, args[0]);
+    // Extract only serializable properties from the request
+    const requestInfo = args[0];
+    const safeRequestInfo = typeof requestInfo === 'string' 
+      ? requestInfo 
+      : {
+          url: String(requestInfo.url || ''),
+          method: String(requestInfo.method || 'GET')
+        };
+    
+    reportHTTPError(error, safeRequestInfo);
     throw error;
   }
 };
@@ -46,8 +55,8 @@ const reportHTTPError = (error, request) => {
       error_type: 'runtime',
       stack: error.stack,
       // Only include basic request info that can be serialized
-      url: typeof request === 'string' ? request : String(request.url),
-      method: typeof request === 'string' ? 'GET' : String(request.method),
+      url: typeof request === 'string' ? request : String(request.url || ''),
+      method: typeof request === 'string' ? 'GET' : String(request.method || 'GET'),
       timestamp: new Date().toISOString()
     };
     
