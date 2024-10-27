@@ -14,22 +14,27 @@ const NodeContent = ({
   setLocalDescription, 
   handleNodeClick,
   isFocused,
-  dimensions
+  dimensions = { width: 200, height: 150 } // Add default dimensions
 }) => {
   const getNodeStyle = () => {
     const focusClasses = isFocused 
       ? 'ring-2 ring-blue-500 ring-offset-[-2px] scale-[1.02]' 
       : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-[-1px] hover:scale-[1.01]';
 
+    const nodeStyles = {
+      width: dimensions?.width || 200,
+      height: dimensions?.height || 150
+    };
+
     switch (style) {
       case 'compact':
         return (
           <div 
             className={cn(
-              "w-10 h-10 p-1 bg-white rounded-full m-1 transition-all duration-200",
+              "p-1 bg-white rounded-full m-1 transition-all duration-200",
               focusClasses
             )}
-            style={{ width: dimensions.width, height: dimensions.height }}
+            style={nodeStyles}
           >
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full" />
           </div>
@@ -41,7 +46,7 @@ const NodeContent = ({
               "flex items-center p-2 bg-white rounded-lg m-1 transition-all duration-200",
               focusClasses
             )}
-            style={{ width: dimensions.width, height: dimensions.height }}
+            style={nodeStyles}
           >
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full mr-2" />
             <div>
@@ -57,7 +62,7 @@ const NodeContent = ({
               "p-4 bg-yellow-100 rounded-sm shadow-md m-1 transition-all duration-200",
               focusClasses
             )}
-            style={{ width: dimensions.width, height: dimensions.height }}
+            style={nodeStyles}
           >
             {isEditing ? (
               <div className="h-full flex flex-col gap-2">
@@ -89,7 +94,7 @@ const NodeContent = ({
               "flex items-center p-2 bg-white rounded-lg m-1 transition-all duration-200",
               focusClasses
             )}
-            style={{ width: dimensions.width, height: dimensions.height }}
+            style={nodeStyles}
           >
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full mr-2" />
             <div>
