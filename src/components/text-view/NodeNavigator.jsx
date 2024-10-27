@@ -4,6 +4,7 @@ import Navigator from '../Navigator';
 import { MoreVertical, Plus } from 'lucide-react';
 import SearchInput from './SearchInput';
 import NodeActions from './NodeActions';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -66,7 +67,13 @@ const NodeNavigator = ({
   return (
     <div className="w-full h-full flex flex-col p-4">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold opacity-15">Node Navigator</h2>
+        <div className="flex items-center gap-2">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src="/default-image.png" alt="Navigator Avatar" />
+            <AvatarFallback>N</AvatarFallback>
+          </Avatar>
+          <h2 className="text-lg font-semibold opacity-15">Node Navigator</h2>
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-200">
