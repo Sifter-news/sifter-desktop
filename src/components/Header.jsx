@@ -13,9 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { User } from 'lucide-react';
 
-const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpdate, onProjectDelete }) => {
+const Header = ({ user, project, onProjectUpdate }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [investigatorType, setInvestigatorType] = useState('pre-deal');
 
@@ -31,13 +30,13 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
         </div>
 
         <div className="flex-grow flex justify-center items-center space-x-4">
-          {projectName && (
+          {project?.title && (
             <div className="flex items-center space-x-4">
               <span 
                 className="text-sm font-normal text-[#4B25F3] cursor-pointer hover:underline" 
                 onClick={() => setIsEditModalOpen(true)}
               >
-                {projectName}
+                {project.title}
               </span>
               <Separator orientation="vertical" className="h-4" />
               <Select value={investigatorType} onValueChange={setInvestigatorType}>
@@ -73,16 +72,17 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
             Dashboard
           </Link>
           <Separator orientation="vertical" className="h-4 mx-2" />
-          <UserProfile user={user} onUpdateUser={onUpdateUser} />
+          <UserProfile user={user} />
         </div>
       </div>
-      <ProjectEditModal 
-        isOpen={isEditModalOpen} 
-        onClose={() => setIsEditModalOpen(false)}
-        projectName={projectName}
-        onUpdate={onProjectUpdate}
-        onDelete={onProjectDelete}
-      />
+      {project && (
+        <ProjectEditModal 
+          isOpen={isEditModalOpen} 
+          onClose={() => setIsEditModalOpen(false)}
+          project={project}
+          onUpdate={onProjectUpdate}
+        />
+      )}
     </header>
   );
 };

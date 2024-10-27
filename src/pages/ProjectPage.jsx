@@ -2,72 +2,39 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import ProjectTabs from '../components/ProjectTabs';
+import { useInvestigation, useUpdateInvestigation } from '@/integrations/supabase/hooks/useInvestigations';
+import { toast } from 'sonner';
 
 const ProjectPage = () => {
-  const { username, projectName } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [project, setProject] = useState(null);
-  const [user, setUser] = useState({
-    name: username,
-    avatar: '/default-image.png',
-    email: `${username}@example.com`,
-  });
+  const { data: project, isLoading } = useInvestigation(id);
+  const { mutate: updateInvestigation } = useUpdateInvestigation();
 
-  useEffect(() => {
-    setProject({
-      id: '1',
-      title: projectName,
-      description: 'Project description',
-      reports: [],
+  const handleProjectUpdate = (updatedProject) => {
+    updateInvestigation(updatedProject, {
+      onSuccess: () => {
+        toast.success('Project updated successfully');
+      },
+      onError: (error) => {
+        toast.error('Failed to update project: ' + error.message);
+      }
     });
-  }, [username, projectName]);
-
-  const handleProjectUpdate = ({ title, description }) => {
-    setProject(prev => ({
-      ...prev,
-      title,
-      description
-    }));
   };
 
-  const handleProjectDelete = () => {
-    navigate('/');
-  };
-
-  const handleAddReport = (newReport) => {
-    setProject(prev => ({
-      ...prev,
-      reports: [...(prev.reports || []), newReport]
-    }));
-  };
-
-  const handleUpdateReport = (updatedReport) => {
-    setProject(prev => ({
-      ...prev,
-      reports: prev.reports.map(report => 
-        report.id === updatedReport.id ? updatedReport : report
-      )
-    }));
-  };
-
-  const handleDeleteReport = (reportId) => {
-    setProject(prev => ({
-      ...prev,
-      reports: prev.reports.filter(report => report.id !== reportId)
-    }));
-  };
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   if (!project) {
-    return <div>Loading...</div>;
+    return <div>Project not found</div>;
   }
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header 
-        user={user} 
-        projectName={project.title} 
+        project={project}
         onProjectUpdate={handleProjectUpdate}
-        onProjectDelete={handleProjectDelete}
       />
       <ProjectTabs
         project={project}
@@ -76,9 +43,6 @@ const ProjectPage = () => {
         onAddNode={() => {}}
         onUpdateNode={() => {}}
         onDeleteNode={() => {}}
-        onAddReport={handleAddReport}
-        onUpdateReport={handleUpdateReport}
-        onDeleteReport={handleDeleteReport}
       />
     </div>
   );
