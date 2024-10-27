@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import Navigator from '../Navigator';
-import { MoreVertical, Plus } from 'lucide-react';
+import { Plus, FolderPlus } from 'lucide-react';
 import SearchInput from './SearchInput';
 import NodeActions from './NodeActions';
 import {
@@ -16,8 +15,10 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toast } from 'sonner';
 
 const NodeNavigator = ({ 
   nodes, 
@@ -30,6 +31,7 @@ const NodeNavigator = ({
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [navigatorNodes, setNavigatorNodes] = useState(nodes);
+  const [selectedNodes, setSelectedNodes] = useState([]);
 
   useEffect(() => {
     setNavigatorNodes(nodes);
@@ -56,6 +58,41 @@ const NodeNavigator = ({
     onUpdateNode(updatedNodes);
   };
 
+  const handleNodeSelect = (nodeId) => {
+    setSelectedNodes(prev => {
+      if (prev.includes(nodeId)) {
+        return prev.filter(id => id !== nodeId);
+      }
+      return [...prev, nodeId];
+    });
+  };
+
+  const handleCreateGroup = () => {
+    if (selectedNodes.length < 2) {
+      toast.error('Select at least 2 nodes to create a group');
+      return;
+    }
+
+    const groupPosition = {
+      x: Math.random() * 500,
+      y: Math.random() * 500
+    };
+
+    const groupNode = {
+      id: Date.now().toString(),
+      type: 'group',
+      title: `Group (${selectedNodes.length} nodes)`,
+      description: 'Grouped nodes',
+      x: groupPosition.x,
+      y: groupPosition.y,
+      children: selectedNodes
+    };
+
+    onAddNode(groupNode);
+    setSelectedNodes([]);
+    toast.success('Group created successfully');
+  };
+
   const getNodeTypeIcon = (nodeType) => {
     const types = {
       node_person: '👤',
@@ -64,6 +101,7 @@ const NodeNavigator = ({
       node_concept: '💡',
       node_location: '📍',
       node_event: '📅',
+      group: '📁',
       generic: '📝'
     };
     return types[nodeType] || '📝';
@@ -81,16 +119,34 @@ const NodeNavigator = ({
     <div className="w-full h-full flex flex-col p-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold opacity-15">Node Navigator</h2>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-200">
-              <MoreVertical className="h-4 w-4" />
+        <div className="flex gap-2">
+          {selectedNodes.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCreateGroup}
+              className="flex items-center gap-2"
+            >
+              <FolderPlus className="h-4 w-4" />
+              Create Group ({selectedNodes.length})
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {/* Empty dropdown menu for future options */}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-200">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={handleAddNode}>
+                Add Node
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleCreateGroup}>
+                Create Group
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       
       <div className="space-y-4 mb-4">
@@ -104,6 +160,7 @@ const NodeNavigator = ({
             <SelectGroup>
               <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="generic">Generic Node</SelectItem>
+              <SelectItem value="group">Groups</SelectItem>
             </SelectGroup>
             <SelectGroup>
               <SelectItem value="node_person">Person</SelectItem>
@@ -119,10 +176,19 @@ const NodeNavigator = ({
 
       <div className="flex-grow overflow-y-auto">
         {filteredNodes.map(node => (
-          <div key={node.id} className="group flex items-center justify-between p-2 hover:bg-gray-100 rounded-lg">
+          <div 
+            key={node.id} 
+            className={`group flex items-center justify-between p-2 hover:bg-gray-100 rounded-lg ${
+              selectedNodes.includes(node.id) ? 'bg-blue-50 ring-2 ring-blue-500' : ''
+            }`}
+            onClick={() => handleNodeSelect(node.id)}
+          >
             <div 
               className="flex items-center flex-grow cursor-pointer gap-3"
-              onClick={() => onNodeFocus(node.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onNodeFocus(node.id);
+              }}
             >
               <Avatar className="h-8 w-8">
                 <AvatarImage src="/default-image.png" alt={node.title} />
@@ -130,7 +196,10 @@ const NodeNavigator = ({
               </Avatar>
               <div>
                 <div className="font-medium">{node.title}</div>
-                <div className="text-sm text-gray-500">{node.description}</div>
+                <div className="text-sm text-gray-500">
+                  {node.description}
+                  {node.type === 'group' && ` (${node.children?.length || 0} nodes)`}
+                </div>
               </div>
             </div>
             <NodeActions 
