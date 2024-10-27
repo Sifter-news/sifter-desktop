@@ -9,14 +9,20 @@ import { toast } from "sonner";
 
 const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
   const navigate = useNavigate();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [formData, setFormData] = useState({
+    title: '',
+    description: ''
+  });
   const [errors, setErrors] = useState({ title: '', description: '' });
 
+  // Reset form data when modal opens or project changes
   useEffect(() => {
     if (project && isOpen) {
-      setTitle(project.title || '');
-      setDescription(project.description || '');
+      setFormData({
+        title: project.title || '',
+        description: project.description || ''
+      });
+      setErrors({ title: '', description: '' });
     }
   }, [project, isOpen]);
 
@@ -26,11 +32,11 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
       description: ''
     };
     
-    if (!title.trim()) {
+    if (!formData.title.trim()) {
       newErrors.title = 'Title is required';
     }
     
-    if (!description.trim()) {
+    if (!formData.description.trim()) {
       newErrors.description = 'Description is required';
     }
     
@@ -47,8 +53,8 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
     try {
       const updatedProject = {
         ...project,
-        title: title.trim(),
-        description: description.trim()
+        title: formData.title.trim(),
+        description: formData.description.trim()
       };
       
       await onUpdate(updatedProject);
@@ -92,8 +98,8 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
             <div className="col-span-3">
               <Input
                 id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                 className={errors.title ? "border-red-500" : ""}
                 placeholder="Enter project title"
               />
@@ -107,8 +113,8 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
             <div className="col-span-3">
               <Textarea
                 id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 className={errors.description ? "border-red-500" : ""}
                 placeholder="Add a project description..."
               />
