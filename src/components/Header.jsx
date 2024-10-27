@@ -91,7 +91,7 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
               <Separator orientation="vertical" className="h-4" />
 
               <Select value={investigatorType} onValueChange={handleTypeChange}>
-                <SelectTrigger className="w-[240px] whitespace-normal border-none focus:ring-0">
+                <SelectTrigger className="w-[240px] whitespace-normal border-none focus:ring-0 [&>svg]:hidden">
                   <SelectValue placeholder="Select investigation type" />
                 </SelectTrigger>
                 <SelectContent className="w-[240px]">
