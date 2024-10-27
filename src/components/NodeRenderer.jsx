@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Rnd } from 'react-rnd';
 import NodeContent from './node/NodeContent';
-import NodeTooltip from './NodeTooltip';
-import ConnectionDot from './ConnectionDot';
+import NodeTooltip from './node/NodeTooltip';
+import ConnectionDot from './node/ConnectionDot';
 
 const NodeRenderer = ({ 
   node, 
