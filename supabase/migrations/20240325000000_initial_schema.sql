@@ -3,6 +3,42 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "postgis";
 CREATE EXTENSION IF NOT EXISTS "wrappers" WITH SCHEMA "extensions";
 
+-- Create profiles table first since it's referenced by other tables
+DROP TABLE IF EXISTS public.profiles;
+CREATE TABLE public.profiles (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    username VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) UNIQUE,
+    avatar_url TEXT DEFAULT '/default-image.png',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    subscription_plan_id UUID,
+    subscription_start_date TIMESTAMP,
+    subscription_end_date TIMESTAMP
+);
+
+-- Create subscription_plans table
+DROP TABLE IF EXISTS public.subscription_plans;
+CREATE TABLE public.subscription_plans (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(50) NOT NULL,
+    price DECIMAL(10, 2),
+    description TEXT,
+    stripe_plan_id VARCHAR(255) UNIQUE
+);
+
+-- Create investigations table after profiles
+DROP TABLE IF EXISTS public.investigations;
+CREATE TABLE public.investigations (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    owner_id UUID REFERENCES public.profiles(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    visibility VARCHAR(20) DEFAULT 'private',
+    view_type VARCHAR(20) DEFAULT 'mind'
+);
+
+-- Create node table after profiles and investigations
 DROP TABLE IF EXISTS public.node;
 CREATE TABLE public.node (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -19,38 +55,7 @@ CREATE TABLE public.node (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-DROP TABLE IF EXISTS public.profiles;
-CREATE TABLE public.profiles (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    username VARCHAR(255) NOT NULL UNIQUE,
-    email VARCHAR(255) UNIQUE,
-    avatar_url TEXT DEFAULT '/default-image.png',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    subscription_plan_id UUID,
-    subscription_start_date TIMESTAMP,
-    subscription_end_date TIMESTAMP
-);
-
-DROP TABLE IF EXISTS public.subscription_plans;
-CREATE TABLE public.subscription_plans (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(50) NOT NULL,
-    price DECIMAL(10, 2),
-    description TEXT,
-    stripe_plan_id VARCHAR(255) UNIQUE
-);
-
-DROP TABLE IF EXISTS public.investigations;
-CREATE TABLE public.investigations (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    owner_id UUID REFERENCES public.profiles(id),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    visibility VARCHAR(20) DEFAULT 'private',
-    view_type VARCHAR(20) DEFAULT 'mind'
-);
-
+-- Create reports table last
 DROP TABLE IF EXISTS public.reports;
 CREATE TABLE public.reports (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
