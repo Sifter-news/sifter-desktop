@@ -23,7 +23,7 @@ const InvestigationModal = ({ isOpen, onClose, investigation, onUpdate }) => {
         title: investigation.title || '',
         description: investigation.description || '',
         type: investigation.investigation_type || 'generic',
-        focus: investigation.investigation_focus || 'node_person'
+        focus: 'node_person' // Default value since column doesn't exist yet
       });
     }
   }, [investigation, isOpen]);
@@ -48,7 +48,7 @@ const InvestigationModal = ({ isOpen, onClose, investigation, onUpdate }) => {
           title: formData.title.trim(),
           description: formData.description.trim(),
           investigation_type: formData.type,
-          investigation_focus: formData.focus,
+          // Removed investigation_focus from update
           updated_at: new Date().toISOString()
         })
         .eq('id', investigation.id)
@@ -110,7 +110,7 @@ const InvestigationModal = ({ isOpen, onClose, investigation, onUpdate }) => {
         <DialogFooter className="flex justify-between">
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive" disabled={isLoading}>Delete Investigation</Button>
+              <Button variant="destructive" disabled={isLoading}>Delete</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
