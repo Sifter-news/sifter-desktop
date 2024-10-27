@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Brain, FileText, Clock, Map } from 'lucide-react';
 import MindMapView from './MindMapView';
@@ -16,14 +16,10 @@ const ProjectTabs = ({
   onDeleteNode,
   onAddReport,
   onUpdateReport,
-  onDeleteReport 
+  onDeleteReport,
+  focusedNodeId,
+  onNodeFocus
 }) => {
-  const [focusedNodeId, setFocusedNodeId] = useState(null);
-
-  const handleNodeFocus = (nodeId) => {
-    setFocusedNodeId(nodeId);
-  };
-
   return (
     <div className="relative h-full">
       <Tabs defaultValue="mind" className="w-full flex flex-col flex-grow">
@@ -55,7 +51,7 @@ const ProjectTabs = ({
               onUpdateNode={onUpdateNode}
               onDeleteNode={onDeleteNode}
               focusedNodeId={focusedNodeId}
-              onNodeFocus={handleNodeFocus}
+              onNodeFocus={onNodeFocus}
             />
           </TabsContent>
           <TabsContent value="node" className="h-full">
@@ -66,7 +62,7 @@ const ProjectTabs = ({
               onUpdateNode={onUpdateNode}
               onDeleteNode={onDeleteNode}
               focusedNodeId={focusedNodeId}
-              onNodeFocus={handleNodeFocus}
+              onNodeFocus={onNodeFocus}
             />
           </TabsContent>
           <TabsContent value="time" className="h-full">
@@ -77,7 +73,7 @@ const ProjectTabs = ({
               onUpdateNode={onUpdateNode}
               onDeleteNode={onDeleteNode}
               focusedNodeId={focusedNodeId}
-              onNodeFocus={handleNodeFocus}
+              onNodeFocus={onNodeFocus}
             />
           </TabsContent>
           <TabsContent value="map" className="h-full">
@@ -88,7 +84,7 @@ const ProjectTabs = ({
               onUpdateNode={onUpdateNode}
               onDeleteNode={onDeleteNode}
               focusedNodeId={focusedNodeId}
-              onNodeFocus={handleNodeFocus}
+              onNodeFocus={onNodeFocus}
             />
           </TabsContent>
         </div>

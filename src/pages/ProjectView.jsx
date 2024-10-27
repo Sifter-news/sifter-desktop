@@ -11,6 +11,7 @@ const ProjectView = () => {
   const { id } = useParams();
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
+  const [focusedNodeId, setFocusedNodeId] = useState(null);
   
   const { project, setProject, nodes, setNodes, loading } = useProjectData(id);
   const { handleAddNode, handleUpdateNode, handleDeleteNode } = useNodeOperations(setNodes);
@@ -52,6 +53,8 @@ const ProjectView = () => {
         onAddNode={(node) => handleAddNode(node, id)}
         onUpdateNode={handleUpdateNode}
         onDeleteNode={handleDeleteNode}
+        focusedNodeId={focusedNodeId}
+        onNodeFocus={setFocusedNodeId}
       />
       <ProjectModals
         project={project}
