@@ -44,7 +44,7 @@ const TooltipButtons = ({
 
   return (
     <>
-      <div className="flex items-center gap-2 p-2 bg-black/90 rounded-lg shadow-lg">
+      <div className="flex items-center gap-2 p-2 bg-black/50 backdrop-blur-sm rounded-lg shadow-lg">
         <Button
           variant="ghost"
           size="sm"
