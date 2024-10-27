@@ -40,7 +40,7 @@ export const useProjectData = (id) => {
       try {
         const { data, error } = await supabase
           .from('node')
-          .select('id, title, description, type, investigation_id, x, y')
+          .select('id, title, description, type, investigation_id, position_x, position_y')
           .eq('investigation_id', id);
           
         if (error) throw error;
@@ -52,8 +52,8 @@ export const useProjectData = (id) => {
             description: node.description || '',
             type: node.type || 'generic',
             investigation_id: node.investigation_id,
-            x: node.x || window.innerWidth / 2,
-            y: node.y || window.innerHeight / 2,
+            x: node.position_x || window.innerWidth / 2,
+            y: node.position_y || window.innerHeight / 2,
             width: 200,
             color: 'bg-yellow-200'
           }));
