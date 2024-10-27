@@ -3,16 +3,19 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { DatePicker } from "@/components/ui/date-picker";
 import { toast } from "sonner";
 
 const NodeEditDialog = ({ node, onClose, onUpdate }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [timestamp, setTimestamp] = useState(null);
 
   useEffect(() => {
     if (node) {
       setTitle(node.title || '');
       setDescription(node.description || '');
+      setTimestamp(node.timestamp ? new Date(node.timestamp) : null);
     }
   }, [node]);
 
@@ -26,7 +29,8 @@ const NodeEditDialog = ({ node, onClose, onUpdate }) => {
       await onUpdate(node.id, {
         ...node,
         title: title.trim(),
-        description: description.trim()
+        description: description.trim(),
+        timestamp: timestamp ? timestamp.toISOString() : null
       });
       toast.success("Node updated successfully");
       onClose();
@@ -63,6 +67,11 @@ const NodeEditDialog = ({ node, onClose, onUpdate }) => {
               onKeyDown={handleKeyDown}
               placeholder="Node description"
               className="resize-none min-h-[100px]"
+            />
+            <DatePicker
+              date={timestamp}
+              onDateChange={setTimestamp}
+              className="w-full"
             />
           </div>
         </div>
