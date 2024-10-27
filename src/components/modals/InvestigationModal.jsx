@@ -1,59 +1,37 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { supabase } from '@/integrations/supabase/supabase';
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { useNavigate } from 'react-router-dom';
-import InvestigationForm from './modals/InvestigationForm';
-import DeleteConfirmation from './modals/DeleteConfirmation';
+import { supabase } from '@/integrations/supabase/supabase';
+import InvestigationForm from './InvestigationForm';
 
-const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, projectId, onUpdate }) => {
+const InvestigationModal = ({ isOpen, onClose, investigation, onUpdate }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    title: projectName || '',
+    title: '',
     description: '',
     type: 'generic'
   });
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const fetchProjectDetails = async () => {
-      if (!projectId) {
-        console.warn('No project ID provided');
-        return;
-      }
-      
-      try {
-        const { data, error } = await supabase
-          .from('investigations')
-          .select('*')
-          .eq('id', projectId)
-          .single();
-          
-        if (error) throw error;
-        
-        if (data) {
-          setFormData({
-            title: data.title || projectName || '',
-            description: data.description || '',
-            type: data.investigation_type || investigationType || 'generic'
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching project:', error);
-        toast.error("Failed to load project details");
-      }
-    };
-
-    if (isOpen && projectId) {
-      fetchProjectDetails();
+    if (investigation && isOpen) {
+      setFormData({
+        title: investigation.title || '',
+        description: investigation.description || '',
+        type: investigation.investigation_type || 'generic'
+      });
     }
-  }, [isOpen, projectId, projectName, investigationType]);
+  }, [investigation, isOpen]);
 
   const handleSave = async (e) => {
-    e.preventDefault();
-    if (!projectId) {
-      toast.error("Invalid project ID");
+    e?.preventDefault();
+    if (!investigation?.id) {
+      toast.error("Invalid investigation ID");
       return;
     }
 
@@ -72,7 +50,7 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
           investigation_type: formData.type,
           updated_at: new Date().toISOString()
         })
-        .eq('id', projectId)
+        .eq('id', investigation.id)
         .select()
         .single();
 
@@ -90,8 +68,8 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
   };
 
   const handleDelete = async () => {
-    if (!projectId) {
-      toast.error("Invalid project ID");
+    if (!investigation?.id) {
+      toast.error("Invalid investigation ID");
       return;
     }
 
@@ -100,7 +78,7 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
       const { error } = await supabase
         .from('investigations')
         .delete()
-        .eq('id', projectId);
+        .eq('id', investigation.id);
 
       if (error) throw error;
 
@@ -119,7 +97,9 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit Investigation Details</DialogTitle>
+          <DialogTitle>
+            {investigation ? 'Edit Investigation' : 'Create Investigation'}
+          </DialogTitle>
         </DialogHeader>
         <InvestigationForm 
           formData={formData}
@@ -127,7 +107,26 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
           isLoading={isLoading}
         />
         <DialogFooter className="flex justify-between">
-          <DeleteConfirmation onDelete={handleDelete} isLoading={isLoading} />
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" disabled={isLoading}>Delete Investigation</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete your
+                  investigation and remove all associated data.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete} disabled={isLoading}>
+                  Delete Investigation
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <div className="space-x-2">
             <Button variant="outline" onClick={onClose} disabled={isLoading}>Cancel</Button>
             <Button onClick={handleSave} disabled={isLoading}>
@@ -140,4 +139,4 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
   );
 };
 
-export default ProjectDetailsModal;
+export default InvestigationModal;
