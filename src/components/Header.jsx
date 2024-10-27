@@ -24,7 +24,7 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
           <div className="flex items-center space-x-2">
             <img src="/favicon.ico" alt="Sifter Logo" className="h-8 w-8" />
             <span className="text-sm font-normal">Sifter</span>
-            <span className="text-sm font-normal text-gray-400">beta</span>
+            <span className="text-sm font-normal text-gray-400">Beta</span>
             <Separator orientation="vertical" className="h-4 mx-2" />
             <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
               Dashboard
