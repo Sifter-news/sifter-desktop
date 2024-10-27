@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import Navigator from '../Navigator';
-import { MoreVertical } from 'lucide-react';
+import { MoreVertical, Plus } from 'lucide-react';
 import SearchInput from './SearchInput';
 import NodeActions from './NodeActions';
 import {
@@ -15,7 +15,6 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -75,9 +74,7 @@ const NodeNavigator = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem onClick={handleAddNode}>
-              Add Node
-            </DropdownMenuItem>
+            {/* Empty dropdown menu for future options */}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -124,7 +121,15 @@ const NodeNavigator = ({
           </div>
         ))}
       </div>
-      <Button onClick={handleAddNode} className="mt-4 w-full">Add Node</Button>
+      
+      <Button 
+        onClick={handleAddNode} 
+        className="mt-4 w-full flex items-center justify-center gap-2"
+        variant="outline"
+      >
+        <Plus className="h-4 w-4" />
+        Add Node
+      </Button>
     </div>
   );
 };
