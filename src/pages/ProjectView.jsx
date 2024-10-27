@@ -3,14 +3,14 @@ import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import ProjectTabs from '../components/ProjectTabs';
 import ProjectModals from '../components/ProjectModals';
-import ArticleModal from '../components/ArticleModal';
+import ContentModal from '../components/ContentModal';
 import { useProjectData } from '../hooks/useProjectData';
 import { useNodeOperations } from '../components/NodeOperations';
 
 const ProjectView = () => {
   const { id } = useParams();
-  const [selectedArticle, setSelectedArticle] = useState(null);
-  const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
+  const [selectedContent, setSelectedContent] = useState(null);
+  const [isContentModalOpen, setIsContentModalOpen] = useState(false);
   const [focusedNodeId, setFocusedNodeId] = useState(null);
   
   const { project, setProject, nodes, setNodes, loading } = useProjectData(id);
@@ -26,9 +26,9 @@ const ProjectView = () => {
     setProject(updatedProject);
   };
 
-  const handleArticleClick = (article) => {
-    setSelectedArticle(article);
-    setIsArticleModalOpen(true);
+  const handleContentClick = (content) => {
+    setSelectedContent(content);
+    setIsContentModalOpen(true);
   };
 
   if (loading) {
@@ -60,13 +60,15 @@ const ProjectView = () => {
         project={project}
         onProjectUpdate={handleProjectUpdate}
       />
-      <ArticleModal
-        isOpen={isArticleModalOpen}
-        onClose={() => setIsArticleModalOpen(false)}
-        article={selectedArticle}
-        onUpdate={(updatedArticle) => {
-          console.log("Article updated:", updatedArticle);
+      <ContentModal
+        isOpen={isContentModalOpen}
+        onClose={() => setIsContentModalOpen(false)}
+        content={selectedContent}
+        onSave={(updatedContent) => {
+          console.log("Content updated:", updatedContent);
+          setIsContentModalOpen(false);
         }}
+        type="article"
       />
     </div>
   );
