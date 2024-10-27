@@ -18,7 +18,7 @@ const NodeListItem = ({
     <div 
       className={`group flex items-center justify-between p-1 hover:bg-gray-100 rounded-lg ${
         isSelected ? 'bg-blue-50 ring-2 ring-blue-500' : ''
-      } ${isFocused ? 'bg-blue-100 ring-2 ring-blue-600' : ''}`}
+      } ${isFocused ? 'ring-2 ring-blue-600' : ''}`}
       onClick={() => onSelect(node.id)}
     >
       <div 
