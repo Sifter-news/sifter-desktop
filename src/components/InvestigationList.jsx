@@ -1,5 +1,7 @@
 import React from 'react';
+import { formatDistanceToNow } from 'date-fns';
 import InvestigationCard from './InvestigationCard';
+import { Badge } from "@/components/ui/badge";
 import { MoreVertical, Pencil, Trash } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
@@ -16,13 +18,24 @@ const InvestigationList = ({
   onDeleteProject,
   onUpdateInvestigation 
 }) => {
+  // Sort investigations by updated_at in descending order
+  const sortedInvestigations = [...(investigations || [])].sort((a, b) => {
+    return new Date(b.updated_at) - new Date(a.updated_at);
+  });
+
   return (
     <div className="flex-grow overflow-y-auto scrollbar-hide">
       <div className="flex flex-col space-y-6">
-        {investigations?.map((investigation) => (
+        {sortedInvestigations?.map((investigation) => (
           <div key={investigation.id} className="flex flex-col lg:flex-row w-full">
             <div className="w-full lg:w-1/2 flex-shrink-0 relative">
-              <div onClick={() => onProjectClick(investigation)}>
+              <div onClick={() => onProjectClick(investigation)} className="relative">
+                <Badge 
+                  variant="secondary" 
+                  className="absolute -top-2 -right-2 z-20"
+                >
+                  {formatDistanceToNow(new Date(investigation.updated_at), { addSuffix: true })}
+                </Badge>
                 <InvestigationCard 
                   investigation={investigation} 
                   onUpdateInvestigation={onUpdateInvestigation}
