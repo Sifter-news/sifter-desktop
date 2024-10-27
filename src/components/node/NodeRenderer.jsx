@@ -19,33 +19,12 @@ const NodeRenderer = ({
   onAIConversation, 
   onDelete 
 }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [localTitle, setLocalTitle] = useState(node.title);
-  const [localDescription, setLocalDescription] = useState(node.description);
   const [showTooltip, setShowTooltip] = useState(false);
-
-  const handleStyleChange = (value) => {
-    onNodeUpdate(node.id, { visualStyle: value });
-    setIsEditing(false);
-  };
-
-  const handleTypeChange = (value) => {
-    onNodeUpdate(node.id, { nodeType: value });
-    setIsEditing(false);
-  };
 
   const handleNodeClick = (e) => {
     e.stopPropagation();
     setShowTooltip(true);
     onFocus(node.id);
-  };
-
-  const handleBlur = () => {
-    setIsEditing(false);
-    onNodeUpdate(node.id, {
-      title: localTitle,
-      description: localDescription
-    });
   };
 
   React.useEffect(() => {
@@ -69,13 +48,7 @@ const NodeRenderer = ({
         >
           <NodeContent
             style={node.visualStyle}
-            isEditing={isEditing}
             node={node}
-            localTitle={localTitle}
-            localDescription={localDescription}
-            handleBlur={handleBlur}
-            setLocalTitle={setLocalTitle}
-            setLocalDescription={setLocalDescription}
             handleNodeClick={handleNodeClick}
             isFocused={isFocused}
           />
@@ -104,12 +77,12 @@ const NodeRenderer = ({
                   node_location: "Location",
                   node_event: "Event"
                 }}
-                handleStyleChange={handleStyleChange}
-                handleTypeChange={handleTypeChange}
+                handleStyleChange={(style) => onNodeUpdate(node.id, { visualStyle: style })}
+                handleTypeChange={(type) => onNodeUpdate(node.id, { nodeType: type })}
                 onAIConversation={onAIConversation}
                 onDelete={onDelete}
                 node={node}
-                onEdit={() => setIsEditing(true)}
+                onUpdate={onNodeUpdate}
               />
             </TooltipContent>
           </Tooltip>
