@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { CircleIcon, ChevronLeft } from 'lucide-react';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import NodeNavigator from './text-view/NodeNavigator';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const SidePanel = ({ 
   nodes, 
@@ -13,9 +14,15 @@ const SidePanel = ({
   const [isExpanded, setIsExpanded] = useState(true);
 
   return (
-    <>
+    <AnimatePresence>
       {isExpanded ? (
-        <div className="fixed top-16 left-0 h-[calc(100vh-64px)] bg-white shadow-lg transition-all duration-300 z-50 w-[250px]">
+        <motion.div 
+          className="fixed top-16 left-0 h-[calc(100vh-64px)] bg-white shadow-lg z-50 w-[250px]"
+          initial={{ x: -250 }}
+          animate={{ x: 0 }}
+          exit={{ x: -250 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
           <Button
             variant="ghost"
             size="icon"
@@ -34,18 +41,25 @@ const SidePanel = ({
               onAddNode={onAddNode}
             />
           </div>
-        </div>
+        </motion.div>
       ) : (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="fixed top-20 left-4 bg-white shadow-lg hover:bg-gray-100 rounded-full z-50 w-10 h-10"
-          onClick={() => setIsExpanded(true)}
+        <motion.div
+          initial={{ x: -50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: -50, opacity: 0 }}
+          transition={{ duration: 0.2 }}
         >
-          <CircleIcon className="h-6 w-6" />
-        </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="fixed top-20 left-4 bg-white shadow-lg hover:bg-gray-100 rounded-full z-50 w-10 h-10"
+            onClick={() => setIsExpanded(true)}
+          >
+            <ChevronRight className="h-6 w-6" />
+          </Button>
+        </motion.div>
       )}
-    </>
+    </AnimatePresence>
   );
 };
 
