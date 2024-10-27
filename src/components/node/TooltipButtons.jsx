@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Layout, Type, Pencil, FileText, User, Building2, Package, Brain, MapPin, Calendar } from 'lucide-react';
+import { MessageCircle, Layout, Type, Pencil, FileText, User, Building2, Package, Brain, MapPin, Calendar, ChevronDown } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import {
   Popover,
@@ -38,10 +38,8 @@ const TooltipButtons = ({
   const currentStyle = node?.visualStyle || 'default';
   const currentType = node?.nodeType || 'generic';
 
-  // Get current node type icon component
   const CurrentTypeIcon = defaultNodeTypes[currentType]?.icon || FileText;
 
-  // Ensure we have valid objects to iterate over
   const styleEntries = Object.entries(styles || defaultStyles);
   const typeEntries = Object.entries(nodeTypes || defaultNodeTypes);
 
@@ -65,6 +63,7 @@ const TooltipButtons = ({
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
               <Layout className="h-4 w-4 mr-2" />
               {defaultStyles[currentStyle]}
+              <ChevronDown className="h-4 w-4 ml-1" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-32">
@@ -91,6 +90,7 @@ const TooltipButtons = ({
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
               <CurrentTypeIcon className="h-4 w-4 mr-2" />
               {defaultNodeTypes[currentType]?.label || "Generic Note"}
+              <ChevronDown className="h-4 w-4 ml-1" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-40">
