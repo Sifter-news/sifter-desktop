@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import Navigator from '../Navigator';
 import { MoreVertical } from 'lucide-react';
+import SearchInput from './SearchInput';
 import {
   Select,
   SelectContent,
@@ -19,6 +20,7 @@ import {
 
 const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNode }) => {
   const [selectedType, setSelectedType] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [navigatorNodes, setNavigatorNodes] = useState(nodes);
 
   useEffect(() => {
@@ -46,9 +48,13 @@ const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNo
     onUpdateNode(updatedNodes);
   };
 
-  const filteredNodes = selectedType === 'all' 
-    ? navigatorNodes 
-    : navigatorNodes.filter(node => node.nodeType === selectedType);
+  const filteredNodes = navigatorNodes
+    .filter(node => {
+      const matchesType = selectedType === 'all' || node.nodeType === selectedType;
+      const matchesSearch = node.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          node.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesType && matchesSearch;
+    });
 
   return (
     <div className="w-full h-full flex flex-col p-4">
@@ -67,7 +73,10 @@ const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNo
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="mb-4">
+      
+      <div className="space-y-4 mb-4">
+        <SearchInput value={searchQuery} onChange={setSearchQuery} />
+        
         <Select value={selectedType} onValueChange={setSelectedType}>
           <SelectTrigger>
             <SelectValue placeholder="Filter by type" />
@@ -88,6 +97,7 @@ const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNo
           </SelectContent>
         </Select>
       </div>
+
       <div className="flex-grow overflow-y-auto">
         <Navigator 
           items={filteredNodes} 
