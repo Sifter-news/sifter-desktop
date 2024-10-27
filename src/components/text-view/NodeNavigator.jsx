@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from 'lucide-react';
 import SearchInput from './SearchInput';
 import NodeListItem from './NodeListItem';
+import NodeDropdownMenu from './NodeDropdownMenu';
 import {
   Select,
   SelectContent,
@@ -20,7 +21,8 @@ const NodeNavigator = ({
   selectedNode, 
   onAddNode,
   onAIConversation,
-  focusedNodeId 
+  focusedNodeId,
+  onEditNode 
 }) => {
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -50,53 +52,6 @@ const NodeNavigator = ({
                         (node.description || '').toLowerCase().includes(searchQuery.toLowerCase());
     return matchesType && matchesSearch;
   });
-
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (!filteredNodes.length) return;
-
-      if (event.key === 'ArrowDown') {
-        event.preventDefault();
-        setCurrentIndex(prev => {
-          const nextIndex = prev < filteredNodes.length - 1 ? prev + 1 : 0;
-          const nodeId = filteredNodes[nextIndex].id;
-          setSelectedNodes([nodeId]);
-          onNodeFocus(nodeId);
-          return nextIndex;
-        });
-      }
-      
-      if (event.key === 'ArrowUp') {
-        event.preventDefault();
-        setCurrentIndex(prev => {
-          const nextIndex = prev > 0 ? prev - 1 : filteredNodes.length - 1;
-          const nodeId = filteredNodes[nextIndex].id;
-          setSelectedNodes([nodeId]);
-          onNodeFocus(nodeId);
-          return nextIndex;
-        });
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [filteredNodes, onNodeFocus]);
-
-  const handleAddNode = () => {
-    const position = {
-      x: Math.random() * 500,
-      y: Math.random() * 500
-    };
-
-    onAddNode({
-      id: Date.now().toString(),
-      type: 'text',
-      title: `New Node ${nodes.length + 1}`,
-      description: '',
-      x: position.x,
-      y: position.y
-    });
-  };
 
   const handleNodeSelect = (nodeId, event) => {
     const index = filteredNodes.findIndex(node => node.id === nodeId);
@@ -153,22 +108,6 @@ const NodeNavigator = ({
               <SelectItem value="node_incident">Incident</SelectItem>
               <SelectItem value="node_timeline">Timeline</SelectItem>
             </SelectGroup>
-
-            <SelectGroup>
-              <SelectLabel>Objects & Items</SelectLabel>
-              <SelectItem value="node_object">Object</SelectItem>
-              <SelectItem value="node_document">Document</SelectItem>
-              <SelectItem value="node_evidence">Evidence</SelectItem>
-              <SelectItem value="node_asset">Asset</SelectItem>
-            </SelectGroup>
-
-            <SelectGroup>
-              <SelectLabel>Concepts & Information</SelectLabel>
-              <SelectItem value="node_concept">Concept</SelectItem>
-              <SelectItem value="node_topic">Topic</SelectItem>
-              <SelectItem value="node_theory">Theory</SelectItem>
-              <SelectItem value="node_information">Information</SelectItem>
-            </SelectGroup>
           </SelectContent>
         </Select>
       </div>
@@ -187,13 +126,14 @@ const NodeNavigator = ({
               onUpdateNode={onUpdateNode}
               onAIConversation={onAIConversation}
               isFocused={focusedNodeId === node.id || index === currentIndex}
+              onEditNode={onEditNode}
             />
           </div>
         ))}
       </div>
       
       <Button 
-        onClick={handleAddNode} 
+        onClick={onAddNode} 
         className="mt-4 w-full flex items-center justify-center gap-2"
         variant="outline"
       >
