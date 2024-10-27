@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ProjectEditModal from './ProjectEditModal';
-import ArticleModal from './ArticleModal';
+import ContentModal from './ContentModal';
 
 const ProjectModals = ({ project, onProjectUpdate }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -38,11 +38,12 @@ const ProjectModals = ({ project, onProjectUpdate }) => {
         project={project}
         onUpdate={onProjectUpdate}
       />
-      <ArticleModal
+      <ContentModal
         isOpen={isNewArticleModalOpen}
         onClose={() => setIsNewArticleModalOpen(false)}
-        article={editingArticle || { title: '', content: '' }}
-        onUpdate={handleSaveArticle}
+        content={editingArticle || { title: '', content: '' }}
+        onSave={handleSaveArticle}
+        type="article"
       />
     </>
   );
