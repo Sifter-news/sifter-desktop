@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import UserProfile from './UserProfile';
-import ProjectEditModal from './ProjectEditModal';
 import { Separator } from "@/components/ui/separator";
 import {
   Select,
@@ -13,11 +12,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { User } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/supabase';
+import { Skeleton } from "@/components/ui/skeleton";
 
-const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpdate, onProjectDelete }) => {
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [investigatorType, setInvestigatorType] = useState('pre-deal');
+const Header = ({ user, projectId, onUpdateUser }) => {
+  const [investigatorType, setInvestigatorType] = React.useState('pre-deal');
+
+  const { data: project, isLoading } = useQuery({
+    queryKey: ['project', projectId],
+    queryFn: async () => {
+      if (!projectId) return null;
+      const { data, error } = await supabase
+        .from('investigations')
+        .select('title, description')
+        .eq('id', projectId)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!projectId
+  });
 
   return (
     <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
@@ -31,14 +47,22 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
         </div>
 
         <div className="flex-grow flex justify-center items-center space-x-4">
-          {projectName && (
+          {projectId && (
             <div className="flex items-center space-x-4">
-              <span 
-                className="text-sm font-normal text-[#4B25F3] cursor-pointer hover:underline" 
-                onClick={() => setIsEditModalOpen(true)}
-              >
-                {projectName}
-              </span>
+              {isLoading ? (
+                <Skeleton className="h-6 w-[200px]" />
+              ) : (
+                <div className="flex flex-col items-center">
+                  <span className="text-sm font-normal text-[#4B25F3]">
+                    {project?.title}
+                  </span>
+                  {project?.description && (
+                    <span className="text-xs text-gray-500">
+                      {project.description}
+                    </span>
+                  )}
+                </div>
+              )}
               <Separator orientation="vertical" className="h-4" />
               <Select value={investigatorType} onValueChange={setInvestigatorType}>
                 <SelectTrigger className="w-[240px] whitespace-normal border-none focus:ring-0">
@@ -76,13 +100,6 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
           <UserProfile user={user} onUpdateUser={onUpdateUser} />
         </div>
       </div>
-      <ProjectEditModal 
-        isOpen={isEditModalOpen} 
-        onClose={() => setIsEditModalOpen(false)}
-        projectName={projectName}
-        onUpdate={onProjectUpdate}
-        onDelete={onProjectDelete}
-      />
     </header>
   );
 };
