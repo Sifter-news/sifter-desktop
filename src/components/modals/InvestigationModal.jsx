@@ -123,7 +123,7 @@ const InvestigationModal = ({ isOpen, onClose, investigation, onUpdate }) => {
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction onClick={handleDelete} disabled={isLoading}>
-                  Delete Investigation
+                  Delete
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -131,7 +131,7 @@ const InvestigationModal = ({ isOpen, onClose, investigation, onUpdate }) => {
           <div className="space-x-2">
             <Button variant="outline" onClick={onClose} disabled={isLoading}>Cancel</Button>
             <Button onClick={handleSave} disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save changes"}
+              {isLoading ? "Saving..." : "Update"}
             </Button>
           </div>
         </DialogFooter>
