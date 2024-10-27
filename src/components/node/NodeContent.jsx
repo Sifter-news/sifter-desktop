@@ -16,19 +16,19 @@ const NodeContent = ({
 }) => {
   const getNodeStyle = () => {
     const focusClasses = isFocused 
-      ? 'ring-2 ring-white p-2 scale-[1.02]' 
+      ? 'ring-2 ring-white scale-[1.02]' 
       : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:scale-[1.01]';
 
     switch (style) {
       case 'compact':
         return (
-          <div className={`w-10 h-10 p-1 bg-white rounded-full m-1 transition-all duration-200 ${focusClasses}`}>
+          <div className={`w-10 h-10 p-1 bg-white rounded-full transition-all duration-200 ${focusClasses}`}>
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full" />
           </div>
         );
       case 'expanded':
         return (
-          <div className={`flex items-center p-2 bg-white rounded-lg m-1 transition-all duration-200 ${focusClasses}`}>
+          <div className={`flex items-center p-2 bg-white rounded-lg transition-all duration-200 ${focusClasses}`}>
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full mr-2" />
             <div>
               <div className="font-medium">{node.title}</div>
@@ -38,7 +38,7 @@ const NodeContent = ({
         );
       case 'postit':
         return (
-          <div className={`w-[256px] h-[256px] p-4 bg-yellow-100 rounded-sm shadow-md m-1 transition-all duration-200 ${focusClasses}`}>
+          <div className={`w-[256px] h-[256px] p-4 bg-yellow-100 rounded-sm shadow-md transition-all duration-200 ${focusClasses}`}>
             {isEditing ? (
               <div className="h-full flex flex-col gap-2">
                 <Input
@@ -64,7 +64,7 @@ const NodeContent = ({
         );
       default:
         return (
-          <div className={`flex items-center p-2 bg-white rounded-lg m-1 transition-all duration-200 ${focusClasses}`}>
+          <div className={`flex items-center p-2 bg-white rounded-lg transition-all duration-200 ${focusClasses}`}>
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full mr-2" />
             <div>
               <div className="font-medium">{node.title}</div>
@@ -76,10 +76,10 @@ const NodeContent = ({
   };
 
   return (
-    <div onClick={handleNodeClick} className="p-4">
+    <div onClick={handleNodeClick}>
       {isEditing ? (
-        <div className={`space-y-2 p-4 bg-white rounded-lg m-1 transition-all duration-200 ${
-          isFocused ? 'ring-2 ring-blue-500 ring-offset-2' : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1'
+        <div className={`space-y-2 p-4 bg-white rounded-lg transition-all duration-200 ${
+          isFocused ? 'ring-2 ring-white' : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1'
         }`}>
           <Input
             value={localTitle}
