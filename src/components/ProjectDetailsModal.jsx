@@ -18,7 +18,10 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
-      if (!projectId) return;
+      if (!projectId) {
+        console.warn('No project ID provided');
+        return;
+      }
       
       try {
         const { data, error } = await supabase
@@ -42,13 +45,18 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
       }
     };
 
-    if (isOpen) {
+    if (isOpen && projectId) {
       fetchProjectDetails();
     }
   }, [isOpen, projectId, projectName, investigationType]);
 
   const handleSave = async (e) => {
     e.preventDefault();
+    if (!projectId) {
+      toast.error("Invalid project ID");
+      return;
+    }
+
     if (!formData.title.trim()) {
       toast.error("Title is required");
       return;
