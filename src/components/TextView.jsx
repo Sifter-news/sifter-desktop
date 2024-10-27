@@ -64,15 +64,17 @@ const TextView = ({
 
   return (
     <>
-      <div className="flex h-full">
-        <NodeNavigator
-          nodes={nodes}
-          onUpdateNode={onUpdateNode}
-          onNodeFocus={onNodeFocus}
-          selectedNode={selectedNode}
-          onAddNode={onAddNode}
-        />
-        <div className="flex-grow flex flex-col p-8 overflow-hidden">
+      <div className="flex h-[calc(100vh-64px)]">
+        <div className="w-1/4 min-w-[250px] border-r border-gray-200 overflow-y-auto h-full">
+          <NodeNavigator
+            nodes={nodes}
+            onUpdateNode={onUpdateNode}
+            onNodeFocus={onNodeFocus}
+            selectedNode={selectedNode}
+            onAddNode={onAddNode}
+          />
+        </div>
+        <div className="flex-1 h-full overflow-y-auto">
           <NodeEditor
             selectedNode={selectedNode}
             onUpdateNode={onUpdateNode}
