@@ -14,7 +14,8 @@ export const useNodeOperations = (setNodes) => {
         position_y: newNode.y || 0,
         width: newNode.width || 200,
         height: newNode.height || 100,
-        node_type: newNode.nodeType || 'generic'
+        node_type: newNode.nodeType || 'generic',
+        step: newNode.step || 1
       };
 
       const { data, error } = await supabase
@@ -32,7 +33,8 @@ export const useNodeOperations = (setNodes) => {
         width: data.width,
         height: data.height,
         visualStyle: data.visual_style,
-        nodeType: data.node_type
+        nodeType: data.node_type,
+        step: data.step
       };
 
       setNodes(prevNodes => [...prevNodes, nodeWithUI]);

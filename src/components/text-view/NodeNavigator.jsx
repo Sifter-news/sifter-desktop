@@ -19,6 +19,7 @@ import {
 
 const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNode }) => {
   const [selectedType, setSelectedType] = useState('all');
+  const [selectedStep, setSelectedStep] = useState('all');
   const [navigatorNodes, setNavigatorNodes] = useState(nodes);
 
   useEffect(() => {
@@ -37,7 +38,8 @@ const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNo
       title: `New Node ${nodes.length + 1}`,
       description: '',
       x: position.x,
-      y: position.y
+      y: position.y,
+      step: 1
     });
   };
 
@@ -46,9 +48,11 @@ const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNo
     onUpdateNode(updatedNodes);
   };
 
-  const filteredNodes = selectedType === 'all' 
-    ? navigatorNodes 
-    : navigatorNodes.filter(node => node.nodeType === selectedType);
+  const filteredNodes = navigatorNodes.filter(node => {
+    const typeMatch = selectedType === 'all' || node.nodeType === selectedType;
+    const stepMatch = selectedStep === 'all' || node.step === parseInt(selectedStep);
+    return typeMatch && stepMatch;
+  });
 
   return (
     <div className="w-full h-full flex flex-col p-4">
@@ -67,7 +71,7 @@ const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNo
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="mb-4">
+      <div className="space-y-4 mb-4">
         <Select value={selectedType} onValueChange={setSelectedType}>
           <SelectTrigger>
             <SelectValue placeholder="Filter by type" />
@@ -76,14 +80,26 @@ const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNo
             <SelectGroup>
               <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="generic">Generic Node</SelectItem>
-            </SelectGroup>
-            <SelectGroup>
               <SelectItem value="node_person">Person</SelectItem>
               <SelectItem value="node_organization">Organization</SelectItem>
               <SelectItem value="node_object">Object</SelectItem>
               <SelectItem value="node_concept">Concept</SelectItem>
               <SelectItem value="node_location">Location</SelectItem>
               <SelectItem value="node_event">Event</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+        <Select value={selectedStep} onValueChange={setSelectedStep}>
+          <SelectTrigger>
+            <SelectValue placeholder="Filter by step" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="all">All Steps</SelectItem>
+              {[1, 2, 3, 4, 5].map(step => (
+                <SelectItem key={step} value={step.toString()}>{`Step ${step}`}</SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </Select>
