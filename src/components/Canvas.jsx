@@ -143,7 +143,12 @@ const Canvas = forwardRef(({
   return (
     <>
       <div 
-        className={`w-screen h-full bg-[#594BFF] overflow-hidden ${isCanvasGrabbed ? 'cursor-grabbing' : 'cursor-grab'}`}
+        className={`w-[1000vw] h-[1000vh] bg-[#594BFF] overflow-hidden ${isCanvasGrabbed ? 'cursor-grabbing' : 'cursor-grab'}`}
+        style={{
+          position: 'absolute',
+          left: '-450vw',  // Center the expanded canvas
+          top: '-450vh',   // Center the expanded canvas
+        }}
         onMouseDown={handleCanvasMouseDown}
         onMouseMove={handleCanvasMouseMove}
         onMouseUp={handleCanvasMouseUp}
