@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Navigator from '../Navigator';
 import { MoreVertical, Plus } from 'lucide-react';
 import SearchInput from './SearchInput';
@@ -55,6 +56,19 @@ const NodeNavigator = ({
     onUpdateNode(updatedNodes);
   };
 
+  const getNodeTypeIcon = (nodeType) => {
+    const types = {
+      node_person: '👤',
+      node_organization: '🏢',
+      node_object: '📦',
+      node_concept: '💡',
+      node_location: '📍',
+      node_event: '📅',
+      generic: '📝'
+    };
+    return types[nodeType] || '📝';
+  };
+
   const filteredNodes = navigatorNodes
     .filter(node => {
       const matchesType = selectedType === 'all' || node.nodeType === selectedType;
@@ -107,11 +121,17 @@ const NodeNavigator = ({
         {filteredNodes.map(node => (
           <div key={node.id} className="group flex items-center justify-between p-2 hover:bg-gray-100 rounded-lg">
             <div 
-              className="flex-grow cursor-pointer"
+              className="flex items-center flex-grow cursor-pointer gap-3"
               onClick={() => onNodeFocus(node.id)}
             >
-              <div className="font-medium">{node.title}</div>
-              <div className="text-sm text-gray-500">{node.description}</div>
+              <Avatar className="h-8 w-8">
+                <AvatarImage src="/default-image.png" alt={node.title} />
+                <AvatarFallback>{getNodeTypeIcon(node.nodeType)}</AvatarFallback>
+              </Avatar>
+              <div>
+                <div className="font-medium">{node.title}</div>
+                <div className="text-sm text-gray-500">{node.description}</div>
+              </div>
             </div>
             <NodeActions 
               node={node} 
