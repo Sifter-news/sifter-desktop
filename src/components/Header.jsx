@@ -41,11 +41,8 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
               </span>
               <Separator orientation="vertical" className="h-4" />
               <Select value={investigatorType} onValueChange={setInvestigatorType}>
-                <SelectTrigger className="w-[180px] bg-white whitespace-nowrap">
-                  <div className="flex items-center space-x-2">
-                    <User className="h-4 w-4" />
-                    <SelectValue placeholder="Select investigation type" />
-                  </div>
+                <SelectTrigger className="w-[180px] whitespace-nowrap border-none focus:ring-0">
+                  <SelectValue placeholder="Select investigation type" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
