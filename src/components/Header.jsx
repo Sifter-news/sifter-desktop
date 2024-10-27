@@ -15,14 +15,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { User } from 'lucide-react';
 
 const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpdate, onProjectDelete }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [investigatorType, setInvestigatorType] = useState('generic');
 
   useEffect(() => {
-    // Fetch the current investigation type when project changes
     const fetchInvestigationType = async () => {
       if (!projectName) return;
       
@@ -30,6 +28,8 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
         const { data, error } = await supabase
           .from('investigations')
           .select('investigation_type')
+          .eq('title', projectName)
+          .limit(1)
           .single();
           
         if (error) throw error;
