@@ -8,6 +8,7 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -112,17 +113,50 @@ const NodeNavigator = ({
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
+              <SelectLabel>General</SelectLabel>
               <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="generic">Generic Node</SelectItem>
               <SelectItem value="group">Groups</SelectItem>
             </SelectGroup>
+            
             <SelectGroup>
+              <SelectLabel>People & Organizations</SelectLabel>
               <SelectItem value="node_person">Person</SelectItem>
               <SelectItem value="node_organization">Organization</SelectItem>
-              <SelectItem value="node_object">Object</SelectItem>
-              <SelectItem value="node_concept">Concept</SelectItem>
+              <SelectItem value="node_group">Group</SelectItem>
+              <SelectItem value="node_network">Network</SelectItem>
+            </SelectGroup>
+
+            <SelectGroup>
+              <SelectLabel>Places & Locations</SelectLabel>
               <SelectItem value="node_location">Location</SelectItem>
+              <SelectItem value="node_address">Address</SelectItem>
+              <SelectItem value="node_building">Building</SelectItem>
+              <SelectItem value="node_area">Area</SelectItem>
+            </SelectGroup>
+
+            <SelectGroup>
+              <SelectLabel>Events & Time</SelectLabel>
               <SelectItem value="node_event">Event</SelectItem>
+              <SelectItem value="node_meeting">Meeting</SelectItem>
+              <SelectItem value="node_incident">Incident</SelectItem>
+              <SelectItem value="node_timeline">Timeline</SelectItem>
+            </SelectGroup>
+
+            <SelectGroup>
+              <SelectLabel>Objects & Items</SelectLabel>
+              <SelectItem value="node_object">Object</SelectItem>
+              <SelectItem value="node_document">Document</SelectItem>
+              <SelectItem value="node_evidence">Evidence</SelectItem>
+              <SelectItem value="node_asset">Asset</SelectItem>
+            </SelectGroup>
+
+            <SelectGroup>
+              <SelectLabel>Concepts & Information</SelectLabel>
+              <SelectItem value="node_concept">Concept</SelectItem>
+              <SelectItem value="node_topic">Topic</SelectItem>
+              <SelectItem value="node_theory">Theory</SelectItem>
+              <SelectItem value="node_information">Information</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
