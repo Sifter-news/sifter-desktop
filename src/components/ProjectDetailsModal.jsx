@@ -146,7 +146,7 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
           <div className="grid gap-2">
             <label htmlFor="type">Investigation Type</label>
             <Select value={type} onValueChange={setType} disabled={isLoading}>
-              <SelectTrigger>
+              <SelectTrigger className="p-0">
                 <SelectValue placeholder="Select investigation type" />
               </SelectTrigger>
               <SelectContent>
