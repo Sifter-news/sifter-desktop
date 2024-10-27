@@ -4,11 +4,12 @@ import ReportList from './ReportList';
 import NodeTooltip from './node/NodeTooltip';
 import NodeEditorModal from './node/NodeEditorModal';
 
-const TimeView = ({ project, nodes, reports, onAddReport, onUpdateReport, onUpdateNode }) => {
+const TimeView = ({ project, nodes, reports, onAddReport, onUpdateReport, onUpdateNode, focusedNodeId, onNodeFocus }) => {
   const [selectedNode, setSelectedNode] = useState(null);
   const sortedNodes = [...nodes].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
   const handleNodeClick = (node) => {
+    onNodeFocus(node.id);
     setSelectedNode(node);
   };
 
@@ -20,12 +21,22 @@ const TimeView = ({ project, nodes, reports, onAddReport, onUpdateReport, onUpda
           <div className="flex justify-between">
             {sortedNodes.map((node, index) => (
               <NodeTooltip key={node.id} node={node} onView={handleNodeClick}>
-                <div className="relative flex flex-col items-center cursor-pointer">
-                  <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center z-10">
+                <div 
+                  className={`relative flex flex-col items-center cursor-pointer transition-all duration-200 ${
+                    focusedNodeId === node.id ? 'scale-110 shadow-lg' : ''
+                  }`}
+                >
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center z-10 ${
+                    focusedNodeId === node.id 
+                      ? 'bg-blue-600 ring-4 ring-blue-200' 
+                      : 'bg-blue-500 hover:bg-blue-600'
+                  }`}>
                     <span className="text-white font-bold">{index + 1}</span>
                   </div>
                   <div className="mt-2 text-center">
-                    <div className="font-semibold hover:text-blue-500 transition-colors">
+                    <div className={`font-semibold transition-colors ${
+                      focusedNodeId === node.id ? 'text-blue-600' : 'hover:text-blue-500'
+                    }`}>
                       {node.title}
                     </div>
                     <div className="text-sm text-gray-500">
@@ -39,13 +50,6 @@ const TimeView = ({ project, nodes, reports, onAddReport, onUpdateReport, onUpda
             ))}
           </div>
         </div>
-      </div>
-      <div className="fixed bottom-12 right-12 z-50">
-        <ReportList
-          reports={reports}
-          onAddReport={onAddReport}
-          onEditReport={onUpdateReport}
-        />
       </div>
       <NodeEditorModal 
         isOpen={!!selectedNode}

@@ -4,9 +4,14 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import NodeTooltip from './node/NodeTooltip';
 import NodeEditorModal from './node/NodeEditorModal';
 
-const MapView = ({ nodes, onUpdateNode }) => {
+const MapView = ({ nodes, onUpdateNode, focusedNodeId, onNodeFocus }) => {
   const [selectedNode, setSelectedNode] = useState(null);
   const token = import.meta.env.VITE_MAPBOX_TOKEN;
+
+  const handleNodeClick = (node) => {
+    onNodeFocus(node.id);
+    setSelectedNode(node);
+  };
 
   if (!token) {
     return <div className="p-4">Please add your Mapbox token to the .env file</div>;
@@ -25,9 +30,17 @@ const MapView = ({ nodes, onUpdateNode }) => {
         mapboxAccessToken={token}
       >
         {nodes.map(node => (
-          <NodeTooltip key={node.id} node={node} onView={setSelectedNode}>
-            <div className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer">
-              <div className="w-4 h-4 bg-red-500 rounded-full" />
+          <NodeTooltip key={node.id} node={node} onView={handleNodeClick}>
+            <div 
+              className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all duration-200 ${
+                focusedNodeId === node.id ? 'scale-125 z-10' : ''
+              }`}
+            >
+              <div className={`w-4 h-4 rounded-full ${
+                focusedNodeId === node.id 
+                  ? 'bg-blue-600 ring-4 ring-blue-200' 
+                  : 'bg-red-500 hover:bg-red-600'
+              }`} />
             </div>
           </NodeTooltip>
         ))}

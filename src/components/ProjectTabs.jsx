@@ -63,10 +63,20 @@ const ProjectTabs = ({
             />
           </TabsContent>
           <TabsContent value="timeline">
-            <TimeView nodes={nodes} />
+            <TimeView 
+              nodes={nodes} 
+              focusedNodeId={focusedNodeId}
+              onNodeFocus={onNodeFocus}
+              onUpdateNode={onUpdateNode}
+            />
           </TabsContent>
           <TabsContent value="map">
-            <MapView nodes={nodes} />
+            <MapView 
+              nodes={nodes} 
+              focusedNodeId={focusedNodeId}
+              onNodeFocus={onNodeFocus}
+              onUpdateNode={onUpdateNode}
+            />
           </TabsContent>
         </div>
       </Tabs>
