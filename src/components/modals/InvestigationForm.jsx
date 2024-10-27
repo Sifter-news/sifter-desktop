@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const InvestigationForm = ({ formData, setFormData, isLoading }) => {
-  const { title, description, type } = formData;
+  const { title, description, type, focus } = formData;
 
   return (
     <form className="grid gap-4 py-4">
@@ -42,6 +42,24 @@ const InvestigationForm = ({ formData, setFormData, isLoading }) => {
               <SelectItem value="background">Background Check Investigation</SelectItem>
               <SelectItem value="asset">Asset Tracing Investigation</SelectItem>
               <SelectItem value="generic">Generic Investigation</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="grid gap-2">
+        <label htmlFor="focus">Investigation Focus</label>
+        <Select value={focus} onValueChange={(value) => setFormData(prev => ({ ...prev, focus: value }))} disabled={isLoading}>
+          <SelectTrigger className="p-0">
+            <SelectValue placeholder="Select investigation focus" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="node_person">Person</SelectItem>
+              <SelectItem value="node_organization">Organization</SelectItem>
+              <SelectItem value="node_object">Object</SelectItem>
+              <SelectItem value="node_concept">Concept</SelectItem>
+              <SelectItem value="node_location">Location</SelectItem>
+              <SelectItem value="node_event">Event</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>

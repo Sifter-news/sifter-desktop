@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { supabase } from '@/integrations/supabase/supabase';
@@ -14,7 +12,8 @@ const InvestigationModal = ({ isOpen, onClose, investigation, onUpdate }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    type: 'generic'
+    type: 'generic',
+    focus: 'node_person'
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,7 +22,8 @@ const InvestigationModal = ({ isOpen, onClose, investigation, onUpdate }) => {
       setFormData({
         title: investigation.title || '',
         description: investigation.description || '',
-        type: investigation.investigation_type || 'generic'
+        type: investigation.investigation_type || 'generic',
+        focus: investigation.investigation_focus || 'node_person'
       });
     }
   }, [investigation, isOpen]);
@@ -48,6 +48,7 @@ const InvestigationModal = ({ isOpen, onClose, investigation, onUpdate }) => {
           title: formData.title.trim(),
           description: formData.description.trim(),
           investigation_type: formData.type,
+          investigation_focus: formData.focus,
           updated_at: new Date().toISOString()
         })
         .eq('id', investigation.id)
