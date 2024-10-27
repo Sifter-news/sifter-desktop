@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ProjectEditModal from './ProjectEditModal';
+import InvestigationModal from './modals/InvestigationModal';
 import ContentModal from './ContentModal';
 
 const ProjectModals = ({ project, onProjectUpdate }) => {
@@ -32,10 +32,10 @@ const ProjectModals = ({ project, onProjectUpdate }) => {
 
   return (
     <>
-      <ProjectEditModal
+      <InvestigationModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        project={project}
+        investigation={project}
         onUpdate={onProjectUpdate}
       />
       <ContentModal
