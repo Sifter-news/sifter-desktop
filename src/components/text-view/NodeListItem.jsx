@@ -20,7 +20,7 @@ const NodeListItem = ({ node, isSelected, onSelect, onFocus, onUpdateNode, onAIC
           onFocus(node.id);
         }}
       >
-        <Avatar className="h-8 w-8">
+        <Avatar className="h-6 w-6">
           <AvatarImage src="/default-image.png" alt={node.title} />
           <AvatarFallback>{getNodeTypeIcon(node.nodeType)}</AvatarFallback>
         </Avatar>
