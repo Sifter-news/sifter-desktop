@@ -100,7 +100,7 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
 
   return (
     <div className="h-full flex flex-col bg-white bg-opacity-80 shadow-lg rounded-lg p-6">
-      <h2 className="text-lg font-semibold mb-4 opacity-15">Node Editor</h2>
+      <h2 className="text-lg font-semibold mb-4">Node Editor</h2>
       <div className="flex-grow flex flex-col space-y-4">
         <NodeTypeSelect value={nodeType} onChange={handleTypeChange} />
 

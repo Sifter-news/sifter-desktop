@@ -54,7 +54,7 @@ const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNo
   return (
     <div className="w-full h-full flex flex-col p-4">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold opacity-15">Node Navigator</h2>
+        <h2 className="text-lg font-semibold">Node Navigator</h2>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-200">
