@@ -20,6 +20,7 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
     metadata: {},
     avatar: ''
   });
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   useEffect(() => {
     if (node) {
@@ -54,87 +55,93 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
     }
   };
 
+  if (!node) return null;
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Edit Node</DialogTitle>
-        </DialogHeader>
-        
-        <NodeAvatar 
-          avatar={formData.avatar}
-          onAvatarChange={(avatar) => setFormData(prev => ({ ...prev, avatar }))}
-        />
-
-        <div className="grid gap-4 py-4">
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-            />
-          </div>
+    <>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit Node</DialogTitle>
+          </DialogHeader>
           
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+          <NodeAvatar 
+            avatar={formData.avatar}
+            onAvatarChange={(avatar) => setFormData(prev => ({ ...prev, avatar }))}
+          />
+
+          <div className="grid gap-4 py-4">
+            <div className="grid w-full items-center gap-1.5">
+              <Label htmlFor="title">Title</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              />
+            </div>
+            
+            <div className="grid w-full items-center gap-1.5">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              />
+            </div>
+
+            <NodeTypeSelect
+              value={formData.nodeType}
+              onChange={(nodeType) => setFormData(prev => ({ ...prev, nodeType }))}
+            />
+
+            <NodeStyleSelect
+              value={formData.visualStyle}
+              onChange={(visualStyle) => setFormData(prev => ({ ...prev, visualStyle }))}
+            />
+
+            <NodeMetadataFields
+              nodeType={formData.nodeType}
+              metadata={formData.metadata}
+              onMetadataChange={(field, value) => 
+                setFormData(prev => ({
+                  ...prev,
+                  metadata: { ...prev.metadata, [field]: value }
+                }))
+              }
             />
           </div>
 
-          <NodeTypeSelect
-            value={formData.nodeType}
-            onChange={(nodeType) => setFormData(prev => ({ ...prev, nodeType }))}
-          />
+          <DialogFooter className="flex justify-between">
+            <Button 
+              variant="destructive" 
+              onClick={() => setShowDeleteDialog(true)}
+            >
+              Delete
+            </Button>
+            <div className="space-x-2">
+              <Button variant="outline" onClick={onClose}>Cancel</Button>
+              <Button onClick={handleSubmit}>Save changes</Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-          <NodeStyleSelect
-            value={formData.visualStyle}
-            onChange={(visualStyle) => setFormData(prev => ({ ...prev, visualStyle }))}
-          />
-
-          <NodeMetadataFields
-            nodeType={formData.nodeType}
-            metadata={formData.metadata}
-            onMetadataChange={(field, value) => 
-              setFormData(prev => ({
-                ...prev,
-                metadata: { ...prev.metadata, [field]: value }
-              }))
-            }
-          />
-        </div>
-
-        <DialogFooter className="flex justify-between">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive">Delete</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete this node
-                  and remove all associated data.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete}>
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-          <div className="space-x-2">
-            <Button variant="outline" onClick={onClose}>Cancel</Button>
-            <Button onClick={handleSubmit}>Save changes</Button>
-          </div>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete this node
+              and remove all associated data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
 
