@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { format } from 'date-fns';
 import ReportList from './ReportList';
+import NodeEditDialog from './node/NodeEditDialog';
 
-const TimeView = ({ project, nodes, reports, onAddReport, onUpdateReport }) => {
+const TimeView = ({ project, nodes, reports, onAddReport, onUpdateReport, onUpdateNode }) => {
+  const [selectedNode, setSelectedNode] = useState(null);
   const sortedNodes = [...nodes].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+  const handleNodeClick = (node) => {
+    setSelectedNode(node);
+  };
 
   return (
     <div className="min-h-[calc(100vh-120px)] p-8 relative flex items-center justify-center">
@@ -17,7 +23,12 @@ const TimeView = ({ project, nodes, reports, onAddReport, onUpdateReport }) => {
                   <span className="text-white font-bold">{index + 1}</span>
                 </div>
                 <div className="mt-2 text-center">
-                  <div className="font-semibold">{node.title}</div>
+                  <div 
+                    className="font-semibold cursor-pointer hover:text-blue-500 transition-colors"
+                    onClick={() => handleNodeClick(node)}
+                  >
+                    {node.title}
+                  </div>
                   <div className="text-sm text-gray-500">
                     {node.timestamp 
                       ? format(new Date(node.timestamp), 'yyyy-MM-dd HH:mm')
@@ -36,6 +47,11 @@ const TimeView = ({ project, nodes, reports, onAddReport, onUpdateReport }) => {
           onEditReport={onUpdateReport}
         />
       </div>
+      <NodeEditDialog 
+        node={selectedNode}
+        onClose={() => setSelectedNode(null)}
+        onUpdate={onUpdateNode}
+      />
     </div>
   );
 };
