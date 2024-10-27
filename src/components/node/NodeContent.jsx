@@ -3,8 +3,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
-const DEFAULT_DIMENSIONS = { width: 200, height: 150 };
-
 const NodeContent = ({ 
   style, 
   isEditing, 
@@ -16,17 +14,12 @@ const NodeContent = ({
   setLocalDescription, 
   handleNodeClick,
   isFocused,
-  dimensions = DEFAULT_DIMENSIONS // Provide default dimensions
+  dimensions
 }) => {
   const getNodeStyle = () => {
     const focusClasses = isFocused 
       ? 'ring-2 ring-blue-500 ring-offset-[-2px] scale-[1.02]' 
       : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-[-1px] hover:scale-[1.01]';
-
-    const currentDimensions = {
-      width: dimensions?.width || DEFAULT_DIMENSIONS.width,
-      height: dimensions?.height || DEFAULT_DIMENSIONS.height
-    };
 
     switch (style) {
       case 'compact':
@@ -36,7 +29,7 @@ const NodeContent = ({
               "w-10 h-10 p-1 bg-white rounded-full m-1 transition-all duration-200",
               focusClasses
             )}
-            style={currentDimensions}
+            style={{ width: dimensions.width, height: dimensions.height }}
           >
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full" />
           </div>
@@ -48,7 +41,7 @@ const NodeContent = ({
               "flex items-center p-2 bg-white rounded-lg m-1 transition-all duration-200",
               focusClasses
             )}
-            style={currentDimensions}
+            style={{ width: dimensions.width, height: dimensions.height }}
           >
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full mr-2" />
             <div>
@@ -64,7 +57,7 @@ const NodeContent = ({
               "p-4 bg-yellow-100 rounded-sm shadow-md m-1 transition-all duration-200",
               focusClasses
             )}
-            style={currentDimensions}
+            style={{ width: dimensions.width, height: dimensions.height }}
           >
             {isEditing ? (
               <div className="h-full flex flex-col gap-2">
@@ -96,7 +89,7 @@ const NodeContent = ({
               "flex items-center p-2 bg-white rounded-lg m-1 transition-all duration-200",
               focusClasses
             )}
-            style={currentDimensions}
+            style={{ width: dimensions.width, height: dimensions.height }}
           >
             <img src="/default-image.png" alt="" className="w-8 h-8 rounded-full mr-2" />
             <div>
