@@ -4,6 +4,7 @@ import Canvas from './Canvas';
 import Toolbar from './Toolbar';
 import AISidePanel from './AISidePanel';
 import ReportList from './ReportList';
+import NodeEditorModal from './node/NodeEditorModal';
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
 
@@ -12,6 +13,7 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
   const [focusedNodeId, setFocusedNodeId] = useState(null);
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
   const [initialAIMessage, setInitialAIMessage] = useState('');
+  const [selectedNode, setSelectedNode] = useState(null);
   const canvasRef = useRef(null);
 
   const {
@@ -75,6 +77,10 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
     setSidePanelOpen(true);
   };
 
+  const handleNodeClick = (node) => {
+    setSelectedNode(node);
+  };
+
   return (
     <div className="flex h-[calc(100vh-64px)] w-screen overflow-hidden">
       <div className="flex-grow relative">
@@ -94,6 +100,7 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
           onNodeDelete={onDeleteNode}
           onAIConversation={handleAIConversation}
           onNodePositionUpdate={handleNodePositionUpdate}
+          onNodeClick={handleNodeClick}
         />
         <Toolbar
           activeTool={activeTool}
@@ -119,6 +126,12 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
           onEditReport={onUpdateReport}
         />
       </div>
+      <NodeEditorModal
+        isOpen={!!selectedNode}
+        onClose={() => setSelectedNode(null)}
+        node={selectedNode}
+        onUpdate={onUpdateNode}
+      />
     </div>
   );
 };
