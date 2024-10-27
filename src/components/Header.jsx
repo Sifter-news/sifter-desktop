@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import UserProfile from './UserProfile';
 import ProjectEditModal from './ProjectEditModal';
 import { useState } from 'react';
+import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
@@ -24,6 +25,10 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
             <img src="/favicon.ico" alt="Sifter Logo" className="h-8 w-8" />
             <span className="text-sm font-normal">Sifter</span>
             <span className="text-sm font-normal text-gray-400">beta</span>
+            <Separator orientation="vertical" className="h-4 mx-2" />
+            <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
+              Dashboard
+            </Link>
           </div>
         </div>
         <div className="flex-grow flex justify-center items-center">
@@ -37,9 +42,6 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
           )}
         </div>
         <div className="flex items-center space-x-4 min-w-[200px] justify-end">
-          <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
-            Dashboard
-          </Link>
           <Select value={investigatorType} onValueChange={setInvestigatorType}>
             <SelectTrigger className="w-[180px] bg-white whitespace-nowrap">
               <SelectValue placeholder="Select investigator type" />
