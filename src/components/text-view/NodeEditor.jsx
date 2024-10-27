@@ -124,15 +124,15 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
           </div>
           <div className="flex-1">
             <Select value={nodeStyle} onValueChange={handleStyleChange}>
-              <SelectTrigger>
+              <SelectTrigger className="text-left rounded-none">
                 <SelectValue placeholder="Select style" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="default">Default</SelectItem>
-                  <SelectItem value="compact">Compact</SelectItem>
-                  <SelectItem value="expanded">Expanded</SelectItem>
-                  <SelectItem value="postit">Post-it</SelectItem>
+                  <SelectItem value="default" className="text-left">Default</SelectItem>
+                  <SelectItem value="compact" className="text-left">Compact</SelectItem>
+                  <SelectItem value="expanded" className="text-left">Expanded</SelectItem>
+                  <SelectItem value="postit" className="text-left">Post-it</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
