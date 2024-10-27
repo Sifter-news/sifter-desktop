@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./components/AuthProvider";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
@@ -20,8 +20,7 @@ const App = () => (
         <AuthProvider>
           <Toaster />
           <Routes>
-            <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="/home" element={<HomePage />} />
+            <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/new-project" element={<NewProjectPage />} />
             <Route path="/project/:id" element={<ProjectView />} />
