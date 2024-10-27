@@ -25,8 +25,32 @@ const Canvas = forwardRef(({
   const [showDeleteConfirmation, setShowDeleteConfirmation] = React.useState(false);
   const [nodeToDelete, setNodeToDelete] = React.useState(null);
   const [isPanning, setIsPanning] = useState(false);
-  const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
-  const [isCanvasGrabbed, setIsCanvasGrabbed] = useState(false);
+  const [startPanPosition, setStartPanPosition] = useState({ x: 0, y: 0 });
+
+  const handleMouseDown = useCallback((e) => {
+    if (activeTool === 'pan' || e.button === 1) { // Middle mouse button
+      setIsPanning(true);
+      setStartPanPosition({ x: e.clientX, y: e.clientY });
+      handlePanStart();
+      e.preventDefault();
+    }
+  }, [activeTool, handlePanStart]);
+
+  const handleMouseMove = useCallback((e) => {
+    if (isPanning) {
+      const dx = e.clientX - startPanPosition.x;
+      const dy = e.clientY - startPanPosition.y;
+      handlePanMove({ movementX: dx, movementY: dy });
+      setStartPanPosition({ x: e.clientX, y: e.clientY });
+    }
+  }, [isPanning, startPanPosition, handlePanMove]);
+
+  const handleMouseUp = useCallback(() => {
+    if (isPanning) {
+      setIsPanning(false);
+      handlePanEnd();
+    }
+  }, [isPanning, handlePanEnd]);
 
   const handleDragStart = useCallback((e, nodeId) => {
     if (activeTool === 'select') {
@@ -42,16 +66,12 @@ const Canvas = forwardRef(({
         if (node.isDragging) {
           const newX = Math.round((e.clientX - ref.current.offsetLeft) / zoom - position.x);
           const newY = Math.round((e.clientY - ref.current.offsetTop) / zoom - position.y);
-          return { 
-            ...node, 
-            x: newX, 
-            y: newY
-          };
+          return { ...node, x: newX, y: newY };
         }
         return node;
       }));
     }
-  }, [activeTool, zoom, position.x, position.y, setNodes, ref]);
+  }, [activeTool, zoom, position, setNodes, ref]);
 
   const handleDragEnd = useCallback(() => {
     setNodes(prevNodes => {
@@ -63,94 +83,45 @@ const Canvas = forwardRef(({
     });
   }, [setNodes, onNodePositionUpdate]);
 
-  const handleCanvasClick = useCallback((e) => {
-    if (e.target === e.currentTarget) {
-      onNodeFocus(null);
-    }
-  }, [onNodeFocus]);
-
-  const handleCanvasMouseDown = useCallback((e) => {
-    if (e.target === e.currentTarget) {
-      setIsCanvasGrabbed(true);
-      setLastMousePosition({ x: e.clientX, y: e.clientY });
-      document.body.style.cursor = 'grabbing';
-    }
-  }, []);
-
-  const handleCanvasMouseMove = useCallback((e) => {
-    handleDrag(e);
-    if (isCanvasGrabbed) {
-      const dx = e.clientX - lastMousePosition.x;
-      const dy = e.clientY - lastMousePosition.y;
-      handlePanMove({ movementX: dx, movementY: dy });
-      setLastMousePosition({ x: e.clientX, y: e.clientY });
-    }
-  }, [handleDrag, isCanvasGrabbed, lastMousePosition, handlePanMove]);
-
-  const handleCanvasMouseUp = useCallback(() => {
-    handleDragEnd();
-    setIsCanvasGrabbed(false);
-    document.body.style.cursor = 'default';
-  }, [handleDragEnd]);
-
-  const handleCanvasMouseLeave = useCallback(() => {
-    handleDragEnd();
-    setIsCanvasGrabbed(false);
-    document.body.style.cursor = 'default';
-  }, [handleDragEnd]);
-
-  const handleKeyDown = useCallback((e) => {
-    if (focusedNodeId) {
-      if (e.key === 'Delete') {
-        const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
-        if (nodeToDelete.type === 'ai') {
-          setNodeToDelete(nodeToDelete);
-          setShowDeleteConfirmation(true);
-        } else {
-          onNodeDelete(focusedNodeId);
-        }
-      } else if ((e.metaKey || e.ctrlKey) && e.key === 'c') {
-        const nodeToCopy = nodes.find(node => node.id === focusedNodeId);
-        if (nodeToCopy) {
-          copyNode(nodeToCopy);
-          toast.success("Node copied to clipboard");
-        }
-      } else if ((e.metaKey || e.ctrlKey) && e.key === 'v') {
-        const newNode = pasteNode();
-        if (newNode) {
-          setNodes(prev => [...prev, newNode]);
-          toast.success("Node pasted from clipboard");
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (focusedNodeId) {
+        if (e.key === 'Delete') {
+          const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
+          if (nodeToDelete?.type === 'ai') {
+            setNodeToDelete(nodeToDelete);
+            setShowDeleteConfirmation(true);
+          } else {
+            onNodeDelete(focusedNodeId);
+          }
+        } else if ((e.metaKey || e.ctrlKey) && e.key === 'c') {
+          const nodeToCopy = nodes.find(node => node.id === focusedNodeId);
+          if (nodeToCopy) {
+            copyNode(nodeToCopy);
+            toast.success("Node copied to clipboard");
+          }
+        } else if ((e.metaKey || e.ctrlKey) && e.key === 'v') {
+          const newNode = pasteNode();
+          if (newNode) {
+            setNodes(prev => [...prev, newNode]);
+            toast.success("Node pasted from clipboard");
+          }
         }
       }
-    }
-  }, [focusedNodeId, nodes, onNodeDelete, setNodes]);
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleKeyDown]);
 
-  const handleConfirmDelete = () => {
-    if (nodeToDelete) {
-      onNodeDelete(nodeToDelete.id);
-    }
-    setShowDeleteConfirmation(false);
-    setNodeToDelete(null);
-  };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [focusedNodeId, nodes, onNodeDelete, setNodes]);
 
   return (
     <>
       <div 
-        className={`w-screen h-full bg-[#594BFF] overflow-hidden ${isCanvasGrabbed ? 'cursor-grabbing' : 'cursor-grab'}`}
-        onMouseDown={handleCanvasMouseDown}
-        onMouseMove={handleCanvasMouseMove}
-        onMouseUp={handleCanvasMouseUp}
-        onMouseLeave={handleCanvasMouseLeave}
-        onClick={handleCanvasClick}
-        onDragOver={onDragOver}
-        onDrop={onDrop}
+        className={`w-full h-full bg-[#594BFF] overflow-hidden ${isPanning ? 'cursor-grabbing' : activeTool === 'pan' ? 'cursor-grab' : 'cursor-default'}`}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
         ref={ref}
       >
         <div 
