@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import Navigator from '../Navigator';
 import { MoreVertical } from 'lucide-react';
 import SearchInput from './SearchInput';
 import NodeActions from './NodeActions';
@@ -20,19 +19,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const NodeNavigator = ({ 
-  nodes, 
-  onUpdateNode, 
-  onNodeFocus, 
-  selectedNode, 
-  onAddNode,
-  onAIConversation 
+  nodes = [], // Add default empty array
+  onUpdateNode = () => {}, // Add default noop function
+  onNodeFocus = () => {}, // Add default noop function
+  selectedNode = null,
+  onAddNode = () => {}, // Add default noop function
+  onAIConversation = () => {} // Add default noop function
 }) => {
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [navigatorNodes, setNavigatorNodes] = useState(nodes);
 
   useEffect(() => {
-    setNavigatorNodes(nodes);
+    setNavigatorNodes(nodes || []); // Ensure nodes is an array
   }, [nodes]);
 
   const handleAddNode = () => {
@@ -44,7 +43,7 @@ const NodeNavigator = ({
     onAddNode({
       id: Date.now().toString(),
       type: 'text',
-      title: `New Node ${nodes.length + 1}`,
+      title: `New Node ${(nodes || []).length + 1}`,
       description: '',
       x: position.x,
       y: position.y
@@ -56,10 +55,10 @@ const NodeNavigator = ({
     onUpdateNode(updatedNodes);
   };
 
-  const filteredNodes = navigatorNodes
+  const filteredNodes = (navigatorNodes || [])
     .filter(node => {
       const matchesType = selectedType === 'all' || node.nodeType === selectedType;
-      const matchesSearch = node.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      const matchesSearch = node.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           node.description?.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesType && matchesSearch;
     });
