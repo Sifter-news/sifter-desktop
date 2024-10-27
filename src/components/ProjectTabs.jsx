@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Brain, FileText, Clock, Map } from 'lucide-react';
 import MindMapView from './MindMapView';
-import TextView from './TextView';
+import NodeView from './NodeView';
 import TimeView from './TimeView';
 import MapView from './MapView';
 import ReportList from './ReportList';
@@ -32,9 +32,9 @@ const ProjectTabs = ({
             <Brain className="w-4 h-4 mr-2" />
             Mind
           </TabsTrigger>
-          <TabsTrigger value="text" className="flex items-center">
+          <TabsTrigger value="node" className="flex items-center">
             <FileText className="w-4 h-4 mr-2" />
-            Text
+            Node
           </TabsTrigger>
           <TabsTrigger value="time" className="flex items-center">
             <Clock className="w-4 h-4 mr-2" />
@@ -58,8 +58,8 @@ const ProjectTabs = ({
               onNodeFocus={handleNodeFocus}
             />
           </TabsContent>
-          <TabsContent value="text" className="h-full">
-            <TextView 
+          <TabsContent value="node" className="h-full">
+            <NodeView 
               project={project} 
               nodes={nodes}
               onAddNode={onAddNode}
