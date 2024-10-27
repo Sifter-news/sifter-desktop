@@ -68,6 +68,7 @@ const ProjectTabs = ({
               focusedNodeId={focusedNodeId}
               onNodeFocus={onNodeFocus}
               onUpdateNode={onUpdateNode}
+              onAddNode={onAddNode}
             />
           </TabsContent>
           <TabsContent value="map">

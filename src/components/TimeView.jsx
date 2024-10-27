@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { Plus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import ReportList from './ReportList';
 import NodeTooltip from './node/NodeTooltip';
 import NodeEditorModal from './node/NodeEditorModal';
 import { toast } from 'sonner';
 
-const TimeView = ({ project, nodes, reports, onAddReport, onUpdateReport, onUpdateNode, focusedNodeId, onNodeFocus, onAddNode }) => {
+const TimeView = ({ nodes, onUpdateNode, focusedNodeId, onNodeFocus, onAddNode }) => {
   const [selectedNode, setSelectedNode] = useState(null);
   const sortedNodes = [...nodes].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
@@ -17,6 +16,11 @@ const TimeView = ({ project, nodes, reports, onAddReport, onUpdateReport, onUpda
   };
 
   const handleAddEventNode = (x) => {
+    if (typeof onAddNode !== 'function') {
+      console.error('onAddNode is not a function');
+      return;
+    }
+
     const newNode = {
       id: Date.now().toString(),
       title: 'New Event',
@@ -71,12 +75,11 @@ const TimeView = ({ project, nodes, reports, onAddReport, onUpdateReport, onUpda
             ))}
           </div>
           
-          {/* Add Event Node Button */}
           <Button
             variant="outline"
             size="sm"
             className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 flex items-center gap-2"
-            onClick={() => handleAddEventNode(sortedNodes.length * 250)} // Space nodes horizontally
+            onClick={() => handleAddEventNode(sortedNodes.length * 250)}
           >
             <Plus className="h-4 w-4" />
             Add Event
