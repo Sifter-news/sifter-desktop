@@ -1,7 +1,6 @@
 import React from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import NodeDropdownMenu from './NodeDropdownMenu';
-import NodeTypeDisplay from './NodeTypeDisplay';
+import NodeActions from './NodeActions';
 import { getNodeTypeIcon } from './NodeTypeIcon';
 
 const NodeListItem = ({ 
@@ -11,10 +10,22 @@ const NodeListItem = ({
   onFocus, 
   onUpdateNode, 
   onAIConversation,
-  isFocused,
-  onEditNode
+  isFocused 
 }) => {
   if (!node) return null;
+
+  const getNodeTypeLabel = (type) => {
+    const types = {
+      generic: "Generic Note",
+      node_person: "Person",
+      node_organization: "Organization",
+      node_object: "Object",
+      node_concept: "Concept",
+      node_location: "Location",
+      node_event: "Event"
+    };
+    return types[type] || "Generic Note";
+  };
 
   return (
     <div 
@@ -36,16 +47,17 @@ const NodeListItem = ({
         </Avatar>
         <div>
           <div className="font-medium text-sm">{node.title}</div>
-          <NodeTypeDisplay nodeType={node.nodeType} />
+          <div className="text-xs text-gray-500">{getNodeTypeLabel(node.nodeType)}</div>
           <div className="text-sm text-gray-500">
             {node.description}
             {node.type === 'group' && node.children && ` (${node.children.length} nodes)`}
           </div>
         </div>
       </div>
-      <NodeDropdownMenu 
-        node={node}
-        onEditNode={onEditNode}
+      <NodeActions 
+        node={node} 
+        onUpdateNode={onUpdateNode}
+        onAIConversation={onAIConversation}
       />
     </div>
   );
