@@ -47,9 +47,8 @@ const InvestigationModal = ({ isOpen, onClose, investigation, onUpdate }) => {
         .update({
           title: formData.title.trim(),
           description: formData.description.trim(),
-          investigation_type: formData.type,
-          // Removed investigation_focus from update
-          updated_at: new Date().toISOString()
+          investigation_type: formData.type
+          // Removed updated_at since it's handled by database default
         })
         .eq('id', investigation.id)
         .select()
