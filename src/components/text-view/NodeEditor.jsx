@@ -12,7 +12,6 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
   const [editedTitle, setEditedTitle] = useState('');
   const [editedDescription, setEditedDescription] = useState('');
   const [nodeType, setNodeType] = useState('generic');
-  const [metadata, setMetadata] = useState({});
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -21,7 +20,6 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
       setEditedTitle(selectedNode.title || '');
       setEditedDescription(selectedNode.description || '');
       setNodeType(selectedNode.type || 'generic');
-      setMetadata(selectedNode.metadata || {});
       setHasUnsavedChanges(false);
     }
   }, [selectedNode]);
@@ -54,15 +52,6 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
     updateNodeState({ type: newType });
   };
 
-  const handleMetadataChange = (field, value) => {
-    const newMetadata = {
-      ...metadata,
-      [field]: value
-    };
-    setMetadata(newMetadata);
-    updateNodeState({ metadata: newMetadata });
-  };
-
   const handleSave = async () => {
     if (!selectedNode) return;
 
@@ -71,8 +60,7 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
       const updates = {
         title: editedTitle,
         description: editedDescription,
-        type: nodeType,
-        metadata: metadata
+        type: nodeType
       };
 
       const { data, error } = await supabase
@@ -84,7 +72,6 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
 
       if (error) throw error;
 
-      // Update the node in the navigator and local state
       onUpdateNode({
         ...selectedNode,
         ...data
@@ -129,12 +116,6 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
           onChange={handleDescriptionChange}
           className="flex-grow w-full p-2 border rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Enter description..."
-        />
-
-        <NodeMetadataForm
-          nodeType={nodeType}
-          metadata={metadata}
-          onMetadataChange={handleMetadataChange}
         />
       </div>
 
