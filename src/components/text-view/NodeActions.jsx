@@ -11,7 +11,8 @@ import {
   Calendar,
   FileText,
   MoreVertical,
-  MessageCircle
+  MessageCircle,
+  Eye
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -51,7 +52,15 @@ const NodeActions = ({ node, onUpdateNode, onAIConversation }) => {
 
   return (
     <>
-      <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 w-8 p-0"
+          onClick={() => setShowEditModal(true)}
+        >
+          <Eye className="h-4 w-4" />
+        </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
