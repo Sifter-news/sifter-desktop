@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
+import Navigator from '../Navigator';
 import { MoreVertical } from 'lucide-react';
 import SearchInput from './SearchInput';
 import NodeActions from './NodeActions';
@@ -19,7 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const NodeNavigator = ({ 
-  nodes = [], // Add default empty array
+  nodes, 
   onUpdateNode, 
   onNodeFocus, 
   selectedNode, 
@@ -31,12 +32,10 @@ const NodeNavigator = ({
   const [navigatorNodes, setNavigatorNodes] = useState(nodes);
 
   useEffect(() => {
-    setNavigatorNodes(nodes || []); // Ensure nodes is an array
+    setNavigatorNodes(nodes);
   }, [nodes]);
 
   const handleAddNode = () => {
-    if (!onAddNode) return; // Guard against undefined onAddNode
-
     const position = {
       x: Math.random() * 500,
       y: Math.random() * 500
@@ -45,7 +44,7 @@ const NodeNavigator = ({
     onAddNode({
       id: Date.now().toString(),
       type: 'text',
-      title: `New Node ${navigatorNodes.length + 1}`,
+      title: `New Node ${nodes.length + 1}`,
       description: '',
       x: position.x,
       y: position.y
@@ -53,17 +52,17 @@ const NodeNavigator = ({
   };
 
   const handleNodeUpdate = (updatedNodes) => {
-    if (!onUpdateNode) return; // Guard against undefined onUpdateNode
     setNavigatorNodes(updatedNodes);
     onUpdateNode(updatedNodes);
   };
 
-  const filteredNodes = navigatorNodes.filter(node => {
-    const matchesType = selectedType === 'all' || node.nodeType === selectedType;
-    const matchesSearch = (node.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         (node.description || '').toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesType && matchesSearch;
-  });
+  const filteredNodes = navigatorNodes
+    .filter(node => {
+      const matchesType = selectedType === 'all' || node.nodeType === selectedType;
+      const matchesSearch = node.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          node.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesType && matchesSearch;
+    });
 
   return (
     <div className="w-full h-full flex flex-col p-4">
@@ -112,7 +111,7 @@ const NodeNavigator = ({
           <div key={node.id} className="group flex items-center justify-between p-2 hover:bg-gray-100 rounded-lg">
             <div 
               className="flex-grow cursor-pointer"
-              onClick={() => onNodeFocus && onNodeFocus(node.id)}
+              onClick={() => onNodeFocus(node.id)}
             >
               <div className="font-medium">{node.title}</div>
               <div className="text-sm text-gray-500">{node.description}</div>
