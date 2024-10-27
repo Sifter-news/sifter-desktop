@@ -3,6 +3,7 @@ import NodeRenderer from './NodeRenderer';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 import { toast } from 'sonner';
+import { useCanvasControls } from '@/hooks/useCanvasControls';
 
 const Canvas = forwardRef(({ 
   nodes, 
@@ -24,9 +25,14 @@ const Canvas = forwardRef(({
 }, ref) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = React.useState(false);
   const [nodeToDelete, setNodeToDelete] = React.useState(null);
-  const [isPanning, setIsPanning] = useState(false);
-  const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
-  const [isCanvasGrabbed, setIsCanvasGrabbed] = useState(false);
+
+  const {
+    isCanvasGrabbed,
+    handleCanvasMouseDown,
+    handleCanvasMouseMove,
+    handleCanvasMouseUp,
+    handleCanvasMouseLeave,
+  } = useCanvasControls(activeTool, handlePanMove);
 
   const handleDragStart = useCallback((e, nodeId) => {
     if (activeTool === 'select') {
@@ -68,36 +74,6 @@ const Canvas = forwardRef(({
       onNodeFocus(null);
     }
   }, [onNodeFocus]);
-
-  const handleCanvasMouseDown = useCallback((e) => {
-    if (e.target === e.currentTarget) {
-      setIsCanvasGrabbed(true);
-      setLastMousePosition({ x: e.clientX, y: e.clientY });
-      document.body.style.cursor = 'grabbing';
-    }
-  }, []);
-
-  const handleCanvasMouseMove = useCallback((e) => {
-    handleDrag(e);
-    if (isCanvasGrabbed) {
-      const dx = e.clientX - lastMousePosition.x;
-      const dy = e.clientY - lastMousePosition.y;
-      handlePanMove({ movementX: dx, movementY: dy });
-      setLastMousePosition({ x: e.clientX, y: e.clientY });
-    }
-  }, [handleDrag, isCanvasGrabbed, lastMousePosition, handlePanMove]);
-
-  const handleCanvasMouseUp = useCallback(() => {
-    handleDragEnd();
-    setIsCanvasGrabbed(false);
-    document.body.style.cursor = 'default';
-  }, [handleDragEnd]);
-
-  const handleCanvasMouseLeave = useCallback(() => {
-    handleDragEnd();
-    setIsCanvasGrabbed(false);
-    document.body.style.cursor = 'default';
-  }, [handleDragEnd]);
 
   const handleKeyDown = useCallback((e) => {
     if (focusedNodeId) {
@@ -143,7 +119,7 @@ const Canvas = forwardRef(({
   return (
     <>
       <div 
-        className={`w-[1000vw] h-[1000vh] bg-[#594BFF] overflow-hidden ${isCanvasGrabbed ? 'cursor-grabbing' : 'cursor-grab'}`}
+        className={`w-[1000vw] h-[1000vh] bg-[#594BFF] overflow-hidden ${isCanvasGrabbed ? 'cursor-grabbing' : activeTool === 'pan' ? 'cursor-grab' : 'cursor-default'}`}
         style={{
           position: 'absolute',
           left: '-450vw',  // Center the expanded canvas
