@@ -16,10 +16,17 @@ const InvestigationList = ({
   onDeleteProject,
   onUpdateInvestigation 
 }) => {
+  // Sort investigations by updated_at in descending order (most recent first)
+  const sortedInvestigations = [...(investigations || [])].sort((a, b) => {
+    const dateA = new Date(a.updated_at || a.created_at);
+    const dateB = new Date(b.updated_at || b.created_at);
+    return dateB - dateA;
+  });
+
   return (
     <div className="flex-grow overflow-y-auto scrollbar-hide">
       <div className="flex flex-col space-y-6">
-        {investigations?.map((investigation) => (
+        {sortedInvestigations.map((investigation) => (
           <div key={investigation.id} className="flex flex-col lg:flex-row w-full">
             <div className="w-full lg:w-1/2 flex-shrink-0 relative">
               <div onClick={() => onProjectClick(investigation)}>
