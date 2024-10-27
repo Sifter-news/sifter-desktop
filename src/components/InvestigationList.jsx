@@ -20,8 +20,19 @@ const InvestigationList = ({
 }) => {
   // Sort investigations by updated_at in descending order
   const sortedInvestigations = [...(investigations || [])].sort((a, b) => {
-    return new Date(b.updated_at) - new Date(a.updated_at);
+    const dateA = a.updated_at ? new Date(a.updated_at) : new Date(0);
+    const dateB = b.updated_at ? new Date(b.updated_at) : new Date(0);
+    return dateB - dateA;
   });
+
+  const getTimeAgo = (date) => {
+    if (!date) return 'No date';
+    try {
+      return formatDistanceToNow(new Date(date), { addSuffix: true });
+    } catch (error) {
+      return 'Invalid date';
+    }
+  };
 
   return (
     <div className="flex-grow overflow-y-auto scrollbar-hide">
@@ -34,7 +45,7 @@ const InvestigationList = ({
                   variant="secondary" 
                   className="absolute -top-2 -right-2 z-20"
                 >
-                  {formatDistanceToNow(new Date(investigation.updated_at), { addSuffix: true })}
+                  {getTimeAgo(investigation.updated_at)}
                 </Badge>
                 <InvestigationCard 
                   investigation={investigation} 
