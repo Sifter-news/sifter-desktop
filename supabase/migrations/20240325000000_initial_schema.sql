@@ -51,8 +51,12 @@ CREATE TABLE public.node (
     owner_id UUID REFERENCES public.profiles(id),
     investigation_id UUID REFERENCES public.investigations(id),
     parent_node_id UUID REFERENCES public.node(id) ON DELETE SET NULL,
-    position_x NUMERIC(10,2) DEFAULT 0,
-    position_y NUMERIC(10,2) DEFAULT 0,
+    position_x DECIMAL(10,2) DEFAULT 0,
+    position_y DECIMAL(10,2) DEFAULT 0,
+    width DECIMAL(10,2) DEFAULT 200,
+    height DECIMAL(10,2) DEFAULT 100,
+    visual_style VARCHAR(50) DEFAULT 'default',
+    node_type VARCHAR(50) DEFAULT 'generic',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     metadata JSONB DEFAULT '{}'::jsonb
 );
