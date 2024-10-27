@@ -71,12 +71,21 @@ const InvestigationModal = ({ isOpen, onClose, investigation, onUpdate }) => {
 
     setIsLoading(true);
     try {
-      const { error } = await supabase
+      // First, delete all nodes associated with this investigation
+      const { error: nodesError } = await supabase
+        .from('node')
+        .delete()
+        .eq('investigation_id', investigation.id);
+
+      if (nodesError) throw nodesError;
+
+      // Then delete the investigation
+      const { error: investigationError } = await supabase
         .from('investigations')
         .delete()
         .eq('id', investigation.id);
 
-      if (error) throw error;
+      if (investigationError) throw investigationError;
 
       toast.success("Investigation deleted successfully");
       onClose();
