@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
-import Map from 'react-map-gl';
+import { Map as MapGL } from 'react-map-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import NodeTooltip from './node/NodeTooltip';
 import NodeEditorModal from './node/NodeEditorModal';
 
 const MapView = ({ nodes, onUpdateNode }) => {
   const [selectedNode, setSelectedNode] = useState(null);
+  const token = import.meta.env.VITE_MAPBOX_TOKEN;
+
+  if (!token) {
+    return <div className="p-4">Please add your Mapbox token to the .env file</div>;
+  }
 
   return (
     <div className="h-full w-full relative">
-      <Map
+      <MapGL
         initialViewState={{
           longitude: -122.4,
           latitude: 37.8,
@@ -16,6 +22,7 @@ const MapView = ({ nodes, onUpdateNode }) => {
         }}
         style={{ width: '100%', height: '100%' }}
         mapStyle="mapbox://styles/mapbox/streets-v11"
+        mapboxAccessToken={token}
       >
         {nodes.map(node => (
           <NodeTooltip key={node.id} node={node} onView={setSelectedNode}>
@@ -24,7 +31,7 @@ const MapView = ({ nodes, onUpdateNode }) => {
             </div>
           </NodeTooltip>
         ))}
-      </Map>
+      </MapGL>
       <NodeEditorModal
         isOpen={!!selectedNode}
         onClose={() => setSelectedNode(null)}
