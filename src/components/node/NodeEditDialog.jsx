@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import NodeMetadataFields from './NodeMetadataFields';
+import { FileText, User, Building2, Package, Brain, MapPin, Calendar, Layout, Square, Maximize2, StickyNote } from 'lucide-react';
 
 const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
   const [formData, setFormData] = useState({
@@ -94,10 +95,48 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
                 <SelectValue placeholder="Select node type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="generic">Generic Note</SelectItem>
-                <SelectItem value="node_person">Person</SelectItem>
-                <SelectItem value="node_organization">Organization</SelectItem>
-                <SelectItem value="node_event">Event</SelectItem>
+                <SelectItem value="generic">
+                  <div className="flex items-center">
+                    <FileText className="h-4 w-4 mr-2" />
+                    Generic Note
+                  </div>
+                </SelectItem>
+                <SelectItem value="node_person">
+                  <div className="flex items-center">
+                    <User className="h-4 w-4 mr-2" />
+                    Person
+                  </div>
+                </SelectItem>
+                <SelectItem value="node_organization">
+                  <div className="flex items-center">
+                    <Building2 className="h-4 w-4 mr-2" />
+                    Organization
+                  </div>
+                </SelectItem>
+                <SelectItem value="node_object">
+                  <div className="flex items-center">
+                    <Package className="h-4 w-4 mr-2" />
+                    Object
+                  </div>
+                </SelectItem>
+                <SelectItem value="node_concept">
+                  <div className="flex items-center">
+                    <Brain className="h-4 w-4 mr-2" />
+                    Concept
+                  </div>
+                </SelectItem>
+                <SelectItem value="node_location">
+                  <div className="flex items-center">
+                    <MapPin className="h-4 w-4 mr-2" />
+                    Location
+                  </div>
+                </SelectItem>
+                <SelectItem value="node_event">
+                  <div className="flex items-center">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Event
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -111,10 +150,30 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
                 <SelectValue placeholder="Select visual style" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="default">Default</SelectItem>
-                <SelectItem value="compact">Compact</SelectItem>
-                <SelectItem value="expanded">Expanded</SelectItem>
-                <SelectItem value="postit">Post-it</SelectItem>
+                <SelectItem value="default">
+                  <div className="flex items-center">
+                    <Square className="h-4 w-4 mr-2" />
+                    Default
+                  </div>
+                </SelectItem>
+                <SelectItem value="compact">
+                  <div className="flex items-center">
+                    <Layout className="h-4 w-4 mr-2" />
+                    Compact
+                  </div>
+                </SelectItem>
+                <SelectItem value="expanded">
+                  <div className="flex items-center">
+                    <Maximize2 className="h-4 w-4 mr-2" />
+                    Expanded
+                  </div>
+                </SelectItem>
+                <SelectItem value="postit">
+                  <div className="flex items-center">
+                    <StickyNote className="h-4 w-4 mr-2" />
+                    Post-it
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
