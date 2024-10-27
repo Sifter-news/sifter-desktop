@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 
-export const useZoomPan = (initialZoom = 1) => {
+export const useZoomPan = (initialZoom = 0.7) => {
   const [zoom, setZoom] = useState(initialZoom);
   const [isPanning, setIsPanning] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
