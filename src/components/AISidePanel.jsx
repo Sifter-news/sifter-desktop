@@ -49,7 +49,7 @@ const AISidePanel = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-16 right-4 bottom-4 w-[336px] bg-white shadow-lg flex flex-col z-[9999] rounded-t-[24px] rounded-b-[48px] my-6">
+    <div className="fixed top-[72px] left-2 bottom-2 w-[336px] bg-white shadow-lg flex flex-col z-[9999] rounded-t-[24px] rounded-b-[48px]">
       <div className="flex justify-between items-center p-4 border-b">
         <h2 className="text-lg font-semibold">{title}</h2>
         <Button variant="ghost" onClick={onClose}>Close</Button>
