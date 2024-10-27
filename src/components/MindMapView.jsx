@@ -24,6 +24,7 @@ const MindMapView = ({
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
   const [initialAIMessage, setInitialAIMessage] = useState('');
   const [selectedNode, setSelectedNode] = useState(null);
+  const [activeTool, setActiveTool] = useState('select');
   const canvasRef = useRef(null);
 
   const {
@@ -36,7 +37,6 @@ const MindMapView = ({
     setPosition
   } = useZoomPan();
 
-  // Effect to center the focused node
   useEffect(() => {
     if (focusedNodeId && canvasRef.current) {
       const focusedNode = nodes.find(node => node.id === focusedNodeId);
@@ -44,12 +44,8 @@ const MindMapView = ({
         const rect = canvasRef.current.getBoundingClientRect();
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
-        
-        // Calculate the position to center the node
         const newX = centerX - (focusedNode.x * zoom);
         const newY = centerY - (focusedNode.y * zoom);
-        
-        // Update the position smoothly
         setPosition({ x: newX, y: newY });
       }
     }
@@ -80,26 +76,56 @@ const MindMapView = ({
     }
   };
 
-  const handleAddGenericNode = () => {
+  const handleAddNode = (options = {}) => {
     const canvasRect = canvasRef.current.getBoundingClientRect();
     const centerX = (canvasRect.width / 2 - position.x) / zoom;
     const centerY = (canvasRect.height / 2 - position.y) / zoom;
     
     const newNode = {
       id: Date.now().toString(),
-      type: 'generic',
-      visualType: 'pill',
+      type: options.type || 'generic',
+      visualStyle: options.type === 'postit' ? 'postit' : 'default',
       title: 'New Node',
       description: '',
       x: centerX,
       y: centerY,
       width: 200,
-      height: 100,
+      height: options.type === 'postit' ? 200 : 100,
       color: '#FFFFFF',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: options.type === 'postit' ? '#FFF8DC' : '#FFFFFF',
     };
     
     onAddNode(newNode);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const nodeType = e.dataTransfer.getData('nodeType');
+    if (nodeType === 'postit') {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left - position.x) / zoom;
+      const y = (e.clientY - rect.top - position.y) / zoom;
+      
+      const newNode = {
+        id: Date.now().toString(),
+        type: 'postit',
+        visualStyle: 'postit',
+        title: 'New Post-it',
+        description: '',
+        x,
+        y,
+        width: 200,
+        height: 200,
+        color: '#000000',
+        backgroundColor: '#FFF8DC',
+      };
+      
+      onAddNode(newNode);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
   };
 
   const handleAIConversation = (node) => {
@@ -113,7 +139,11 @@ const MindMapView = ({
 
   return (
     <div className="flex h-[calc(100vh-64px)] w-screen overflow-hidden">
-      <div className="flex-grow relative">
+      <div 
+        className="flex-grow relative"
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+      >
         <Canvas
           ref={canvasRef}
           nodes={nodes}
@@ -130,12 +160,15 @@ const MindMapView = ({
           onAIConversation={handleAIConversation}
           onNodePositionUpdate={handleNodePositionUpdate}
           onNodeClick={handleNodeClick}
+          activeTool={activeTool}
         />
         <Toolbar
+          activeTool={activeTool}
+          setActiveTool={setActiveTool}
           handleZoom={handleZoom}
           zoom={zoom}
           nodes={nodes}
-          onAddNode={handleAddGenericNode}
+          onAddNode={handleAddNode}
         />
       </div>
       <AISidePanel

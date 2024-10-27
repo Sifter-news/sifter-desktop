@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, Hand, MousePointer, CirclePlus, Download } from 'lucide-react';
+import { Minus, Plus, Hand, MousePointer, CirclePlus, Download, StickyNote } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -12,6 +12,10 @@ import ExportDialog from './ExportDialog';
 
 const Toolbar = ({ activeTool, setActiveTool, handleZoom, zoom, nodes, onAddNode }) => {
   const [isExportDialogOpen, setIsExportDialogOpen] = React.useState(false);
+
+  const handleDragStart = (e) => {
+    e.dataTransfer.setData('nodeType', 'postit');
+  };
 
   return (
     <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-20 backdrop-blur-sm rounded-full shadow-lg p-2">
@@ -33,6 +37,14 @@ const Toolbar = ({ activeTool, setActiveTool, handleZoom, zoom, nodes, onAddNode
           icon={<CirclePlus className="h-4 w-4" />}
           label="Add Node"
           onClick={onAddNode}
+          isActive={false}
+        />
+        <ToolButton 
+          icon={<StickyNote className="h-4 w-4" />}
+          label="Add Post-it"
+          onClick={() => onAddNode({ type: 'postit' })}
+          draggable
+          onDragStart={handleDragStart}
           isActive={false}
         />
         <div className="flex items-center space-x-2">
