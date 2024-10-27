@@ -1,6 +1,6 @@
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import { MoreVertical, Trash, FolderInput, Users } from 'lucide-react';
+import { MoreVertical, Trash, FolderInput, Users, Pencil } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,7 +9,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const NavigatorItem = ({ item, index, onDocumentClick, dragOverFolder, setDragOverFolder, setDragTimer, isFocused }) => {
+const NavigatorItem = ({ 
+  item, 
+  index, 
+  onDocumentClick, 
+  dragOverFolder, 
+  setDragOverFolder, 
+  setDragTimer, 
+  isFocused,
+  onEditProject 
+}) => {
   const handleDragEnter = () => {
     if (item.type === 'folder') {
       setDragOverFolder(item.id);
@@ -61,6 +70,13 @@ const NavigatorItem = ({ item, index, onDocumentClick, dragOverFolder, setDragOv
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
+                <DropdownMenuItem onClick={(e) => {
+                  e.stopPropagation();
+                  onEditProject(item);
+                }}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  <span>Edit</span>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => console.log('Create Group')}>
                   <Users className="mr-2 h-4 w-4" />
                   <span>Create Group</span>
