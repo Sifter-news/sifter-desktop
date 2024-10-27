@@ -1,53 +1,36 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { PlusIcon, Circle } from 'lucide-react';
+import { PlusIcon } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import ArticleModal from './ArticleModal';
+import ContentModal from './ContentModal';
+import ContentPreview from './ContentPreview';
 import { toast } from "sonner";
 
 const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
-  const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleSaveArticle = (article) => {
-    // Ensure we're only passing serializable data
-    const serializableArticle = {
-      id: String(Date.now()),
-      title: article?.title || '',
-      content: article?.content || '',
-      image: article?.image || '/default-image.png'
-    };
-    
+  const handleSaveReport = (report) => {
     try {
       if (typeof onAddReport === 'function') {
-        // Clone the object to ensure it's serializable
-        const clonedArticle = JSON.parse(JSON.stringify(serializableArticle));
-        onAddReport(clonedArticle);
+        const clonedReport = JSON.parse(JSON.stringify(report));
+        onAddReport(clonedReport);
       } else {
         console.warn('onAddReport prop is not a function');
         toast.error("Unable to add report at this time");
       }
     } catch (error) {
-      console.error('Error saving article:', error);
+      console.error('Error saving report:', error);
       toast.error("Failed to save report");
     }
-    setIsArticleModalOpen(false);
+    setIsModalOpen(false);
   };
 
   const handleEditReport = (report) => {
     if (!report) return;
     
     try {
-      // Ensure we're only passing serializable data
-      const serializableReport = {
-        id: String(report.id),
-        title: report?.title || '',
-        content: report?.content || '',
-        image: report?.image || '/default-image.png'
-      };
-      
       if (typeof onEditReport === 'function') {
-        // Clone the object to ensure it's serializable
-        const clonedReport = JSON.parse(JSON.stringify(serializableReport));
+        const clonedReport = JSON.parse(JSON.stringify(report));
         onEditReport(clonedReport);
       } else {
         console.warn('onEditReport prop is not a function');
@@ -66,21 +49,12 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
           {reports && reports.length > 0 && (
             <div className="w-[30%] mb-4 flex flex-wrap justify-center gap-2">
               {reports.map((report) => (
-                <TooltipProvider key={String(report.id)}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        className="w-12 h-12 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors flex items-center justify-center text-white cursor-pointer"
-                        onClick={() => handleEditReport(report)}
-                      >
-                        <Circle className="w-6 h-6" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="font-bold">{report.title || 'Untitled'}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <ContentPreview
+                  key={String(report.id)}
+                  content={report}
+                  onUpdate={handleEditReport}
+                  type="report"
+                />
               ))}
             </div>
           )}
@@ -90,7 +64,7 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
                 <Button
                   size="icon"
                   className="rounded-full w-12 h-12 bg-black hover:bg-gray-800 text-white shadow-lg"
-                  onClick={() => setIsArticleModalOpen(true)}
+                  onClick={() => setIsModalOpen(true)}
                 >
                   <PlusIcon className="h-6 w-6" />
                 </Button>
@@ -102,11 +76,12 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
           </TooltipProvider>
         </div>
       </div>
-      <ArticleModal
-        isOpen={isArticleModalOpen}
-        onClose={() => setIsArticleModalOpen(false)}
-        article={null}
-        onSave={handleSaveArticle}
+      <ContentModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        content={null}
+        onSave={handleSaveReport}
+        type="report"
       />
     </div>
   );
