@@ -1,6 +1,16 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Layout, Type, Edit } from 'lucide-react';
+import { 
+  Layout, 
+  Search, 
+  User, 
+  Building2, 
+  Package, 
+  Brain, 
+  MapPin, 
+  Calendar,
+  FileText
+} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,13 +30,13 @@ const NodeActions = ({ node, onUpdateNode }) => {
   };
 
   const nodeTypes = {
-    generic: "Generic Note",
-    node_person: "Person",
-    node_organization: "Organization",
-    node_object: "Object",
-    node_concept: "Concept",
-    node_location: "Location",
-    node_event: "Event"
+    generic: { label: "Generic Note", icon: FileText },
+    node_person: { label: "Person", icon: User },
+    node_organization: { label: "Organization", icon: Building2 },
+    node_object: { label: "Object", icon: Package },
+    node_concept: { label: "Concept", icon: Brain },
+    node_location: { label: "Location", icon: MapPin },
+    node_event: { label: "Event", icon: Calendar }
   };
 
   const handleStyleChange = (style) => {
@@ -61,15 +71,16 @@ const NodeActions = ({ node, onUpdateNode }) => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Type className="h-4 w-4" />
+              <Search className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            {Object.entries(nodeTypes).map(([value, label]) => (
+            {Object.entries(nodeTypes).map(([value, { label, icon: Icon }]) => (
               <DropdownMenuItem
                 key={value}
                 onClick={() => handleTypeChange(value)}
               >
+                <Icon className="h-4 w-4 mr-2" />
                 {label}
               </DropdownMenuItem>
             ))}
@@ -82,7 +93,7 @@ const NodeActions = ({ node, onUpdateNode }) => {
           className="h-8 w-8 p-0"
           onClick={() => setShowEditModal(true)}
         >
-          <Edit className="h-4 w-4" />
+          <Search className="h-4 w-4" />
         </Button>
       </div>
 
