@@ -10,7 +10,9 @@ export const useNodeOperations = (setNodes) => {
         title: newNode.title,
         description: newNode.description,
         type: newNode.type,
-        investigation_id: projectId
+        investigation_id: projectId,
+        position_x: newNode.x || position.x,
+        position_y: newNode.y || position.y
       };
 
       const { data, error } = await supabase
@@ -24,8 +26,8 @@ export const useNodeOperations = (setNodes) => {
       // Add UI-specific properties
       const nodeWithUI = {
         ...data,
-        x: 0,
-        y: 0,
+        x: data.position_x || 0,
+        y: data.position_y || 0,
         width: newNode.width || 200
       };
 
@@ -41,7 +43,9 @@ export const useNodeOperations = (setNodes) => {
     try {
       const databaseUpdates = {
         title: updates.title,
-        description: updates.description
+        description: updates.description,
+        position_x: updates.x,
+        position_y: updates.y
       };
 
       const { error } = await supabase
