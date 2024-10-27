@@ -30,13 +30,14 @@ const Canvas = forwardRef(({
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   const handleMouseDown = useCallback((e) => {
-    if (activeTool === 'pan' || e.button === 1) {
+    // Only start panning if left click or middle click
+    if (e.button === 0 || e.button === 1) {
       setIsPanning(true);
       setStartPanPosition({ x: e.clientX, y: e.clientY });
       handlePanStart();
       e.preventDefault();
     }
-  }, [activeTool, handlePanStart]);
+  }, [handlePanStart]);
 
   const handleMouseMove = useCallback((e) => {
     if (isPanning) {
@@ -119,7 +120,7 @@ const Canvas = forwardRef(({
   return (
     <>
       <div 
-        className={`w-full h-full bg-[#594BFF] overflow-hidden ${isPanning ? 'cursor-grabbing' : activeTool === 'pan' ? 'cursor-grab' : 'cursor-default'}`}
+        className={`w-full h-full bg-[#594BFF] overflow-hidden ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
