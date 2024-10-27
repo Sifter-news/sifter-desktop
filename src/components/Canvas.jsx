@@ -33,6 +33,9 @@ const Canvas = forwardRef(({
     handleCanvasMouseMove,
     handleCanvasMouseUp,
     handleCanvasMouseLeave,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
   } = useCanvasControls(activeTool, handlePanMove);
 
   const handleDragStart = useCallback((e, nodeId) => {
@@ -133,6 +136,7 @@ const Canvas = forwardRef(({
           position: 'absolute',
           left: '-450vw',
           top: '-450vh',
+          touchAction: 'none' // Prevent default touch behaviors
         }}
         onMouseDown={handleCanvasMouseDown}
         onMouseMove={(e) => {
@@ -148,6 +152,9 @@ const Canvas = forwardRef(({
           handleDragEnd();
         }}
         onClick={handleCanvasClick}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         onDragOver={onDragOver}
         onDrop={onDrop}
         ref={ref}
