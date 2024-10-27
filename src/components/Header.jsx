@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { User } from 'lucide-react';
 
 const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpdate, onProjectDelete }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -31,25 +32,33 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
             </Link>
           </div>
         </div>
-        <div className="flex-grow flex justify-center items-center">
+
+        <div className="flex-grow flex justify-center items-center space-x-4">
           {projectName && (
-            <span 
-              className="text-sm font-normal text-[#4B25F3] cursor-pointer hover:underline" 
-              onClick={() => setIsEditModalOpen(true)}
-            >
-              {projectName}
-            </span>
+            <div className="flex items-center space-x-4">
+              <span 
+                className="text-sm font-normal text-[#4B25F3] cursor-pointer hover:underline" 
+                onClick={() => setIsEditModalOpen(true)}
+              >
+                {projectName}
+              </span>
+              <Separator orientation="vertical" className="h-4" />
+              <Select value={investigatorType} onValueChange={setInvestigatorType}>
+                <SelectTrigger className="w-[180px] bg-white whitespace-nowrap">
+                  <div className="flex items-center space-x-2">
+                    <User className="h-4 w-4" />
+                    <SelectValue placeholder="Select investigator type" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="investigator">Investigator</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           )}
         </div>
-        <div className="flex items-center space-x-4 min-w-[200px] justify-end">
-          <Select value={investigatorType} onValueChange={setInvestigatorType}>
-            <SelectTrigger className="w-[180px] bg-white whitespace-nowrap">
-              <SelectValue placeholder="Select investigator type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="investigator">Investigator</SelectItem>
-            </SelectContent>
-          </Select>
+
+        <div className="min-w-[200px] flex justify-end">
           <UserProfile user={user} onUpdateUser={onUpdateUser} />
         </div>
       </div>
