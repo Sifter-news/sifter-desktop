@@ -14,11 +14,11 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
   const [errors, setErrors] = useState({ title: '', description: '' });
 
   useEffect(() => {
-    if (project) {
+    if (project && isOpen) {
       setTitle(project.title || '');
       setDescription(project.description || '');
     }
-  }, [project]);
+  }, [project, isOpen]);
 
   const validateForm = () => {
     const newErrors = {
@@ -46,7 +46,7 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
     
     try {
       const updatedProject = {
-        id: project.id,
+        ...project,
         title: title.trim(),
         description: description.trim()
       };
@@ -82,7 +82,7 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit {project?.title || 'Project'}</DialogTitle>
+          <DialogTitle>Edit Project</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
