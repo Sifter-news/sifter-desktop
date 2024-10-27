@@ -31,6 +31,14 @@ const NodeNavigator = ({
     setNavigatorNodes(nodes);
   }, [nodes]);
 
+  const filteredNodes = navigatorNodes.filter(node => {
+    if (!node) return false;
+    const matchesType = selectedType === 'all' || node.nodeType === selectedType;
+    const matchesSearch = (node.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        (node.description || '').toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesType && matchesSearch;
+  });
+
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (!filteredNodes.length) return;
@@ -92,14 +100,6 @@ const NodeNavigator = ({
       return [nodeId];
     });
   };
-
-  const filteredNodes = navigatorNodes.filter(node => {
-    if (!node) return false;
-    const matchesType = selectedType === 'all' || node.nodeType === selectedType;
-    const matchesSearch = (node.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        (node.description || '').toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesType && matchesSearch;
-  });
 
   return (
     <div className="w-full h-full flex flex-col p-4 bg-white/30 backdrop-blur-md">
