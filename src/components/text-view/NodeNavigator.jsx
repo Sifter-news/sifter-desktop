@@ -60,7 +60,7 @@ const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNo
           items={filteredNodes} 
           setItems={onUpdateNode} 
           onDocumentClick={(node) => onNodeFocus(node.id)}
-          focusedNode={selectedNode}
+          focusedDocument={selectedNode}
         />
       </div>
       <Button onClick={handleAddNode} className="mt-4 w-full">Add Node</Button>

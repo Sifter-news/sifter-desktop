@@ -20,7 +20,7 @@ const TextView = ({
 }) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [nodeToDelete, setNodeToDelete] = useState(null);
-  const selectedNode = nodes.find(node => node.id === focusedNodeId) || nodes[0];
+  const selectedNode = nodes.find(node => node.id === focusedNodeId);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -38,11 +38,10 @@ const TextView = ({
         } else if ((e.metaKey || e.ctrlKey) && e.key === 'v') {
           const newNode = pasteNode();
           if (newNode) {
-            const position = findAvailablePosition(nodes);
             onAddNode({
               ...newNode,
-              x: position.x,
-              y: position.y
+              x: Math.random() * 500,
+              y: Math.random() * 500
             });
             toast.success("Node pasted from clipboard");
           }
