@@ -53,7 +53,8 @@ CREATE TABLE public.node (
     parent_node_id UUID REFERENCES public.node(id) ON DELETE SET NULL,
     position_x NUMERIC(10,2) DEFAULT 0,
     position_y NUMERIC(10,2) DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    metadata JSONB DEFAULT '{}'::jsonb
 );
 
 -- Create reports table last

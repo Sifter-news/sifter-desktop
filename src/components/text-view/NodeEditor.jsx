@@ -19,7 +19,7 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
     if (selectedNode) {
       setEditedTitle(selectedNode.title || '');
       setEditedDescription(selectedNode.description || '');
-      setNodeType(selectedNode.nodeType || 'generic');
+      setNodeType(selectedNode.type || 'generic');
       setMetadata(selectedNode.metadata || {});
       setHasUnsavedChanges(false);
     }
@@ -30,13 +30,11 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
     setEditedTitle(newTitle);
     setHasUnsavedChanges(true);
     
-    // Immediately update the node for real-time reflection
     if (selectedNode) {
-      const updatedNode = {
+      onUpdateNode({
         ...selectedNode,
         title: newTitle
-      };
-      onUpdateNode(updatedNode);
+      });
     }
   };
 
@@ -46,11 +44,10 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
     setHasUnsavedChanges(true);
     
     if (selectedNode) {
-      const updatedNode = {
+      onUpdateNode({
         ...selectedNode,
         description: newDescription
-      };
-      onUpdateNode(updatedNode);
+      });
     }
   };
 
@@ -59,11 +56,10 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
     setHasUnsavedChanges(true);
     
     if (selectedNode) {
-      const updatedNode = {
+      onUpdateNode({
         ...selectedNode,
-        nodeType: newType
-      };
-      onUpdateNode(updatedNode);
+        type: newType
+      });
     }
   };
 
@@ -76,11 +72,10 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
     setHasUnsavedChanges(true);
     
     if (selectedNode) {
-      const updatedNode = {
+      onUpdateNode({
         ...selectedNode,
         metadata: newMetadata
-      };
-      onUpdateNode(updatedNode);
+      });
     }
   };
 
@@ -92,8 +87,7 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
         title: editedTitle,
         description: editedDescription,
         type: nodeType,
-        metadata: metadata,
-        updated_at: new Date().toISOString()
+        metadata: metadata
       };
 
       const { error } = await supabase
