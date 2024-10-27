@@ -36,10 +36,10 @@ CREATE TABLE public.investigations (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     visibility VARCHAR(20) DEFAULT 'private',
-    view_type VARCHAR(20) DEFAULT 'mind'
+    view_type VARCHAR(20) DEFAULT 'mind',
+    investigation_type VARCHAR(50) DEFAULT 'generic'
 );
 
--- Create node table after profiles and investigations
 DROP TABLE IF EXISTS public.node;
 CREATE TABLE public.node (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
