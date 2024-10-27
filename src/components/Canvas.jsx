@@ -145,6 +145,7 @@ const Canvas = forwardRef(({
               node={node}
               onDragStart={(e) => handleNodeDragStart(e, node.id)}
               onDrag={(e) => handleNodeDrag(e, node.id)}
+              onDragEnd={() => handleMouseUp()}
               zoom={zoom}
               onNodeUpdate={onNodeUpdate}
               onFocus={onNodeFocus}
