@@ -30,7 +30,6 @@ const Canvas = forwardRef(({
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   const handleMouseDown = useCallback((e) => {
-    // Only start panning if left click or middle click
     if (e.button === 0 || e.button === 1) {
       setIsPanning(true);
       setStartPanPosition({ x: e.clientX, y: e.clientY });
@@ -130,13 +129,11 @@ const Canvas = forwardRef(({
         <div 
           className="absolute inset-0" 
           style={{
-            backgroundImage: `
-              radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px),
-              linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
-            `,
-            backgroundSize: '24px 24px, 24px 24px, 24px 24px',
-            backgroundPosition: '0 0, 12px 12px, 12px 12px',
+            width: '1000px',
+            height: '1000px',
+            border: '2px solid rgba(255, 255, 255, 0.2)',
+            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
             transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
           }}
         >
