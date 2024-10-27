@@ -10,7 +10,7 @@ import DeleteConfirmation from './modals/DeleteConfirmation';
 const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, projectId, onUpdate }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    title: '',
+    title: projectName || '',
     description: '',
     type: 'generic'
   });
@@ -31,9 +31,9 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
         
         if (data) {
           setFormData({
-            title: data.title || '',
+            title: data.title || projectName || '',
             description: data.description || '',
-            type: investigationType || 'generic'
+            type: data.investigation_type || investigationType || 'generic'
           });
         }
       } catch (error) {
@@ -45,7 +45,7 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
     if (isOpen) {
       fetchProjectDetails();
     }
-  }, [isOpen, projectId, investigationType]);
+  }, [isOpen, projectId, projectName, investigationType]);
 
   const handleSave = async (e) => {
     e.preventDefault();
