@@ -14,6 +14,7 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
     title: '',
     description: '',
     nodeType: '',
+    visualStyle: '',
     metadata: {}
   });
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -24,6 +25,7 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
         title: node.title || '',
         description: node.description || '',
         nodeType: node.nodeType || 'generic',
+        visualStyle: node.visualStyle || 'default',
         metadata: node.metadata || {}
       });
     }
@@ -96,6 +98,23 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
                 <SelectItem value="node_person">Person</SelectItem>
                 <SelectItem value="node_organization">Organization</SelectItem>
                 <SelectItem value="node_event">Event</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="style">Visual Style</Label>
+            <Select 
+              value={formData.visualStyle} 
+              onValueChange={(value) => setFormData(prev => ({ ...prev, visualStyle: value }))}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select visual style" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="default">Default</SelectItem>
+                <SelectItem value="compact">Compact</SelectItem>
+                <SelectItem value="expanded">Expanded</SelectItem>
+                <SelectItem value="postit">Post-it</SelectItem>
               </SelectContent>
             </Select>
           </div>
