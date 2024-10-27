@@ -19,7 +19,7 @@ export const useProjectData = (id) => {
         if (error) throw error;
         
         if (data) {
-          const serializedProject = JSON.parse(JSON.stringify({
+          const serializedProject = {
             id: data.id,
             title: data.title || '',
             description: data.description || '',
@@ -27,7 +27,7 @@ export const useProjectData = (id) => {
             updated_at: data.updated_at || new Date().toISOString(),
             user_id: data.user_id || '',
             reports: []
-          }));
+          };
           setProject(serializedProject);
         }
       } catch (error) {
@@ -40,23 +40,25 @@ export const useProjectData = (id) => {
       try {
         const { data, error } = await supabase
           .from('node')
-          .select('id, title, description, type, investigation_id')
+          .select('*')
           .eq('investigation_id', id);
           
         if (error) throw error;
         
         if (data) {
-          const serializedNodes = data.map((node, index) => JSON.parse(JSON.stringify({
+          const serializedNodes = data.map(node => ({
             id: node.id,
             title: node.title || '',
             description: node.description || '',
             type: node.type || 'generic',
             investigation_id: node.investigation_id,
-            x: (index % 3) * 250 + 100,
-            y: Math.floor(index / 3) * 250 + 100,
-            width: 200,
-            color: 'bg-yellow-200'
-          })));
+            x: node.position_x || 0,
+            y: node.position_y || 0,
+            width: node.width || 200,
+            height: node.height || 100,
+            visualStyle: node.visual_style || 'default',
+            nodeType: node.node_type || 'generic'
+          }));
           setNodes(serializedNodes);
         }
       } catch (error) {

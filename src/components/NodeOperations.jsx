@@ -8,7 +8,13 @@ export const useNodeOperations = (setNodes) => {
         title: newNode.title,
         description: newNode.description,
         type: newNode.type,
-        investigation_id: projectId
+        investigation_id: projectId,
+        visual_style: newNode.visualStyle || 'default',
+        position_x: newNode.x || 0,
+        position_y: newNode.y || 0,
+        width: newNode.width || 200,
+        height: newNode.height || 100,
+        node_type: newNode.nodeType || 'generic'
       };
 
       const { data, error } = await supabase
@@ -19,12 +25,15 @@ export const useNodeOperations = (setNodes) => {
 
       if (error) throw error;
 
-      const nodeWithUI = JSON.parse(JSON.stringify({
+      const nodeWithUI = {
         ...data,
-        x: newNode.x || 0,
-        y: newNode.y || 0,
-        width: newNode.width || 200
-      }));
+        x: data.position_x,
+        y: data.position_y,
+        width: data.width,
+        height: data.height,
+        visualStyle: data.visual_style,
+        nodeType: data.node_type
+      };
 
       setNodes(prevNodes => [...prevNodes, nodeWithUI]);
       toast.success('Node added successfully');
@@ -39,8 +48,19 @@ export const useNodeOperations = (setNodes) => {
       const databaseUpdates = {
         title: updates.title,
         description: updates.description,
-        type: updates.type
+        type: updates.type,
+        visual_style: updates.visualStyle,
+        position_x: updates.x,
+        position_y: updates.y,
+        width: updates.width,
+        height: updates.height,
+        node_type: updates.nodeType
       };
+
+      // Remove undefined values
+      Object.keys(databaseUpdates).forEach(key => 
+        databaseUpdates[key] === undefined && delete databaseUpdates[key]
+      );
 
       const { error } = await supabase
         .from('node')
@@ -49,9 +69,8 @@ export const useNodeOperations = (setNodes) => {
 
       if (error) throw error;
 
-      const serializedUpdates = JSON.parse(JSON.stringify(updates));
       setNodes(prevNodes => prevNodes.map(node => 
-        node.id === nodeId ? { ...node, ...serializedUpdates } : node
+        node.id === nodeId ? { ...node, ...updates } : node
       ));
     } catch (error) {
       console.error('Error updating node:', error);
