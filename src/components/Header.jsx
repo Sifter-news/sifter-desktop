@@ -90,6 +90,11 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
                 </SelectTrigger>
                 <SelectContent className="w-[240px]">
                   <SelectGroup>
+                    <SelectLabel>Generic</SelectLabel>
+                    <SelectItem value="generic">Generic Investigation</SelectItem>
+                    <SelectItem value="research">Research</SelectItem>
+                  </SelectGroup>
+                  <SelectGroup>
                     <SelectLabel>Due Diligence</SelectLabel>
                     <SelectItem value="pre-deal">Pre-Deal Due Diligence Investigation</SelectItem>
                     <SelectItem value="post-deal">Post-Deal Due Diligence Investigation</SelectItem>
@@ -105,7 +110,6 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
                     <SelectItem value="fraud">Fraud Investigation</SelectItem>
                     <SelectItem value="background">Background Check Investigation</SelectItem>
                     <SelectItem value="asset">Asset Tracing Investigation</SelectItem>
-                    <SelectItem value="generic">Generic Investigation</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
