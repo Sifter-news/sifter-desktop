@@ -20,11 +20,11 @@ import {
 
 const NodeNavigator = ({ 
   nodes = [], // Add default empty array
-  onUpdateNode = () => {}, // Add default noop function
-  onNodeFocus = () => {}, // Add default noop function
-  selectedNode = null,
-  onAddNode = () => {}, // Add default noop function
-  onAIConversation = () => {} // Add default noop function
+  onUpdateNode, 
+  onNodeFocus, 
+  selectedNode, 
+  onAddNode,
+  onAIConversation 
 }) => {
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -35,6 +35,8 @@ const NodeNavigator = ({
   }, [nodes]);
 
   const handleAddNode = () => {
+    if (!onAddNode) return; // Guard against undefined onAddNode
+
     const position = {
       x: Math.random() * 500,
       y: Math.random() * 500
@@ -43,7 +45,7 @@ const NodeNavigator = ({
     onAddNode({
       id: Date.now().toString(),
       type: 'text',
-      title: `New Node ${(nodes || []).length + 1}`,
+      title: `New Node ${navigatorNodes.length + 1}`,
       description: '',
       x: position.x,
       y: position.y
@@ -51,17 +53,17 @@ const NodeNavigator = ({
   };
 
   const handleNodeUpdate = (updatedNodes) => {
+    if (!onUpdateNode) return; // Guard against undefined onUpdateNode
     setNavigatorNodes(updatedNodes);
     onUpdateNode(updatedNodes);
   };
 
-  const filteredNodes = (navigatorNodes || [])
-    .filter(node => {
-      const matchesType = selectedType === 'all' || node.nodeType === selectedType;
-      const matchesSearch = node.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          node.description?.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesType && matchesSearch;
-    });
+  const filteredNodes = navigatorNodes.filter(node => {
+    const matchesType = selectedType === 'all' || node.nodeType === selectedType;
+    const matchesSearch = (node.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         (node.description || '').toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesType && matchesSearch;
+  });
 
   return (
     <div className="w-full h-full flex flex-col p-4">
@@ -110,7 +112,7 @@ const NodeNavigator = ({
           <div key={node.id} className="group flex items-center justify-between p-2 hover:bg-gray-100 rounded-lg">
             <div 
               className="flex-grow cursor-pointer"
-              onClick={() => onNodeFocus(node.id)}
+              onClick={() => onNodeFocus && onNodeFocus(node.id)}
             >
               <div className="font-medium">{node.title}</div>
               <div className="text-sm text-gray-500">{node.description}</div>
