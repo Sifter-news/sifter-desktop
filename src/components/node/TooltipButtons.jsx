@@ -9,9 +9,26 @@ import {
 } from "@/components/ui/popover";
 import NodeEditDialog from './NodeEditDialog';
 
+const defaultStyles = {
+  default: "Default",
+  compact: "Compact",
+  expanded: "Expanded",
+  postit: "Post-it"
+};
+
+const defaultNodeTypes = {
+  generic: "Generic Note",
+  node_person: "Person",
+  node_organization: "Organization",
+  node_object: "Object",
+  node_concept: "Concept",
+  node_location: "Location",
+  node_event: "Event"
+};
+
 const TooltipButtons = ({ 
-  styles, 
-  nodeTypes, 
+  styles = defaultStyles, 
+  nodeTypes = defaultNodeTypes, 
   handleStyleChange, 
   handleTypeChange, 
   onAIConversation, 
@@ -20,6 +37,10 @@ const TooltipButtons = ({
   onUpdate
 }) => {
   const [showEditDialog, setShowEditDialog] = React.useState(false);
+
+  // Ensure we have valid objects to iterate over
+  const styleEntries = Object.entries(styles || defaultStyles);
+  const typeEntries = Object.entries(nodeTypes || defaultNodeTypes);
 
   return (
     <>
@@ -45,12 +66,12 @@ const TooltipButtons = ({
           </PopoverTrigger>
           <PopoverContent className="w-32">
             <div className="flex flex-col space-y-1">
-              {Object.entries(styles).map(([value, label]) => (
+              {styleEntries.map(([value, label]) => (
                 <Button
                   key={value}
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleStyleChange(value)}
+                  onClick={() => handleStyleChange?.(value)}
                 >
                   {label}
                 </Button>
@@ -70,12 +91,12 @@ const TooltipButtons = ({
           </PopoverTrigger>
           <PopoverContent className="w-40">
             <div className="flex flex-col space-y-1">
-              {Object.entries(nodeTypes).map(([value, label]) => (
+              {typeEntries.map(([value, label]) => (
                 <Button
                   key={value}
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleTypeChange(value)}
+                  onClick={() => handleTypeChange?.(value)}
                 >
                   {label}
                 </Button>
