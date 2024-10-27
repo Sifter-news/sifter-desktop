@@ -55,7 +55,7 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
 
   if (!selectedNode) {
     return (
-      <div className="h-screen flex items-center justify-center text-center text-gray-500">
+      <div className="h-full flex items-center justify-center text-center text-gray-500">
         <div>
           <h2 className="text-lg font-semibold mb-4">Node Editor</h2>
           Select a node from the navigator to view its content.
@@ -65,7 +65,7 @@ const NodeEditor = ({ selectedNode, onUpdateNode }) => {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-white bg-opacity-80 shadow-lg rounded-lg p-6">
+    <div className="h-full flex flex-col bg-white bg-opacity-80 shadow-lg rounded-lg p-6">
       <h2 className="text-lg font-semibold mb-4">Node Editor</h2>
       <div className="flex-grow flex flex-col">
         {isEditing ? (
