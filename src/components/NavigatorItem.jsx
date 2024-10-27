@@ -24,6 +24,20 @@ const NavigatorItem = ({ item, index, onDocumentClick, dragOverFolder, setDragOv
     if (setDragTimer) clearTimeout(setDragTimer);
   };
 
+  const getNodeTypeDisplay = (nodeType) => {
+    const types = {
+      'node_person': 'Person',
+      'node_organization': 'Organization',
+      'node_object': 'Object',
+      'node_concept': 'Concept',
+      'node_location': 'Location',
+      'node_event': 'Event',
+      'node': 'Generic Note',
+      'generic': 'Generic Note'
+    };
+    return types[nodeType] || 'Generic Note';
+  };
+
   return (
     <Draggable key={item.id} draggableId={item.id} index={index}>
       {(provided) => (
@@ -31,35 +45,38 @@ const NavigatorItem = ({ item, index, onDocumentClick, dragOverFolder, setDragOv
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`cursor-pointer hover:bg-gray-200 p-2 rounded flex justify-between items-center transition-all duration-200 ${
+          className={`cursor-pointer hover:bg-gray-200 p-2 rounded flex flex-col transition-all duration-200 ${
             dragOverFolder === item.id ? 'bg-blue-100' : ''
           } ${isFocused ? 'ring-2 ring-blue-500 bg-blue-50' : ''}`}
           onClick={() => item.type === 'document' && onDocumentClick(item)}
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
         >
-          <span>{item.type === 'folder' ? '📁' : '📄'} {item.title}</span>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-300" onClick={(e) => e.stopPropagation()}>
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => console.log('Create Group')}>
-                <Users className="mr-2 h-4 w-4" />
-                <span>Create Group</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => console.log('Delete')}>
-                <Trash className="mr-2 h-4 w-4" />
-                <span>Delete</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => console.log('Move')}>
-                <FolderInput className="mr-2 h-4 w-4" />
-                <span>Move to</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex justify-between items-center">
+            <span>{item.type === 'folder' ? '📁' : '📄'} {item.title}</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-300" onClick={(e) => e.stopPropagation()}>
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => console.log('Create Group')}>
+                  <Users className="mr-2 h-4 w-4" />
+                  <span>Create Group</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => console.log('Delete')}>
+                  <Trash className="mr-2 h-4 w-4" />
+                  <span>Delete</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => console.log('Move')}>
+                  <FolderInput className="mr-2 h-4 w-4" />
+                  <span>Move to</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <span className="text-sm text-gray-500 ml-6">{getNodeTypeDisplay(item.nodeType || 'node')}</span>
         </li>
       )}
     </Draggable>
