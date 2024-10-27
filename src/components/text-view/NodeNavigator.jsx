@@ -5,14 +5,16 @@ import { findAvailablePosition } from '../../utils/canvasUtils';
 
 const NodeNavigator = ({ nodes, onUpdateNode, onNodeFocus, selectedNode, onAddNode }) => {
   return (
-    <div className="w-1/4 bg-gray-100 p-4 overflow-y-auto">
+    <div className="w-full h-full flex flex-col p-4">
       <h2 className="text-lg font-semibold mb-4">Node Navigator</h2>
-      <Navigator 
-        items={nodes} 
-        setItems={onUpdateNode} 
-        onDocumentClick={(node) => onNodeFocus(node.id)}
-        focusedNode={selectedNode}
-      />
+      <div className="flex-grow overflow-y-auto">
+        <Navigator 
+          items={nodes} 
+          setItems={onUpdateNode} 
+          onDocumentClick={(node) => onNodeFocus(node.id)}
+          focusedNode={selectedNode}
+        />
+      </div>
       <Button onClick={() => {
         const position = findAvailablePosition(nodes);
         onAddNode({
