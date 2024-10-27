@@ -140,6 +140,21 @@ const Canvas = forwardRef(({
     setNodeToDelete(null);
   };
 
+  const gridSize = 24; // Size of each grid cell
+  const gridStyle = {
+    backgroundImage: `
+      radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px),
+      linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+    `,
+    backgroundSize: `${gridSize}px ${gridSize}px, ${gridSize}px ${gridSize}px, ${gridSize}px ${gridSize}px`,
+    backgroundPosition: `
+      ${(position.x * zoom) % gridSize}px ${(position.y * zoom) % gridSize}px,
+      ${(position.x * zoom) % gridSize}px ${(position.y * zoom) % gridSize}px,
+      ${(position.x * zoom) % gridSize}px ${(position.y * zoom) % gridSize}px
+    `,
+  };
+
   return (
     <>
       <div 
@@ -156,13 +171,7 @@ const Canvas = forwardRef(({
         <div 
           className="absolute inset-0" 
           style={{
-            backgroundImage: `
-              radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px),
-              linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
-            `,
-            backgroundSize: '24px 24px, 24px 24px, 24px 24px',
-            backgroundPosition: '0 0, 12px 12px, 12px 12px',
+            ...gridStyle,
             transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
           }}
         >
@@ -181,6 +190,7 @@ const Canvas = forwardRef(({
           ))}
         </div>
       </div>
+
       <AlertDialog open={showDeleteConfirmation} onOpenChange={setShowDeleteConfirmation}>
         <AlertDialogContent>
           <AlertDialogHeader>
