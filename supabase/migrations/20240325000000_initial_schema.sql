@@ -34,6 +34,7 @@ CREATE TABLE public.investigations (
     description TEXT,
     owner_id UUID REFERENCES public.profiles(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     visibility VARCHAR(20) DEFAULT 'private',
     view_type VARCHAR(20) DEFAULT 'mind'
 );

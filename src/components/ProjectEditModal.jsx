@@ -8,7 +8,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { toast } from "sonner";
 import { supabase } from '@/integrations/supabase/supabase';
 
-const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
+const ProjectEditModal = ({ isOpen, onClose, project, onUpdate }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: project?.title || '',
@@ -57,8 +57,7 @@ const ProjectEditModal = ({ isOpen, onClose, project, onUpdate, onDelete }) => {
         .from('investigations')
         .update({
           title: formData.title.trim(),
-          description: formData.description.trim(),
-          updated_at: new Date().toISOString()
+          description: formData.description.trim()
         })
         .eq('id', project.id)
         .select()
