@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import UserProfile from './UserProfile';
 import { Separator } from "@/components/ui/separator";
-import ProjectDetailsModal from './ProjectDetailsModal';
+import ProjectEditDialog from './shared/ProjectEditDialog';
 import {
   Select,
   SelectContent,
@@ -13,11 +13,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { User } from 'lucide-react';
 
-const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpdate, onProjectDelete }) => {
+const Header = ({ user, project, onProjectUpdate }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [investigatorType, setInvestigatorType] = useState('pre-deal');
 
   return (
     <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
@@ -31,20 +29,20 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
         </div>
 
         <div className="flex-grow flex justify-center items-center space-x-4">
-          {projectName && (
+          {project?.title && (
             <div className="flex items-center space-x-4">
               <span 
                 className="text-sm font-normal text-[#4B25F3] cursor-pointer hover:underline"
                 onClick={() => setIsEditModalOpen(true)}
               >
-                {projectName}
+                {project.title}
               </span>
               <Separator orientation="vertical" className="h-4" />
-              <Select value={investigatorType} onValueChange={setInvestigatorType}>
+              <Select value={project.investigation_type} disabled>
                 <SelectTrigger className="w-[240px] whitespace-normal border-none focus:ring-0">
                   <SelectValue placeholder="Select investigation type" />
                 </SelectTrigger>
-                <SelectContent className="w-[240px]">
+                <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Due Diligence</SelectLabel>
                     <SelectItem value="pre-deal">Pre-Deal Due Diligence Investigation</SelectItem>
@@ -74,15 +72,14 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
             Dashboard
           </Link>
           <Separator orientation="vertical" className="h-4 mx-2" />
-          <UserProfile user={user} onUpdateUser={onUpdateUser} />
+          <UserProfile user={user} />
         </div>
       </div>
 
-      <ProjectDetailsModal 
+      <ProjectEditDialog 
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        projectName={projectName}
-        investigationType={investigatorType}
+        project={project}
         onUpdate={onProjectUpdate}
       />
     </header>

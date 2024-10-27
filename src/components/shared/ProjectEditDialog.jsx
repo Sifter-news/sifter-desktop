@@ -27,51 +27,28 @@ import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from "sonner";
 import { useNavigate } from 'react-router-dom';
 
-const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, projectId, onUpdate }) => {
+const ProjectEditDialog = ({ isOpen, onClose, project, onUpdate }) => {
   const navigate = useNavigate();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [type, setType] = useState('generic');
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    investigation_type: 'generic'
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const fetchProjectDetails = async () => {
-      if (!projectId) return;
-      
-      try {
-        const { data, error } = await supabase
-          .from('investigations')
-          .select('*')
-          .eq('id', projectId)
-          .single();
-          
-        if (error) throw error;
-        
-        if (data) {
-          setTitle(data.title || '');
-          setDescription(data.description || '');
-          setType(investigationType || 'generic');
-        }
-      } catch (error) {
-        console.error('Error fetching project:', error);
-        toast.error("Failed to load project details");
-      }
-    };
-
-    if (isOpen) {
-      fetchProjectDetails();
+    if (project && isOpen) {
+      setFormData({
+        title: project.title || '',
+        description: project.description || '',
+        investigation_type: project.investigation_type || 'generic'
+      });
     }
-  }, [isOpen, projectId, investigationType]);
+  }, [project, isOpen]);
 
-  const handleSave = async (e) => {
-    e.preventDefault();
-    if (!title.trim()) {
+  const handleSave = async () => {
+    if (!formData.title.trim()) {
       toast.error("Title is required");
-      return;
-    }
-
-    if (!projectId) {
-      toast.error("Invalid project ID");
       return;
     }
 
@@ -80,16 +57,17 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
       const { error } = await supabase
         .from('investigations')
         .update({
-          title: title.trim(),
-          description: description.trim(),
+          title: formData.title.trim(),
+          description: formData.description.trim(),
+          investigation_type: formData.investigation_type,
           updated_at: new Date().toISOString()
         })
-        .eq('id', projectId);
+        .eq('id', project.id);
 
       if (error) throw error;
 
       toast.success("Project updated successfully");
-      onUpdate({ title: title.trim(), description: description.trim(), type });
+      onUpdate(formData);
       onClose();
     } catch (error) {
       console.error('Error updating project:', error);
@@ -99,19 +77,13 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
     }
   };
 
-  const handleDelete = async (e) => {
-    e.preventDefault();
-    if (!projectId) {
-      toast.error("Invalid project ID");
-      return;
-    }
-
+  const handleDelete = async () => {
     setIsLoading(true);
     try {
       const { error } = await supabase
         .from('investigations')
         .delete()
-        .eq('id', projectId);
+        .eq('id', project.id);
 
       if (error) throw error;
 
@@ -130,22 +102,22 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit Investigation Details</DialogTitle>
+          <DialogTitle>Edit Project</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSave} className="grid gap-4 py-4">
+        <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <label htmlFor="title">Title</label>
             <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Investigation title"
+              value={formData.title}
+              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              placeholder="Project title"
+              className="text-lg font-semibold"
               disabled={isLoading}
             />
-          </div>
-          <div className="grid gap-2">
-            <label htmlFor="type">Investigation Type</label>
-            <Select value={type} onValueChange={setType} disabled={isLoading}>
+            <Select 
+              value={formData.investigation_type} 
+              onValueChange={(value) => setFormData(prev => ({ ...prev, investigation_type: value }))}
+              disabled={isLoading}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select investigation type" />
               </SelectTrigger>
@@ -170,36 +142,32 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
                 </SelectGroup>
               </SelectContent>
             </Select>
-          </div>
-          <div className="grid gap-2">
-            <label htmlFor="description">Description</label>
             <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Investigation description"
+              value={formData.description}
+              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              placeholder="Project description"
               className="min-h-[100px]"
               disabled={isLoading}
             />
           </div>
-        </form>
+        </div>
         <DialogFooter className="flex justify-between">
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive" disabled={isLoading}>Delete</Button>
+              <Button variant="destructive" disabled={isLoading}>Delete Project</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
                   This action cannot be undone. This will permanently delete your
-                  investigation and remove all associated data.
+                  project and remove all associated data.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction onClick={handleDelete} disabled={isLoading}>
-                  Delete
+                  Delete Project
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -216,4 +184,4 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
   );
 };
 
-export default ProjectDetailsModal;
+export default ProjectEditDialog;
