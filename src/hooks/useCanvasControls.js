@@ -8,8 +8,8 @@ export const useCanvasControls = (activeTool, handlePanMove, handleZoom) => {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Space for pan tool
-      if (e.code === 'Space' && !e.repeat) {
+      // Only trigger if it's not already pressed and not in an input
+      if (e.code === 'Space' && !e.repeat && e.target === document.body) {
         e.preventDefault();
         setIsSpacePressed(true);
         document.body.style.cursor = 'grab';
@@ -34,6 +34,7 @@ export const useCanvasControls = (activeTool, handlePanMove, handleZoom) => {
       if (e.code === 'Space') {
         e.preventDefault();
         setIsSpacePressed(false);
+        setIsCanvasGrabbed(false);
         document.body.style.cursor = 'default';
       }
     };
@@ -51,14 +52,23 @@ export const useCanvasControls = (activeTool, handlePanMove, handleZoom) => {
       }
     };
 
+    // Add blur event to handle cases where window loses focus
+    const handleBlur = () => {
+      setIsSpacePressed(false);
+      setIsCanvasGrabbed(false);
+      document.body.style.cursor = 'default';
+    };
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
     window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('blur', handleBlur);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
       window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('blur', handleBlur);
     };
   }, [handleZoom, handlePanMove]);
 
