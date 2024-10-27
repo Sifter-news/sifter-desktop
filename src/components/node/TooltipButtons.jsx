@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Layout, Type, Trash2, Pencil, FileText, User, Building2, Package, Brain, MapPin, Calendar } from 'lucide-react';
+import { MessageCircle, Layout, Type, Pencil, FileText, User, Building2, Package, Brain, MapPin, Calendar } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import {
   Popover,
@@ -32,7 +32,6 @@ const TooltipButtons = ({
   handleStyleChange, 
   handleTypeChange, 
   onAIConversation, 
-  onDelete, 
   node
 }) => {
   const [showEditDialog, setShowEditDialog] = React.useState(false);
@@ -122,16 +121,6 @@ const TooltipButtons = ({
         >
           <MessageCircle className="h-4 w-4 mr-2" />
           AI
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-white hover:bg-red-700"
-          onClick={onDelete}
-        >
-          <Trash2 className="h-4 w-4 mr-2" />
-          Delete
         </Button>
       </div>
 
