@@ -1,14 +1,26 @@
 const postMessage = (message) => {
   try {
-    // Convert any non-cloneable parts of the message to strings
-    const cloneableMessage = JSON.parse(JSON.stringify(message));
-    window.parent.postMessage(cloneableMessage, '*');
+    // Create a simplified version of the message that's guaranteed to be cloneable
+    const serializableMessage = {
+      type: message.type || 'error',
+      message: message.message || String(message),
+      error_type: message.error_type || 'runtime',
+      timestamp: new Date().toISOString(),
+      // Only include stack if it exists and is a string
+      ...(message.stack && typeof message.stack === 'string' && { stack: message.stack }),
+      // For HTTP errors, include simplified request info
+      ...(message.url && { url: String(message.url) }),
+      ...(message.method && { method: String(message.method) })
+    };
+
+    window.parent.postMessage(serializableMessage, '*');
   } catch (e) {
-    console.warn('Failed to post message:', e);
-    // Fallback: send a simplified error message
+    // Fallback with minimal error info if serialization fails
+    console.warn('Failed to post error message:', e);
     window.parent.postMessage({
       type: 'error',
-      error: message.toString(),
+      message: 'Error occurred (details not serializable)',
+      error_type: 'runtime',
       timestamp: new Date().toISOString()
     }, '*');
   }
@@ -28,25 +40,31 @@ window.fetch = async (...args) => {
 
 const reportHTTPError = (error, request) => {
   try {
+    // Create a simplified version of the request info that's guaranteed to be cloneable
     const errorData = {
-      message: error.message,
+      message: error.message || String(error),
       error_type: 'runtime',
       stack: error.stack,
-      url: typeof request === 'string' ? request : request.url,
-      method: typeof request === 'string' ? 'GET' : request.method,
-      // Don't include the full request object as it may not be cloneable
+      // Only include basic request info that can be serialized
+      url: typeof request === 'string' ? request : String(request.url),
+      method: typeof request === 'string' ? 'GET' : String(request.method),
       timestamp: new Date().toISOString()
     };
     
     postMessage(errorData);
   } catch (e) {
     console.warn('Error in error reporting:', e);
+    postMessage({
+      message: 'Error occurred (details not serializable)',
+      error_type: 'runtime',
+      timestamp: new Date().toISOString()
+    });
   }
 };
 
 window.addEventListener('error', (event) => {
   const errorData = {
-    message: event.message,
+    message: event.message || 'Unknown error',
     error_type: 'runtime',
     stack: event.error?.stack,
     source: event.filename,
