@@ -124,6 +124,7 @@ const MindMapView = ({ project, nodes, setNodes, onAddNode, onUpdateNode, onDele
           reports={reports}
           onAddReport={onAddReport}
           onEditReport={onUpdateReport}
+          onAIConversation={handleAIConversation}
         />
       </div>
       <NodeEditorModal
