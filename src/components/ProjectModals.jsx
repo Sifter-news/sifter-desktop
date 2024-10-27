@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ProjectEditModal from './ProjectEditModal';
 import ContentModal from './ContentModal';
 
