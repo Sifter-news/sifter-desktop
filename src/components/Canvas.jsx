@@ -26,6 +26,7 @@ const Canvas = forwardRef(({
   const [nodeToDelete, setNodeToDelete] = React.useState(null);
   const [isPanning, setIsPanning] = useState(false);
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
+  const [isCanvasGrabbed, setIsCanvasGrabbed] = useState(false);
 
   const handleDragStart = useCallback((e, nodeId) => {
     if (activeTool === 'select') {
@@ -35,16 +36,12 @@ const Canvas = forwardRef(({
     }
   }, [activeTool, setNodes]);
 
-  const snapToGrid = useCallback((value) => {
-    return Math.round(value / 24) * 24;
-  }, []);
-
   const handleDrag = useCallback((e) => {
     if (activeTool === 'select') {
       setNodes(prevNodes => prevNodes.map(node => {
         if (node.isDragging) {
-          const newX = snapToGrid((e.clientX - ref.current.offsetLeft) / zoom - position.x);
-          const newY = snapToGrid((e.clientY - ref.current.offsetTop) / zoom - position.y);
+          const newX = Math.round((e.clientX - ref.current.offsetLeft) / zoom - position.x);
+          const newY = Math.round((e.clientY - ref.current.offsetTop) / zoom - position.y);
           return { 
             ...node, 
             x: newX, 
@@ -54,7 +51,7 @@ const Canvas = forwardRef(({
         return node;
       }));
     }
-  }, [activeTool, zoom, position.x, position.y, setNodes, snapToGrid, ref]);
+  }, [activeTool, zoom, position.x, position.y, setNodes, ref]);
 
   const handleDragEnd = useCallback(() => {
     setNodes(prevNodes => {
@@ -74,24 +71,32 @@ const Canvas = forwardRef(({
 
   const handleCanvasMouseDown = useCallback((e) => {
     if (e.target === e.currentTarget) {
-      setIsPanning(true);
+      setIsCanvasGrabbed(true);
       setLastMousePosition({ x: e.clientX, y: e.clientY });
+      document.body.style.cursor = 'grabbing';
     }
   }, []);
 
   const handleCanvasMouseMove = useCallback((e) => {
     handleDrag(e);
-    if (isPanning) {
+    if (isCanvasGrabbed) {
       const dx = e.clientX - lastMousePosition.x;
       const dy = e.clientY - lastMousePosition.y;
       handlePanMove({ movementX: dx, movementY: dy });
       setLastMousePosition({ x: e.clientX, y: e.clientY });
     }
-  }, [handleDrag, isPanning, lastMousePosition, handlePanMove]);
+  }, [handleDrag, isCanvasGrabbed, lastMousePosition, handlePanMove]);
 
   const handleCanvasMouseUp = useCallback(() => {
     handleDragEnd();
-    setIsPanning(false);
+    setIsCanvasGrabbed(false);
+    document.body.style.cursor = 'default';
+  }, [handleDragEnd]);
+
+  const handleCanvasMouseLeave = useCallback(() => {
+    handleDragEnd();
+    setIsCanvasGrabbed(false);
+    document.body.style.cursor = 'default';
   }, [handleDragEnd]);
 
   const handleKeyDown = useCallback((e) => {
@@ -138,16 +143,15 @@ const Canvas = forwardRef(({
   return (
     <>
       <div 
-        className="w-screen h-full bg-[#594BFF] overflow-hidden"
+        className={`w-screen h-full bg-[#594BFF] overflow-hidden ${isCanvasGrabbed ? 'cursor-grabbing' : 'cursor-grab'}`}
         onMouseDown={handleCanvasMouseDown}
         onMouseMove={handleCanvasMouseMove}
         onMouseUp={handleCanvasMouseUp}
-        onMouseLeave={handleCanvasMouseUp}
+        onMouseLeave={handleCanvasMouseLeave}
         onClick={handleCanvasClick}
         onDragOver={onDragOver}
         onDrop={onDrop}
         ref={ref}
-        style={{ cursor: isPanning ? 'grabbing' : 'grab' }}
       >
         <div 
           className="absolute inset-0" 
@@ -187,7 +191,15 @@ const Canvas = forwardRef(({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setShowDeleteConfirmation(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete}>Delete</AlertDialogAction>
+            <AlertDialogAction onClick={() => {
+              if (nodeToDelete) {
+                onNodeDelete(nodeToDelete.id);
+              }
+              setShowDeleteConfirmation(false);
+              setNodeToDelete(null);
+            }}>
+              Delete
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
