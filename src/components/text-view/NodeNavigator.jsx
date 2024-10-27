@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Plus, FolderPlus, List, Grid, Type, Layout } from 'lucide-react';
+import { Plus, FolderPlus } from 'lucide-react';
 import SearchInput from './SearchInput';
 import NodeListItem from './NodeListItem';
 import {
@@ -11,16 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@/components/ui/toggle-group";
 import { toast } from 'sonner';
 
 const NodeNavigator = ({ 
@@ -35,7 +25,6 @@ const NodeNavigator = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [navigatorNodes, setNavigatorNodes] = useState([]);
   const [selectedNodes, setSelectedNodes] = useState([]);
-  const [viewMode, setViewMode] = useState('list');
 
   useEffect(() => {
     setNavigatorNodes(nodes);
@@ -115,32 +104,6 @@ const NodeNavigator = ({
               Create Group ({selectedNodes.length})
             </Button>
           )}
-          <ToggleGroup type="single" value={viewMode} onValueChange={(value) => value && setViewMode(value)}>
-            <ToggleGroupItem value="list" aria-label="List view">
-              <List className="h-4 w-4" />
-            </ToggleGroupItem>
-            <ToggleGroupItem value="type" aria-label="Type view">
-              <Type className="h-4 w-4" />
-            </ToggleGroupItem>
-            <ToggleGroupItem value="style" aria-label="Style view">
-              <Layout className="h-4 w-4" />
-            </ToggleGroupItem>
-          </ToggleGroup>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-200">
-                <Plus className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={handleAddNode}>
-                Add Node
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleCreateGroup}>
-                Create Group
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
       
