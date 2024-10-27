@@ -11,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from 'sonner';
 
 const NodeNavigator = ({ 
   nodes = [], 
@@ -70,7 +69,7 @@ const NodeNavigator = ({
   });
 
   return (
-    <div className="w-full h-full flex flex-col p-4">
+    <div className="w-full h-full flex flex-col p-4 bg-white/30 backdrop-blur-md">
       <div className="space-y-4 mb-4">
         <SearchInput value={searchQuery} onChange={setSearchQuery} />
         
