@@ -25,76 +25,74 @@ const ProjectTabs = ({
   };
 
   return (
-    <div className="relative h-full flex">
-      <div className="flex-1 max-w-[calc(100%-480px)]">
-        <Tabs defaultValue="mind" className="w-full flex flex-col flex-grow">
-          <TabsList className="max-w-[340px] mx-auto justify-center fixed top-16 left-0 right-[480px] bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex">
-            <TabsTrigger value="mind" className="flex items-center">
-              <Brain className="w-4 h-4 mr-2" />
-              Mind
-            </TabsTrigger>
-            <TabsTrigger value="text" className="flex items-center">
-              <FileText className="w-4 h-4 mr-2" />
-              Text
-            </TabsTrigger>
-            <TabsTrigger value="time" className="flex items-center">
-              <Clock className="w-4 h-4 mr-2" />
-              Time
-            </TabsTrigger>
-            <TabsTrigger value="map" className="flex items-center">
-              <Map className="w-4 h-4 mr-2" />
-              Map
-            </TabsTrigger>
-          </TabsList>
-          <div className="flex-grow mt-12">
-            <TabsContent value="mind" className="h-full">
-              <MindMapView 
-                project={project} 
-                nodes={nodes}
-                setNodes={setNodes}
-                onAddNode={onAddNode}
-                onUpdateNode={onUpdateNode}
-                onDeleteNode={onDeleteNode}
-                focusedNodeId={focusedNodeId}
-                onNodeFocus={handleNodeFocus}
-              />
-            </TabsContent>
-            <TabsContent value="text" className="h-full">
-              <TextView 
-                project={project} 
-                nodes={nodes}
-                onAddNode={onAddNode}
-                onUpdateNode={onUpdateNode}
-                onDeleteNode={onDeleteNode}
-                focusedNodeId={focusedNodeId}
-                onNodeFocus={handleNodeFocus}
-              />
-            </TabsContent>
-            <TabsContent value="time" className="h-full">
-              <TimeView 
-                project={project} 
-                nodes={nodes}
-                onAddNode={onAddNode}
-                onUpdateNode={onUpdateNode}
-                onDeleteNode={onDeleteNode}
-                focusedNodeId={focusedNodeId}
-                onNodeFocus={handleNodeFocus}
-              />
-            </TabsContent>
-            <TabsContent value="map" className="h-full">
-              <MapView 
-                project={project} 
-                nodes={nodes}
-                onAddNode={onAddNode}
-                onUpdateNode={onUpdateNode}
-                onDeleteNode={onDeleteNode}
-                focusedNodeId={focusedNodeId}
-                onNodeFocus={handleNodeFocus}
-              />
-            </TabsContent>
-          </div>
-        </Tabs>
-      </div>
+    <div className="relative h-full">
+      <Tabs defaultValue="mind" className="w-full flex flex-col flex-grow">
+        <TabsList className="max-w-[340px] mx-auto justify-center fixed top-16 left-0 right-0 bg-white bg-opacity-80 backdrop-blur-md z-10 inline-flex">
+          <TabsTrigger value="mind" className="flex items-center">
+            <Brain className="w-4 h-4 mr-2" />
+            Mind
+          </TabsTrigger>
+          <TabsTrigger value="text" className="flex items-center">
+            <FileText className="w-4 h-4 mr-2" />
+            Text
+          </TabsTrigger>
+          <TabsTrigger value="time" className="flex items-center">
+            <Clock className="w-4 h-4 mr-2" />
+            Time
+          </TabsTrigger>
+          <TabsTrigger value="map" className="flex items-center">
+            <Map className="w-4 h-4 mr-2" />
+            Map
+          </TabsTrigger>
+        </TabsList>
+        <div className="flex-grow mt-12">
+          <TabsContent value="mind" className="h-full">
+            <MindMapView 
+              project={project} 
+              nodes={nodes}
+              setNodes={setNodes}
+              onAddNode={onAddNode}
+              onUpdateNode={onUpdateNode}
+              onDeleteNode={onDeleteNode}
+              focusedNodeId={focusedNodeId}
+              onNodeFocus={handleNodeFocus}
+            />
+          </TabsContent>
+          <TabsContent value="text" className="h-full">
+            <TextView 
+              project={project} 
+              nodes={nodes}
+              onAddNode={onAddNode}
+              onUpdateNode={onUpdateNode}
+              onDeleteNode={onDeleteNode}
+              focusedNodeId={focusedNodeId}
+              onNodeFocus={handleNodeFocus}
+            />
+          </TabsContent>
+          <TabsContent value="time" className="h-full">
+            <TimeView 
+              project={project} 
+              nodes={nodes}
+              onAddNode={onAddNode}
+              onUpdateNode={onUpdateNode}
+              onDeleteNode={onDeleteNode}
+              focusedNodeId={focusedNodeId}
+              onNodeFocus={handleNodeFocus}
+            />
+          </TabsContent>
+          <TabsContent value="map" className="h-full">
+            <MapView 
+              project={project} 
+              nodes={nodes}
+              onAddNode={onAddNode}
+              onUpdateNode={onUpdateNode}
+              onDeleteNode={onDeleteNode}
+              focusedNodeId={focusedNodeId}
+              onNodeFocus={handleNodeFocus}
+            />
+          </TabsContent>
+        </div>
+      </Tabs>
       
       <div className="fixed bottom-[calc(12px+480px)] right-12 z-50">
         <ReportList
