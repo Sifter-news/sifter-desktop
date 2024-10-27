@@ -1,15 +1,15 @@
 const getCircularReplacer = () => {
   const seen = new WeakSet();
   return (key, value) => {
+    // Handle Request objects specially
     if (value instanceof Request) {
       return {
+        type: 'Request',
         url: value.url,
-        method: value.method,
-        credentials: value.credentials,
-        mode: value.mode,
-        type: 'Request'
+        method: value.method
       };
     }
+    // Don't serialize DOM nodes or React fiber nodes
     if (value instanceof Node || key.startsWith('__react')) {
       return undefined;
     }
@@ -25,7 +25,16 @@ const getCircularReplacer = () => {
 
 const postMessage = (message) => {
   try {
-    const serializableMessage = JSON.parse(JSON.stringify(message, getCircularReplacer()));
+    // Create a simplified version of the message that's guaranteed to be cloneable
+    const serializableMessage = {
+      type: message.type || 'error',
+      message: typeof message === 'string' ? message : message.message || 'Unknown error',
+      error_type: message.error_type || 'runtime',
+      timestamp: new Date().toISOString(),
+      // Only include stack if it exists and is a string
+      ...(message.stack && typeof message.stack === 'string' && { stack: message.stack })
+    };
+
     window.parent.postMessage(serializableMessage, '*');
   } catch (e) {
     console.warn('Failed to post error message:', e);
@@ -39,16 +48,15 @@ const postMessage = (message) => {
 };
 
 const reportHTTPError = (error, requestInfo) => {
+  // Create a safe serializable version of the request info
   let safeRequestInfo;
   
   try {
     if (requestInfo instanceof Request) {
       safeRequestInfo = {
+        type: 'Request',
         url: requestInfo.url,
-        method: requestInfo.method,
-        credentials: requestInfo.credentials,
-        mode: requestInfo.mode,
-        type: 'Request'
+        method: requestInfo.method
       };
     } else {
       safeRequestInfo = {
