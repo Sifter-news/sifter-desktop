@@ -53,7 +53,7 @@ const MindMapView = ({
         setPosition({ x: newX, y: newY });
       }
     }
-  }, [focusedNodeId, nodes, zoom]);
+  }, [focusedNodeId, nodes, zoom, setPosition]);
 
   const handleNodePositionUpdate = async (nodeId, x, y) => {
     try {

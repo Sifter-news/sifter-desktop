@@ -51,6 +51,7 @@ export const useZoomPan = (initialZoom = 1) => {
     handlePanStart,
     handlePanMove,
     handlePanEnd,
+    setPosition
   };
 };
 
