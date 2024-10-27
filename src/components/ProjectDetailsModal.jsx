@@ -50,7 +50,7 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
         if (data) {
           setTitle(data.title || '');
           setDescription(data.description || '');
-          setType(data.investigation_type || investigationType || 'generic');
+          setType(investigationType || 'generic');
         }
       } catch (error) {
         console.error('Error fetching project:', error);
@@ -70,6 +70,11 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
       return;
     }
 
+    if (!projectId) {
+      toast.error("Invalid project ID");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const { error } = await supabase
@@ -77,19 +82,18 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
         .update({
           title: title.trim(),
           description: description.trim(),
-          investigation_type: type,
           updated_at: new Date().toISOString()
         })
         .eq('id', projectId);
 
       if (error) throw error;
 
-      toast.success("Investigation updated successfully");
-      onUpdate({ title: title.trim(), description: description.trim(), investigation_type: type });
+      toast.success("Project updated successfully");
+      onUpdate({ title: title.trim(), description: description.trim(), type });
       onClose();
     } catch (error) {
       console.error('Error updating project:', error);
-      toast.error("Failed to update investigation");
+      toast.error("Failed to update project");
     } finally {
       setIsLoading(false);
     }
@@ -97,6 +101,11 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
 
   const handleDelete = async (e) => {
     e.preventDefault();
+    if (!projectId) {
+      toast.error("Invalid project ID");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const { error } = await supabase
@@ -106,12 +115,12 @@ const ProjectDetailsModal = ({ isOpen, onClose, projectName, investigationType, 
 
       if (error) throw error;
 
-      toast.success("Investigation deleted successfully");
+      toast.success("Project deleted successfully");
       onClose();
       navigate('/');
     } catch (error) {
       console.error('Error deleting project:', error);
-      toast.error("Failed to delete investigation");
+      toast.error("Failed to delete project");
     } finally {
       setIsLoading(false);
     }
