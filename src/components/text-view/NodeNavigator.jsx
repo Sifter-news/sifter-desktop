@@ -25,10 +25,42 @@ const NodeNavigator = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [navigatorNodes, setNavigatorNodes] = useState([]);
   const [selectedNodes, setSelectedNodes] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(-1);
 
   useEffect(() => {
     setNavigatorNodes(nodes);
   }, [nodes]);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (!filteredNodes.length) return;
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        setCurrentIndex(prev => {
+          const nextIndex = prev < filteredNodes.length - 1 ? prev + 1 : 0;
+          const nodeId = filteredNodes[nextIndex].id;
+          setSelectedNodes([nodeId]);
+          onNodeFocus(nodeId);
+          return nextIndex;
+        });
+      }
+      
+      if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        setCurrentIndex(prev => {
+          const nextIndex = prev > 0 ? prev - 1 : filteredNodes.length - 1;
+          const nodeId = filteredNodes[nextIndex].id;
+          setSelectedNodes([nodeId]);
+          onNodeFocus(nodeId);
+          return nextIndex;
+        });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [filteredNodes, onNodeFocus]);
 
   const handleAddNode = () => {
     const position = {
@@ -47,15 +79,16 @@ const NodeNavigator = ({
   };
 
   const handleNodeSelect = (nodeId, event) => {
+    const index = filteredNodes.findIndex(node => node.id === nodeId);
+    setCurrentIndex(index);
+    
     setSelectedNodes(prev => {
-      // If Option/Alt key is held, allow multiple selections
       if (event.altKey) {
         if (prev.includes(nodeId)) {
           return prev.filter(id => id !== nodeId);
         }
         return [...prev, nodeId];
       }
-      // Otherwise, only select the clicked node
       return [nodeId];
     });
   };
@@ -96,7 +129,7 @@ const NodeNavigator = ({
       </div>
 
       <div className="flex-grow overflow-y-auto">
-        {filteredNodes.map(node => node && (
+        {filteredNodes.map((node, index) => node && (
           <NodeListItem
             key={node.id}
             node={node}
@@ -105,7 +138,7 @@ const NodeNavigator = ({
             onFocus={onNodeFocus}
             onUpdateNode={onUpdateNode}
             onAIConversation={onAIConversation}
-            isFocused={focusedNodeId === node.id}
+            isFocused={focusedNodeId === node.id || index === currentIndex}
           />
         ))}
       </div>
