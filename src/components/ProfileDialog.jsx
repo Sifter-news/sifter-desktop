@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UserIcon, LogOutIcon } from 'lucide-react';
+import { UserIcon, LogOutIcon, PencilIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
@@ -15,13 +14,14 @@ const ProfileDialog = ({ user }) => {
   const { data: profile, isLoading, error } = useProfile(user?.id);
   const { mutate: updateProfile } = useUpdateProfile();
   const [username, setUsername] = useState('');
-  const [avatar, setAvatar] = useState('/placeholder.svg');
+  const [avatar, setAvatar] = useState('/default-image.png');
   const [isOpen, setIsOpen] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (profile) {
       setUsername(profile.username || '');
-      setAvatar(profile.avatar_url || '/placeholder.svg');
+      setAvatar(profile.avatar_url || '/default-image.png');
     }
   }, [profile]);
 
@@ -52,6 +52,10 @@ const ProfileDialog = ({ user }) => {
     } catch (error) {
       toast.error('Error updating profile: ' + error.message);
     }
+  };
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
   };
 
   const handleImageUpload = async (event) => {
@@ -115,39 +119,46 @@ const ProfileDialog = ({ user }) => {
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex items-center justify-center">
-            <Avatar className="h-24 w-24">
-              <AvatarImage src={avatar} alt={username} />
-              <AvatarFallback><UserIcon className="h-12 w-12" /></AvatarFallback>
-            </Avatar>
-          </div>
-          <div className="flex justify-center">
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="w-full max-w-xs"
-            />
+            <div 
+              className="relative group cursor-pointer"
+              onClick={handleAvatarClick}
+            >
+              <Avatar className="h-24 w-24">
+                <AvatarImage src={avatar} alt={username} />
+                <AvatarFallback><UserIcon className="h-12 w-12" /></AvatarFallback>
+              </Avatar>
+              <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                <PencilIcon className="h-6 w-6 text-white" />
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+            </div>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="username" className="text-right">
               Username
             </Label>
-            <Input 
+            <input 
               id="username" 
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="col-span-3" 
+              className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="email" className="text-right">
               Email
             </Label>
-            <Input 
+            <input 
               id="email" 
               value={user?.email || ''} 
               disabled 
-              className="col-span-3" 
+              className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
             />
           </div>
         </div>
