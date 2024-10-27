@@ -2,6 +2,14 @@ import React from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import NodeActions from './NodeActions';
 import { getNodeTypeIcon } from './NodeTypeIcon';
+import { Pencil } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 const NodeListItem = ({ 
   node, 
@@ -10,7 +18,8 @@ const NodeListItem = ({
   onFocus, 
   onUpdateNode, 
   onAIConversation,
-  isFocused 
+  isFocused,
+  onEdit 
 }) => {
   if (!node) return null;
 
@@ -54,11 +63,24 @@ const NodeListItem = ({
           </div>
         </div>
       </div>
-      <NodeActions 
-        node={node} 
-        onUpdateNode={onUpdateNode}
-        onAIConversation={onAIConversation}
-      />
+      <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 p-0"
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit(node);
+          }}
+        >
+          <Pencil className="h-4 w-4" />
+        </Button>
+        <NodeActions 
+          node={node} 
+          onUpdateNode={onUpdateNode}
+          onAIConversation={onAIConversation}
+        />
+      </div>
     </div>
   );
 };
