@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -14,6 +14,20 @@ const NodeContent = ({
   handleNodeClick,
   isFocused 
 }) => {
+  const [isPostitEditing, setIsPostitEditing] = useState(false);
+  const [postitTitle, setPostitTitle] = useState(node.title || '');
+  const [postitDescription, setPostitDescription] = useState(node.description || '');
+
+  useEffect(() => {
+    setPostitTitle(node.title || '');
+    setPostitDescription(node.description || '');
+  }, [node]);
+
+  const handlePostitBlur = () => {
+    handleBlur();
+    setIsPostitEditing(false);
+  };
+
   const getNodeStyle = () => {
     const focusClasses = isFocused 
       ? 'ring-2 ring-white scale-[1.02]' 
@@ -44,39 +58,36 @@ const NodeContent = ({
         );
       case 'postit':
         return (
-          <div className={`w-[200px] h-[200px] p-4 bg-yellow-100 rounded-sm shadow-lg transition-all duration-200 transform rotate-1 ${focusClasses}`}>
-            {isEditing ? (
-              <div className="h-full flex flex-col gap-2">
-                <Input
-                  value={localTitle}
-                  onChange={(e) => setLocalTitle(e.target.value)}
-                  onBlur={handleBlur}
-                  className="bg-transparent border-none focus:ring-0 font-medium"
-                />
-                <Textarea
-                  value={localDescription}
-                  onChange={(e) => setLocalDescription(e.target.value)}
-                  onBlur={handleBlur}
-                  className="flex-1 bg-transparent border-none focus:ring-0 resize-none text-sm"
-                />
-              </div>
-            ) : (
-              <div className="h-full flex flex-col">
-                <h3 className="font-medium mb-2 font-handwritten">{node.title}</h3>
-                <p className="text-sm text-gray-700 font-handwritten cursor-text overflow-hidden" 
-                   onClick={(e) => {
-                     e.stopPropagation();
-                     setLocalDescription(node.description);
-                     setLocalTitle(node.title);
-                     handleNodeClick(e);
-                   }}>
-                  {node.description}
-                </p>
-              </div>
-            )}
+          <div 
+            className={`w-[200px] h-[200px] p-4 bg-yellow-100 rounded-sm shadow-lg transition-all duration-200 transform rotate-1 ${focusClasses}`}
+            onClick={() => setIsPostitEditing(true)}
+          >
+            <div className="h-full flex flex-col gap-2">
+              <Input
+                value={postitTitle}
+                onChange={(e) => setPostitTitle(e.target.value)}
+                onBlur={() => {
+                  setLocalTitle(postitTitle);
+                  handlePostitBlur();
+                }}
+                className="bg-transparent border-none focus:ring-0 font-medium font-handwritten"
+                placeholder="Title"
+                autoFocus={isPostitEditing}
+              />
+              <Textarea
+                value={postitDescription}
+                onChange={(e) => setPostitDescription(e.target.value)}
+                onBlur={() => {
+                  setLocalDescription(postitDescription);
+                  handlePostitBlur();
+                }}
+                className="flex-1 bg-transparent border-none focus:ring-0 resize-none text-sm font-handwritten"
+                placeholder="Write your note here..."
+              />
+            </div>
           </div>
         );
-      default: // default style
+      default:
         return (
           <div className={`min-w-[150px] p-3 bg-white rounded-lg shadow-sm transition-all duration-200 ${focusClasses}`}>
             {isEditing ? (
