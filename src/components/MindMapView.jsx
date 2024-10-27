@@ -33,6 +33,7 @@ const MindMapView = ({
     handlePanStart,
     handlePanMove,
     handlePanEnd,
+    setPosition
   } = useZoomPan();
 
   // Effect to center the focused node
@@ -48,14 +49,11 @@ const MindMapView = ({
         const newX = centerX - (focusedNode.x * zoom);
         const newY = centerY - (focusedNode.y * zoom);
         
-        // Update the position
-        handlePanMove({ 
-          movementX: newX - position.x, 
-          movementY: newY - position.y 
-        });
+        // Update the position smoothly
+        setPosition({ x: newX, y: newY });
       }
     }
-  }, [focusedNodeId]);
+  }, [focusedNodeId, nodes, zoom]);
 
   const handleNodePositionUpdate = async (nodeId, x, y) => {
     try {
