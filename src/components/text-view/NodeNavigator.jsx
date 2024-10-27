@@ -20,19 +20,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const NodeNavigator = ({ 
-  nodes, 
-  onUpdateNode, 
-  onNodeFocus, 
+  nodes = [], // Add default empty array
+  onUpdateNode = () => {}, // Add default noop function
+  onNodeFocus = () => {}, // Add default noop function
   selectedNode, 
-  onAddNode,
-  onAIConversation 
+  onAddNode = () => {}, // Add default noop function
+  onAIConversation = () => {} // Add default noop function
 }) => {
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [navigatorNodes, setNavigatorNodes] = useState(nodes);
 
   useEffect(() => {
-    setNavigatorNodes(nodes);
+    setNavigatorNodes(nodes || []); // Ensure we always set an array
   }, [nodes]);
 
   const handleAddNode = () => {
@@ -44,7 +44,7 @@ const NodeNavigator = ({
     onAddNode({
       id: Date.now().toString(),
       type: 'text',
-      title: `New Node ${nodes.length + 1}`,
+      title: `New Node ${(nodes || []).length + 1}`,
       description: '',
       x: position.x,
       y: position.y
@@ -56,11 +56,13 @@ const NodeNavigator = ({
     onUpdateNode(updatedNodes);
   };
 
-  const filteredNodes = navigatorNodes
+  // Ensure we're working with arrays and handle potential undefined values
+  const filteredNodes = (navigatorNodes || [])
     .filter(node => {
+      if (!node) return false;
       const matchesType = selectedType === 'all' || node.nodeType === selectedType;
-      const matchesSearch = node.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          node.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = (node.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (node.description || '').toLowerCase().includes(searchQuery.toLowerCase());
       return matchesType && matchesSearch;
     });
 
