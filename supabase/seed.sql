@@ -29,8 +29,8 @@ INSERT INTO auth.users (
     crypt('admin123', gen_salt('bf')),
     NOW(),
     NOW(),
-    '{"provider": "email", "providers": ["email"]}',
-    '{"name": "Admin User"}',
+    '{"provider": "email", "providers": ["email"]}'::jsonb,
+    '{"name": "Admin User"}'::jsonb,
     false,
     NOW(),
     NOW()
@@ -79,8 +79,8 @@ BEGIN
             crypt('password123', gen_salt('bf')),
             NOW(),
             NOW(),
-            '{"provider": "email", "providers": ["email"]}',
-            format('{"name": "%s"}', split_part(user_email, '@', 1)),
+            '{"provider": "email", "providers": ["email"]}'::jsonb,
+            jsonb_build_object('name', split_part(user_email, '@', 1)),
             false,
             NOW(),
             NOW()
@@ -123,7 +123,7 @@ BEGIN
                 WHEN user_email = 'academic-history@example.com' THEN 'Analysis of historical documents and connections'
                 WHEN user_email = 'sales@example.com' THEN 'Due diligence on sales pipeline and prospects'
                 WHEN user_email = 'marketing@example.com' THEN 'Analysis of market competition and positioning'
-                WHEN user_email = 'sarah@ddteam.com' THEN 'Due diligence investigation for TechCorp acquisition'
+                WHEN user_email = 'sarah@ddteam.com' THEN 'TechCorp Acquisition DD'
                 ELSE 'General investigation description'
             END,
             user_id,
