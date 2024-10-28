@@ -34,6 +34,7 @@ const NodeNavigator = ({
   const [folders, setFolders] = useState([]);
   const [openFolders, setOpenFolders] = useState({});
   const [showCreateFolder, setShowCreateFolder] = useState(false);
+  const [draggedOverFolderId, setDraggedOverFolderId] = useState(null);
   const nodeRefs = useRef({});
 
   useEffect(() => {
@@ -69,56 +70,60 @@ const NodeNavigator = ({
   };
 
   const handleDragEnd = (result) => {
+    setDraggedOverFolderId(null);
     if (!result.destination) return;
 
-    const { source, destination } = result;
-    const sourceId = source.droppableId;
-    const destId = destination.droppableId;
+    const reorder = (list, startIndex, endIndex) => {
+      const result = Array.from(list);
+      const [removed] = result.splice(startIndex, 1);
+      result.splice(endIndex, 0, removed);
+      return result;
+    };
 
-    // Create new arrays
-    const newFolders = [...folders];
-    const newNodes = [...navigatorNodes];
-
-    // Handle node movement
-    if (result.type === 'node') {
-      const nodeId = result.draggableId;
-      const node = navigatorNodes.find(n => n.id === nodeId);
-
-      if (destId === 'root') {
-        // Moving to root
-        if (sourceId !== 'root') {
-          // Remove from folder
-          const sourceFolder = newFolders.find(f => f.id === sourceId);
-          sourceFolder.nodes = sourceFolder.nodes.filter(n => n.id !== nodeId);
-          // Add to root
-          newNodes.splice(destination.index, 0, node);
-        } else {
-          // Reorder in root
-          const [removed] = newNodes.splice(source.index, 1);
-          newNodes.splice(destination.index, 0, removed);
+    const findItemById = (items, id) => {
+      for (let item of items) {
+        if (item.id === id) return item;
+        if (item.children.length > 0) {
+          const found = findItemById(item.children, id);
+          if (found) return found;
         }
-      } else {
-        // Moving to folder
-        const destFolder = newFolders.find(f => f.id === destId);
-        
-        if (sourceId === 'root') {
-          // Remove from root
-          newNodes.splice(source.index, 1);
-        } else if (sourceId !== destId) {
-          // Remove from source folder
-          const sourceFolder = newFolders.find(f => f.id === sourceId);
-          sourceFolder.nodes = sourceFolder.nodes.filter(n => n.id !== nodeId);
-        }
-        
-        // Add to destination folder
-        if (!destFolder.nodes) destFolder.nodes = [];
-        destFolder.nodes.splice(destination.index, 0, node);
       }
+    };
+
+    const sourceItem = findItemById(navigatorNodes, result.draggableId);
+    const destinationItem = findItemById(navigatorNodes, result.destination.droppableId);
+
+    if (destinationItem && destinationItem.type === 'folder') {
+      const newItems = [...navigatorNodes];
+      const sourceParent = findItemById(newItems, result.source.droppableId);
+      
+      if (sourceParent) {
+        sourceParent.children = sourceParent.children.filter(child => child.id !== sourceItem.id);
+      } else {
+        const index = newItems.findIndex(item => item.id === sourceItem.id);
+        if (index !== -1) newItems.splice(index, 1);
+      }
+
+      destinationItem.children.splice(result.destination.index, 0, sourceItem);
+      setNavigatorNodes(newItems);
+    } else {
+      setNavigatorNodes(reorder(navigatorNodes, result.source.index, result.destination.index));
+    }
+  };
+
+  const handleDragUpdate = (update) => {
+    if (!update.destination) {
+      setDraggedOverFolderId(null);
+      return;
     }
 
-    // Update state
-    setFolders(newFolders);
-    setNavigatorNodes(newNodes);
+    const destId = update.destination.droppableId;
+    const folder = folders.find(f => f.id === destId);
+    if (folder) {
+      setDraggedOverFolderId(destId);
+    } else {
+      setDraggedOverFolderId(null);
+    }
   };
 
   const filteredNodes = navigatorNodes.filter(node => {
@@ -158,7 +163,10 @@ const NodeNavigator = ({
         </Button>
       </div>
 
-      <DragDropContext onDragEnd={handleDragEnd}>
+      <DragDropContext 
+        onDragEnd={handleDragEnd}
+        onDragUpdate={handleDragUpdate}
+      >
         <div className="flex-grow overflow-y-auto">
           <Droppable droppableId="root" type="node">
             {(provided) => (
@@ -173,6 +181,7 @@ const NodeNavigator = ({
                     index={index}
                     isOpen={openFolders[folder.id]}
                     onToggle={() => handleToggleFolder(folder.id)}
+                    isDraggedOver={draggedOverFolderId === folder.id}
                   >
                     <Droppable droppableId={folder.id} type="node">
                       {(provided) => (
