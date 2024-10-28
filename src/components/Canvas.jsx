@@ -126,10 +126,8 @@ const Canvas = forwardRef(({
 
   const handleWheelZoom = (e) => {
     e.preventDefault();
-    if (e.ctrlKey || e.metaKey) {
-      const delta = -e.deltaY * 0.001;
-      handleWheel({ ...e, delta });
-    }
+    const delta = -e.deltaY * 0.001;
+    handleWheel({ ...e, delta });
   };
 
   return (
