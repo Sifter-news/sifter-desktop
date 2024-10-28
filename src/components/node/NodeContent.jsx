@@ -42,20 +42,6 @@ const NodeContent = ({
             </div>
           </div>
         );
-      case 'expanded':
-        return (
-          <div className={`min-w-[200px] p-4 bg-white rounded-lg shadow-md transition-all duration-200 ${focusClasses}`}>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                {node.title?.charAt(0) || '?'}
-              </div>
-              <div>
-                <div className="font-medium">{node.title}</div>
-                <div className="text-sm text-gray-600 line-clamp-2">{node.description}</div>
-              </div>
-            </div>
-          </div>
-        );
       case 'postit':
         return (
           <div 

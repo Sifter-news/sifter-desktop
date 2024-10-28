@@ -1,7 +1,7 @@
 import React from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Layout, Square, Maximize2, StickyNote } from 'lucide-react';
+import { Layout, Square, StickyNote } from 'lucide-react';
 
 const NodeStyleSelect = ({ value, onChange }) => {
   return (
@@ -22,12 +22,6 @@ const NodeStyleSelect = ({ value, onChange }) => {
             <div className="flex items-center">
               <Layout className="h-4 w-4 mr-2" />
               Compact
-            </div>
-          </SelectItem>
-          <SelectItem value="expanded">
-            <div className="flex items-center">
-              <Maximize2 className="h-4 w-4 mr-2" />
-              Expanded
             </div>
           </SelectItem>
           <SelectItem value="postit">

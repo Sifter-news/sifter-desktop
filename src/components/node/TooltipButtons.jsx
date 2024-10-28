@@ -12,7 +12,6 @@ import NodeEditDialog from './NodeEditDialog';
 const defaultStyles = {
   default: "Default",
   compact: "Compact",
-  expanded: "Expanded",
   postit: "Post-it"
 };
 
