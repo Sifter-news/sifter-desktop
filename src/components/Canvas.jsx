@@ -29,8 +29,8 @@ const Canvas = forwardRef(({
 }, ref) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [nodeToDelete, setNodeToDelete] = useState(null);
-  const [draggedNodeId, setDraggedNodeId] = useState(null);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
   const { isSpacePressed } = useKeyboardControls(activeTool, setActiveTool);
   const {
@@ -75,8 +75,13 @@ const Canvas = forwardRef(({
   const handleMouseDown = (e) => {
     if (e.target === ref.current) {
       const rect = ref.current.getBoundingClientRect();
+      setDragStart({
+        x: e.clientX,
+        y: e.clientY
+      });
       
       if (activeTool === 'pan' || isSpacePressed) {
+        setIsDragging(true);
         handlePanStart();
       } else if (activeTool === 'select') {
         handleSelectionStart(e, rect);
@@ -85,59 +90,46 @@ const Canvas = forwardRef(({
   };
 
   const handleMouseMove = (e) => {
-    if (activeTool === 'select' && selectionStart) {
+    if (isDragging && (activeTool === 'pan' || isSpacePressed)) {
+      handlePanMove(e);
+    } else if (activeTool === 'select' && selectionStart) {
       const rect = ref.current.getBoundingClientRect();
       handleSelectionMove(e, rect);
-    } else if (activeTool === 'pan' || isSpacePressed) {
-      handlePanMove(e);
     }
   };
 
   const handleMouseUp = () => {
-    if (draggedNodeId) {
-      const node = nodes.find(n => n.id === draggedNodeId);
-      if (node) {
-        onNodePositionUpdate(draggedNodeId, node.x, node.y);
-      }
-      setDraggedNodeId(null);
-      setDragOffset({ x: 0, y: 0 });
-    }
+    setIsDragging(false);
     handlePanEnd();
     clearSelection();
   };
 
-  const handleNodeDragStart = useCallback((e, nodeId) => {
+  const handleNodeDragStart = (e, nodeId) => {
+    if (activeTool === 'select') {
+      onNodeFocus(nodeId);
+    }
+  };
+
+  const handleNodeDrag = (e, nodeId) => {
     if (activeTool === 'select') {
       const node = nodes.find(n => n.id === nodeId);
       if (node) {
-        const rect = ref.current.getBoundingClientRect();
-        setDragOffset({
-          x: (e.clientX - rect.left) / zoom - node.x - position.x,
-          y: (e.clientY - rect.top) / zoom - node.y - position.y
-        });
-        setDraggedNodeId(nodeId);
+        const updatedNode = {
+          ...node,
+          x: e.x,
+          y: e.y
+        };
+        onNodeUpdate(nodeId, updatedNode);
       }
     }
-  }, [activeTool, nodes, zoom, position]);
-
-  const handleNodeDrag = useCallback((e, nodeId) => {
-    if (activeTool === 'select' && draggedNodeId === nodeId) {
-      const rect = ref.current.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / zoom - dragOffset.x - position.x;
-      const y = (e.clientY - rect.top) / zoom - dragOffset.y - position.y;
-
-      setNodes(prevNodes => prevNodes.map(node => 
-        node.id === nodeId ? { ...node, x, y } : node
-      ));
-    }
-  }, [activeTool, draggedNodeId, zoom, position, dragOffset, setNodes]);
+  };
 
   return (
     <>
       <div 
         className={`w-full h-full bg-[#594BFF] overflow-hidden ${
-          isSpacePressed ? 'cursor-grab active:cursor-grabbing' : 
-          activeTool === 'pan' ? 'cursor-grab' : 'cursor-default'
+          (isSpacePressed || activeTool === 'pan') ? 'cursor-grab active:cursor-grabbing' : 
+          activeTool === 'select' ? 'cursor-default' : 'cursor-default'
         }`}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -165,14 +157,13 @@ const Canvas = forwardRef(({
               node={node}
               onDragStart={(e) => handleNodeDragStart(e, node.id)}
               onDrag={(e) => handleNodeDrag(e, node.id)}
-              onDragEnd={() => handleMouseUp()}
               zoom={zoom}
               onNodeUpdate={onNodeUpdate}
               onFocus={onNodeFocus}
               isFocused={focusedNodeId === node.id || selectedNodes.includes(node.id)}
               onDelete={onNodeDelete}
               onAIConversation={onAIConversation}
-              isDragging={draggedNodeId === node.id}
+              isDragging={isDragging}
             />
           ))}
           <SelectionOverlay selectionStart={selectionStart} selectionEnd={selectionEnd} />
