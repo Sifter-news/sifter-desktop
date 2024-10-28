@@ -30,6 +30,36 @@ const Canvas = forwardRef(({
   const [draggedNodeId, setDraggedNodeId] = useState(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
+  const handleKeyDown = useCallback((e) => {
+    if (focusedNodeId && (e.key === 'Delete' || e.key === 'Backspace')) {
+      const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
+      if (nodeToDelete?.type === 'ai') {
+        setNodeToDelete(nodeToDelete);
+        setShowDeleteConfirmation(true);
+      } else {
+        onNodeDelete(focusedNodeId);
+        toast.success("Node deleted");
+      }
+    } else if (focusedNodeId && (e.metaKey || e.ctrlKey) && e.key === 'c') {
+      const nodeToCopy = nodes.find(node => node.id === focusedNodeId);
+      if (nodeToCopy) {
+        copyNode(nodeToCopy);
+        toast.success("Node copied to clipboard");
+      }
+    } else if ((e.metaKey || e.ctrlKey) && e.key === 'v') {
+      const newNode = pasteNode();
+      if (newNode) {
+        setNodes(prev => [...prev, newNode]);
+        toast.success("Node pasted from clipboard");
+      }
+    }
+  }, [focusedNodeId, nodes, onNodeDelete, setNodes]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
   const handleMouseDown = useCallback((e) => {
     if (e.button === 0 || e.button === 1) {
       setIsPanning(true);
@@ -86,37 +116,6 @@ const Canvas = forwardRef(({
     }
   }, [activeTool, draggedNodeId, zoom, position, dragOffset, setNodes]);
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (focusedNodeId) {
-        if (e.key === 'Delete') {
-          const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
-          if (nodeToDelete?.type === 'ai') {
-            setNodeToDelete(nodeToDelete);
-            setShowDeleteConfirmation(true);
-          } else {
-            onNodeDelete(focusedNodeId);
-          }
-        } else if ((e.metaKey || e.ctrlKey) && e.key === 'c') {
-          const nodeToCopy = nodes.find(node => node.id === focusedNodeId);
-          if (nodeToCopy) {
-            copyNode(nodeToCopy);
-            toast.success("Node copied to clipboard");
-          }
-        } else if ((e.metaKey || e.ctrlKey) && e.key === 'v') {
-          const newNode = pasteNode();
-          if (newNode) {
-            setNodes(prev => [...prev, newNode]);
-            toast.success("Node pasted from clipboard");
-          }
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [focusedNodeId, nodes, onNodeDelete, setNodes]);
-
   return (
     <>
       <div 
@@ -127,6 +126,7 @@ const Canvas = forwardRef(({
         onMouseLeave={handleMouseUp}
         onWheel={handleWheel}
         ref={ref}
+        tabIndex={0} // Make the div focusable to capture keyboard events
       >
         <div 
           className="absolute inset-0" 
@@ -171,6 +171,7 @@ const Canvas = forwardRef(({
             <AlertDialogAction onClick={() => {
               if (nodeToDelete) {
                 onNodeDelete(nodeToDelete.id);
+                toast.success("AI node deleted");
               }
               setShowDeleteConfirmation(false);
               setNodeToDelete(null);
