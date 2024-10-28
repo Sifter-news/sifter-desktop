@@ -42,6 +42,7 @@ const NodeNavigator = ({
   const handleDeleteNode = async (nodeId) => {
     try {
       await onDeleteNode(nodeId);
+      setNavigatorNodes(prev => prev.filter(node => node.id !== nodeId));
       toast.success('Node deleted successfully');
     } catch (error) {
       console.error('Error deleting node:', error);
@@ -100,6 +101,7 @@ const NodeNavigator = ({
             onUpdateNode(id, updates);
             setEditingNode(null);
           }}
+          onDelete={handleDeleteNode}
         />
       )}
     </div>
