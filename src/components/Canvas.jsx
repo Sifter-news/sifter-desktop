@@ -13,6 +13,7 @@ const Canvas = forwardRef(({
   handlePanStart, 
   handlePanMove, 
   handlePanEnd,
+  handleWheel,
   onNodeUpdate,
   focusedNodeId,
   onNodeFocus,
@@ -84,14 +85,6 @@ const Canvas = forwardRef(({
       ));
     }
   }, [activeTool, draggedNodeId, zoom, position, dragOffset, setNodes]);
-
-  const handleWheel = useCallback((e) => {
-    if (e.ctrlKey || e.metaKey) {
-      e.preventDefault();
-      const delta = -e.deltaY * 0.001;
-      handleZoom(delta);
-    }
-  }, [handleZoom]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {

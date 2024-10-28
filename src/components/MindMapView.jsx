@@ -34,6 +34,7 @@ const MindMapView = ({
     handlePanStart,
     handlePanMove,
     handlePanEnd,
+    handleWheel,
     setPosition
   } = useZoomPan();
 
@@ -153,6 +154,7 @@ const MindMapView = ({
           handlePanStart={handlePanStart}
           handlePanMove={handlePanMove}
           handlePanEnd={handlePanEnd}
+          handleWheel={handleWheel}
           onNodeUpdate={onUpdateNode}
           focusedNodeId={focusedNodeId}
           onNodeFocus={onNodeFocus}
