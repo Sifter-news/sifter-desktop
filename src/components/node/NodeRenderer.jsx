@@ -20,6 +20,12 @@ const NodeRenderer = ({
   const [showTooltip, setShowTooltip] = useState(false);
   const [position, setPosition] = useState({ x: node.x, y: node.y });
 
+  // Set default avatar for all nodes
+  const nodeWithDefaultAvatar = {
+    ...node,
+    avatar: '/default-image.png'
+  };
+
   useEffect(() => {
     if (!isFocused) {
       setShowTooltip(false);
@@ -67,7 +73,7 @@ const NodeRenderer = ({
       <NodeContent
         style={node.visualStyle}
         isEditing={isEditing}
-        node={node}
+        node={nodeWithDefaultAvatar}
         localTitle={localTitle}
         localDescription={localDescription}
         handleBlur={handleBlur}
@@ -77,7 +83,7 @@ const NodeRenderer = ({
         isFocused={isFocused}
       />
       <NodeTooltip
-        node={node}
+        node={nodeWithDefaultAvatar}
         showTooltip={showTooltip}
         onAIConversation={onAIConversation}
         onDelete={onDelete}
