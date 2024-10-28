@@ -30,33 +30,6 @@ const Canvas = forwardRef(({
   const [draggedNodeId, setDraggedNodeId] = useState(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const nodeType = e.dataTransfer.getData('nodeType');
-    if (nodeType) {
-      const rect = ref.current.getBoundingClientRect();
-      const x = (e.clientX - rect.left - position.x) / zoom;
-      const y = (e.clientY - rect.top - position.y) / zoom;
-      
-      const newNode = {
-        id: Date.now().toString(),
-        type: nodeType,
-        nodeType: nodeType, // Set the node type from the dragged item
-        visualStyle: nodeType === 'postit' ? 'postit' : 'default',
-        title: 'New Node',
-        description: '',
-        x,
-        y,
-        width: 200,
-        height: nodeType === 'postit' ? 200 : 100,
-        color: '#000000',
-        backgroundColor: nodeType === 'postit' ? '#FFF8DC' : '#FFFFFF',
-      };
-      
-      onAddNode(newNode);
-    }
-  };
-
   const handleKeyDown = useCallback((e) => {
     if (focusedNodeId && (e.key === 'Delete' || e.key === 'Backspace')) {
       const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
@@ -213,4 +186,3 @@ const Canvas = forwardRef(({
 });
 
 export default Canvas;
-
