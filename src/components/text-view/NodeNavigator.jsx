@@ -88,6 +88,7 @@ const NodeNavigator = ({
           <div 
             key={node.id}
             ref={el => nodeRefs.current[node.id] = el}
+            className="mb-1"
           >
             <NodeListItem
               node={node}
