@@ -47,11 +47,18 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
 
   const handleDelete = async () => {
     try {
-      await onDelete(node.id);
-      toast.success("Node deleted successfully");
-      onClose();
+      if (onDelete) {
+        await onDelete(node.id);
+        toast.success("Node deleted successfully");
+        setShowDeleteDialog(false);
+        onClose();
+      } else {
+        throw new Error("Delete handler not provided");
+      }
     } catch (error) {
+      console.error('Error deleting node:', error);
       toast.error("Failed to delete node");
+      setShowDeleteDialog(false);
     }
   };
 
