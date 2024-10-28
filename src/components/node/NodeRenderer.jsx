@@ -26,7 +26,6 @@ const NodeRenderer = ({
     }
   }, [isFocused]);
 
-  // Only update local position when node props change significantly
   useEffect(() => {
     if (Math.abs(node.x - position.x) > 1 || Math.abs(node.y - position.y) > 1) {
       setPosition({ x: node.x, y: node.y });
@@ -50,7 +49,6 @@ const NodeRenderer = ({
   const handleDragStop = (e, d) => {
     const newPosition = { x: d.x, y: d.y };
     setPosition(newPosition);
-    // Ensure we update the parent component with the new position
     onNodePositionUpdate(node.id, newPosition.x, newPosition.y);
   };
 
@@ -58,13 +56,9 @@ const NodeRenderer = ({
     <Rnd
       size={{ width: node.width, height: node.height }}
       position={position}
-      scale={zoom}
       onDragStop={handleDragStop}
-      className={`${
-        isFocused 
-          ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' 
-          : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01]'
-      } transition-all duration-200`}
+      scale={zoom}
+      className={`${isFocused ? 'ring-2 ring-blue-500' : ''}`}
       onClick={handleNodeClick}
       enableResizing={false}
       disableDragging={!isDraggable}
