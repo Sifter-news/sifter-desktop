@@ -77,6 +77,32 @@ const Canvas = forwardRef(({
     resetCursor();
   };
 
+  const handleNodeDragStart = useCallback((e, nodeId) => {
+    if (activeTool === 'select') {
+      const node = nodes.find(n => n.id === nodeId);
+      if (node) {
+        const rect = ref.current.getBoundingClientRect();
+        setDragOffset({
+          x: (e.clientX - rect.left) / zoom - node.x - position.x,
+          y: (e.clientY - rect.top) / zoom - node.y - position.y
+        });
+        setDraggedNodeId(nodeId);
+      }
+    }
+  }, [activeTool, nodes, zoom, position]);
+
+  const handleNodeDrag = useCallback((e, nodeId) => {
+    if (activeTool === 'select' && draggedNodeId === nodeId) {
+      const rect = ref.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / zoom - dragOffset.x - position.x;
+      const y = (e.clientY - rect.top) / zoom - dragOffset.y - position.y;
+
+      setNodes(prevNodes => prevNodes.map(node => 
+        node.id === nodeId ? { ...node, x, y } : node
+      ));
+    }
+  }, [activeTool, draggedNodeId, zoom, position, dragOffset, setNodes]);
+
   const handleKeyDown = useCallback((e) => {
     if (focusedNodeId && (e.key === 'Delete' || e.key === 'Backspace')) {
       const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
