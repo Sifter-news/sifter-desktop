@@ -88,13 +88,22 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
               >
                 {projectName}
               </span>
-              <Separator orientation="vertical" className="h-4" />
+            </div>
+          )}
+        </div>
 
+        <div className="min-w-[200px] flex justify-end items-center space-x-2">
+          <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
+            Dashboard
+          </Link>
+          
+          {projectName && (
+            <>
               <Select value={investigatorType} onValueChange={handleTypeChange}>
-                <SelectTrigger className="w-[240px] whitespace-normal border-none focus:ring-0 [&>svg]:hidden">
+                <SelectTrigger className="w-fit border-none focus:ring-0 [&>span]:line-clamp-1 px-2">
                   <SelectValue placeholder="Select investigation type" />
                 </SelectTrigger>
-                <SelectContent className="w-[240px]">
+                <SelectContent className="w-fit min-w-[200px]">
                   <SelectGroup>
                     <SelectLabel>Generic</SelectLabel>
                     <SelectItem value="generic">Generic Investigation</SelectItem>
@@ -119,16 +128,10 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
                   </SelectGroup>
                 </SelectContent>
               </Select>
-
-            </div>
+              <Separator orientation="vertical" className="h-4 mx-2" />
+            </>
           )}
-        </div>
-
-        <div className="min-w-[200px] flex justify-end items-center space-x-2">
-          <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors pr-4">
-            Dashboard
-          </Link>
-          <Separator orientation="vertical" className="h-4 mx-2" />
+          
           <UserProfile user={user} onUpdateUser={onUpdateUser} />
         </div>
       </div>
