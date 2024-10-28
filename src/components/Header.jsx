@@ -96,12 +96,12 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
 
         {/* Right section with fixed width */}
         <div className="ml-auto w-[200px] flex justify-end items-center space-x-2">
-          <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
-            Dashboard
-          </Link>
-          
           {projectName && (
             <>
+              <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
+                Dashboard
+              </Link>
+              <Separator orientation="vertical" className="h-4 mx-2" />
               <Select value={investigatorType} onValueChange={handleTypeChange}>
                 <SelectTrigger className="w-fit border-none focus:ring-0 [&>span]:line-clamp-1 px-2">
                   <SelectValue placeholder="Select investigation type" />
@@ -131,7 +131,6 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              <Separator orientation="vertical" className="h-4 mx-2" />
             </>
           )}
           
