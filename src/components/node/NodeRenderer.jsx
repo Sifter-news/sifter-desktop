@@ -41,43 +41,41 @@ const NodeRenderer = ({
   };
 
   return (
-    <div className="group">
-      <Rnd
-        size={{ width: node.width, height: node.height }}
-        position={{ x: node.x, y: node.y }}
-        onDragStart={onDragStart}
-        onDrag={onDrag}
-        scale={zoom}
-        className={`relative ${
-          isFocused 
-            ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' 
-            : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01]'
-        } ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-        onClick={handleNodeClick}
-        enableResizing={false}
-        bounds="parent"
-      >
-        <NodeContent
-          style={node.visualStyle}
-          isEditing={isEditing}
-          node={node}
-          localTitle={localTitle}
-          localDescription={localDescription}
-          handleBlur={handleBlur}
-          setLocalTitle={setLocalTitle}
-          setLocalDescription={setLocalDescription}
-          handleNodeClick={handleNodeClick}
-          isFocused={isFocused}
-        />
-        <NodeTooltip
-          node={node}
-          showTooltip={showTooltip}
-          onAIConversation={onAIConversation}
-          onDelete={onDelete}
-          onUpdateNode={onNodeUpdate}
-        />
-      </Rnd>
-    </div>
+    <Rnd
+      size={{ width: node.width, height: node.height }}
+      position={{ x: node.x, y: node.y }}
+      onDragStart={onDragStart}
+      onDrag={onDrag}
+      scale={zoom}
+      className={`${
+        isFocused 
+          ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' 
+          : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01]'
+      } ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+      onClick={handleNodeClick}
+      enableResizing={false}
+      bounds="parent"
+    >
+      <NodeContent
+        style={node.visualStyle}
+        isEditing={isEditing}
+        node={node}
+        localTitle={localTitle}
+        localDescription={localDescription}
+        handleBlur={handleBlur}
+        setLocalTitle={setLocalTitle}
+        setLocalDescription={setLocalDescription}
+        handleNodeClick={handleNodeClick}
+        isFocused={isFocused}
+      />
+      <NodeTooltip
+        node={node}
+        showTooltip={showTooltip}
+        onAIConversation={onAIConversation}
+        onDelete={onDelete}
+        onUpdateNode={onNodeUpdate}
+      />
+    </Rnd>
   );
 };
 
