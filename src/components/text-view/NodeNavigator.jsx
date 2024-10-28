@@ -12,6 +12,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const NodeNavigator = ({ 
   nodes = [], 
@@ -93,7 +94,7 @@ const NodeNavigator = ({
         <NodeTypeSelector selectedType={selectedType} setSelectedType={setSelectedType} />
       </div>
 
-      <div className="flex-grow overflow-y-auto">
+      <ScrollArea className="flex-grow">
         <Accordion type="multiple" className="w-full">
           {Object.entries(groupedNodes).map(([type, nodes]) => (
             <AccordionItem value={type} key={type}>
@@ -130,7 +131,7 @@ const NodeNavigator = ({
             </AccordionItem>
           ))}
         </Accordion>
-      </div>
+      </ScrollArea>
 
       {editingNode && (
         <NodeEditDialog
