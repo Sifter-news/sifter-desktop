@@ -21,7 +21,16 @@ const NodeRenderer = ({
   const [position, setPosition] = useState({ x: node.x, y: node.y });
 
   useEffect(() => {
-    setPosition({ x: node.x, y: node.y });
+    if (!isFocused) {
+      setShowTooltip(false);
+    }
+  }, [isFocused]);
+
+  // Only update local position when node props change significantly
+  useEffect(() => {
+    if (Math.abs(node.x - position.x) > 1 || Math.abs(node.y - position.y) > 1) {
+      setPosition({ x: node.x, y: node.y });
+    }
   }, [node.x, node.y]);
 
   const handleNodeClick = (e) => {
@@ -41,7 +50,8 @@ const NodeRenderer = ({
   const handleDragStop = (e, d) => {
     const newPosition = { x: d.x, y: d.y };
     setPosition(newPosition);
-    onNodePositionUpdate(node.id, d.x, d.y);
+    // Ensure we update the parent component with the new position
+    onNodePositionUpdate(node.id, newPosition.x, newPosition.y);
   };
 
   return (
