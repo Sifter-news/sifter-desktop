@@ -20,6 +20,8 @@ const NodeTooltip = ({ node, showTooltip, onAIConversation, onDelete, onUpdateNo
             onAIConversation={onAIConversation}
             onDelete={onDelete}
             onUpdateNode={onUpdateNode}
+            handleStyleChange={(style) => onUpdateNode(node.id, { visualStyle: style })}
+            handleTypeChange={(type) => onUpdateNode(node.id, { nodeType: type })}
           />
         </TooltipContent>
       </Tooltip>
