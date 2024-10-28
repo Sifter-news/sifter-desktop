@@ -6,6 +6,12 @@ import NodeListItem from './NodeListItem';
 import NodeTypeSelector from './NodeTypeSelector';
 import NodeEditDialog from '../node/NodeEditDialog';
 import { toast } from 'sonner';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const NodeNavigator = ({ 
   nodes = [], 
@@ -58,6 +64,28 @@ const NodeNavigator = ({
     return matchesType && matchesSearch;
   });
 
+  const groupedNodes = filteredNodes.reduce((acc, node) => {
+    const type = node.nodeType || 'generic';
+    if (!acc[type]) {
+      acc[type] = [];
+    }
+    acc[type].push(node);
+    return acc;
+  }, {});
+
+  const getNodeTypeLabel = (type) => {
+    const labels = {
+      'generic': 'Generic Notes',
+      'node_person': 'People',
+      'node_organization': 'Organizations',
+      'node_object': 'Objects',
+      'node_concept': 'Concepts',
+      'node_location': 'Locations',
+      'node_event': 'Events'
+    };
+    return labels[type] || type;
+  };
+
   return (
     <div className="w-full h-full flex flex-col p-4">
       <div className="space-y-4 mb-4">
@@ -66,30 +94,42 @@ const NodeNavigator = ({
       </div>
 
       <div className="flex-grow overflow-y-auto">
-        {filteredNodes.map((node, index) => node && (
-          <div 
-            key={node.id}
-            ref={el => nodeRefs.current[node.id] = el}
-            className="mb-1"
-          >
-            <NodeListItem
-              node={node}
-              isSelected={selectedNodes.includes(node.id)}
-              onSelect={(nodeId) => {
-                const index = filteredNodes.findIndex(n => n.id === nodeId);
-                setCurrentIndex(index);
-                setSelectedNodes([nodeId]);
-                onNodeFocus(nodeId);
-              }}
-              onFocus={onNodeFocus}
-              onUpdateNode={onUpdateNode}
-              onAIConversation={onAIConversation}
-              isFocused={focusedNodeId === node.id || index === currentIndex}
-              onEdit={setEditingNode}
-              onDelete={handleDeleteNode}
-            />
-          </div>
-        ))}
+        <Accordion type="multiple" className="w-full">
+          {Object.entries(groupedNodes).map(([type, nodes]) => (
+            <AccordionItem value={type} key={type}>
+              <AccordionTrigger className="text-sm font-medium">
+                {getNodeTypeLabel(type)} ({nodes.length})
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-1">
+                  {nodes.map((node) => (
+                    <div 
+                      key={node.id}
+                      ref={el => nodeRefs.current[node.id] = el}
+                    >
+                      <NodeListItem
+                        node={node}
+                        isSelected={selectedNodes.includes(node.id)}
+                        onSelect={(nodeId) => {
+                          const index = filteredNodes.findIndex(n => n.id === nodeId);
+                          setCurrentIndex(index);
+                          setSelectedNodes([nodeId]);
+                          onNodeFocus(nodeId);
+                        }}
+                        onFocus={onNodeFocus}
+                        onUpdateNode={onUpdateNode}
+                        onAIConversation={onAIConversation}
+                        isFocused={focusedNodeId === node.id || nodes.indexOf(node) === currentIndex}
+                        onEdit={setEditingNode}
+                        onDelete={handleDeleteNode}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </div>
 
       {editingNode && (
