@@ -1,12 +1,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Hand, MousePointer, CirclePlus, Download, StickyNote } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import ToolButton from './ToolbarButton';
 import ExportDialog from './ExportDialog';
 
@@ -17,19 +12,25 @@ const Toolbar = ({ activeTool, setActiveTool, handleZoom, zoom, nodes, onAddNode
     e.dataTransfer.setData('nodeType', 'postit');
   };
 
+  const handleToolChange = (tool) => {
+    setActiveTool(tool);
+    // Reset cursor state when changing tools
+    document.body.style.cursor = tool === 'pan' ? 'grab' : 'default';
+  };
+
   return (
     <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-20 backdrop-blur-sm rounded-full shadow-lg p-2">
       <div className="bg-white rounded-full p-2 flex items-center space-x-2">
         <ToolButton 
           icon={<MousePointer className="h-4 w-4" />} 
           label="Select"
-          onClick={() => setActiveTool('select')}
+          onClick={() => handleToolChange('select')}
           isActive={activeTool === 'select'}
         />
         <ToolButton 
           icon={<Hand className="h-4 w-4" />} 
           label="Pan"
-          onClick={() => setActiveTool('pan')}
+          onClick={() => handleToolChange('pan')}
           isActive={activeTool === 'pan'}
         />
         <div className="w-px h-6 bg-gray-300 mx-2" />
