@@ -5,6 +5,7 @@ import SearchInput from './SearchInput';
 import NodeListItem from './NodeListItem';
 import NodeTypeSelector from './NodeTypeSelector';
 import NodeEditDialog from '../node/NodeEditDialog';
+import { toast } from 'sonner';
 
 const NodeNavigator = ({ 
   nodes = [], 
@@ -13,7 +14,8 @@ const NodeNavigator = ({
   selectedNode, 
   onAddNode,
   onAIConversation,
-  focusedNodeId 
+  focusedNodeId,
+  onDeleteNode 
 }) => {
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -36,6 +38,16 @@ const NodeNavigator = ({
       setSelectedNodes([focusedNodeId]);
     }
   }, [focusedNodeId]);
+
+  const handleDeleteNode = async (nodeId) => {
+    try {
+      await onDeleteNode(nodeId);
+      toast.success('Node deleted successfully');
+    } catch (error) {
+      console.error('Error deleting node:', error);
+      toast.error('Failed to delete node');
+    }
+  };
 
   const filteredNodes = navigatorNodes.filter(node => {
     if (!node) return false;
@@ -73,6 +85,7 @@ const NodeNavigator = ({
               onAIConversation={onAIConversation}
               isFocused={focusedNodeId === node.id || index === currentIndex}
               onEdit={setEditingNode}
+              onDelete={handleDeleteNode}
             />
           </div>
         ))}
