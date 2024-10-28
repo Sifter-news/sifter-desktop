@@ -22,7 +22,7 @@ const NodeNavigator = ({
   onNodeFocus, 
   selectedNode, 
   onAddNode,
-  onAIConversation,
+  onAIConversation = () => {}, // Provide default empty function
   focusedNodeId,
   onDeleteNode 
 }) => {
@@ -64,6 +64,12 @@ const NodeNavigator = ({
     const newFolder = handleCreateFolder(folderName);
     setFolders([...folders, newFolder]);
     setShowCreateFolder(false);
+  };
+
+  const handleAIConversation = (node) => {
+    if (typeof onAIConversation === 'function') {
+      onAIConversation(node);
+    }
   };
 
   const filteredNodes = navigatorNodes.filter(node => {
@@ -142,7 +148,7 @@ const NodeNavigator = ({
                                   }}
                                   onFocus={onNodeFocus}
                                   onUpdateNode={onUpdateNode}
-                                  onAIConversation={onAIConversation}
+                                  onAIConversation={handleAIConversation}
                                   isFocused={focusedNodeId === node.id}
                                   onEdit={setEditingNode}
                                   onDelete={onDeleteNode}
@@ -172,7 +178,7 @@ const NodeNavigator = ({
                       }}
                       onFocus={onNodeFocus}
                       onUpdateNode={onUpdateNode}
-                      onAIConversation={onAIConversation}
+                      onAIConversation={handleAIConversation}
                       isFocused={focusedNodeId === node.id}
                       onEdit={setEditingNode}
                       onDelete={onDeleteNode}
