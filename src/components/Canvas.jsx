@@ -22,8 +22,8 @@ const Canvas = forwardRef(({
   onAIConversation,
   onNodePositionUpdate
 }, ref) => {
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = React.useState(false);
-  const [nodeToDelete, setNodeToDelete] = React.useState(null);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [nodeToDelete, setNodeToDelete] = useState(null);
   const [isPanning, setIsPanning] = useState(false);
   const [startPanPosition, setStartPanPosition] = useState({ x: 0, y: 0 });
   const [draggedNodeId, setDraggedNodeId] = useState(null);
@@ -85,6 +85,14 @@ const Canvas = forwardRef(({
     }
   }, [activeTool, draggedNodeId, zoom, position, dragOffset, setNodes]);
 
+  const handleWheel = useCallback((e) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const delta = -e.deltaY * 0.001;
+      handleZoom(delta);
+    }
+  }, [handleZoom]);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (focusedNodeId) {
@@ -124,6 +132,7 @@ const Canvas = forwardRef(({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onWheel={handleWheel}
         ref={ref}
       >
         <div 

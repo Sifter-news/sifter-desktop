@@ -9,6 +9,14 @@ export const useZoomPan = (initialZoom = 1) => {
     setZoom((prevZoom) => Math.max(0.1, Math.min(prevZoom + delta, 5)));
   }, []);
 
+  const handleWheel = useCallback((e) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const delta = -e.deltaY * 0.001;
+      handleZoom(delta);
+    }
+  }, [handleZoom]);
+
   const handlePanStart = useCallback(() => {
     setIsPanning(true);
   }, []);
@@ -51,6 +59,7 @@ export const useZoomPan = (initialZoom = 1) => {
     handlePanStart,
     handlePanMove,
     handlePanEnd,
+    handleWheel,
     setPosition
   };
 };
