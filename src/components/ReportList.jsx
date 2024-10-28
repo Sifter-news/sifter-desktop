@@ -5,26 +5,60 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import ContentModal from './ContentModal';
 import { toast } from "sonner";
+import { supabase } from '@/integrations/supabase/supabase';
 
-const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
+const ReportList = ({ reports = [], onAddReport, onEditReport, projectId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSaveReport = (report) => {
+  const handleSaveReport = async (report) => {
+    if (!projectId) {
+      toast.error("No project ID provided");
+      return;
+    }
+
+    setIsSaving(true);
     try {
-      if (typeof onAddReport === 'function') {
-        const clonedReport = JSON.parse(JSON.stringify(report));
-        onAddReport(clonedReport);
+      const reportData = {
+        title: report.title,
+        content: report.content,
+        investigation_id: projectId,
+      };
+
+      if (selectedReport?.id) {
+        // Update existing report
+        const { data, error } = await supabase
+          .from('reports')
+          .update(reportData)
+          .eq('id', selectedReport.id)
+          .select()
+          .single();
+
+        if (error) throw error;
+        if (onEditReport) onEditReport(data);
+        toast.success("Report updated successfully");
       } else {
-        console.warn('onAddReport prop is not a function');
-        toast.error("Unable to add report at this time");
+        // Create new report
+        const { data, error } = await supabase
+          .from('reports')
+          .insert([reportData])
+          .select()
+          .single();
+
+        if (error) throw error;
+        if (onAddReport) onAddReport(data);
+        toast.success("Report created successfully");
       }
+
+      setIsModalOpen(false);
+      setSelectedReport(null);
     } catch (error) {
       console.error('Error saving report:', error);
       toast.error("Failed to save report");
+    } finally {
+      setIsSaving(false);
     }
-    setIsModalOpen(false);
-    setSelectedReport(null);
   };
 
   const handleAvatarClick = (report) => {
@@ -90,6 +124,7 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
         content={selectedReport}
         onSave={handleSaveReport}
         type="report"
+        isSaving={isSaving}
       />
     </div>
   );
