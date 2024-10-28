@@ -67,7 +67,7 @@ const ReportList = ({ reports = [], onAddReport, onEditReport, projectId }) => {
 
   return (
     <div className="fixed bottom-12 right-12" style={{ zIndex: 10 }}>
-      <div className="bg-white rounded-[50px] p-8 shadow-lg">
+      <div className="bg-white/10 rounded-[50px] p-8 shadow-lg backdrop-blur-sm">
         <ScrollArea className="h-[300px] w-[100px] pr-4">
           <div className="flex flex-col items-center space-y-4">
             {reports.map((report) => (
