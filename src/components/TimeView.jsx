@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
-import { Plus } from 'lucide-react';
+import { Plus, Calendar } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import NodeTooltip from './node/NodeTooltip';
 import NodeEditorModal from './node/NodeEditorModal';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { toast } from 'sonner';
 
 const TimeView = ({ nodes, onUpdateNode, focusedNodeId, onNodeFocus, onAddNode }) => {
   const [selectedNode, setSelectedNode] = useState(null);
-  const sortedNodes = [...nodes].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+  const sortedNodes = [...nodes]
+    .filter(node => node.nodeType === 'node_event' || node.type === 'node_event')
+    .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
   const handleNodeClick = (node) => {
     onNodeFocus(node.id);
@@ -27,15 +35,16 @@ const TimeView = ({ nodes, onUpdateNode, focusedNodeId, onNodeFocus, onAddNode }
       description: '',
       type: 'node_event',
       nodeType: 'node_event',
+      visualStyle: 'compact',
       x: x,
-      y: 200, // Fixed vertical position for timeline
+      y: 200,
       width: 200,
       height: 100,
       timestamp: new Date().toISOString()
     };
 
     onAddNode(newNode);
-    toast.success('Event node added');
+    toast.success('Event added to timeline');
   };
 
   return (
@@ -45,33 +54,46 @@ const TimeView = ({ nodes, onUpdateNode, focusedNodeId, onNodeFocus, onAddNode }
           <div className="absolute top-5 left-5 w-[calc(100%-40px)] h-1 bg-blue-200"></div>
           <div className="flex justify-between">
             {sortedNodes.map((node, index) => (
-              <NodeTooltip key={node.id} node={node} onView={handleNodeClick}>
-                <div 
-                  className={`relative flex flex-col items-center cursor-pointer transition-all duration-200 ${
-                    focusedNodeId === node.id ? 'scale-110 shadow-lg' : ''
-                  }`}
-                >
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center z-10 ${
-                    focusedNodeId === node.id 
-                      ? 'bg-blue-600 ring-4 ring-blue-200' 
-                      : 'bg-blue-500 hover:bg-blue-600'
-                  }`}>
-                    <span className="text-white font-bold">{index + 1}</span>
-                  </div>
-                  <div className="mt-2 text-center">
-                    <div className={`font-semibold transition-colors ${
-                      focusedNodeId === node.id ? 'text-blue-600' : 'hover:text-blue-500'
-                    }`}>
-                      {node.title}
+              <TooltipProvider key={node.id}>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <div 
+                      className={`relative flex flex-col items-center cursor-pointer transition-all duration-200 ${
+                        focusedNodeId === node.id ? 'scale-110 shadow-lg' : ''
+                      }`}
+                      onClick={() => handleNodeClick(node)}
+                    >
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center z-10 ${
+                        focusedNodeId === node.id 
+                          ? 'bg-blue-600 ring-4 ring-blue-200' 
+                          : 'bg-blue-500 hover:bg-blue-600'
+                      }`}>
+                        <Calendar className="h-5 w-5 text-white" />
+                      </div>
+                      <div className="mt-2 text-center">
+                        <div className={`font-semibold transition-colors ${
+                          focusedNodeId === node.id ? 'text-blue-600' : 'hover:text-blue-500'
+                        }`}>
+                          {node.title}
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-500">
-                      {node.timestamp 
-                        ? format(new Date(node.timestamp), 'yyyy-MM-dd HH:mm')
-                        : 'No timestamp'}
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <div className="text-sm">
+                      <div className="font-medium">{node.title}</div>
+                      <div className="text-gray-500">
+                        {node.timestamp 
+                          ? format(new Date(node.timestamp), 'PPP p')
+                          : 'No date set'}
+                      </div>
+                      {node.description && (
+                        <div className="mt-1 max-w-xs">{node.description}</div>
+                      )}
                     </div>
-                  </div>
-                </div>
-              </NodeTooltip>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             ))}
           </div>
           
