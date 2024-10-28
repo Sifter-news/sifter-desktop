@@ -4,6 +4,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FileText } from 'lucide-react';
 
+const DEFAULT_IMAGE = '/default-image.png';
+
 const NodeContent = ({ 
   style, 
   isEditing, 
@@ -22,7 +24,7 @@ const NodeContent = ({
           <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
             <Avatar className="h-10 w-10">
               <AvatarImage 
-                src={node.avatar || `https://images.unsplash.com/photo-1488590528505-98d2b5aba04b`} 
+                src={node.avatar || DEFAULT_IMAGE} 
                 alt={node.title} 
               />
               <AvatarFallback><FileText className="h-4 w-4" /></AvatarFallback>
@@ -35,7 +37,7 @@ const NodeContent = ({
             <div className="flex items-center gap-2 mb-2">
               <Avatar className="h-8 w-8">
                 <AvatarImage 
-                  src={node.avatar || `https://images.unsplash.com/photo-1488590528505-98d2b5aba04b`} 
+                  src={node.avatar || DEFAULT_IMAGE} 
                   alt={node.title} 
                 />
                 <AvatarFallback><FileText className="h-4 w-4" /></AvatarFallback>
@@ -72,7 +74,7 @@ const NodeContent = ({
             <div className="flex items-center gap-2 mb-2">
               <Avatar className="h-8 w-8">
                 <AvatarImage 
-                  src={node.avatar || `https://images.unsplash.com/photo-1488590528505-98d2b5aba04b`} 
+                  src={node.avatar || DEFAULT_IMAGE} 
                   alt={node.title} 
                 />
                 <AvatarFallback><FileText className="h-4 w-4" /></AvatarFallback>
