@@ -135,7 +135,7 @@ const Canvas = forwardRef(({
             height: '1000px',
             border: '2px solid rgba(255, 255, 255, 0.2)',
             backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)',
-            backgroundSize: '24px 24px',
+            backgroundSize: '48px 48px',
             transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
           }}
         >
