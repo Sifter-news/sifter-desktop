@@ -72,6 +72,8 @@ export const useNodeOperations = (setNodes) => {
       setNodes(prevNodes => prevNodes.map(node => 
         node.id === nodeId ? { ...node, ...updates } : node
       ));
+      
+      toast.success('Node updated successfully');
     } catch (error) {
       console.error('Error updating node:', error);
       toast.error('Failed to update node');

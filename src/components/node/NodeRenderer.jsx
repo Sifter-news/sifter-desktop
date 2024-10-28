@@ -18,13 +18,7 @@ const NodeRenderer = ({
   const [localTitle, setLocalTitle] = useState(node.title);
   const [localDescription, setLocalDescription] = useState(node.description);
   const [showTooltip, setShowTooltip] = useState(false);
-  const [position, setPosition] = useState({ x: node.x, y: node.y });
-
-  // Set default avatar for all nodes
-  const nodeWithDefaultAvatar = {
-    ...node,
-    avatar: '/default-image.png'
-  };
+  const [position, setPosition] = useState({ x: node.x || 0, y: node.y || 0 });
 
   useEffect(() => {
     if (!isFocused) {
@@ -33,7 +27,8 @@ const NodeRenderer = ({
   }, [isFocused]);
 
   useEffect(() => {
-    if (Math.abs(node.x - position.x) > 1 || Math.abs(node.y - position.y) > 1) {
+    // Update local position when node position changes
+    if (node.x !== undefined && node.y !== undefined) {
       setPosition({ x: node.x, y: node.y });
     }
   }, [node.x, node.y]);
@@ -55,35 +50,36 @@ const NodeRenderer = ({
   const handleDragStop = (e, d) => {
     const newPosition = { x: d.x, y: d.y };
     setPosition(newPosition);
+    // Ensure we're passing the node ID and new position to the update handler
     onNodePositionUpdate(node.id, newPosition.x, newPosition.y);
   };
 
   return (
     <Rnd
-      size={{ width: node.width, height: node.height }}
       position={position}
+      size={{ width: node.width || 200, height: node.height || 100 }}
       onDragStop={handleDragStop}
       scale={zoom}
-      className={`${isFocused ? 'ring-2 ring-blue-500' : ''}`}
+      className={`absolute ${isFocused ? 'ring-2 ring-blue-500' : ''}`}
       onClick={handleNodeClick}
       enableResizing={false}
       disableDragging={!isDraggable}
       bounds="parent"
+      dragGrid={[1, 1]} // Allow smooth dragging
     >
       <NodeContent
         style={node.visualStyle}
         isEditing={isEditing}
-        node={nodeWithDefaultAvatar}
+        node={node}
         localTitle={localTitle}
         localDescription={localDescription}
         handleBlur={handleBlur}
         setLocalTitle={setLocalTitle}
         setLocalDescription={setLocalDescription}
-        handleNodeClick={handleNodeClick}
         isFocused={isFocused}
       />
       <NodeTooltip
-        node={nodeWithDefaultAvatar}
+        node={node}
         showTooltip={showTooltip}
         onAIConversation={onAIConversation}
         onDelete={onDelete}
