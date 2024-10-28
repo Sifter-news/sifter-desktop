@@ -17,8 +17,8 @@ const NodeTooltip = ({ node, showTooltip, onAIConversation, onDelete, onUpdateNo
         <TooltipContent side="top">
           <TooltipButtons
             node={node}
-            onAIConversation={onAIConversation}
-            onDelete={onDelete}
+            onAIConversation={() => onAIConversation(node)}
+            onDelete={() => onDelete(node.id)}
             onUpdateNode={onUpdateNode}
             handleStyleChange={(style) => onUpdateNode(node.id, { visualStyle: style })}
             handleTypeChange={(type) => onUpdateNode(node.id, { nodeType: type })}

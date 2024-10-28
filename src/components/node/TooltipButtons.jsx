@@ -1,5 +1,4 @@
 import React from 'react';
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Layout, Type, Pencil, FileText, User, Building2, Package, Brain, MapPin, Calendar, ChevronDown } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
@@ -33,6 +32,7 @@ const TooltipButtons = ({
   handleStyleChange, 
   handleTypeChange, 
   onAIConversation, 
+  onDelete,
   node,
   onUpdateNode
 }) => {
@@ -56,6 +56,11 @@ const TooltipButtons = ({
   const handleNodeTypeChange = (newType) => {
     onUpdateNode(node.id, { nodeType: newType });
     handleTypeChange?.(newType);
+  };
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    onDelete();
   };
 
   return (
@@ -136,6 +141,15 @@ const TooltipButtons = ({
         >
           <MessageCircle className="h-4 w-4 mr-2" />
           AI
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-white hover:bg-red-700 bg-red-600"
+          onClick={handleDelete}
+        >
+          Delete
         </Button>
       </div>
 
