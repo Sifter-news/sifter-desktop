@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/popover";
 import NodeEditDialog from './NodeEditDialog';
 import { getNodeDimensions } from '@/utils/nodeDimensions';
+import { handleNodeDelete } from '@/utils/nodeDeleteUtils';
 
 const defaultStyles = {
   default: "Default",
@@ -56,11 +57,6 @@ const TooltipButtons = ({
   const handleNodeTypeChange = (newType) => {
     onUpdateNode(node.id, { nodeType: newType });
     handleTypeChange?.(newType);
-  };
-
-  const handleDelete = (e) => {
-    e.stopPropagation();
-    onDelete();
   };
 
   return (
@@ -136,18 +132,11 @@ const TooltipButtons = ({
         <Button
           variant="ghost"
           size="sm"
-          className="text-white hover:bg-purple-700 bg-purple-600"
-          onClick={onAIConversation}
-        >
-          <MessageCircle className="h-4 w-4 mr-2" />
-          AI
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="sm"
           className="text-white hover:bg-red-700 bg-red-600"
-          onClick={handleDelete}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleNodeDelete(node.id, onDelete);
+          }}
         >
           Delete
         </Button>
@@ -158,6 +147,7 @@ const TooltipButtons = ({
         onClose={() => setShowEditDialog(false)}
         node={node}
         onUpdate={onUpdateNode}
+        onDelete={onDelete}
       />
     </>
   );

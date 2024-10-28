@@ -5,11 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
 import NodeMetadataFields from './NodeMetadataFields';
 import NodeTypeSelect from './NodeTypeSelect';
 import NodeStyleSelect from './NodeStyleSelect';
 import NodeAvatar from './NodeAvatar';
+import { handleNodeDelete } from '@/utils/nodeDeleteUtils';
 
 const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
   const [formData, setFormData] = useState({
@@ -42,23 +42,6 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
       onClose();
     } catch (error) {
       toast.error("Failed to update node");
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      if (onDelete) {
-        await onDelete(node.id);
-        toast.success("Node deleted successfully");
-        setShowDeleteDialog(false);
-        onClose();
-      } else {
-        throw new Error("Delete handler not provided");
-      }
-    } catch (error) {
-      console.error('Error deleting node:', error);
-      toast.error("Failed to delete node");
-      setShowDeleteDialog(false);
     }
   };
 
@@ -144,7 +127,9 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+            <AlertDialogAction onClick={() => handleNodeDelete(node.id, onDelete, onClose, setShowDeleteDialog)}>
+              Delete
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
