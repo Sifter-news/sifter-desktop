@@ -106,25 +106,25 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
                 <SelectContent className="w-fit min-w-[200px]">
                   <SelectGroup>
                     <SelectLabel>Generic</SelectLabel>
-                    <SelectItem value="generic">Generic Investigation</SelectItem>
+                    <SelectItem value="generic">Generic</SelectItem>
                     <SelectItem value="research">Research</SelectItem>
                   </SelectGroup>
                   <SelectGroup>
                     <SelectLabel>Due Diligence</SelectLabel>
-                    <SelectItem value="pre-deal">Pre-Deal Due Diligence Investigation</SelectItem>
-                    <SelectItem value="post-deal">Post-Deal Due Diligence Investigation</SelectItem>
+                    <SelectItem value="pre-deal">Pre-Deal Due Diligence</SelectItem>
+                    <SelectItem value="post-deal">Post-Deal Due Diligence</SelectItem>
                   </SelectGroup>
                   <SelectGroup>
                     <SelectLabel>Compliance</SelectLabel>
-                    <SelectItem value="aml">Anti-Money Laundering Investigation</SelectItem>
-                    <SelectItem value="kyc">Know Your Customer Investigation</SelectItem>
-                    <SelectItem value="regulatory">Regulatory Compliance Investigation</SelectItem>
+                    <SelectItem value="aml">Anti-Money Laundering</SelectItem>
+                    <SelectItem value="kyc">Know Your Customer</SelectItem>
+                    <SelectItem value="regulatory">Regulatory Compliance</SelectItem>
                   </SelectGroup>
                   <SelectGroup>
                     <SelectLabel>Corporate</SelectLabel>
-                    <SelectItem value="fraud">Fraud Investigation</SelectItem>
-                    <SelectItem value="background">Background Check Investigation</SelectItem>
-                    <SelectItem value="asset">Asset Tracing Investigation</SelectItem>
+                    <SelectItem value="fraud">Fraud</SelectItem>
+                    <SelectItem value="background">Background Check</SelectItem>
+                    <SelectItem value="asset">Asset Tracing</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
