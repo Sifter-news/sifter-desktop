@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useZoomPan, findAvailablePosition } from '../utils/canvasUtils';
-import Canvas from './Canvas';
+import CanvasGrid from './canvas/CanvasGrid';
 import Toolbar from './Toolbar';
 import AISidePanel from './AISidePanel';
 import ReportList from './ReportList';
@@ -134,44 +134,26 @@ const MindMapView = ({
     setSidePanelOpen(true);
   };
 
-  const handleNodeClick = (node) => {
-    setSelectedNode(node);
-  };
-
   return (
     <div className="flex h-[calc(100vh-64px)] w-screen overflow-hidden">
       <div 
         className="flex-grow relative"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
+        ref={canvasRef}
       >
-        <div 
-          className="absolute inset-0" 
-          style={{
-            width: '5000px',
-            height: '5000px',
-            border: '2px solid rgba(255, 255, 255, 0.2)',
-            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)',
-            backgroundSize: '120px 120px',
-            transformOrigin: '0 0',
-            transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
-          }}
-        >
-          {nodes.map(node => (
-            <NodeRenderer
-              key={node.id}
-              node={node}
-              zoom={zoom}
-              onNodeUpdate={onUpdateNode}
-              onFocus={onNodeFocus}
-              isFocused={focusedNodeId === node.id}
-              onDelete={onDeleteNode}
-              onAIConversation={handleAIConversation}
-              onNodePositionUpdate={handleNodePositionUpdate}
-              isDraggable={activeTool !== 'pan'}
-            />
-          ))}
-        </div>
+        <CanvasGrid
+          zoom={zoom}
+          position={position}
+          nodes={nodes}
+          onNodeUpdate={onUpdateNode}
+          onNodeFocus={onNodeFocus}
+          focusedNodeId={focusedNodeId}
+          onDelete={onDeleteNode}
+          onAIConversation={handleAIConversation}
+          onNodePositionUpdate={handleNodePositionUpdate}
+          activeTool={activeTool}
+        />
         <Toolbar
           activeTool={activeTool}
           setActiveTool={setActiveTool}
