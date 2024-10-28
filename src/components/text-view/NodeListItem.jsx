@@ -36,10 +36,10 @@ const NodeListItem = ({
           } ${isFocused ? 'ring-2 ring-blue-600' : ''}`}
           onClick={() => onSelect(node.id)}
         >
-          <div className="flex items-center gap-0 group-hover:gap-2 transition-all flex-grow">
+          <div className="flex items-center gap-2 flex-grow">
             <div
               {...provided.dragHandleProps}
-              className="opacity-0 w-0 group-hover:w-auto group-hover:opacity-100 transition-all cursor-grab active:cursor-grabbing"
+              className="opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
             >
               <GripVertical className="h-4 w-4 text-gray-400" />
             </div>

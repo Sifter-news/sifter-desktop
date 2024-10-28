@@ -8,6 +8,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import NodeEditDialog from './NodeEditDialog';
+import { getNodeDimensions } from '@/utils/nodeDimensions';
+import { handleNodeDelete } from '@/utils/nodeDeleteUtils';
 
 const defaultStyles = {
   default: "Default",
@@ -31,7 +33,9 @@ const TooltipButtons = ({
   handleStyleChange, 
   handleTypeChange, 
   onAIConversation, 
-  node
+  onDelete,
+  node,
+  onUpdateNode
 }) => {
   const [showEditDialog, setShowEditDialog] = React.useState(false);
   const currentStyle = node?.visualStyle || 'default';
@@ -39,8 +43,21 @@ const TooltipButtons = ({
 
   const CurrentTypeIcon = defaultNodeTypes[currentType]?.icon || FileText;
 
-  const styleEntries = Object.entries(styles || defaultStyles);
-  const typeEntries = Object.entries(nodeTypes || defaultNodeTypes);
+  const handleVisualStyleChange = (newStyle) => {
+    const dimensions = getNodeDimensions(newStyle);
+    const updates = {
+      visualStyle: newStyle,
+      width: dimensions.width,
+      height: dimensions.height
+    };
+    onUpdateNode(node.id, updates);
+    handleStyleChange?.(newStyle);
+  };
+
+  const handleNodeTypeChange = (newType) => {
+    onUpdateNode(node.id, { nodeType: newType });
+    handleTypeChange?.(newType);
+  };
 
   return (
     <>
@@ -67,12 +84,12 @@ const TooltipButtons = ({
           </PopoverTrigger>
           <PopoverContent className="w-32">
             <div className="flex flex-col space-y-1">
-              {styleEntries.map(([value, label]) => (
+              {Object.entries(styles).map(([value, label]) => (
                 <Button
                   key={value}
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleStyleChange?.(value)}
+                  onClick={() => handleVisualStyleChange(value)}
                   className={`justify-start ${currentStyle === value ? 'bg-accent' : ''}`}
                 >
                   {label}
@@ -99,7 +116,7 @@ const TooltipButtons = ({
                   key={value}
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleTypeChange?.(value)}
+                  onClick={() => handleNodeTypeChange(value)}
                   className={`justify-start ${currentType === value ? 'bg-accent' : ''}`}
                 >
                   <Icon className="h-4 w-4 mr-2" />
@@ -115,11 +132,13 @@ const TooltipButtons = ({
         <Button
           variant="ghost"
           size="sm"
-          className="text-white hover:bg-purple-700 bg-purple-600"
-          onClick={onAIConversation}
+          className="text-white hover:bg-red-700 bg-red-600"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleNodeDelete(node.id, onDelete);
+          }}
         >
-          <MessageCircle className="h-4 w-4 mr-2" />
-          AI
+          Delete
         </Button>
       </div>
 
@@ -127,7 +146,8 @@ const TooltipButtons = ({
         isOpen={showEditDialog}
         onClose={() => setShowEditDialog(false)}
         node={node}
-        onUpdate={handleStyleChange}
+        onUpdate={onUpdateNode}
+        onDelete={onDelete}
       />
     </>
   );

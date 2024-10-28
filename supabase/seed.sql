@@ -1,82 +1,141 @@
--- Enable UUID extension if not already enabled
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- Reset tables
+TRUNCATE TABLE auth.users CASCADE;
+TRUNCATE TABLE public.profiles CASCADE;
+TRUNCATE TABLE public.investigations CASCADE;
+TRUNCATE TABLE public.reports CASCADE;
+TRUNCATE TABLE public.node CASCADE;
 
--- Load subscription plans
-INSERT INTO public.subscription_plans (id, name, price, description)
-VALUES 
-  (uuid_generate_v4(), 'Free', 0, 'Basic access to investigation tools'),
-  (uuid_generate_v4(), 'Pro', 9.99, 'Advanced features and unlimited investigations'),
-  (uuid_generate_v4(), 'Team', 29.99, 'Team collaboration and advanced analytics');
-
--- Insert admin user
-INSERT INTO public.profiles (id, username, email, avatar_url) 
-VALUES (
-  uuid_generate_v4(),
-  'admin',
-  'admin@sifter.news',
-  '/default-image.png'
+-- Create admin user
+INSERT INTO auth.users (
+    instance_id,
+    id,
+    aud,
+    role,
+    email,
+    encrypted_password,
+    email_confirmed_at,
+    last_sign_in_at,
+    raw_app_meta_data,
+    raw_user_meta_data,
+    is_super_admin,
+    created_at,
+    updated_at
+) VALUES (
+    '00000000-0000-0000-0000-000000000000',
+    'd0d8c19c-3b3e-4f5a-a7b0-d9cee666d454',
+    'authenticated',
+    'authenticated',
+    'admin@sifter.news',
+    crypt('admin123', gen_salt('bf')),
+    NOW(),
+    NOW(),
+    '{"provider": "email", "providers": ["email"]}'::jsonb,
+    '{"name": "Admin User"}'::jsonb,
+    false,
+    NOW(),
+    NOW()
 );
 
--- Insert sample users
-INSERT INTO public.profiles (id, username, email, avatar_url) 
-SELECT 
-  uuid_generate_v4(),
-  'user_' || i,
-  'user' || i || '@example.com',
-  '/default-image.png'
-FROM generate_series(1, 10) i;
+-- Create test users with proper UUIDs
+DO $$
+DECLARE
+    test_users TEXT[] := ARRAY[
+        'sarah@ddteam.com',
+        'financial@example.com',
+        'criminal@example.com',
+        'private@example.com',
+        'academic-ai@example.com',
+        'academic-history@example.com',
+        'sales@example.com',
+        'marketing@example.com'
+    ];
+    user_email TEXT;
+    user_id UUID;
+BEGIN
+    FOREACH user_email IN ARRAY test_users
+    LOOP
+        user_id := uuid_generate_v4();
+        
+        INSERT INTO auth.users (
+            instance_id,
+            id,
+            aud,
+            role,
+            email,
+            encrypted_password,
+            email_confirmed_at,
+            last_sign_in_at,
+            raw_app_meta_data,
+            raw_user_meta_data,
+            is_super_admin,
+            created_at,
+            updated_at
+        ) VALUES (
+            '00000000-0000-0000-0000-000000000000',
+            user_id,
+            'authenticated',
+            'authenticated',
+            user_email,
+            crypt('password123', gen_salt('bf')),
+            NOW(),
+            NOW(),
+            '{"provider": "email", "providers": ["email"]}'::jsonb,
+            jsonb_build_object('name', split_part(user_email, '@', 1)),
+            false,
+            NOW(),
+            NOW()
+        );
 
--- Insert sample investigations
-WITH user_ids AS (SELECT id FROM public.profiles)
-INSERT INTO public.investigations (id, title, description, owner_id, visibility, view_type)
-SELECT 
-  uuid_generate_v4(),
-  CASE (i % 3)
-    WHEN 0 THEN 'Financial Investigation ' || i
-    WHEN 1 THEN 'Criminal Case ' || i
-    ELSE 'Historical Research ' || i
-  END,
-  'Sample investigation description ' || i,
-  u.id,
-  CASE (i % 3) 
-    WHEN 0 THEN 'private'
-    WHEN 1 THEN 'public'
-    ELSE 'organization'
-  END,
-  CASE (i % 4)
-    WHEN 0 THEN 'mind'
-    WHEN 1 THEN 'timeline'
-    WHEN 2 THEN 'map'
-    ELSE 'text'
-  END
-FROM user_ids u
-CROSS JOIN generate_series(1, 5) i;
+        -- Create corresponding profile
+        INSERT INTO public.profiles (id, username, email)
+        VALUES (
+            user_id,
+            split_part(user_email, '@', 1),
+            user_email
+        );
 
--- Insert sample reports
-WITH investigation_ids AS (SELECT id FROM public.investigations)
-INSERT INTO public.reports (id, investigation_id, title, content)
-SELECT 
-  uuid_generate_v4(),
-  inv.id,
-  'Report ' || r,
-  'Sample report content ' || r
-FROM investigation_ids inv
-CROSS JOIN generate_series(1, 3) r;
-
--- Insert sample nodes
-WITH investigation_ids AS (SELECT id FROM public.investigations)
-INSERT INTO public.node (id, title, description, type, owner_id, investigation_id)
-SELECT 
-  uuid_generate_v4(),
-  'Node ' || n,
-  'Sample node description ' || n,
-  CASE (n % 4)
-    WHEN 0 THEN 'evidence'
-    WHEN 1 THEN 'witness'
-    WHEN 2 THEN 'document'
-    WHEN 3 THEN 'location'
-  END,
-  (SELECT id FROM public.profiles LIMIT 1),
-  inv.id
-FROM investigation_ids inv
-CROSS JOIN generate_series(1, 5) n;
+        -- Create sample investigation for each user
+        INSERT INTO public.investigations (
+            id,
+            title,
+            description,
+            owner_id,
+            visibility,
+            investigation_type
+        ) VALUES (
+            uuid_generate_v4(),
+            CASE 
+                WHEN user_email = 'financial@example.com' THEN 'Financial Fraud Investigation'
+                WHEN user_email = 'criminal@example.com' THEN 'Criminal Network Analysis'
+                WHEN user_email = 'private@example.com' THEN 'Corporate Background Check'
+                WHEN user_email = 'academic-ai@example.com' THEN 'AI Ethics Research'
+                WHEN user_email = 'academic-history@example.com' THEN 'Historical Document Analysis'
+                WHEN user_email = 'sales@example.com' THEN 'Sales Pipeline Due Diligence'
+                WHEN user_email = 'marketing@example.com' THEN 'Market Competition Analysis'
+                WHEN user_email = 'sarah@ddteam.com' THEN 'TechCorp Acquisition DD'
+                ELSE 'General Investigation'
+            END,
+            CASE 
+                WHEN user_email = 'financial@example.com' THEN 'Investigation into suspected financial fraud patterns'
+                WHEN user_email = 'criminal@example.com' THEN 'Analysis of potential criminal network connections'
+                WHEN user_email = 'private@example.com' THEN 'Corporate entity background verification'
+                WHEN user_email = 'academic-ai@example.com' THEN 'Research into AI system ethical implications'
+                WHEN user_email = 'academic-history@example.com' THEN 'Analysis of historical documents and connections'
+                WHEN user_email = 'sales@example.com' THEN 'Due diligence on sales pipeline and prospects'
+                WHEN user_email = 'marketing@example.com' THEN 'Analysis of market competition and positioning'
+                WHEN user_email = 'sarah@ddteam.com' THEN 'TechCorp Acquisition DD'
+                ELSE 'General investigation description'
+            END,
+            user_id,
+            'private',
+            CASE 
+                WHEN user_email LIKE 'academic%' THEN 'research'
+                WHEN user_email IN ('financial@example.com', 'sales@example.com') THEN 'pre-deal'
+                WHEN user_email = 'criminal@example.com' THEN 'fraud'
+                WHEN user_email = 'private@example.com' THEN 'background'
+                WHEN user_email = 'marketing@example.com' THEN 'generic'
+                ELSE 'generic'
+            END
+        );
+    END LOOP;
+END $$;

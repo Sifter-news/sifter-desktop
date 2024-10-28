@@ -66,8 +66,9 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
 
   return (
     <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
-      <div className="mx-auto px-12 py-2 flex justify-between items-center">
-        <div className="flex items-center space-x-4 min-w-[200px]">
+      <div className="mx-auto px-12 py-2 flex items-center">
+        {/* Left section with fixed width */}
+        <div className="w-[200px] flex items-center space-x-4">
           <div className="flex items-center space-x-2">
             <img src="/favicon.ico" alt="Sifter Logo" className="h-8 w-8" />
             <span className="text-sm font-normal">Sifter</span>
@@ -75,7 +76,8 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
           </div>
         </div>
 
-        <div className="flex-grow flex justify-center items-center space-x-4">
+        {/* Center section with absolute positioning */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center space-x-4">
           {projectName && (
             <div className="flex items-center space-x-4">
               <Avatar className="h-8 w-8">
@@ -88,47 +90,50 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
               >
                 {projectName}
               </span>
-              <Separator orientation="vertical" className="h-4" />
-
-              <Select value={investigatorType} onValueChange={handleTypeChange}>
-                <SelectTrigger className="w-[240px] whitespace-normal border-none focus:ring-0 [&>svg]:hidden">
-                  <SelectValue placeholder="Select investigation type" />
-                </SelectTrigger>
-                <SelectContent className="w-[240px]">
-                  <SelectGroup>
-                    <SelectLabel>Generic</SelectLabel>
-                    <SelectItem value="generic">Generic Investigation</SelectItem>
-                    <SelectItem value="research">Research</SelectItem>
-                  </SelectGroup>
-                  <SelectGroup>
-                    <SelectLabel>Due Diligence</SelectLabel>
-                    <SelectItem value="pre-deal">Pre-Deal Due Diligence Investigation</SelectItem>
-                    <SelectItem value="post-deal">Post-Deal Due Diligence Investigation</SelectItem>
-                  </SelectGroup>
-                  <SelectGroup>
-                    <SelectLabel>Compliance</SelectLabel>
-                    <SelectItem value="aml">Anti-Money Laundering Investigation</SelectItem>
-                    <SelectItem value="kyc">Know Your Customer Investigation</SelectItem>
-                    <SelectItem value="regulatory">Regulatory Compliance Investigation</SelectItem>
-                  </SelectGroup>
-                  <SelectGroup>
-                    <SelectLabel>Corporate</SelectLabel>
-                    <SelectItem value="fraud">Fraud Investigation</SelectItem>
-                    <SelectItem value="background">Background Check Investigation</SelectItem>
-                    <SelectItem value="asset">Asset Tracing Investigation</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-
             </div>
           )}
         </div>
 
-        <div className="min-w-[200px] flex justify-end items-center space-x-2">
-          <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors pr-4">
-            Dashboard
-          </Link>
-          <Separator orientation="vertical" className="h-4 mx-2" />
+        {/* Right section with fixed width */}
+        <div className="ml-auto w-[200px] flex justify-end items-center space-x-2">
+          {projectName && (
+            <>
+              <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
+                Dashboard
+              </Link>
+              <Separator orientation="vertical" className="h-4 mx-2" />
+              <Select value={investigatorType} onValueChange={handleTypeChange}>
+                <SelectTrigger className="w-fit border-none focus:ring-0 [&>span]:line-clamp-1 px-2">
+                  <SelectValue placeholder="Select investigation type" />
+                </SelectTrigger>
+                <SelectContent className="w-fit min-w-[200px]">
+                  <SelectGroup>
+                    <SelectLabel>Generic</SelectLabel>
+                    <SelectItem value="generic">Generic</SelectItem>
+                    <SelectItem value="research">Research</SelectItem>
+                  </SelectGroup>
+                  <SelectGroup>
+                    <SelectLabel>Due Diligence</SelectLabel>
+                    <SelectItem value="pre-deal">Pre-Deal Due Diligence</SelectItem>
+                    <SelectItem value="post-deal">Post-Deal Due Diligence</SelectItem>
+                  </SelectGroup>
+                  <SelectGroup>
+                    <SelectLabel>Compliance</SelectLabel>
+                    <SelectItem value="aml">Anti-Money Laundering</SelectItem>
+                    <SelectItem value="kyc">Know Your Customer</SelectItem>
+                    <SelectItem value="regulatory">Regulatory Compliance</SelectItem>
+                  </SelectGroup>
+                  <SelectGroup>
+                    <SelectLabel>Corporate</SelectLabel>
+                    <SelectItem value="fraud">Fraud</SelectItem>
+                    <SelectItem value="background">Background Check</SelectItem>
+                    <SelectItem value="asset">Asset Tracing</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </>
+          )}
+          
           <UserProfile user={user} onUpdateUser={onUpdateUser} />
         </div>
       </div>

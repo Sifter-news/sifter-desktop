@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { FileText } from 'lucide-react';
+
+const DEFAULT_IMAGE = '/default-image.png';
 
 const NodeContent = ({ 
   style, 
@@ -11,103 +15,98 @@ const NodeContent = ({
   handleBlur, 
   setLocalTitle, 
   setLocalDescription, 
-  handleNodeClick,
   isFocused 
 }) => {
-  const [isPostitEditing, setIsPostitEditing] = useState(false);
-  const [postitTitle, setPostitTitle] = useState(node.title || '');
-  const [postitDescription, setPostitDescription] = useState(node.description || '');
-
-  useEffect(() => {
-    setPostitTitle(node.title || '');
-    setPostitDescription(node.description || '');
-  }, [node]);
-
-  const handlePostitBlur = () => {
-    handleBlur();
-    setIsPostitEditing(false);
-  };
-
-  const getNodeStyle = () => {
-    const focusClasses = isFocused 
-      ? 'ring-2 ring-white scale-[1.02]' 
-      : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:scale-[1.01]';
-
+  const renderNode = () => {
     switch (style) {
       case 'compact':
         return (
-          <div className={`w-10 h-10 p-1 bg-white rounded-full shadow-sm transition-all duration-200 ${focusClasses}`}>
-            <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs">
-              {node.title?.charAt(0) || '?'}
-            </div>
+          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+            <Avatar className="h-10 w-10">
+              <AvatarImage 
+                src={node.avatar || DEFAULT_IMAGE} 
+                alt={node.title} 
+              />
+              <AvatarFallback><FileText className="h-4 w-4" /></AvatarFallback>
+            </Avatar>
           </div>
         );
       case 'postit':
         return (
-          <div 
-            className={`w-[200px] h-[200px] p-4 bg-yellow-100 rounded-sm shadow-lg transition-all duration-200 transform rotate-1 ${focusClasses}`}
-            onClick={() => setIsPostitEditing(true)}
-          >
-            <div className="h-full flex flex-col gap-2">
-              <Input
-                value={postitTitle}
-                onChange={(e) => setPostitTitle(e.target.value)}
-                onBlur={() => {
-                  setLocalTitle(postitTitle);
-                  handlePostitBlur();
-                }}
-                className="bg-transparent border-none focus:ring-0 font-medium font-handwritten"
-                placeholder="Title"
-                autoFocus={isPostitEditing}
-              />
-              <Textarea
-                value={postitDescription}
-                onChange={(e) => setPostitDescription(e.target.value)}
-                onBlur={() => {
-                  setLocalDescription(postitDescription);
-                  handlePostitBlur();
-                }}
-                className="flex-1 bg-transparent border-none focus:ring-0 resize-none text-sm font-handwritten"
-                placeholder="Write your note here..."
-              />
-            </div>
-          </div>
-        );
-      default:
-        return (
-          <div className={`min-w-[150px] p-3 bg-white rounded-lg shadow-sm transition-all duration-200 ${focusClasses}`}>
-            {isEditing ? (
-              <div className="space-y-2">
+          <div className="w-[256px] h-[256px] p-4 bg-yellow-100 rotate-1">
+            <div className="flex items-center gap-2 mb-2">
+              <Avatar className="h-8 w-8">
+                <AvatarImage 
+                  src={node.avatar || DEFAULT_IMAGE} 
+                  alt={node.title} 
+                />
+                <AvatarFallback><FileText className="h-4 w-4" /></AvatarFallback>
+              </Avatar>
+              {isEditing ? (
                 <Input
                   value={localTitle}
                   onChange={(e) => setLocalTitle(e.target.value)}
                   onBlur={handleBlur}
-                  className="bg-transparent border-none focus:ring-0"
+                  className="bg-transparent border-none flex-1"
+                  placeholder="Title"
                   autoFocus
                 />
-                <Textarea
-                  value={localDescription}
-                  onChange={(e) => setLocalDescription(e.target.value)}
-                  onBlur={handleBlur}
-                  className="bg-transparent border-none focus:ring-0 resize-none"
-                />
-              </div>
+              ) : (
+                <div className="font-medium flex-1">{node.title}</div>
+              )}
+            </div>
+            {isEditing ? (
+              <Textarea
+                value={localDescription}
+                onChange={(e) => setLocalDescription(e.target.value)}
+                onBlur={handleBlur}
+                className="bg-transparent border-none resize-none text-sm h-[calc(100%-40px)]"
+                placeholder="Write your note here..."
+              />
             ) : (
-              <div>
-                <div className="font-medium">{node.title}</div>
-                <div className="text-sm text-gray-600">{node.description}</div>
-              </div>
+              <div className="text-sm text-gray-600 mt-2">{node.description}</div>
+            )}
+          </div>
+        );
+      default:
+        return (
+          <div className="min-w-[40px] h-[128px] p-3 bg-white">
+            <div className="flex items-center gap-2 mb-2">
+              <Avatar className="h-8 w-8">
+                <AvatarImage 
+                  src={node.avatar || DEFAULT_IMAGE} 
+                  alt={node.title} 
+                />
+                <AvatarFallback><FileText className="h-4 w-4" /></AvatarFallback>
+              </Avatar>
+              {isEditing ? (
+                <Input
+                  value={localTitle}
+                  onChange={(e) => setLocalTitle(e.target.value)}
+                  onBlur={handleBlur}
+                  className="bg-transparent border-none flex-1"
+                  autoFocus
+                />
+              ) : (
+                <div className="font-medium flex-1">{node.title}</div>
+              )}
+            </div>
+            {isEditing ? (
+              <Textarea
+                value={localDescription}
+                onChange={(e) => setLocalDescription(e.target.value)}
+                onBlur={handleBlur}
+                className="bg-transparent border-none resize-none mt-2"
+              />
+            ) : (
+              <div className="text-sm text-gray-600 mt-2">{node.description}</div>
             )}
           </div>
         );
     }
   };
 
-  return (
-    <div onClick={handleNodeClick}>
-      {getNodeStyle()}
-    </div>
-  );
+  return renderNode();
 };
 
 export default NodeContent;

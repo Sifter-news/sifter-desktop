@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useZoomPan, findAvailablePosition, snapToGrid } from '../utils/canvasUtils';
+import { useZoomPan, findAvailablePosition } from '../utils/canvasUtils';
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
 import AISidePanel from './AISidePanel';
@@ -163,6 +163,7 @@ const MindMapView = ({
           onNodePositionUpdate={handleNodePositionUpdate}
           onNodeClick={handleNodeClick}
           activeTool={activeTool}
+          setActiveTool={setActiveTool}
         />
         <Toolbar
           activeTool={activeTool}
@@ -186,6 +187,7 @@ const MindMapView = ({
           reports={reports}
           onAddReport={onAddReport}
           onEditReport={onUpdateReport}
+          projectId={project?.id}
         />
       </div>
       <NodeEditorModal

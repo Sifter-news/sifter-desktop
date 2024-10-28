@@ -2,30 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { Rnd } from 'react-rnd';
 import NodeContent from './NodeContent';
 import NodeTooltip from './NodeTooltip';
+import { getNodeDimensions } from '@/utils/nodeDimensions';
 
 const NodeRenderer = ({ 
   node, 
-  onDragStart, 
-  onDrag,
   zoom, 
   onNodeUpdate, 
   onFocus, 
   isFocused, 
   onAIConversation, 
   onDelete,
-  isDragging,
-  onPositionUpdate 
+  onNodePositionUpdate,
+  isDraggable
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [localTitle, setLocalTitle] = useState(node.title);
   const [localDescription, setLocalDescription] = useState(node.description);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [position, setPosition] = useState({ x: node.x || 0, y: node.y || 0 });
+  const dimensions = getNodeDimensions(node.visualStyle);
 
   useEffect(() => {
     if (!isFocused) {
       setShowTooltip(false);
     }
   }, [isFocused]);
+
+  useEffect(() => {
+    if (node.x !== undefined && node.y !== undefined) {
+      setPosition({ x: node.x, y: node.y });
+    }
+  }, [node.x, node.y]);
 
   const handleNodeClick = (e) => {
     e.stopPropagation();
@@ -42,28 +49,23 @@ const NodeRenderer = ({
   };
 
   const handleDragStop = (e, d) => {
-    if (onPositionUpdate) {
-      onPositionUpdate(node.id, d.x, d.y);
-    }
+    const newPosition = { x: d.x, y: d.y };
+    setPosition(newPosition);
+    onNodePositionUpdate(node.id, newPosition.x, newPosition.y);
   };
 
   return (
     <Rnd
-      size={{ width: node.width || 200, height: node.height || 100 }}
-      position={{ x: node.x || 0, y: node.y || 0 }}
-      onDragStart={(e) => onDragStart?.(e)}
-      onDrag={(e) => onDrag?.(e)}
+      position={position}
+      size={dimensions}
       onDragStop={handleDragStop}
       scale={zoom}
-      className={`absolute ${
-        isFocused 
-          ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02] z-50' 
-          : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01] z-40'
-      } ${isDragging ? 'cursor-grabbing !transition-none' : 'cursor-grab transition-all duration-200'}`}
+      className={`absolute ${isFocused ? 'ring-2 ring-blue-500' : ''}`}
       onClick={handleNodeClick}
       enableResizing={false}
+      disableDragging={!isDraggable}
       bounds="parent"
-      dragHandleClassName="drag-handle"
+      dragGrid={[1, 1]}
     >
       <NodeContent
         style={node.visualStyle}
@@ -74,18 +76,15 @@ const NodeRenderer = ({
         handleBlur={handleBlur}
         setLocalTitle={setLocalTitle}
         setLocalDescription={setLocalDescription}
-        handleNodeClick={handleNodeClick}
         isFocused={isFocused}
       />
-      {showTooltip && (
-        <NodeTooltip
-          node={node}
-          showTooltip={showTooltip}
-          onAIConversation={onAIConversation}
-          onDelete={onDelete}
-          onUpdateNode={onNodeUpdate}
-        />
-      )}
+      <NodeTooltip
+        node={node}
+        showTooltip={showTooltip}
+        onAIConversation={onAIConversation}
+        onDelete={onDelete}
+        onUpdateNode={onNodeUpdate}
+      />
     </Rnd>
   );
 };

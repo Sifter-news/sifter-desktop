@@ -5,19 +5,39 @@ export const useZoomPan = (initialZoom = 1) => {
   const [isPanning, setIsPanning] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
-  const handleZoom = useCallback((delta) => {
+  const handleZoom = useCallback((delta, clientX, clientY) => {
     setZoom((prevZoom) => {
-      const newZoom = prevZoom + delta;
-      // Limit zoom between 0.1 and 2 for better visibility
-      return Math.max(0.1, Math.min(newZoom, 2));
+      const newZoom = Math.max(0.1, Math.min(prevZoom + delta, 2));
+      
+      // Calculate the viewport center
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      
+      // Use mouse position if available, otherwise use viewport center
+      const zoomX = clientX ?? viewportWidth / 2;
+      const zoomY = clientY ?? viewportHeight / 2;
+
+      // Calculate the point in canvas space before and after zooming
+      const beforeZoomX = (zoomX - position.x) / prevZoom;
+      const beforeZoomY = (zoomY - position.y) / prevZoom;
+      const afterZoomX = (zoomX - position.x) / newZoom;
+      const afterZoomY = (zoomY - position.y) / newZoom;
+
+      // Adjust position to maintain the same point under cursor
+      setPosition(prev => ({
+        x: prev.x + (afterZoomX - beforeZoomX) * newZoom,
+        y: prev.y + (afterZoomY - beforeZoomY) * newZoom
+      }));
+
+      return newZoom;
     });
-  }, []);
+  }, [position]);
 
   const handleWheel = useCallback((e) => {
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
       const delta = -e.deltaY * 0.001;
-      handleZoom(delta);
+      handleZoom(delta, e.clientX, e.clientY);
     }
   }, [handleZoom]);
 
@@ -105,7 +125,7 @@ export const findAvailablePosition = (nodes) => {
   }
 };
 
-export const snapToGrid = (x, y, gridSize = 8) => {
+export const snapToGrid = (x, y, gridSize = 40) => {
   return {
     x: Math.round(x / gridSize) * gridSize,
     y: Math.round(y / gridSize) * gridSize
