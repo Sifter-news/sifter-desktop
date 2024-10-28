@@ -3,7 +3,6 @@ import { useZoomPan, findAvailablePosition } from '../utils/canvasUtils';
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
 import AISidePanel from './AISidePanel';
-import ReportList from './ReportList';
 import NodeEditorModal from './node/NodeEditorModal';
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
@@ -14,10 +13,7 @@ const MindMapView = ({
   setNodes, 
   onAddNode, 
   onUpdateNode, 
-  onDeleteNode, 
-  reports, 
-  onAddReport, 
-  onUpdateReport,
+  onDeleteNode,
   focusedNodeId,
   onNodeFocus 
 }) => {
@@ -182,14 +178,6 @@ const MindMapView = ({
           console.log("Sending message to AI:", message);
         }}
       />
-      <div className="fixed bottom-12 right-12 z-50">
-        <ReportList
-          reports={reports}
-          onAddReport={onAddReport}
-          onEditReport={onUpdateReport}
-          projectId={project?.id}
-        />
-      </div>
       <NodeEditorModal
         isOpen={!!selectedNode}
         onClose={() => setSelectedNode(null)}

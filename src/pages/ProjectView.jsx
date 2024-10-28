@@ -26,11 +26,6 @@ const ProjectView = () => {
     setProject(updatedProject);
   };
 
-  const handleContentClick = (content) => {
-    setSelectedContent(content);
-    setIsContentModalOpen(true);
-  };
-
   if (loading) {
     return <div className="flex items-center justify-center h-screen">Loading...</div>;
   }
