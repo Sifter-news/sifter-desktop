@@ -20,12 +20,17 @@ const NodeRenderer = ({
   const [localTitle, setLocalTitle] = useState(node.title);
   const [localDescription, setLocalDescription] = useState(node.description);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [dragPosition, setDragPosition] = useState({ x: node.x, y: node.y });
 
   useEffect(() => {
     if (!isFocused) {
       setShowTooltip(false);
     }
   }, [isFocused]);
+
+  useEffect(() => {
+    setDragPosition({ x: node.x, y: node.y });
+  }, [node.x, node.y]);
 
   const handleNodeClick = (e) => {
     e.stopPropagation();
@@ -45,10 +50,20 @@ const NodeRenderer = ({
     <div className="group">
       <Rnd
         size={{ width: node.width, height: node.height }}
-        position={{ x: node.x, y: node.y }}
-        onDragStart={onDragStart}
-        onDrag={onDrag}
-        onDragStop={onDragEnd}
+        position={dragPosition}
+        onDragStart={(e) => {
+          e.stopPropagation();
+          onDragStart?.(e, node.id);
+        }}
+        onDrag={(e, data) => {
+          e.stopPropagation();
+          setDragPosition({ x: data.x, y: data.y });
+          onDrag?.(data, node.id);
+        }}
+        onDragStop={(e, data) => {
+          e.stopPropagation();
+          onDragEnd?.(data, node.id);
+        }}
         scale={zoom}
         className={`relative ${
           isFocused 
@@ -58,6 +73,7 @@ const NodeRenderer = ({
         onClick={handleNodeClick}
         enableResizing={false}
         bounds="parent"
+        dragHandleClassName="drag-handle"
       >
         <NodeContent
           style={node.visualStyle}
