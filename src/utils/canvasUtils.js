@@ -9,20 +9,24 @@ export const useZoomPan = (initialZoom = 1) => {
     setZoom((prevZoom) => {
       const newZoom = Math.max(0.1, Math.min(prevZoom + delta, 2));
       
-      // Calculate the viewport center if no specific point is provided
+      // Calculate the viewport center
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
-      const pointX = clientX ?? viewportWidth / 2;
-      const pointY = clientY ?? viewportHeight / 2;
+      
+      // Use mouse position if available, otherwise use viewport center
+      const zoomX = clientX ?? viewportWidth / 2;
+      const zoomY = clientY ?? viewportHeight / 2;
 
-      // Calculate how the position should change to keep the zoom point steady
-      const zoomFactor = newZoom / prevZoom;
-      const dx = (pointX - position.x) * (1 - zoomFactor);
-      const dy = (pointY - position.y) * (1 - zoomFactor);
+      // Calculate the point in canvas space before and after zooming
+      const beforeZoomX = (zoomX - position.x) / prevZoom;
+      const beforeZoomY = (zoomY - position.y) / prevZoom;
+      const afterZoomX = (zoomX - position.x) / newZoom;
+      const afterZoomY = (zoomY - position.y) / newZoom;
 
+      // Adjust position to maintain the same point under cursor
       setPosition(prev => ({
-        x: prev.x + dx,
-        y: prev.y + dy
+        x: prev.x + (afterZoomX - beforeZoomX) * newZoom,
+        y: prev.y + (afterZoomY - beforeZoomY) * newZoom
       }));
 
       return newZoom;
