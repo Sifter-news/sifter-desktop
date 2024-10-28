@@ -124,6 +124,14 @@ const Canvas = forwardRef(({
     }
   };
 
+  const handleWheelZoom = (e) => {
+    e.preventDefault();
+    if (e.ctrlKey || e.metaKey) {
+      const delta = -e.deltaY * 0.001;
+      handleWheel({ ...e, delta });
+    }
+  };
+
   return (
     <>
       <div 
@@ -135,7 +143,7 @@ const Canvas = forwardRef(({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        onWheel={handleWheel}
+        onWheel={handleWheelZoom}
         ref={ref}
         tabIndex={0}
       >
