@@ -1,84 +1,82 @@
--- Reset tables
-TRUNCATE TABLE auth.users CASCADE;
-TRUNCATE TABLE public.profiles CASCADE;
-TRUNCATE TABLE public.investigations CASCADE;
-TRUNCATE TABLE public.reports CASCADE;
-TRUNCATE TABLE public.node CASCADE;
+-- Enable UUID extension if not already enabled
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Create users in auth.users with proper authentication
-INSERT INTO auth.users (
-    id,
-    email,
-    encrypted_password,
-    email_confirmed_at,
-    created_at,
-    updated_at,
-    raw_app_meta_data,
-    raw_user_meta_data,
-    is_super_admin,
-    confirmed_at
-)
+-- Load subscription plans
+INSERT INTO public.subscription_plans (id, name, price, description)
 VALUES 
-(
-    'd0d8c19c-3b3e-4f5a-a7b0-d9cee666d454',
-    'admin@sifter.news',
-    crypt('admin123', gen_salt('bf')),
-    NOW(),
-    NOW(),
-    NOW(),
-    '{"provider":"email","providers":["email"]}',
-    '{"name":"Admin User"}',
-    false,
-    NOW()
-),
-(
-    'e1f2g3h4-5i6j-7k8l-9m0n-opqrstuvwxyz',
-    'sarah@ddteam.com',
-    crypt('sarah123', gen_salt('bf')),
-    NOW(),
-    NOW(),
-    NOW(),
-    '{"provider":"email","providers":["email"]}',
-    '{"name":"Sarah"}',
-    false,
-    NOW()
-),
-(
-    'a1b2c3d4-5e6f-7g8h-9i0j-klmnopqrstuv',
-    'mike@ddteam.com',
-    crypt('mike123', gen_salt('bf')),
-    NOW(),
-    NOW(),
-    NOW(),
-    '{"provider":"email","providers":["email"]}',
-    '{"name":"Mike"}',
-    false,
-    NOW()
-),
-(
-    'm1n2o3p4-5q6r-7s8t-9u0v-wxyzabcdefgh',
-    'lisa@ddteam.com',
-    crypt('lisa123', gen_salt('bf')),
-    NOW(),
-    NOW(),
-    NOW(),
-    '{"provider":"email","providers":["email"]}',
-    '{"name":"Lisa"}',
-    false,
-    NOW()
+  (uuid_generate_v4(), 'Free', 0, 'Basic access to investigation tools'),
+  (uuid_generate_v4(), 'Pro', 9.99, 'Advanced features and unlimited investigations'),
+  (uuid_generate_v4(), 'Team', 29.99, 'Team collaboration and advanced analytics');
+
+-- Insert admin user
+INSERT INTO public.profiles (id, username, email, avatar_url) 
+VALUES (
+  uuid_generate_v4(),
+  'admin',
+  'admin@sifter.news',
+  '/default-image.png'
 );
 
--- Create corresponding profiles
-INSERT INTO public.profiles (id, username, email, avatar_url)
-VALUES
-  ('d0d8c19c-3b3e-4f5a-a7b0-d9cee666d454', 'admin', 'admin@sifter.news', '/default-image.png'),
-  ('e1f2g3h4-5i6j-7k8l-9m0n-opqrstuvwxyz', 'sarah', 'sarah@ddteam.com', '/default-image.png'),
-  ('a1b2c3d4-5e6f-7g8h-9i0j-klmnopqrstuv', 'mike', 'mike@ddteam.com', '/default-image.png'),
-  ('m1n2o3p4-5q6r-7s8t-9u0v-wxyzabcdefgh', 'lisa', 'lisa@ddteam.com', '/default-image.png');
+-- Insert sample users
+INSERT INTO public.profiles (id, username, email, avatar_url) 
+SELECT 
+  uuid_generate_v4(),
+  'user_' || i,
+  'user' || i || '@example.com',
+  '/default-image.png'
+FROM generate_series(1, 10) i;
 
--- Create sample investigations
-INSERT INTO public.investigations (id, title, description, owner_id, visibility, investigation_type)
-VALUES
-  (uuid_generate_v4(), 'TechCorp Acquisition DD', 'Due diligence investigation for TechCorp acquisition', 'e1f2g3h4-5i6j-7k8l-9m0n-opqrstuvwxyz', 'private', 'pre-deal'),
-  (uuid_generate_v4(), 'Manhattan Property Investment DD', 'Due diligence for Manhattan property investment', 'a1b2c3d4-5e6f-7g8h-9i0j-klmnopqrstuv', 'private', 'pre-deal'),
-  (uuid_generate_v4(), 'Regulatory Compliance Review', 'Annual regulatory compliance review', 'm1n2o3p4-5q6r-7s8t-9u0v-wxyzabcdefgh', 'private', 'regulatory');
+-- Insert sample investigations
+WITH user_ids AS (SELECT id FROM public.profiles)
+INSERT INTO public.investigations (id, title, description, owner_id, visibility, view_type)
+SELECT 
+  uuid_generate_v4(),
+  CASE (i % 3)
+    WHEN 0 THEN 'Financial Investigation ' || i
+    WHEN 1 THEN 'Criminal Case ' || i
+    ELSE 'Historical Research ' || i
+  END,
+  'Sample investigation description ' || i,
+  u.id,
+  CASE (i % 3) 
+    WHEN 0 THEN 'private'
+    WHEN 1 THEN 'public'
+    ELSE 'organization'
+  END,
+  CASE (i % 4)
+    WHEN 0 THEN 'mind'
+    WHEN 1 THEN 'timeline'
+    WHEN 2 THEN 'map'
+    ELSE 'text'
+  END
+FROM user_ids u
+CROSS JOIN generate_series(1, 5) i;
+
+-- Insert sample reports
+WITH investigation_ids AS (SELECT id FROM public.investigations)
+INSERT INTO public.reports (id, investigation_id, title, content)
+SELECT 
+  uuid_generate_v4(),
+  inv.id,
+  'Report ' || r,
+  'Sample report content ' || r
+FROM investigation_ids inv
+CROSS JOIN generate_series(1, 3) r;
+
+-- Insert sample nodes
+WITH investigation_ids AS (SELECT id FROM public.investigations)
+INSERT INTO public.node (id, title, description, type, owner_id, investigation_id)
+SELECT 
+  uuid_generate_v4(),
+  'Node ' || n,
+  'Sample node description ' || n,
+  CASE (n % 4)
+    WHEN 0 THEN 'evidence'
+    WHEN 1 THEN 'witness'
+    WHEN 2 THEN 'document'
+    WHEN 3 THEN 'location'
+  END,
+  (SELECT id FROM public.profiles LIMIT 1),
+  inv.id
+FROM investigation_ids inv
+CROSS JOIN generate_series(1, 5) n;
