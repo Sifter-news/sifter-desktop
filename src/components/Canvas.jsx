@@ -9,7 +9,7 @@ const Canvas = forwardRef(({
   setNodes, 
   zoom, 
   position, 
-  activeTool,
+  activeTool, 
   handlePanStart, 
   handlePanMove, 
   handlePanEnd,
@@ -21,22 +21,17 @@ const Canvas = forwardRef(({
   onDragOver,
   onDrop,
   onAIConversation,
-  onNodePositionUpdate,
-  setActiveTool
+  onNodePositionUpdate
 }, ref) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [nodeToDelete, setNodeToDelete] = useState(null);
-  const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
-  const [previousTool, setPreviousTool] = useState(null);
+  const [startPanPosition, setStartPanPosition] = useState({ x: 0, y: 0 });
+  const [draggedNodeId, setDraggedNodeId] = useState(null);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   const handleKeyDown = useCallback((e) => {
-    if (e.code === 'Space' && !isSpacePressed) {
-      e.preventDefault();
-      setIsSpacePressed(true);
-      setPreviousTool(activeTool);
-      setActiveTool('pan');
-    } else if (focusedNodeId && (e.key === 'Delete' || e.key === 'Backspace')) {
+    if (focusedNodeId && (e.key === 'Delete' || e.key === 'Backspace')) {
       const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
       if (nodeToDelete?.type === 'ai') {
         setNodeToDelete(nodeToDelete);
@@ -58,31 +53,21 @@ const Canvas = forwardRef(({
         toast.success("Node pasted from clipboard");
       }
     }
-  }, [focusedNodeId, nodes, onNodeDelete, setNodes, isSpacePressed, activeTool, setActiveTool]);
-
-  const handleKeyUp = useCallback((e) => {
-    if (e.code === 'Space') {
-      setIsSpacePressed(false);
-      setActiveTool(previousTool || 'select');
-    }
-  }, [previousTool, setActiveTool]);
+  }, [focusedNodeId, nodes, onNodeDelete, setNodes]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [handleKeyDown, handleKeyUp]);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
 
   const handleMouseDown = useCallback((e) => {
-    if (isSpacePressed || activeTool === 'pan') {
+    if (e.button === 0 || e.button === 1) {
       setIsPanning(true);
+      setStartPanPosition({ x: e.clientX, y: e.clientY });
       handlePanStart();
       e.preventDefault();
     }
-  }, [isSpacePressed, activeTool, handlePanStart]);
+  }, [handlePanStart]);
 
   const handleMouseMove = useCallback((e) => {
     if (isPanning) {
@@ -95,19 +80,53 @@ const Canvas = forwardRef(({
       setIsPanning(false);
       handlePanEnd();
     }
-  }, [isPanning, handlePanEnd]);
+    if (draggedNodeId) {
+      const node = nodes.find(n => n.id === draggedNodeId);
+      if (node) {
+        onNodePositionUpdate(draggedNodeId, node.x, node.y);
+      }
+      setDraggedNodeId(null);
+      setDragOffset({ x: 0, y: 0 });
+    }
+  }, [isPanning, handlePanEnd, draggedNodeId, nodes, onNodePositionUpdate]);
+
+  const handleNodeDragStart = useCallback((e, nodeId) => {
+    if (activeTool === 'select') {
+      const node = nodes.find(n => n.id === nodeId);
+      if (node) {
+        const rect = ref.current.getBoundingClientRect();
+        setDragOffset({
+          x: (e.clientX - rect.left) / zoom - node.x - position.x,
+          y: (e.clientY - rect.top) / zoom - node.y - position.y
+        });
+        setDraggedNodeId(nodeId);
+      }
+    }
+  }, [activeTool, nodes, zoom, position]);
+
+  const handleNodeDrag = useCallback((e, nodeId) => {
+    if (activeTool === 'select' && draggedNodeId === nodeId) {
+      const rect = ref.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / zoom - dragOffset.x - position.x;
+      const y = (e.clientY - rect.top) / zoom - dragOffset.y - position.y;
+
+      setNodes(prevNodes => prevNodes.map(node => 
+        node.id === nodeId ? { ...node, x, y } : node
+      ));
+    }
+  }, [activeTool, draggedNodeId, zoom, position, dragOffset, setNodes]);
 
   return (
     <>
       <div 
-        className={`w-full h-full bg-[#594BFF] overflow-hidden ${isPanning ? 'cursor-grabbing' : isSpacePressed ? 'cursor-grab' : 'cursor-default'}`}
+        className={`w-full h-full bg-[#594BFF] overflow-hidden ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         onWheel={handleWheel}
         ref={ref}
-        tabIndex={0}
+        tabIndex={0} // Make the div focusable to capture keyboard events
       >
         <div 
           className="absolute inset-0" 
@@ -125,14 +144,16 @@ const Canvas = forwardRef(({
             <NodeRenderer
               key={node.id}
               node={node}
+              onDragStart={(e) => handleNodeDragStart(e, node.id)}
+              onDrag={(e) => handleNodeDrag(e, node.id)}
+              onDragEnd={() => handleMouseUp()}
               zoom={zoom}
               onNodeUpdate={onNodeUpdate}
               onFocus={onNodeFocus}
               isFocused={focusedNodeId === node.id}
               onDelete={onNodeDelete}
               onAIConversation={onAIConversation}
-              onNodePositionUpdate={onNodePositionUpdate}
-              isDraggable={activeTool !== 'pan'}
+              isDragging={draggedNodeId === node.id}
             />
           ))}
         </div>
