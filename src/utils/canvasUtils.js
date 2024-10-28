@@ -5,19 +5,35 @@ export const useZoomPan = (initialZoom = 1) => {
   const [isPanning, setIsPanning] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
-  const handleZoom = useCallback((delta) => {
+  const handleZoom = useCallback((delta, clientX, clientY) => {
     setZoom((prevZoom) => {
-      const newZoom = prevZoom + delta;
-      // Limit zoom between 0.1 and 2 for better visibility
-      return Math.max(0.1, Math.min(newZoom, 2));
+      const newZoom = Math.max(0.1, Math.min(prevZoom + delta, 2));
+      
+      // Calculate the viewport center if no specific point is provided
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const pointX = clientX ?? viewportWidth / 2;
+      const pointY = clientY ?? viewportHeight / 2;
+
+      // Calculate how the position should change to keep the zoom point steady
+      const zoomFactor = newZoom / prevZoom;
+      const dx = (pointX - position.x) * (1 - zoomFactor);
+      const dy = (pointY - position.y) * (1 - zoomFactor);
+
+      setPosition(prev => ({
+        x: prev.x + dx,
+        y: prev.y + dy
+      }));
+
+      return newZoom;
     });
-  }, []);
+  }, [position]);
 
   const handleWheel = useCallback((e) => {
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
       const delta = -e.deltaY * 0.001;
-      handleZoom(delta);
+      handleZoom(delta, e.clientX, e.clientY);
     }
   }, [handleZoom]);
 
@@ -105,7 +121,7 @@ export const findAvailablePosition = (nodes) => {
   }
 };
 
-export const snapToGrid = (x, y, gridSize = 40) => { // Changed from 8 to 40 (8 * 5)
+export const snapToGrid = (x, y, gridSize = 40) => {
   return {
     x: Math.round(x / gridSize) * gridSize,
     y: Math.round(y / gridSize) * gridSize
