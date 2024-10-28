@@ -10,6 +10,7 @@ const Canvas = forwardRef(({
   zoom, 
   position, 
   activeTool,
+  setActiveTool,
   handlePanStart, 
   handlePanMove, 
   handlePanEnd,
@@ -21,8 +22,7 @@ const Canvas = forwardRef(({
   onDragOver,
   onDrop,
   onAIConversation,
-  onNodePositionUpdate,
-  setActiveTool
+  onNodePositionUpdate
 }, ref) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [nodeToDelete, setNodeToDelete] = useState(null);
@@ -163,5 +163,7 @@ const Canvas = forwardRef(({
     </>
   );
 });
+
+Canvas.displayName = 'Canvas';
 
 export default Canvas;
