@@ -3,6 +3,7 @@ import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import NodeNavigator from './text-view/NodeNavigator';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const SidePanel = ({ 
   nodes, 
@@ -11,7 +12,7 @@ const SidePanel = ({
   selectedNode, 
   onAddNode 
 }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <div className="relative">
@@ -24,15 +25,56 @@ const SidePanel = ({
             exit={{ x: -250 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
-            <div className="mt-4 flex-grow overflow-hidden">
-              <NodeNavigator
-                nodes={nodes}
-                onUpdateNode={onUpdateNode}
-                onNodeFocus={onNodeFocus}
-                selectedNode={selectedNode}
-                onAddNode={onAddNode}
-              />
-            </div>
+            <Tabs defaultValue="nodes" className="w-full">
+              <TabsList className="w-full">
+                <TabsTrigger value="nodes" className="flex-1">Nodes</TabsTrigger>
+                <TabsTrigger value="suggested" className="flex-1">Add</TabsTrigger>
+              </TabsList>
+              <TabsContent value="nodes">
+                <NodeNavigator
+                  nodes={nodes}
+                  onUpdateNode={onUpdateNode}
+                  onNodeFocus={onNodeFocus}
+                  selectedNode={selectedNode}
+                  onAddNode={onAddNode}
+                />
+              </TabsContent>
+              <TabsContent value="suggested" className="p-4">
+                <div className="space-y-4">
+                  <input
+                    type="search"
+                    placeholder="Search nodes..."
+                    className="w-full px-3 py-2 border rounded-md"
+                  />
+                  <div className="space-y-2">
+                    <h3 className="font-medium">Suggested Nodes</h3>
+                    <div className="space-y-2">
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-start" 
+                        onClick={() => onAddNode({ type: 'person' })}
+                      >
+                        Add Person
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-start" 
+                        onClick={() => onAddNode({ type: 'organization' })}
+                      >
+                        Add Organization
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-start" 
+                        onClick={() => onAddNode({ type: 'event' })}
+                      >
+                        Add Event
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
           </motion.div>
         ) : null}
       </AnimatePresence>
@@ -48,7 +90,7 @@ const SidePanel = ({
           variant="secondary"
           size="icon"
           className={`flex items-center justify-center w-8 h-8 rounded-full shadow-lg bg-white hover:bg-gray-100 ${
-            isExpanded ? 'ml-[250px]' : 'ml-4'
+            isExpanded ? 'ml-[266px]' : 'ml-4'
           }`}
           onClick={() => setIsExpanded(!isExpanded)}
         >

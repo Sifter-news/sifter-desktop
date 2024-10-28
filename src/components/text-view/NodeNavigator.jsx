@@ -45,39 +45,8 @@ const NodeNavigator = ({
     return matchesType && matchesSearch;
   });
 
-  const handleNodeSelect = (nodeId, event) => {
-    const index = filteredNodes.findIndex(node => node.id === nodeId);
-    setCurrentIndex(index);
-    
-    setSelectedNodes(prev => {
-      if (event.altKey) {
-        if (prev.includes(nodeId)) {
-          return prev.filter(id => id !== nodeId);
-        }
-        return [...prev, nodeId];
-      }
-      return [nodeId];
-    });
-  };
-
-  const handleAddNode = () => {
-    const position = {
-      x: Math.random() * 500,
-      y: Math.random() * 500
-    };
-
-    onAddNode({
-      id: Date.now().toString(),
-      type: 'text',
-      title: `New Node ${nodes.length + 1}`,
-      description: '',
-      x: position.x,
-      y: position.y
-    });
-  };
-
   return (
-    <div className="w-full h-full flex flex-col p-4 bg-white/30 backdrop-blur-md">
+    <div className="w-full h-full flex flex-col p-4">
       <div className="space-y-4 mb-4">
         <SearchInput value={searchQuery} onChange={setSearchQuery} />
         <NodeTypeSelector selectedType={selectedType} setSelectedType={setSelectedType} />
@@ -93,7 +62,12 @@ const NodeNavigator = ({
             <NodeListItem
               node={node}
               isSelected={selectedNodes.includes(node.id)}
-              onSelect={(nodeId) => handleNodeSelect(nodeId, window.event)}
+              onSelect={(nodeId) => {
+                const index = filteredNodes.findIndex(n => n.id === nodeId);
+                setCurrentIndex(index);
+                setSelectedNodes([nodeId]);
+                onNodeFocus(nodeId);
+              }}
               onFocus={onNodeFocus}
               onUpdateNode={onUpdateNode}
               onAIConversation={onAIConversation}
@@ -103,15 +77,6 @@ const NodeNavigator = ({
           </div>
         ))}
       </div>
-      
-      <Button 
-        onClick={handleAddNode} 
-        className="mt-4 w-full flex items-center justify-center gap-2"
-        variant="outline"
-      >
-        <Plus className="h-4 w-4" />
-        Add Node
-      </Button>
 
       {editingNode && (
         <NodeEditDialog
