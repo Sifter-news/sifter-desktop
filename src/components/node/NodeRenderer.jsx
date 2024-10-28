@@ -18,12 +18,11 @@ const NodeRenderer = ({
   const [localTitle, setLocalTitle] = useState(node.title);
   const [localDescription, setLocalDescription] = useState(node.description);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [position, setPosition] = useState({ x: node.x, y: node.y });
 
   useEffect(() => {
-    if (!isFocused) {
-      setShowTooltip(false);
-    }
-  }, [isFocused]);
+    setPosition({ x: node.x, y: node.y });
+  }, [node.x, node.y]);
 
   const handleNodeClick = (e) => {
     e.stopPropagation();
@@ -40,13 +39,15 @@ const NodeRenderer = ({
   };
 
   const handleDragStop = (e, d) => {
+    const newPosition = { x: d.x, y: d.y };
+    setPosition(newPosition);
     onNodePositionUpdate(node.id, d.x, d.y);
   };
 
   return (
     <Rnd
       size={{ width: node.width, height: node.height }}
-      position={{ x: node.x, y: node.y }}
+      position={position}
       scale={zoom}
       onDragStop={handleDragStop}
       className={`${
