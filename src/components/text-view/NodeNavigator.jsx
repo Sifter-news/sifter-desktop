@@ -8,7 +8,8 @@ import NodeTypeSelector from './NodeTypeSelector';
 import NodeEditDialog from '../node/NodeEditDialog';
 import FolderItem from './FolderItem';
 import CreateFolderDialog from './CreateFolderDialog';
-import { toast } from 'sonner';
+import { useDragAndDrop } from './hooks/useDragAndDrop';
+import { useFolderManagement } from './hooks/useFolderManagement';
 import {
   Popover,
   PopoverContent,
@@ -32,10 +33,18 @@ const NodeNavigator = ({
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [editingNode, setEditingNode] = useState(null);
   const [folders, setFolders] = useState([]);
-  const [openFolders, setOpenFolders] = useState({});
   const [showCreateFolder, setShowCreateFolder] = useState(false);
-  const [draggedOverFolderId, setDraggedOverFolderId] = useState(null);
   const nodeRefs = useRef({});
+
+  const { handleDragEnd } = useDragAndDrop(navigatorNodes, setNavigatorNodes);
+  const {
+    openFolders,
+    draggedOverFolderId,
+    handleToggleFolder,
+    handleCreateFolder,
+    handleDragUpdate,
+    setDraggedOverFolderId
+  } = useFolderManagement();
 
   useEffect(() => {
     setNavigatorNodes(nodes);
@@ -51,79 +60,10 @@ const NodeNavigator = ({
     }
   }, [focusedNodeId]);
 
-  const handleCreateFolder = (folderName) => {
-    const newFolder = {
-      id: `folder-${Date.now()}`,
-      title: folderName,
-      type: 'folder',
-      nodes: []
-    };
+  const handleCreateNewFolder = (folderName) => {
+    const newFolder = handleCreateFolder(folderName);
     setFolders([...folders, newFolder]);
-    toast.success('Folder created successfully');
-  };
-
-  const handleToggleFolder = (folderId) => {
-    setOpenFolders(prev => ({
-      ...prev,
-      [folderId]: !prev[folderId]
-    }));
-  };
-
-  const handleDragEnd = (result) => {
-    setDraggedOverFolderId(null);
-    if (!result.destination) return;
-
-    const reorder = (list, startIndex, endIndex) => {
-      const result = Array.from(list);
-      const [removed] = result.splice(startIndex, 1);
-      result.splice(endIndex, 0, removed);
-      return result;
-    };
-
-    const findItemById = (items, id) => {
-      for (let item of items) {
-        if (item.id === id) return item;
-        if (item.children.length > 0) {
-          const found = findItemById(item.children, id);
-          if (found) return found;
-        }
-      }
-    };
-
-    const sourceItem = findItemById(navigatorNodes, result.draggableId);
-    const destinationItem = findItemById(navigatorNodes, result.destination.droppableId);
-
-    if (destinationItem && destinationItem.type === 'folder') {
-      const newItems = [...navigatorNodes];
-      const sourceParent = findItemById(newItems, result.source.droppableId);
-      
-      if (sourceParent) {
-        sourceParent.children = sourceParent.children.filter(child => child.id !== sourceItem.id);
-      } else {
-        const index = newItems.findIndex(item => item.id === sourceItem.id);
-        if (index !== -1) newItems.splice(index, 1);
-      }
-
-      destinationItem.children.splice(result.destination.index, 0, sourceItem);
-      setNavigatorNodes(newItems);
-    } else {
-      setNavigatorNodes(reorder(navigatorNodes, result.source.index, result.destination.index));
-    }
-  };
-
-  const handleDragUpdate = (update) => {
-    if (!update.destination) {
-      setDraggedOverFolderId(null);
-      return;
-    }
-
-    const destId = update.destination.droppableId;
-    const folder = folders.find(f => f.id === destId);
-    if (folder) {
-      setDraggedOverFolderId(destId);
-    } else {
-      setDraggedOverFolderId(null);
-    }
+    setShowCreateFolder(false);
   };
 
   const filteredNodes = navigatorNodes.filter(node => {
@@ -142,11 +82,7 @@ const NodeNavigator = ({
         </div>
         <Popover>
           <PopoverTrigger asChild>
-            <Button 
-              variant="outline" 
-              size="icon"
-              className="shrink-0"
-            >
+            <Button variant="outline" size="icon" className="shrink-0">
               <Filter className="h-4 w-4" />
             </Button>
           </PopoverTrigger>
@@ -164,7 +100,10 @@ const NodeNavigator = ({
       </div>
 
       <DragDropContext 
-        onDragEnd={handleDragEnd}
+        onDragEnd={(result) => {
+          setDraggedOverFolderId(null);
+          handleDragEnd(result);
+        }}
         onDragUpdate={handleDragUpdate}
       >
         <div className="flex-grow overflow-y-auto">
@@ -189,25 +128,27 @@ const NodeNavigator = ({
                           ref={provided.innerRef}
                           {...provided.droppableProps}
                         >
-                          {folder.nodes?.map((node, nodeIndex) => (
-                            <div key={node.id} ref={el => nodeRefs.current[node.id] = el}>
-                              <NodeListItem
-                                node={node}
-                                index={nodeIndex}
-                                isSelected={selectedNodes.includes(node.id)}
-                                onSelect={(nodeId) => {
-                                  setCurrentIndex(nodeIndex);
-                                  setSelectedNodes([nodeId]);
-                                  onNodeFocus(nodeId);
-                                }}
-                                onFocus={onNodeFocus}
-                                onUpdateNode={onUpdateNode}
-                                onAIConversation={onAIConversation}
-                                isFocused={focusedNodeId === node.id}
-                                onEdit={setEditingNode}
-                                onDelete={onDeleteNode}
-                              />
-                            </div>
+                          {folder.children?.map((node, nodeIndex) => (
+                            node && (
+                              <div key={node.id} ref={el => nodeRefs.current[node.id] = el}>
+                                <NodeListItem
+                                  node={node}
+                                  index={nodeIndex}
+                                  isSelected={selectedNodes.includes(node.id)}
+                                  onSelect={(nodeId) => {
+                                    setCurrentIndex(nodeIndex);
+                                    setSelectedNodes([nodeId]);
+                                    onNodeFocus(nodeId);
+                                  }}
+                                  onFocus={onNodeFocus}
+                                  onUpdateNode={onUpdateNode}
+                                  onAIConversation={onAIConversation}
+                                  isFocused={focusedNodeId === node.id}
+                                  onEdit={setEditingNode}
+                                  onDelete={onDeleteNode}
+                                />
+                              </div>
+                            )
                           ))}
                           {provided.placeholder}
                         </div>
@@ -261,7 +202,7 @@ const NodeNavigator = ({
       <CreateFolderDialog
         isOpen={showCreateFolder}
         onClose={() => setShowCreateFolder(false)}
-        onCreateFolder={handleCreateFolder}
+        onCreateFolder={handleCreateNewFolder}
       />
     </div>
   );
