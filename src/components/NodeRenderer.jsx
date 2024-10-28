@@ -55,14 +55,14 @@ const NodeRenderer = ({
           e.stopPropagation();
           onDragStart?.(e, node.id);
         }}
-        onDrag={(e, data) => {
+        onDrag={(e, d) => {
           e.stopPropagation();
-          setDragPosition({ x: data.x, y: data.y });
-          onDrag?.(data, node.id);
+          setDragPosition({ x: d.x, y: d.y });
+          onDrag?.({ x: d.x, y: d.y }, node.id);
         }}
-        onDragStop={(e, data) => {
+        onDragStop={(e, d) => {
           e.stopPropagation();
-          onDragEnd?.(data, node.id);
+          onDragEnd?.({ x: d.x, y: d.y }, node.id);
         }}
         scale={zoom}
         className={`relative ${
