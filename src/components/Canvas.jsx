@@ -1,11 +1,12 @@
 import React, { forwardRef, useCallback, useEffect, useState } from 'react';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 import { toast } from 'sonner';
 import { useKeyboardControls } from './canvas/useKeyboardControls';
 import { useSelectionControls } from './canvas/useSelectionControls';
 import SelectionOverlay from './canvas/SelectionOverlay';
 import NodeRenderer from './NodeRenderer';
+import PanningControls from './canvas/PanningControls';
+import DeleteConfirmationDialog from './canvas/DeleteConfirmationDialog';
 
 const Canvas = forwardRef(({ 
   nodes, 
@@ -104,46 +105,25 @@ const Canvas = forwardRef(({
     clearSelection();
   };
 
-  const handleNodeDragStart = (e, nodeId) => {
-    if (activeTool === 'select') {
-      onNodeFocus(nodeId);
-    }
-  };
-
-  const handleNodeDrag = (e, nodeId) => {
-    if (activeTool === 'select') {
-      const node = nodes.find(n => n.id === nodeId);
-      if (node) {
-        const updatedNode = {
-          ...node,
-          x: e.x,
-          y: e.y
-        };
-        onNodeUpdate(nodeId, updatedNode);
-      }
-    }
-  };
-
   const handleWheelZoom = (e) => {
     e.preventDefault();
-    const delta = -e.deltaY * 0.001;
-    handleWheel({ ...e, delta });
+    handleWheel(e);
   };
 
   return (
     <>
-      <div 
-        className={`w-full h-full bg-[#594BFF] overflow-hidden ${
-          (isSpacePressed || activeTool === 'pan') ? 'cursor-grab active:cursor-grabbing' : 
-          activeTool === 'select' ? 'cursor-default' : 'cursor-default'
-        }`}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        onWheel={handleWheelZoom}
+      <PanningControls
+        isDragging={isDragging}
+        activeTool={activeTool}
+        isSpacePressed={isSpacePressed}
+        handlePanStart={handlePanStart}
+        handlePanMove={handlePanMove}
+        handlePanEnd={handlePanEnd}
+        handleMouseDown={handleMouseDown}
+        handleMouseMove={handleMouseMove}
+        handleMouseUp={handleMouseUp}
+        handleWheelZoom={handleWheelZoom}
         ref={ref}
-        tabIndex={0}
       >
         <div 
           className="absolute inset-0" 
@@ -174,31 +154,15 @@ const Canvas = forwardRef(({
           ))}
           <SelectionOverlay selectionStart={selectionStart} selectionEnd={selectionEnd} />
         </div>
-      </div>
+      </PanningControls>
 
-      <AlertDialog open={showDeleteConfirmation} onOpenChange={setShowDeleteConfirmation}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure you want to delete this AI node?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the AI node and its associated data.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowDeleteConfirmation(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => {
-              if (nodeToDelete) {
-                onNodeDelete(nodeToDelete.id);
-                toast.success("AI node deleted");
-              }
-              setShowDeleteConfirmation(false);
-              setNodeToDelete(null);
-            }}>
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmationDialog
+        showDeleteConfirmation={showDeleteConfirmation}
+        setShowDeleteConfirmation={setShowDeleteConfirmation}
+        nodeToDelete={nodeToDelete}
+        setNodeToDelete={setNodeToDelete}
+        onNodeDelete={onNodeDelete}
+      />
     </>
   );
 });
