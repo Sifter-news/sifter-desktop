@@ -4,8 +4,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FileText } from 'lucide-react';
 
-const DEFAULT_IMAGE = '/default-image.png';
-
 const NodeContent = ({ 
   style, 
   isEditing, 
@@ -21,25 +19,19 @@ const NodeContent = ({
     switch (style) {
       case 'compact':
         return (
-          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-xs">
             <Avatar className="h-10 w-10">
-              <AvatarImage 
-                src={node.avatar || DEFAULT_IMAGE} 
-                alt={node.title} 
-              />
+              <AvatarImage src={node.avatar} alt={node.title} />
               <AvatarFallback><FileText className="h-4 w-4" /></AvatarFallback>
             </Avatar>
           </div>
         );
       case 'postit':
         return (
-          <div className="w-[256px] h-[256px] p-4 bg-yellow-100 rotate-1">
+          <div className="w-[200px] h-[200px] p-4 bg-yellow-100 rotate-1">
             <div className="flex items-center gap-2 mb-2">
               <Avatar className="h-8 w-8">
-                <AvatarImage 
-                  src={node.avatar || DEFAULT_IMAGE} 
-                  alt={node.title} 
-                />
+                <AvatarImage src={node.avatar} alt={node.title} />
                 <AvatarFallback><FileText className="h-4 w-4" /></AvatarFallback>
               </Avatar>
               {isEditing ? (
@@ -70,13 +62,10 @@ const NodeContent = ({
         );
       default:
         return (
-          <div className="min-w-[40px] h-[128px] p-3 bg-white">
+          <div className="min-w-[200px] p-3 bg-white">
             <div className="flex items-center gap-2 mb-2">
               <Avatar className="h-8 w-8">
-                <AvatarImage 
-                  src={node.avatar || DEFAULT_IMAGE} 
-                  alt={node.title} 
-                />
+                <AvatarImage src={node.avatar} alt={node.title} />
                 <AvatarFallback><FileText className="h-4 w-4" /></AvatarFallback>
               </Avatar>
               {isEditing ? (

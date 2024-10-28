@@ -1,7 +1,7 @@
 import React from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { getNodeTypeIcon } from './NodeTypeIcon';
-import { GripVertical, Pencil, Trash2, MoreVertical, MessageCircle } from 'lucide-react';
+import { GripVertical, Pencil, Trash2, MoreVertical, MessageCircle, Layout, FileText } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,9 +17,11 @@ const NodeListItem = ({
   isSelected, 
   onSelect, 
   onFocus, 
-  onUpdateNode,
+  onUpdateNode, 
+  onAIConversation,
   isFocused,
-  onEdit
+  onEdit,
+  onDelete 
 }) => {
   if (!node) return null;
 
@@ -75,6 +77,23 @@ const NodeListItem = ({
                 }}>
                   <Pencil className="h-4 w-4 mr-2" />
                   Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => onAIConversation(node)}
+                  className="bg-purple-600 hover:bg-purple-700 text-white focus:bg-purple-700 focus:text-white"
+                >
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  AI Conversation
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-red-600"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(node.id);
+                  }}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

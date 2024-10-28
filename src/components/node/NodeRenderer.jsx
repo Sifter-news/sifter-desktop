@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Rnd } from 'react-rnd';
 import NodeContent from './NodeContent';
 import NodeTooltip from './NodeTooltip';
-import { getNodeDimensions } from '@/utils/nodeDimensions';
 
 const NodeRenderer = ({ 
   node, 
@@ -19,8 +18,13 @@ const NodeRenderer = ({
   const [localTitle, setLocalTitle] = useState(node.title);
   const [localDescription, setLocalDescription] = useState(node.description);
   const [showTooltip, setShowTooltip] = useState(false);
-  const [position, setPosition] = useState({ x: node.x || 0, y: node.y || 0 });
-  const dimensions = getNodeDimensions(node.visualStyle);
+  const [position, setPosition] = useState({ x: node.x, y: node.y });
+
+  // Set default avatar for all nodes
+  const nodeWithDefaultAvatar = {
+    ...node,
+    avatar: '/default-image.png'
+  };
 
   useEffect(() => {
     if (!isFocused) {
@@ -29,7 +33,7 @@ const NodeRenderer = ({
   }, [isFocused]);
 
   useEffect(() => {
-    if (node.x !== undefined && node.y !== undefined) {
+    if (Math.abs(node.x - position.x) > 1 || Math.abs(node.y - position.y) > 1) {
       setPosition({ x: node.x, y: node.y });
     }
   }, [node.x, node.y]);
@@ -56,30 +60,30 @@ const NodeRenderer = ({
 
   return (
     <Rnd
+      size={{ width: node.width, height: node.height }}
       position={position}
-      size={dimensions}
       onDragStop={handleDragStop}
       scale={zoom}
-      className={`absolute ${isFocused ? 'ring-2 ring-blue-500' : ''}`}
+      className={`${isFocused ? 'ring-2 ring-blue-500' : ''}`}
       onClick={handleNodeClick}
       enableResizing={false}
       disableDragging={!isDraggable}
       bounds="parent"
-      dragGrid={[1, 1]}
     >
       <NodeContent
         style={node.visualStyle}
         isEditing={isEditing}
-        node={node}
+        node={nodeWithDefaultAvatar}
         localTitle={localTitle}
         localDescription={localDescription}
         handleBlur={handleBlur}
         setLocalTitle={setLocalTitle}
         setLocalDescription={setLocalDescription}
+        handleNodeClick={handleNodeClick}
         isFocused={isFocused}
       />
       <NodeTooltip
-        node={node}
+        node={nodeWithDefaultAvatar}
         showTooltip={showTooltip}
         onAIConversation={onAIConversation}
         onDelete={onDelete}

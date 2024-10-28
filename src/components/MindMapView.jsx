@@ -187,7 +187,6 @@ const MindMapView = ({
           reports={reports}
           onAddReport={onAddReport}
           onEditReport={onUpdateReport}
-          projectId={project?.id}
         />
       </div>
       <NodeEditorModal

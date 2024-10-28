@@ -29,7 +29,6 @@ const Canvas = forwardRef(({
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
   const [previousTool, setPreviousTool] = useState(null);
-  const [startPanPosition, setStartPanPosition] = useState({ x: 0, y: 0 });
 
   const handleKeyDown = useCallback((e) => {
     if (e.code === 'Space' && !isSpacePressed) {
@@ -80,7 +79,6 @@ const Canvas = forwardRef(({
   const handleMouseDown = useCallback((e) => {
     if (isSpacePressed || activeTool === 'pan') {
       setIsPanning(true);
-      setStartPanPosition({ x: e.clientX, y: e.clientY });
       handlePanStart();
       e.preventDefault();
     }
@@ -88,12 +86,9 @@ const Canvas = forwardRef(({
 
   const handleMouseMove = useCallback((e) => {
     if (isPanning) {
-      const deltaX = e.clientX - startPanPosition.x;
-      const deltaY = e.clientY - startPanPosition.y;
-      handlePanMove({ movementX: deltaX, movementY: deltaY });
-      setStartPanPosition({ x: e.clientX, y: e.clientY });
+      handlePanMove({ movementX: e.movementX, movementY: e.movementY });
     }
-  }, [isPanning, handlePanMove, startPanPosition]);
+  }, [isPanning, handlePanMove]);
 
   const handleMouseUp = useCallback(() => {
     if (isPanning) {
@@ -105,7 +100,7 @@ const Canvas = forwardRef(({
   return (
     <>
       <div 
-        className="w-full h-full bg-[#594BFF] overflow-hidden"
+        className={`w-full h-full bg-[#594BFF] overflow-hidden ${isPanning ? 'cursor-grabbing' : isSpacePressed ? 'cursor-grab' : 'cursor-default'}`}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -121,7 +116,7 @@ const Canvas = forwardRef(({
             height: '100%',
             border: '2px solid rgba(255, 255, 255, 0.2)',
             backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)',
-            backgroundSize: '120px 120px', // Changed from 24px to 120px (24 * 5)
+            backgroundSize: '24px 24px',
             transformOrigin: '0 0',
             transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
           }}
