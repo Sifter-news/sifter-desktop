@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { PlusIcon } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import ContentModal from './ContentModal';
-import ContentPreview from './ContentPreview';
 import { toast } from "sonner";
 
 const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
@@ -25,39 +24,10 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
     setIsModalOpen(false);
   };
 
-  const handleEditReport = (report) => {
-    if (!report) return;
-    
-    try {
-      if (typeof onEditReport === 'function') {
-        const clonedReport = JSON.parse(JSON.stringify(report));
-        onEditReport(clonedReport);
-      } else {
-        console.warn('onEditReport prop is not a function');
-        toast.error("Unable to edit report at this time");
-      }
-    } catch (error) {
-      console.error('Error editing report:', error);
-      toast.error("Failed to edit report");
-    }
-  };
-
   return (
     <div className="fixed bottom-12 right-12" style={{ zIndex: 10 }}>
       <div className="bg-white bg-opacity-20 backdrop-blur-sm p-4 rounded-full">
         <div className="flex flex-col items-center">
-          {reports && reports.length > 0 && (
-            <div className="w-[30%] mb-4 flex flex-wrap justify-center gap-2">
-              {reports.map((report) => (
-                <ContentPreview
-                  key={String(report.id)}
-                  content={report}
-                  onUpdate={handleEditReport}
-                  type="report"
-                />
-              ))}
-            </div>
-          )}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
