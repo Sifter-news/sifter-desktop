@@ -1,21 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
-import { Plus, FolderPlus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import SearchInput from './SearchInput';
 import NodeListItem from './NodeListItem';
 import NodeTypeSelector from './NodeTypeSelector';
 import NodeEditDialog from '../node/NodeEditDialog';
-import FolderItem from './FolderItem';
 import { toast } from 'sonner';
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const NodeNavigator = ({ 
   nodes = [], 
@@ -30,124 +27,111 @@ const NodeNavigator = ({
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [navigatorNodes, setNavigatorNodes] = useState([]);
-  const [folders, setFolders] = useState([]);
-  const [isNewFolderDialogOpen, setIsNewFolderDialogOpen] = useState(false);
-  const [newFolderTitle, setNewFolderTitle] = useState('');
+  const [selectedNodes, setSelectedNodes] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(-1);
   const [editingNode, setEditingNode] = useState(null);
+  const nodeRefs = useRef({});
 
   useEffect(() => {
     setNavigatorNodes(nodes);
   }, [nodes]);
 
-  const handleCreateFolder = () => {
-    if (!newFolderTitle.trim()) {
-      toast.error('Please enter a folder name');
-      return;
+  useEffect(() => {
+    if (focusedNodeId && nodeRefs.current[focusedNodeId]) {
+      nodeRefs.current[focusedNodeId].scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest'
+      });
+      setSelectedNodes([focusedNodeId]);
     }
+  }, [focusedNodeId]);
 
-    const newFolder = {
-      id: `folder-${Date.now()}`,
-      title: newFolderTitle,
-      type: 'folder',
-      nodes: []
+  const handleDeleteNode = async (nodeId) => {
+    try {
+      await onDeleteNode(nodeId);
+      setNavigatorNodes(prev => prev.filter(node => node.id !== nodeId));
+      toast.success('Node deleted successfully');
+    } catch (error) {
+      console.error('Error deleting node:', error);
+      toast.error('Failed to delete node');
+    }
+  };
+
+  const filteredNodes = navigatorNodes.filter(node => {
+    if (!node) return false;
+    const matchesType = selectedType === 'all' || node.nodeType === selectedType;
+    const matchesSearch = (node.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        (node.description || '').toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesType && matchesSearch;
+  });
+
+  const groupedNodes = filteredNodes.reduce((acc, node) => {
+    const type = node.nodeType || 'generic';
+    if (!acc[type]) {
+      acc[type] = [];
+    }
+    acc[type].push(node);
+    return acc;
+  }, {});
+
+  const getNodeTypeLabel = (type) => {
+    const labels = {
+      'generic': 'Generic Notes',
+      'node_person': 'People',
+      'node_organization': 'Organizations',
+      'node_object': 'Objects',
+      'node_concept': 'Concepts',
+      'node_location': 'Locations',
+      'node_event': 'Events'
     };
-
-    setFolders(prev => [...prev, newFolder]);
-    setNewFolderTitle('');
-    setIsNewFolderDialogOpen(false);
-    toast.success('Folder created successfully');
-  };
-
-  const handleNodeDrop = (nodeId, folderId) => {
-    setFolders(prev => prev.map(folder => {
-      if (folder.id === folderId) {
-        return {
-          ...folder,
-          nodes: [...folder.nodes, nodeId]
-        };
-      }
-      return folder;
-    }));
-
-    toast.success('Node moved to folder');
-  };
-
-  const getNodesInFolder = (folderId) => {
-    const folder = folders.find(f => f.id === folderId);
-    if (!folder) return [];
-    return nodes.filter(node => folder.nodes.includes(node.id));
-  };
-
-  const getUnorganizedNodes = () => {
-    const organizedNodeIds = folders.flatMap(folder => folder.nodes);
-    return nodes.filter(node => !organizedNodeIds.includes(node.id));
+    return labels[type] || type;
   };
 
   return (
     <div className="w-full h-full flex flex-col p-4">
-      <div className="flex justify-between items-center mb-4">
+      <div className="space-y-4 mb-4">
         <SearchInput value={searchQuery} onChange={setSearchQuery} />
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setIsNewFolderDialogOpen(true)}
-        >
-          <FolderPlus className="h-4 w-4" />
-        </Button>
+        <NodeTypeSelector selectedType={selectedType} setSelectedType={setSelectedType} />
       </div>
 
-      <NodeTypeSelector selectedType={selectedType} setSelectedType={setSelectedType} />
-
       <ScrollArea className="flex-grow">
-        <div className="space-y-2">
-          {folders.map(folder => (
-            <FolderItem
-              key={folder.id}
-              folder={folder}
-              nodes={getNodesInFolder(folder.id)}
-              onNodeSelect={onNodeFocus}
-              focusedNodeId={focusedNodeId}
-            />
+        <Accordion type="multiple" className="w-full">
+          {Object.entries(groupedNodes).map(([type, nodes]) => (
+            <AccordionItem value={type} key={type}>
+              <AccordionTrigger className="text-sm font-medium">
+                {getNodeTypeLabel(type)} ({nodes.length})
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-1">
+                  {nodes.map((node) => (
+                    <div 
+                      key={node.id}
+                      ref={el => nodeRefs.current[node.id] = el}
+                    >
+                      <NodeListItem
+                        node={node}
+                        isSelected={selectedNodes.includes(node.id)}
+                        onSelect={(nodeId) => {
+                          const index = filteredNodes.findIndex(n => n.id === nodeId);
+                          setCurrentIndex(index);
+                          setSelectedNodes([nodeId]);
+                          onNodeFocus(nodeId);
+                        }}
+                        onFocus={onNodeFocus}
+                        onUpdateNode={onUpdateNode}
+                        onAIConversation={onAIConversation}
+                        isFocused={focusedNodeId === node.id || nodes.indexOf(node) === currentIndex}
+                        onEdit={setEditingNode}
+                        onDelete={handleDeleteNode}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
           ))}
-
-          <div className="mt-4">
-            <div className="text-sm font-medium text-gray-500 mb-2">Unorganized Nodes</div>
-            {getUnorganizedNodes().map(node => (
-              <NodeListItem
-                key={node.id}
-                node={node}
-                onSelect={onNodeFocus}
-                onUpdateNode={onUpdateNode}
-                onAIConversation={onAIConversation}
-                isFocused={focusedNodeId === node.id}
-                onEdit={setEditingNode}
-                onDelete={onDeleteNode}
-              />
-            ))}
-          </div>
-        </div>
+        </Accordion>
       </ScrollArea>
-
-      <Dialog open={isNewFolderDialogOpen} onOpenChange={setIsNewFolderDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create New Folder</DialogTitle>
-          </DialogHeader>
-          <Input
-            value={newFolderTitle}
-            onChange={(e) => setNewFolderTitle(e.target.value)}
-            placeholder="Enter folder name"
-          />
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsNewFolderDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleCreateFolder}>
-              Create
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {editingNode && (
         <NodeEditDialog
@@ -158,7 +142,7 @@ const NodeNavigator = ({
             onUpdateNode(id, updates);
             setEditingNode(null);
           }}
-          onDelete={onDeleteNode}
+          onDelete={handleDeleteNode}
         />
       )}
     </div>
