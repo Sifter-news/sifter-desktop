@@ -8,14 +8,62 @@ VALUES
   (uuid_generate_v4(), 'Pro', 9.99, 'Advanced features and unlimited investigations'),
   (uuid_generate_v4(), 'Team', 29.99, 'Team collaboration and advanced analytics');
 
--- Insert admin user
-INSERT INTO public.profiles (id, username, email, avatar_url) 
-VALUES (
-  uuid_generate_v4(),
-  'admin',
-  'admin@sifter.news',
-  '/default-image.png'
-);
+-- Insert admin user and store ID
+DO $$
+DECLARE
+    admin_id UUID;
+    admin_investigation_id UUID;
+BEGIN
+    -- Insert admin user
+    INSERT INTO public.profiles (id, username, email, avatar_url) 
+    VALUES (
+      uuid_generate_v4(),
+      'admin',
+      'admin@sifter.news',
+      '/default-image.png'
+    )
+    RETURNING id INTO admin_id;
+
+    -- Create admin's sample investigation
+    INSERT INTO public.investigations (id, title, description, owner_id, visibility, view_type, investigation_type, investigation_focus)
+    VALUES (
+      uuid_generate_v4(),
+      'Platform Security Audit',
+      'Internal security audit and compliance investigation of Sifter platform',
+      admin_id,
+      'private',
+      'mind',
+      'internal-audit',
+      'node_organization'
+    )
+    RETURNING id INTO admin_investigation_id;
+
+    -- Insert nodes for admin's investigation
+    INSERT INTO public.node (id, title, description, owner_id, investigation_id, node_type, position_x, position_y, metadata)
+    VALUES
+      -- Main platform
+      (uuid_generate_v4(), 'Sifter Platform', 'Core platform infrastructure and systems', admin_id, admin_investigation_id, 'node_organization', 0, 0, 
+       '{"deploymentDate": "2024-01-01", "userCount": "1000+", "version": "2.0.1"}'::jsonb),
+      -- Security Systems
+      (uuid_generate_v4(), 'Authentication System', 'User authentication and authorization services', admin_id, admin_investigation_id, 'node_object', -200, -150,
+       '{"provider": "Supabase Auth", "mfaEnabled": "true", "lastAudit": "2024-03-15"}'::jsonb),
+      -- Key Personnel
+      (uuid_generate_v4(), 'Security Team Lead', 'Head of Platform Security', admin_id, admin_investigation_id, 'node_person', 200, -150,
+       '{"role": "Security Lead", "clearance": "Level 3", "certifications": "CISSP, CEH"}'::jsonb),
+      -- Compliance Documents
+      (uuid_generate_v4(), 'GDPR Compliance', 'Data protection and privacy compliance', admin_id, admin_investigation_id, 'node_object', -150, 100,
+       '{"status": "Compliant", "lastReview": "2024-02-01", "nextReview": "2024-08-01"}'::jsonb),
+      -- Security Events
+      (uuid_generate_v4(), 'Q1 Security Review', 'Quarterly security assessment and penetration testing', admin_id, admin_investigation_id, 'node_event', 150, 100,
+       '{"date": "2024-03-30", "findings": "2 low, 0 critical", "status": "Resolved"}'::jsonb);
+
+    -- Insert reports for admin's investigation
+    INSERT INTO public.reports (id, investigation_id, title, content)
+    VALUES
+      (uuid_generate_v4(), admin_investigation_id, 'Q1 2024 Security Report', 'Comprehensive security analysis of platform infrastructure...'),
+      (uuid_generate_v4(), admin_investigation_id, 'GDPR Compliance Status', 'Current status of GDPR compliance measures and documentation...'),
+      (uuid_generate_v4(), admin_investigation_id, 'Penetration Test Results', 'Results and remediation steps from latest penetration testing...');
+END $$;
 
 -- Insert sample users with investigator roles
 INSERT INTO public.profiles (id, username, email, avatar_url) 
