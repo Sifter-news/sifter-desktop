@@ -41,21 +41,53 @@ BEGIN
     -- Insert nodes for admin's investigation
     INSERT INTO public.node (id, title, description, owner_id, investigation_id, node_type, position_x, position_y, metadata)
     VALUES
-      -- Main platform
+      -- Organizations (3)
       (uuid_generate_v4(), 'Sifter Platform', 'Core platform infrastructure and systems', admin_id, admin_investigation_id, 'node_organization', 0, 0, 
        '{"deploymentDate": "2024-01-01", "userCount": "1000+", "version": "2.0.1"}'::jsonb),
-      -- Security Systems
-      (uuid_generate_v4(), 'Authentication System', 'User authentication and authorization services', admin_id, admin_investigation_id, 'node_object', -200, -150,
-       '{"provider": "Supabase Auth", "mfaEnabled": "true", "lastAudit": "2024-03-15"}'::jsonb),
-      -- Key Personnel
+      (uuid_generate_v4(), 'Cloud Provider', 'Infrastructure hosting provider', admin_id, admin_investigation_id, 'node_organization', -300, 0,
+       '{"provider": "AWS", "region": "us-west-2", "serviceLevel": "Enterprise"}'::jsonb),
+      (uuid_generate_v4(), 'Security Vendor', 'Third-party security services', admin_id, admin_investigation_id, 'node_organization', 300, 0,
+       '{"vendor": "SecureGuard", "services": ["Pentesting", "Audit", "Training"]}'::jsonb),
+
+      -- People (3)
       (uuid_generate_v4(), 'Security Team Lead', 'Head of Platform Security', admin_id, admin_investigation_id, 'node_person', 200, -150,
        '{"role": "Security Lead", "clearance": "Level 3", "certifications": "CISSP, CEH"}'::jsonb),
-      -- Compliance Documents
-      (uuid_generate_v4(), 'GDPR Compliance', 'Data protection and privacy compliance', admin_id, admin_investigation_id, 'node_object', -150, 100,
-       '{"status": "Compliant", "lastReview": "2024-02-01", "nextReview": "2024-08-01"}'::jsonb),
-      -- Security Events
-      (uuid_generate_v4(), 'Q1 Security Review', 'Quarterly security assessment and penetration testing', admin_id, admin_investigation_id, 'node_event', 150, 100,
-       '{"date": "2024-03-30", "findings": "2 low, 0 critical", "status": "Resolved"}'::jsonb);
+      (uuid_generate_v4(), 'Compliance Officer', 'Data Protection Officer', admin_id, admin_investigation_id, 'node_person', 0, -150,
+       '{"role": "DPO", "certifications": "CIPP/E", "jurisdiction": "EU"}'::jsonb),
+      (uuid_generate_v4(), 'Infrastructure Engineer', 'Lead DevOps Engineer', admin_id, admin_investigation_id, 'node_person', -200, -150,
+       '{"role": "DevOps Lead", "expertise": "Cloud Infrastructure", "team": "Platform"}'::jsonb),
+
+      -- Objects (3)
+      (uuid_generate_v4(), 'Authentication System', 'User authentication and authorization services', admin_id, admin_investigation_id, 'node_object', -200, 100,
+       '{"provider": "Supabase Auth", "mfaEnabled": "true", "lastAudit": "2024-03-15"}'::jsonb),
+      (uuid_generate_v4(), 'Backup System', 'Data backup and recovery infrastructure', admin_id, admin_investigation_id, 'node_object', 0, 100,
+       '{"type": "Incremental", "frequency": "Daily", "retention": "90 days"}'::jsonb),
+      (uuid_generate_v4(), 'Firewall Configuration', 'Network security settings', admin_id, admin_investigation_id, 'node_object', 200, 100,
+       '{"type": "Next-Gen", "rules": "250+", "lastUpdate": "2024-03-20"}'::jsonb),
+
+      -- Concepts (3)
+      (uuid_generate_v4(), 'Zero Trust Architecture', 'Security framework implementation', admin_id, admin_investigation_id, 'node_concept', -200, 200,
+       '{"status": "Implementing", "completion": "75%", "priority": "High"}'::jsonb),
+      (uuid_generate_v4(), 'Defense in Depth', 'Layered security approach', admin_id, admin_investigation_id, 'node_concept', 0, 200,
+       '{"layers": ["Network", "Application", "Data"], "maturity": "Advanced"}'::jsonb),
+      (uuid_generate_v4(), 'Least Privilege', 'Access control principle', admin_id, admin_investigation_id, 'node_concept', 200, 200,
+       '{"implementation": "Role-based", "coverage": "100%", "lastReview": "2024-02-15"}'::jsonb),
+
+      -- Locations (3)
+      (uuid_generate_v4(), 'Primary Data Center', 'Main infrastructure location', admin_id, admin_investigation_id, 'node_location', -200, 300,
+       '{"region": "US-West", "redundancy": "N+1", "tier": "Tier 4"}'::jsonb),
+      (uuid_generate_v4(), 'Disaster Recovery Site', 'Backup data center', admin_id, admin_investigation_id, 'node_location', 0, 300,
+       '{"region": "US-East", "type": "Hot Standby", "failoverTime": "15min"}'::jsonb),
+      (uuid_generate_v4(), 'Security Operations Center', 'SOC location', admin_id, admin_investigation_id, 'node_location', 200, 300,
+       '{"location": "HQ", "coverage": "24/7", "team": "15 analysts"}'::jsonb),
+
+      -- Events (3)
+      (uuid_generate_v4(), 'Q1 Security Review', 'Quarterly security assessment', admin_id, admin_investigation_id, 'node_event', -200, 400,
+       '{"date": "2024-03-30", "findings": "2 low, 0 critical", "status": "Resolved"}'::jsonb),
+      (uuid_generate_v4(), 'Penetration Test', 'Annual security testing', admin_id, admin_investigation_id, 'node_event', 0, 400,
+       '{"date": "2024-02-15", "vendor": "SecureGuard", "findings": "5 medium"}'::jsonb),
+      (uuid_generate_v4(), 'Compliance Audit', 'GDPR compliance review', admin_id, admin_investigation_id, 'node_event', 200, 400,
+       '{"date": "2024-01-20", "auditor": "EY", "result": "Passed"}'::jsonb);
 
     -- Insert reports for admin's investigation
     INSERT INTO public.reports (id, investigation_id, title, content)
