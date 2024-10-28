@@ -35,13 +35,24 @@ export const AuthProvider = ({ children }) => {
 
         if (!session) {
           setUser(null);
-          if (location.pathname !== '/login') {
+          if (location.pathname !== '/login' && 
+              location.pathname !== '/signup' && 
+              !location.pathname.startsWith('/auth/callback')) {
             navigate('/login');
           }
           return;
         }
 
-        setUser(session.user);
+        // Attempt to refresh the session
+        const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+        
+        if (refreshError) {
+          console.error('Session refresh error:', refreshError);
+          await handleAuthError();
+          return;
+        }
+
+        setUser(refreshData.user ?? session.user);
       } catch (error) {
         console.error('Auth error:', error);
         await handleAuthError();
@@ -63,8 +74,6 @@ export const AuthProvider = ({ children }) => {
       } else if (event === 'TOKEN_REFRESHED') {
         setUser(session?.user ?? null);
       } else if (event === 'USER_UPDATED') {
-        setUser(session?.user ?? null);
-      } else if (event === 'INITIAL_SESSION') {
         setUser(session?.user ?? null);
       }
       setLoading(false);
@@ -114,3 +123,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export default AuthProvider;
