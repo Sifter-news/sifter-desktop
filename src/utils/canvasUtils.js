@@ -6,7 +6,11 @@ export const useZoomPan = (initialZoom = 1) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   const handleZoom = useCallback((delta) => {
-    setZoom((prevZoom) => Math.max(0.1, Math.min(prevZoom + delta, 5)));
+    setZoom((prevZoom) => {
+      const newZoom = prevZoom + delta;
+      // Limit zoom between 0.1 and 2 for better visibility
+      return Math.max(0.1, Math.min(newZoom, 2));
+    });
   }, []);
 
   const handleWheel = useCallback((e) => {

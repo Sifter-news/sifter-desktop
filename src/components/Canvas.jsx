@@ -131,11 +131,12 @@ const Canvas = forwardRef(({
         <div 
           className="absolute inset-0" 
           style={{
-            width: '25600px',
-            height: '25600px',
+            width: '100%',
+            height: '100%',
             border: '2px solid rgba(255, 255, 255, 0.2)',
             backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)',
             backgroundSize: '24px 24px',
+            transformOrigin: '0 0',
             transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
           }}
         >
