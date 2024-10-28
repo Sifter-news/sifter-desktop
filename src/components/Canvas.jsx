@@ -1,11 +1,9 @@
 import React, { forwardRef, useCallback, useEffect, useState } from 'react';
+import NodeRenderer from './NodeRenderer';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 import { toast } from 'sonner';
 import { useKeyboardControls } from './canvas/useKeyboardControls';
-import { useSelectionControls } from './canvas/useSelectionControls';
-import SelectionOverlay from './canvas/SelectionOverlay';
-import NodeRenderer from './NodeRenderer';
 
 const Canvas = forwardRef(({ 
   nodes, 
@@ -31,16 +29,11 @@ const Canvas = forwardRef(({
   const [nodeToDelete, setNodeToDelete] = useState(null);
   const [draggedNodeId, setDraggedNodeId] = useState(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [selectionStart, setSelectionStart] = useState(null);
+  const [selectionEnd, setSelectionEnd] = useState(null);
+  const [selectedNodes, setSelectedNodes] = useState([]);
 
   const { isSpacePressed } = useKeyboardControls(activeTool, setActiveTool);
-  const {
-    selectionStart,
-    selectionEnd,
-    selectedNodes,
-    handleSelectionStart,
-    handleSelectionMove,
-    clearSelection
-  } = useSelectionControls(ref, zoom, nodes, onNodeFocus);
 
   const handleKeyDown = useCallback((e) => {
     if (focusedNodeId && (e.key === 'Delete' || e.key === 'Backspace')) {
@@ -73,23 +66,43 @@ const Canvas = forwardRef(({
   }, [handleKeyDown]);
 
   const handleMouseDown = (e) => {
-    if (e.target === ref.current) {
+    if (e.target === ref.current && (activeTool === 'select' || isSpacePressed)) {
       const rect = ref.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / zoom;
+      const y = (e.clientY - rect.top) / zoom;
       
       if (activeTool === 'pan' || isSpacePressed) {
         handlePanStart();
-      } else if (activeTool === 'select') {
-        handleSelectionStart(e, rect);
+      } else {
+        setSelectionStart({ x, y });
+        setSelectionEnd({ x, y });
       }
     }
   };
 
   const handleMouseMove = (e) => {
-    if (activeTool === 'select' && selectionStart) {
+    if (selectionStart && activeTool === 'select') {
       const rect = ref.current.getBoundingClientRect();
-      handleSelectionMove(e, rect);
-    } else if (activeTool === 'pan' || isSpacePressed) {
-      handlePanMove(e);
+      const x = (e.clientX - rect.left) / zoom;
+      const y = (e.clientY - rect.top) / zoom;
+      setSelectionEnd({ x, y });
+
+      // Calculate selection bounds
+      const bounds = {
+        left: Math.min(selectionStart.x, x),
+        right: Math.max(selectionStart.x, x),
+        top: Math.min(selectionStart.y, y),
+        bottom: Math.max(selectionStart.y, y)
+      };
+
+      // Select nodes within bounds
+      const selected = nodes.filter(node => {
+        return node.x >= bounds.left && 
+               node.x <= bounds.right && 
+               node.y >= bounds.top && 
+               node.y <= bounds.bottom;
+      });
+      setSelectedNodes(selected.map(node => node.id));
     }
   };
 
@@ -102,8 +115,8 @@ const Canvas = forwardRef(({
       setDraggedNodeId(null);
       setDragOffset({ x: 0, y: 0 });
     }
-    handlePanEnd();
-    clearSelection();
+    setSelectionStart(null);
+    setSelectionEnd(null);
   };
 
   const handleNodeDragStart = useCallback((e, nodeId) => {
@@ -136,8 +149,7 @@ const Canvas = forwardRef(({
     <>
       <div 
         className={`w-full h-full bg-[#594BFF] overflow-hidden ${
-          isSpacePressed ? 'cursor-grab active:cursor-grabbing' : 
-          activeTool === 'pan' ? 'cursor-grab' : 'cursor-default'
+          isSpacePressed ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'
         }`}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -175,10 +187,19 @@ const Canvas = forwardRef(({
               isDragging={draggedNodeId === node.id}
             />
           ))}
-          <SelectionOverlay selectionStart={selectionStart} selectionEnd={selectionEnd} />
+          {selectionStart && selectionEnd && (
+            <div
+              className="absolute border-2 border-blue-500 bg-blue-500/20"
+              style={{
+                left: Math.min(selectionStart.x, selectionEnd.x),
+                top: Math.min(selectionStart.y, selectionEnd.y),
+                width: Math.abs(selectionEnd.x - selectionStart.x),
+                height: Math.abs(selectionEnd.y - selectionStart.y),
+              }}
+            />
+          )}
         </div>
       </div>
-
       <AlertDialog open={showDeleteConfirmation} onOpenChange={setShowDeleteConfirmation}>
         <AlertDialogContent>
           <AlertDialogHeader>
