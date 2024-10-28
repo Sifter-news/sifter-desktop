@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useZoomPan, findAvailablePosition } from '../utils/canvasUtils';
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
