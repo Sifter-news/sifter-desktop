@@ -5,13 +5,68 @@ TRUNCATE TABLE public.investigations CASCADE;
 TRUNCATE TABLE public.reports CASCADE;
 TRUNCATE TABLE public.node CASCADE;
 
--- Create users in auth.users
-INSERT INTO auth.users (id, email, encrypted_password, email_confirmed_at, created_at, updated_at)
+-- Create users in auth.users with proper authentication
+INSERT INTO auth.users (
+    id,
+    email,
+    encrypted_password,
+    email_confirmed_at,
+    created_at,
+    updated_at,
+    raw_app_meta_data,
+    raw_user_meta_data,
+    is_super_admin,
+    confirmed_at
+)
 VALUES 
-  ('d0d8c19c-3b3e-4f5a-a7b0-d9cee666d454', 'admin@sifter.news', crypt('admin123', gen_salt('bf')), NOW(), NOW(), NOW()),
-  ('e1f2g3h4-5i6j-7k8l-9m0n-opqrstuvwxyz', 'sarah@ddteam.com', crypt('sarah123', gen_salt('bf')), NOW(), NOW(), NOW()),
-  ('a1b2c3d4-5e6f-7g8h-9i0j-klmnopqrstuv', 'mike@ddteam.com', crypt('mike123', gen_salt('bf')), NOW(), NOW(), NOW()),
-  ('m1n2o3p4-5q6r-7s8t-9u0v-wxyzabcdefgh', 'lisa@ddteam.com', crypt('lisa123', gen_salt('bf')), NOW(), NOW(), NOW());
+(
+    'd0d8c19c-3b3e-4f5a-a7b0-d9cee666d454',
+    'admin@sifter.news',
+    crypt('admin123', gen_salt('bf')),
+    NOW(),
+    NOW(),
+    NOW(),
+    '{"provider":"email","providers":["email"]}',
+    '{"name":"Admin User"}',
+    false,
+    NOW()
+),
+(
+    'e1f2g3h4-5i6j-7k8l-9m0n-opqrstuvwxyz',
+    'sarah@ddteam.com',
+    crypt('sarah123', gen_salt('bf')),
+    NOW(),
+    NOW(),
+    NOW(),
+    '{"provider":"email","providers":["email"]}',
+    '{"name":"Sarah"}',
+    false,
+    NOW()
+),
+(
+    'a1b2c3d4-5e6f-7g8h-9i0j-klmnopqrstuv',
+    'mike@ddteam.com',
+    crypt('mike123', gen_salt('bf')),
+    NOW(),
+    NOW(),
+    NOW(),
+    '{"provider":"email","providers":["email"]}',
+    '{"name":"Mike"}',
+    false,
+    NOW()
+),
+(
+    'm1n2o3p4-5q6r-7s8t-9u0v-wxyzabcdefgh',
+    'lisa@ddteam.com',
+    crypt('lisa123', gen_salt('bf')),
+    NOW(),
+    NOW(),
+    NOW(),
+    '{"provider":"email","providers":["email"]}',
+    '{"name":"Lisa"}',
+    false,
+    NOW()
+);
 
 -- Create corresponding profiles
 INSERT INTO public.profiles (id, username, email, avatar_url)
