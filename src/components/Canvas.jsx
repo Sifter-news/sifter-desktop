@@ -131,8 +131,8 @@ const Canvas = forwardRef(({
         <div 
           className="absolute inset-0" 
           style={{
-            width: '1000px',
-            height: '1000px',
+            width: '25600px',
+            height: '25600px',
             border: '2px solid rgba(255, 255, 255, 0.2)',
             backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)',
             backgroundSize: '24px 24px',
