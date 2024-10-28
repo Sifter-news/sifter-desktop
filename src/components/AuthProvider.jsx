@@ -14,8 +14,11 @@ export const AuthProvider = ({ children }) => {
   const location = useLocation();
 
   const handleAuthError = async () => {
+    // Clear any existing session data
     await supabase.auth.signOut();
     setUser(null);
+    localStorage.removeItem('supabase.auth.token');
+    
     if (location.pathname !== '/login') {
       navigate('/login');
       toast.error('Session expired. Please sign in again.');
@@ -40,19 +43,30 @@ export const AuthProvider = ({ children }) => {
               !location.pathname.startsWith('/auth/callback')) {
             navigate('/login');
           }
+          setLoading(false);
           return;
         }
 
-        // Attempt to refresh the session
-        const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
-        
-        if (refreshError) {
-          console.error('Session refresh error:', refreshError);
-          await handleAuthError();
-          return;
-        }
+        // Only attempt to refresh if we have a valid session
+        if (session?.refresh_token) {
+          try {
+            const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+            
+            if (refreshError) {
+              console.error('Session refresh error:', refreshError);
+              await handleAuthError();
+              return;
+            }
 
-        setUser(refreshData.user ?? session.user);
+            setUser(refreshData.user ?? session.user);
+          } catch (refreshError) {
+            console.error('Session refresh error:', refreshError);
+            await handleAuthError();
+            return;
+          }
+        } else {
+          setUser(session.user);
+        }
       } catch (error) {
         console.error('Auth error:', error);
         await handleAuthError();
@@ -108,6 +122,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
+        localStorage.removeItem('supabase.auth.token');
         navigate('/login');
       } catch (error) {
         toast.error(error.message);
