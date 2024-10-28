@@ -29,6 +29,7 @@ const Canvas = forwardRef(({
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
   const [previousTool, setPreviousTool] = useState(null);
+  const [startPanPosition, setStartPanPosition] = useState({ x: 0, y: 0 });
 
   const handleKeyDown = useCallback((e) => {
     if (e.code === 'Space' && !isSpacePressed) {
@@ -79,6 +80,7 @@ const Canvas = forwardRef(({
   const handleMouseDown = useCallback((e) => {
     if (isSpacePressed || activeTool === 'pan') {
       setIsPanning(true);
+      setStartPanPosition({ x: e.clientX, y: e.clientY });
       handlePanStart();
       e.preventDefault();
     }
@@ -86,9 +88,12 @@ const Canvas = forwardRef(({
 
   const handleMouseMove = useCallback((e) => {
     if (isPanning) {
-      handlePanMove({ movementX: e.movementX, movementY: e.movementY });
+      const deltaX = e.clientX - startPanPosition.x;
+      const deltaY = e.clientY - startPanPosition.y;
+      handlePanMove({ movementX: deltaX, movementY: deltaY });
+      setStartPanPosition({ x: e.clientX, y: e.clientY });
     }
-  }, [isPanning, handlePanMove]);
+  }, [isPanning, handlePanMove, startPanPosition]);
 
   const handleMouseUp = useCallback(() => {
     if (isPanning) {
