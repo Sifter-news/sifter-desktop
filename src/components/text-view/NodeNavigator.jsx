@@ -5,6 +5,8 @@ import SearchInput from './SearchInput';
 import NodeListItem from './NodeListItem';
 import NodeTypeSelector from './NodeTypeSelector';
 import NodeEditDialog from '../node/NodeEditDialog';
+import DraggableNodeTypes from './DraggableNodeTypes';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from 'sonner';
 
 const NodeNavigator = ({ 
@@ -59,38 +61,48 @@ const NodeNavigator = ({
   });
 
   return (
-    <div className="w-full h-full flex flex-col p-4">
-      <div className="space-y-4 mb-4">
-        <SearchInput value={searchQuery} onChange={setSearchQuery} />
-        <NodeTypeSelector selectedType={selectedType} setSelectedType={setSelectedType} />
-      </div>
-
-      <div className="flex-grow overflow-y-auto">
-        {filteredNodes.map((node, index) => node && (
-          <div 
-            key={node.id}
-            ref={el => nodeRefs.current[node.id] = el}
-            className="mb-1"
-          >
-            <NodeListItem
-              node={node}
-              isSelected={selectedNodes.includes(node.id)}
-              onSelect={(nodeId) => {
-                const index = filteredNodes.findIndex(n => n.id === nodeId);
-                setCurrentIndex(index);
-                setSelectedNodes([nodeId]);
-                onNodeFocus(nodeId);
-              }}
-              onFocus={onNodeFocus}
-              onUpdateNode={onUpdateNode}
-              onAIConversation={onAIConversation}
-              isFocused={focusedNodeId === node.id || index === currentIndex}
-              onEdit={setEditingNode}
-              onDelete={handleDeleteNode}
-            />
+    <div className="w-full h-full flex flex-col">
+      <Tabs defaultValue="nodes" className="w-full h-full">
+        <TabsList className="w-full">
+          <TabsTrigger value="nodes" className="flex-1">Nodes</TabsTrigger>
+          <TabsTrigger value="add" className="flex-1">Add</TabsTrigger>
+        </TabsList>
+        <TabsContent value="nodes" className="flex-grow overflow-hidden">
+          <div className="p-4 space-y-4">
+            <SearchInput value={searchQuery} onChange={setSearchQuery} />
+            <NodeTypeSelector selectedType={selectedType} setSelectedType={setSelectedType} />
           </div>
-        ))}
-      </div>
+          <div className="flex-grow overflow-y-auto px-4">
+            {filteredNodes.map((node, index) => node && (
+              <div 
+                key={node.id}
+                ref={el => nodeRefs.current[node.id] = el}
+                className="mb-1"
+              >
+                <NodeListItem
+                  node={node}
+                  isSelected={selectedNodes.includes(node.id)}
+                  onSelect={(nodeId) => {
+                    const index = filteredNodes.findIndex(n => n.id === nodeId);
+                    setCurrentIndex(index);
+                    setSelectedNodes([nodeId]);
+                    onNodeFocus(nodeId);
+                  }}
+                  onFocus={onNodeFocus}
+                  onUpdateNode={onUpdateNode}
+                  onAIConversation={onAIConversation}
+                  isFocused={focusedNodeId === node.id || index === currentIndex}
+                  onEdit={setEditingNode}
+                  onDelete={handleDeleteNode}
+                />
+              </div>
+            ))}
+          </div>
+        </TabsContent>
+        <TabsContent value="add" className="flex-grow overflow-y-auto">
+          <DraggableNodeTypes />
+        </TabsContent>
+      </Tabs>
 
       {editingNode && (
         <NodeEditDialog
