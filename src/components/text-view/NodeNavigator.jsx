@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
-import { Plus, Filter } from 'lucide-react';
+import { Plus, Filter, FolderPlus } from 'lucide-react';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import SearchInput from './SearchInput';
 import NodeListItem from './NodeListItem';
 import NodeTypeSelector from './NodeTypeSelector';
 import NodeEditDialog from '../node/NodeEditDialog';
+import FolderItem from './FolderItem';
+import CreateFolderDialog from './CreateFolderDialog';
 import { toast } from 'sonner';
 import {
   Popover,
@@ -28,6 +31,9 @@ const NodeNavigator = ({
   const [selectedNodes, setSelectedNodes] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [editingNode, setEditingNode] = useState(null);
+  const [folders, setFolders] = useState([]);
+  const [openFolders, setOpenFolders] = useState({});
+  const [showCreateFolder, setShowCreateFolder] = useState(false);
   const nodeRefs = useRef({});
 
   useEffect(() => {
@@ -44,15 +50,75 @@ const NodeNavigator = ({
     }
   }, [focusedNodeId]);
 
-  const handleDeleteNode = async (nodeId) => {
-    try {
-      await onDeleteNode(nodeId);
-      setNavigatorNodes(prev => prev.filter(node => node.id !== nodeId));
-      toast.success('Node deleted successfully');
-    } catch (error) {
-      console.error('Error deleting node:', error);
-      toast.error('Failed to delete node');
+  const handleCreateFolder = (folderName) => {
+    const newFolder = {
+      id: `folder-${Date.now()}`,
+      title: folderName,
+      type: 'folder',
+      nodes: []
+    };
+    setFolders([...folders, newFolder]);
+    toast.success('Folder created successfully');
+  };
+
+  const handleToggleFolder = (folderId) => {
+    setOpenFolders(prev => ({
+      ...prev,
+      [folderId]: !prev[folderId]
+    }));
+  };
+
+  const handleDragEnd = (result) => {
+    if (!result.destination) return;
+
+    const { source, destination } = result;
+    const sourceId = source.droppableId;
+    const destId = destination.droppableId;
+
+    // Create new arrays
+    const newFolders = [...folders];
+    const newNodes = [...navigatorNodes];
+
+    // Handle node movement
+    if (result.type === 'node') {
+      const nodeId = result.draggableId;
+      const node = navigatorNodes.find(n => n.id === nodeId);
+
+      if (destId === 'root') {
+        // Moving to root
+        if (sourceId !== 'root') {
+          // Remove from folder
+          const sourceFolder = newFolders.find(f => f.id === sourceId);
+          sourceFolder.nodes = sourceFolder.nodes.filter(n => n.id !== nodeId);
+          // Add to root
+          newNodes.splice(destination.index, 0, node);
+        } else {
+          // Reorder in root
+          const [removed] = newNodes.splice(source.index, 1);
+          newNodes.splice(destination.index, 0, removed);
+        }
+      } else {
+        // Moving to folder
+        const destFolder = newFolders.find(f => f.id === destId);
+        
+        if (sourceId === 'root') {
+          // Remove from root
+          newNodes.splice(source.index, 1);
+        } else if (sourceId !== destId) {
+          // Remove from source folder
+          const sourceFolder = newFolders.find(f => f.id === sourceId);
+          sourceFolder.nodes = sourceFolder.nodes.filter(n => n.id !== nodeId);
+        }
+        
+        // Add to destination folder
+        if (!destFolder.nodes) destFolder.nodes = [];
+        destFolder.nodes.splice(destination.index, 0, node);
+      }
     }
+
+    // Update state
+    setFolders(newFolders);
+    setNavigatorNodes(newNodes);
   };
 
   const filteredNodes = navigatorNodes.filter(node => {
@@ -83,34 +149,92 @@ const NodeNavigator = ({
             <NodeTypeSelector selectedType={selectedType} setSelectedType={setSelectedType} />
           </PopoverContent>
         </Popover>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setShowCreateFolder(true)}
+        >
+          <FolderPlus className="h-4 w-4" />
+        </Button>
       </div>
 
-      <div className="flex-grow overflow-y-auto">
-        {filteredNodes.map((node, index) => node && (
-          <div 
-            key={node.id}
-            ref={el => nodeRefs.current[node.id] = el}
-            className="mb-1"
-          >
-            <NodeListItem
-              node={node}
-              isSelected={selectedNodes.includes(node.id)}
-              onSelect={(nodeId) => {
-                const index = filteredNodes.findIndex(n => n.id === nodeId);
-                setCurrentIndex(index);
-                setSelectedNodes([nodeId]);
-                onNodeFocus(nodeId);
-              }}
-              onFocus={onNodeFocus}
-              onUpdateNode={onUpdateNode}
-              onAIConversation={onAIConversation}
-              isFocused={focusedNodeId === node.id || index === currentIndex}
-              onEdit={setEditingNode}
-              onDelete={handleDeleteNode}
-            />
-          </div>
-        ))}
-      </div>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <div className="flex-grow overflow-y-auto">
+          <Droppable droppableId="root" type="node">
+            {(provided) => (
+              <div
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+              >
+                {folders.map((folder, index) => (
+                  <FolderItem
+                    key={folder.id}
+                    folder={folder}
+                    index={index}
+                    isOpen={openFolders[folder.id]}
+                    onToggle={() => handleToggleFolder(folder.id)}
+                  >
+                    <Droppable droppableId={folder.id} type="node">
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                        >
+                          {folder.nodes?.map((node, nodeIndex) => (
+                            <div key={node.id} ref={el => nodeRefs.current[node.id] = el}>
+                              <NodeListItem
+                                node={node}
+                                index={nodeIndex}
+                                isSelected={selectedNodes.includes(node.id)}
+                                onSelect={(nodeId) => {
+                                  setCurrentIndex(nodeIndex);
+                                  setSelectedNodes([nodeId]);
+                                  onNodeFocus(nodeId);
+                                }}
+                                onFocus={onNodeFocus}
+                                onUpdateNode={onUpdateNode}
+                                onAIConversation={onAIConversation}
+                                isFocused={focusedNodeId === node.id}
+                                onEdit={setEditingNode}
+                                onDelete={onDeleteNode}
+                              />
+                            </div>
+                          ))}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                  </FolderItem>
+                ))}
+                {filteredNodes.map((node, index) => node && (
+                  <div 
+                    key={node.id}
+                    ref={el => nodeRefs.current[node.id] = el}
+                  >
+                    <NodeListItem
+                      node={node}
+                      index={index}
+                      isSelected={selectedNodes.includes(node.id)}
+                      onSelect={(nodeId) => {
+                        setCurrentIndex(index);
+                        setSelectedNodes([nodeId]);
+                        onNodeFocus(nodeId);
+                      }}
+                      onFocus={onNodeFocus}
+                      onUpdateNode={onUpdateNode}
+                      onAIConversation={onAIConversation}
+                      isFocused={focusedNodeId === node.id}
+                      onEdit={setEditingNode}
+                      onDelete={onDeleteNode}
+                    />
+                  </div>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </div>
+      </DragDropContext>
 
       {editingNode && (
         <NodeEditDialog
@@ -121,9 +245,15 @@ const NodeNavigator = ({
             onUpdateNode(id, updates);
             setEditingNode(null);
           }}
-          onDelete={handleDeleteNode}
+          onDelete={onDeleteNode}
         />
       )}
+
+      <CreateFolderDialog
+        isOpen={showCreateFolder}
+        onClose={() => setShowCreateFolder(false)}
+        onCreateFolder={handleCreateFolder}
+      />
     </div>
   );
 };
