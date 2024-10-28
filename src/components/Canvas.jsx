@@ -1,12 +1,8 @@
 import React, { forwardRef, useCallback, useEffect, useState } from 'react';
+import NodeRenderer from './NodeRenderer';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 import { toast } from 'sonner';
-import { useKeyboardControls } from './canvas/useKeyboardControls';
-import { useSelectionControls } from './canvas/useSelectionControls';
-import SelectionOverlay from './canvas/SelectionOverlay';
-import NodeRenderer from './NodeRenderer';
-import PanningControls from './canvas/PanningControls';
-import DeleteConfirmationDialog from './canvas/DeleteConfirmationDialog';
 
 const Canvas = forwardRef(({ 
   nodes, 
@@ -14,7 +10,6 @@ const Canvas = forwardRef(({
   zoom, 
   position, 
   activeTool,
-  setActiveTool,
   handlePanStart, 
   handlePanMove, 
   handlePanEnd,
@@ -26,25 +21,22 @@ const Canvas = forwardRef(({
   onDragOver,
   onDrop,
   onAIConversation,
-  onNodePositionUpdate
+  onNodePositionUpdate,
+  setActiveTool
 }, ref) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [nodeToDelete, setNodeToDelete] = useState(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-
-  const { isSpacePressed } = useKeyboardControls(activeTool, setActiveTool);
-  const {
-    selectionStart,
-    selectionEnd,
-    selectedNodes,
-    handleSelectionStart,
-    handleSelectionMove,
-    clearSelection
-  } = useSelectionControls(ref, zoom, nodes, onNodeFocus);
+  const [isSpacePressed, setIsSpacePressed] = useState(false);
+  const [isPanning, setIsPanning] = useState(false);
+  const [previousTool, setPreviousTool] = useState(null);
 
   const handleKeyDown = useCallback((e) => {
-    if (focusedNodeId && (e.key === 'Delete' || e.key === 'Backspace')) {
+    if (e.code === 'Space' && !isSpacePressed) {
+      e.preventDefault();
+      setIsSpacePressed(true);
+      setPreviousTool(activeTool);
+      setActiveTool('pan');
+    } else if (focusedNodeId && (e.key === 'Delete' || e.key === 'Backspace')) {
       const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
       if (nodeToDelete?.type === 'ai') {
         setNodeToDelete(nodeToDelete);
@@ -66,64 +58,56 @@ const Canvas = forwardRef(({
         toast.success("Node pasted from clipboard");
       }
     }
-  }, [focusedNodeId, nodes, onNodeDelete, setNodes]);
+  }, [focusedNodeId, nodes, onNodeDelete, setNodes, isSpacePressed, activeTool, setActiveTool]);
+
+  const handleKeyUp = useCallback((e) => {
+    if (e.code === 'Space') {
+      setIsSpacePressed(false);
+      setActiveTool(previousTool || 'select');
+    }
+  }, [previousTool, setActiveTool]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleKeyDown]);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [handleKeyDown, handleKeyUp]);
 
-  const handleMouseDown = (e) => {
-    if (e.target === ref.current) {
-      const rect = ref.current.getBoundingClientRect();
-      setDragStart({
-        x: e.clientX,
-        y: e.clientY
-      });
-      
-      if (activeTool === 'pan' || isSpacePressed) {
-        setIsDragging(true);
-        handlePanStart();
-      } else if (activeTool === 'select') {
-        handleSelectionStart(e, rect);
-      }
+  const handleMouseDown = useCallback((e) => {
+    if (isSpacePressed || activeTool === 'pan') {
+      setIsPanning(true);
+      handlePanStart();
+      e.preventDefault();
     }
-  };
+  }, [isSpacePressed, activeTool, handlePanStart]);
 
-  const handleMouseMove = (e) => {
-    if (isDragging && (activeTool === 'pan' || isSpacePressed)) {
-      handlePanMove(e);
-    } else if (activeTool === 'select' && selectionStart) {
-      const rect = ref.current.getBoundingClientRect();
-      handleSelectionMove(e, rect);
+  const handleMouseMove = useCallback((e) => {
+    if (isPanning) {
+      handlePanMove({ movementX: e.movementX, movementY: e.movementY });
     }
-  };
+  }, [isPanning, handlePanMove]);
 
-  const handleMouseUp = () => {
-    setIsDragging(false);
-    handlePanEnd();
-    clearSelection();
-  };
-
-  const handleWheelZoom = (e) => {
-    e.preventDefault();
-    handleWheel(e);
-  };
+  const handleMouseUp = useCallback(() => {
+    if (isPanning) {
+      setIsPanning(false);
+      handlePanEnd();
+    }
+  }, [isPanning, handlePanEnd]);
 
   return (
     <>
-      <PanningControls
-        isDragging={isDragging}
-        activeTool={activeTool}
-        isSpacePressed={isSpacePressed}
-        handlePanStart={handlePanStart}
-        handlePanMove={handlePanMove}
-        handlePanEnd={handlePanEnd}
-        handleMouseDown={handleMouseDown}
-        handleMouseMove={handleMouseMove}
-        handleMouseUp={handleMouseUp}
-        handleWheelZoom={handleWheelZoom}
+      <div 
+        className={`w-full h-full bg-[#594BFF] overflow-hidden ${isPanning ? 'cursor-grabbing' : isSpacePressed ? 'cursor-grab' : 'cursor-default'}`}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onWheel={handleWheel}
         ref={ref}
+        tabIndex={0}
       >
         <div 
           className="absolute inset-0" 
@@ -141,28 +125,41 @@ const Canvas = forwardRef(({
             <NodeRenderer
               key={node.id}
               node={node}
-              onDragStart={(e) => handleNodeDragStart(e, node.id)}
-              onDrag={(e) => handleNodeDrag(e, node.id)}
               zoom={zoom}
               onNodeUpdate={onNodeUpdate}
               onFocus={onNodeFocus}
-              isFocused={focusedNodeId === node.id || selectedNodes.includes(node.id)}
+              isFocused={focusedNodeId === node.id}
               onDelete={onNodeDelete}
               onAIConversation={onAIConversation}
-              isDragging={isDragging}
+              onNodePositionUpdate={onNodePositionUpdate}
+              isDraggable={activeTool !== 'pan'}
             />
           ))}
-          <SelectionOverlay selectionStart={selectionStart} selectionEnd={selectionEnd} />
         </div>
-      </PanningControls>
-
-      <DeleteConfirmationDialog
-        showDeleteConfirmation={showDeleteConfirmation}
-        setShowDeleteConfirmation={setShowDeleteConfirmation}
-        nodeToDelete={nodeToDelete}
-        setNodeToDelete={setNodeToDelete}
-        onNodeDelete={onNodeDelete}
-      />
+      </div>
+      <AlertDialog open={showDeleteConfirmation} onOpenChange={setShowDeleteConfirmation}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to delete this AI node?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the AI node and its associated data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowDeleteConfirmation(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => {
+              if (nodeToDelete) {
+                onNodeDelete(nodeToDelete.id);
+                toast.success("AI node deleted");
+              }
+              setShowDeleteConfirmation(false);
+              setNodeToDelete(null);
+            }}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 });

@@ -163,7 +163,6 @@ const MindMapView = ({
           onNodePositionUpdate={handleNodePositionUpdate}
           onNodeClick={handleNodeClick}
           activeTool={activeTool}
-          setActiveTool={setActiveTool}
         />
         <Toolbar
           activeTool={activeTool}

@@ -20,17 +20,12 @@ const NodeRenderer = ({
   const [localTitle, setLocalTitle] = useState(node.title);
   const [localDescription, setLocalDescription] = useState(node.description);
   const [showTooltip, setShowTooltip] = useState(false);
-  const [dragPosition, setDragPosition] = useState({ x: node.x, y: node.y });
 
   useEffect(() => {
     if (!isFocused) {
       setShowTooltip(false);
     }
   }, [isFocused]);
-
-  useEffect(() => {
-    setDragPosition({ x: node.x, y: node.y });
-  }, [node.x, node.y]);
 
   const handleNodeClick = (e) => {
     e.stopPropagation();
@@ -47,29 +42,20 @@ const NodeRenderer = ({
   };
 
   return (
-    <div className="group" onClick={handleNodeClick}>
+    <div className="group">
       <Rnd
         size={{ width: node.width, height: node.height }}
-        position={dragPosition}
-        onDragStart={(e) => {
-          e.stopPropagation();
-          onDragStart?.(e, node.id);
-        }}
-        onDrag={(e, d) => {
-          e.stopPropagation();
-          setDragPosition({ x: d.x, y: d.y });
-          onDrag?.({ x: d.x, y: d.y }, node.id);
-        }}
-        onDragStop={(e, d) => {
-          e.stopPropagation();
-          onDragEnd?.({ x: d.x, y: d.y }, node.id);
-        }}
+        position={{ x: node.x, y: node.y }}
+        onDragStart={onDragStart}
+        onDrag={onDrag}
+        onDragStop={onDragEnd}
         scale={zoom}
         className={`relative ${
           isFocused 
             ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' 
             : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01]'
         } ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+        onClick={handleNodeClick}
         enableResizing={false}
         bounds="parent"
       >
