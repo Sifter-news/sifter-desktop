@@ -34,8 +34,8 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
 
   return (
     <div className="fixed bottom-12 right-12" style={{ zIndex: 10 }}>
-      <div className="bg-white bg-opacity-20 backdrop-blur-sm p-4 rounded-full">
-        <div className="flex flex-col items-center space-y-2">
+      <div className="bg-white rounded-[50px] p-8 shadow-lg">
+        <div className="flex flex-col items-center space-y-4">
           {reports.map((report) => (
             <TooltipProvider key={report.id}>
               <Tooltip>
@@ -64,7 +64,7 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
               <TooltipTrigger asChild>
                 <Button
                   size="icon"
-                  className="rounded-full w-12 h-12 bg-black hover:bg-gray-800 text-white shadow-lg"
+                  className="rounded-full w-12 h-12 bg-black hover:bg-gray-800 text-white shadow-lg mt-4"
                   onClick={() => {
                     setSelectedReport(null);
                     setIsModalOpen(true);
@@ -80,6 +80,7 @@ const ReportList = ({ reports = [], onAddReport, onEditReport }) => {
           </TooltipProvider>
         </div>
       </div>
+
       <ContentModal
         isOpen={isModalOpen}
         onClose={() => {
