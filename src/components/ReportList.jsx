@@ -78,9 +78,9 @@ const ReportList = ({ reports = [], onAddReport, onEditReport, projectId }) => {
                       className="focus:outline-none transform transition-transform hover:scale-110"
                       onClick={() => handleAvatarClick(report)}
                     >
-                      <Avatar className="h-12 w-12 border-2 border-white shadow-lg hover:border-blue-500">
+                      <Avatar className="h-10 w-10 bg-white border-2 border-white shadow-lg hover:border-blue-500">
                         <AvatarImage src={report.avatar || '/default-image.png'} alt={report.title} />
-                        <AvatarFallback>
+                        <AvatarFallback className="bg-white">
                           <FileText className="h-6 w-6 text-gray-400" />
                         </AvatarFallback>
                       </Avatar>
@@ -100,7 +100,7 @@ const ReportList = ({ reports = [], onAddReport, onEditReport, projectId }) => {
             <TooltipTrigger asChild>
               <Button
                 size="icon"
-                className="rounded-full w-12 h-12 bg-black hover:bg-gray-800 text-white shadow-lg mt-4"
+                className="rounded-full w-10 h-10 bg-black hover:bg-gray-800 text-white shadow-lg mt-4"
                 onClick={() => {
                   setSelectedReport(null);
                   setIsModalOpen(true);
