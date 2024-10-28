@@ -1,11 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
-import { Plus } from 'lucide-react';
+import { Plus, Filter } from 'lucide-react';
 import SearchInput from './SearchInput';
 import NodeListItem from './NodeListItem';
 import NodeTypeSelector from './NodeTypeSelector';
 import NodeEditDialog from '../node/NodeEditDialog';
 import { toast } from 'sonner';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const NodeNavigator = ({ 
   nodes = [], 
@@ -60,9 +65,24 @@ const NodeNavigator = ({
 
   return (
     <div className="w-full h-full flex flex-col p-4">
-      <div className="space-y-4 mb-4">
-        <SearchInput value={searchQuery} onChange={setSearchQuery} />
-        <NodeTypeSelector selectedType={selectedType} setSelectedType={setSelectedType} />
+      <div className="flex items-center gap-2 mb-4">
+        <div className="flex-1">
+          <SearchInput value={searchQuery} onChange={setSearchQuery} />
+        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button 
+              variant="outline" 
+              size="icon"
+              className="shrink-0"
+            >
+              <Filter className="h-4 w-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-48">
+            <NodeTypeSelector selectedType={selectedType} setSelectedType={setSelectedType} />
+          </PopoverContent>
+        </Popover>
       </div>
 
       <div className="flex-grow overflow-y-auto">
