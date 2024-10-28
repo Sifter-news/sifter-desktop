@@ -2,7 +2,6 @@ import React, { forwardRef, useCallback, useEffect } from 'react';
 import { useCanvasState } from '@/hooks/useCanvasState';
 import CanvasGrid from './canvas/CanvasGrid';
 import NodeLayer from './canvas/NodeLayer';
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog";
 import { toast } from 'sonner';
 
 const Canvas = forwardRef(({ 

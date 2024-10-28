@@ -13,7 +13,8 @@ const NodeRenderer = ({
   isFocused, 
   onAIConversation, 
   onDelete,
-  isDragging 
+  isDragging,
+  onPositionUpdate 
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [localTitle, setLocalTitle] = useState(node.title);
@@ -40,17 +41,24 @@ const NodeRenderer = ({
     });
   };
 
+  const handleDragStop = (e, d) => {
+    if (onPositionUpdate) {
+      onPositionUpdate(node.id, d.x, d.y);
+    }
+  };
+
   return (
     <Rnd
-      size={{ width: node.width, height: node.height }}
-      position={{ x: node.x, y: node.y }}
-      onDragStart={onDragStart}
-      onDrag={onDrag}
+      size={{ width: node.width || 200, height: node.height || 100 }}
+      position={{ x: node.x || 0, y: node.y || 0 }}
+      onDragStart={(e) => onDragStart?.(e)}
+      onDrag={(e) => onDrag?.(e)}
+      onDragStop={handleDragStop}
       scale={zoom}
-      className={`${
+      className={`absolute ${
         isFocused 
-          ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' 
-          : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01]'
+          ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02] z-50' 
+          : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01] z-40'
       } ${isDragging ? 'cursor-grabbing !transition-none' : 'cursor-grab transition-all duration-200'}`}
       onClick={handleNodeClick}
       enableResizing={false}
@@ -69,13 +77,15 @@ const NodeRenderer = ({
         handleNodeClick={handleNodeClick}
         isFocused={isFocused}
       />
-      <NodeTooltip
-        node={node}
-        showTooltip={showTooltip}
-        onAIConversation={onAIConversation}
-        onDelete={onDelete}
-        onUpdateNode={onNodeUpdate}
-      />
+      {showTooltip && (
+        <NodeTooltip
+          node={node}
+          showTooltip={showTooltip}
+          onAIConversation={onAIConversation}
+          onDelete={onDelete}
+          onUpdateNode={onNodeUpdate}
+        />
+      )}
     </Rnd>
   );
 };

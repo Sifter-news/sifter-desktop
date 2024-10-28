@@ -12,8 +12,8 @@ const NodeLayer = ({
   onNodePositionUpdate 
 }) => {
   return (
-    <div className="absolute inset-0">
-      {nodes.map(node => (
+    <div className="absolute inset-0 w-full h-full">
+      {nodes?.map(node => (
         <NodeRenderer
           key={node.id}
           node={node}
