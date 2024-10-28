@@ -21,17 +21,21 @@ const Canvas = forwardRef(({
   onDragOver,
   onDrop,
   onAIConversation,
-  onNodePositionUpdate
+  onNodePositionUpdate,
+  setActiveTool
 }, ref) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [nodeToDelete, setNodeToDelete] = useState(null);
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
+  const [previousTool, setPreviousTool] = useState(null);
 
   const handleKeyDown = useCallback((e) => {
     if (e.code === 'Space' && !isSpacePressed) {
       e.preventDefault();
       setIsSpacePressed(true);
+      setPreviousTool(activeTool);
+      setActiveTool('pan');
     } else if (focusedNodeId && (e.key === 'Delete' || e.key === 'Backspace')) {
       const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
       if (nodeToDelete?.type === 'ai') {
@@ -54,13 +58,14 @@ const Canvas = forwardRef(({
         toast.success("Node pasted from clipboard");
       }
     }
-  }, [focusedNodeId, nodes, onNodeDelete, setNodes, isSpacePressed]);
+  }, [focusedNodeId, nodes, onNodeDelete, setNodes, isSpacePressed, activeTool, setActiveTool]);
 
   const handleKeyUp = useCallback((e) => {
     if (e.code === 'Space') {
       setIsSpacePressed(false);
+      setActiveTool(previousTool || 'select');
     }
-  }, []);
+  }, [previousTool, setActiveTool]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -72,12 +77,12 @@ const Canvas = forwardRef(({
   }, [handleKeyDown, handleKeyUp]);
 
   const handleMouseDown = useCallback((e) => {
-    if (isSpacePressed) {
+    if (isSpacePressed || activeTool === 'pan') {
       setIsPanning(true);
       handlePanStart();
       e.preventDefault();
     }
-  }, [isSpacePressed, handlePanStart]);
+  }, [isSpacePressed, activeTool, handlePanStart]);
 
   const handleMouseMove = useCallback((e) => {
     if (isPanning) {
@@ -127,6 +132,7 @@ const Canvas = forwardRef(({
               onDelete={onNodeDelete}
               onAIConversation={onAIConversation}
               onNodePositionUpdate={onNodePositionUpdate}
+              isDraggable={activeTool !== 'pan'}
             />
           ))}
         </div>
