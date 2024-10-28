@@ -5,7 +5,7 @@ TRUNCATE TABLE public.investigations CASCADE;
 TRUNCATE TABLE public.reports CASCADE;
 TRUNCATE TABLE public.node CASCADE;
 
--- Create users in auth.users with proper authentication
+-- Create admin user
 INSERT INTO auth.users (
     instance_id,
     id,
@@ -19,15 +19,8 @@ INSERT INTO auth.users (
     raw_user_meta_data,
     is_super_admin,
     created_at,
-    updated_at,
-    phone,
-    phone_confirmed_at,
-    confirmation_token,
-    email_change,
-    email_change_token_new,
-    recovery_token
-) VALUES
-(
+    updated_at
+) VALUES (
     '00000000-0000-0000-0000-000000000000',
     'd0d8c19c-3b3e-4f5a-a7b0-d9cee666d454',
     'authenticated',
@@ -40,228 +33,109 @@ INSERT INTO auth.users (
     '{"name": "Admin User"}',
     false,
     NOW(),
-    NOW(),
-    NULL,
-    NULL,
-    '',
-    '',
-    '',
-    ''
-),
-(
-    '00000000-0000-0000-0000-000000000000',
-    'e1f2g3h4-5i6j-7k8l-9m0n-opqrstuvwxyz',
-    'authenticated',
-    'authenticated',
-    'sarah@ddteam.com',
-    crypt('sarah123', gen_salt('bf')),
-    NOW(),
-    NOW(),
-    '{"provider": "email", "providers": ["email"]}',
-    '{"name": "Sarah"}',
-    false,
-    NOW(),
-    NOW(),
-    NULL,
-    NULL,
-    '',
-    '',
-    '',
-    ''
-),
-(
-    '00000000-0000-0000-0000-000000000000',
-    uuid_generate_v4(),
-    'authenticated',
-    'authenticated',
-    'financial@example.com',
-    crypt('password123', gen_salt('bf')),
-    NOW(),
-    NOW(),
-    '{"provider": "email", "providers": ["email"]}',
-    '{"name": "Financial Investigator"}',
-    false,
-    NOW(),
-    NOW(),
-    NULL,
-    NULL,
-    '',
-    '',
-    '',
-    ''
-),
-(
-    '00000000-0000-0000-0000-000000000000',
-    uuid_generate_v4(),
-    'authenticated',
-    'authenticated',
-    'criminal@example.com',
-    crypt('password123', gen_salt('bf')),
-    NOW(),
-    NOW(),
-    '{"provider": "email", "providers": ["email"]}',
-    '{"name": "Criminal Investigator"}',
-    false,
-    NOW(),
-    NOW(),
-    NULL,
-    NULL,
-    '',
-    '',
-    '',
-    ''
-),
-(
-    '00000000-0000-0000-0000-000000000000',
-    uuid_generate_v4(),
-    'authenticated',
-    'authenticated',
-    'private@example.com',
-    crypt('password123', gen_salt('bf')),
-    NOW(),
-    NOW(),
-    '{"provider": "email", "providers": ["email"]}',
-    '{"name": "Private Investigator"}',
-    false,
-    NOW(),
-    NOW(),
-    NULL,
-    NULL,
-    '',
-    '',
-    '',
-    ''
-),
-(
-    '00000000-0000-0000-0000-000000000000',
-    uuid_generate_v4(),
-    'authenticated',
-    'authenticated',
-    'academic-ai@example.com',
-    crypt('password123', gen_salt('bf')),
-    NOW(),
-    NOW(),
-    '{"provider": "email", "providers": ["email"]}',
-    '{"name": "AI Research Investigator"}',
-    false,
-    NOW(),
-    NOW(),
-    NULL,
-    NULL,
-    '',
-    '',
-    '',
-    ''
-),
-(
-    '00000000-0000-0000-0000-000000000000',
-    uuid_generate_v4(),
-    'authenticated',
-    'authenticated',
-    'academic-history@example.com',
-    crypt('password123', gen_salt('bf')),
-    NOW(),
-    NOW(),
-    '{"provider": "email", "providers": ["email"]}',
-    '{"name": "Historical Research"}',
-    false,
-    NOW(),
-    NOW(),
-    NULL,
-    NULL,
-    '',
-    '',
-    '',
-    ''
-),
-(
-    '00000000-0000-0000-0000-000000000000',
-    uuid_generate_v4(),
-    'authenticated',
-    'authenticated',
-    'sales@example.com',
-    crypt('password123', gen_salt('bf')),
-    NOW(),
-    NOW(),
-    '{"provider": "email", "providers": ["email"]}',
-    '{"name": "Sales Due Diligence"}',
-    false,
-    NOW(),
-    NOW(),
-    NULL,
-    NULL,
-    '',
-    '',
-    '',
-    ''
-),
-(
-    '00000000-0000-0000-0000-000000000000',
-    uuid_generate_v4(),
-    'authenticated',
-    'authenticated',
-    'marketing@example.com',
-    crypt('password123', gen_salt('bf')),
-    NOW(),
-    NOW(),
-    '{"provider": "email", "providers": ["email"]}',
-    '{"name": "Marketing Research"}',
-    false,
-    NOW(),
-    NOW(),
-    NULL,
-    NULL,
-    '',
-    '',
-    '',
-    ''
+    NOW()
 );
 
--- Create corresponding profiles
-INSERT INTO public.profiles (id, username, email)
-SELECT id, 
-       CASE 
-           WHEN email = 'admin@sifter.news' THEN 'admin'
-           WHEN email = 'sarah@ddteam.com' THEN 'sarah'
-           ELSE split_part(email, '@', 1)
-       END,
-       email
-FROM auth.users;
+-- Create test users with proper UUIDs
+DO $$
+DECLARE
+    test_users TEXT[] := ARRAY[
+        'sarah@ddteam.com',
+        'financial@example.com',
+        'criminal@example.com',
+        'private@example.com',
+        'academic-ai@example.com',
+        'academic-history@example.com',
+        'sales@example.com',
+        'marketing@example.com'
+    ];
+    user_email TEXT;
+    user_id UUID;
+BEGIN
+    FOREACH user_email IN ARRAY test_users
+    LOOP
+        user_id := uuid_generate_v4();
+        
+        INSERT INTO auth.users (
+            instance_id,
+            id,
+            aud,
+            role,
+            email,
+            encrypted_password,
+            email_confirmed_at,
+            last_sign_in_at,
+            raw_app_meta_data,
+            raw_user_meta_data,
+            is_super_admin,
+            created_at,
+            updated_at
+        ) VALUES (
+            '00000000-0000-0000-0000-000000000000',
+            user_id,
+            'authenticated',
+            'authenticated',
+            user_email,
+            crypt('password123', gen_salt('bf')),
+            NOW(),
+            NOW(),
+            '{"provider": "email", "providers": ["email"]}',
+            format('{"name": "%s"}', split_part(user_email, '@', 1)),
+            false,
+            NOW(),
+            NOW()
+        );
 
--- Create sample investigations with relevant titles for each user type
-INSERT INTO public.investigations (id, title, description, owner_id, visibility, investigation_type)
-SELECT 
-    uuid_generate_v4(),
-    CASE 
-        WHEN u.email = 'financial@example.com' THEN 'Financial Fraud Investigation'
-        WHEN u.email = 'criminal@example.com' THEN 'Criminal Network Analysis'
-        WHEN u.email = 'private@example.com' THEN 'Corporate Background Check'
-        WHEN u.email = 'academic-ai@example.com' THEN 'AI Ethics Research'
-        WHEN u.email = 'academic-history@example.com' THEN 'Historical Document Analysis'
-        WHEN u.email = 'sales@example.com' THEN 'Sales Pipeline Due Diligence'
-        WHEN u.email = 'marketing@example.com' THEN 'Market Competition Analysis'
-        WHEN u.email = 'sarah@ddteam.com' THEN 'TechCorp Acquisition DD'
-        ELSE 'General Investigation'
-    END,
-    CASE 
-        WHEN u.email = 'financial@example.com' THEN 'Investigation into suspected financial fraud patterns'
-        WHEN u.email = 'criminal@example.com' THEN 'Analysis of potential criminal network connections'
-        WHEN u.email = 'private@example.com' THEN 'Corporate entity background verification'
-        WHEN u.email = 'academic-ai@example.com' THEN 'Research into AI system ethical implications'
-        WHEN u.email = 'academic-history@example.com' THEN 'Analysis of historical documents and connections'
-        WHEN u.email = 'sales@example.com' THEN 'Due diligence on sales pipeline and prospects'
-        WHEN u.email = 'marketing@example.com' THEN 'Analysis of market competition and positioning'
-        WHEN u.email = 'sarah@ddteam.com' THEN 'Due diligence investigation for TechCorp acquisition'
-        ELSE 'General investigation description'
-    END,
-    u.id,
-    'private',
-    CASE 
-        WHEN u.email LIKE 'academic%' THEN 'research'
-        WHEN u.email IN ('financial@example.com', 'sales@example.com') THEN 'pre-deal'
-        WHEN u.email = 'criminal@example.com' THEN 'fraud'
-        WHEN u.email = 'private@example.com' THEN 'background'
-        WHEN u.email = 'marketing@example.com' THEN 'generic'
-        ELSE 'generic'
-    END
-FROM auth.users u;
+        -- Create corresponding profile
+        INSERT INTO public.profiles (id, username, email)
+        VALUES (
+            user_id,
+            split_part(user_email, '@', 1),
+            user_email
+        );
+
+        -- Create sample investigation for each user
+        INSERT INTO public.investigations (
+            id,
+            title,
+            description,
+            owner_id,
+            visibility,
+            investigation_type
+        ) VALUES (
+            uuid_generate_v4(),
+            CASE 
+                WHEN user_email = 'financial@example.com' THEN 'Financial Fraud Investigation'
+                WHEN user_email = 'criminal@example.com' THEN 'Criminal Network Analysis'
+                WHEN user_email = 'private@example.com' THEN 'Corporate Background Check'
+                WHEN user_email = 'academic-ai@example.com' THEN 'AI Ethics Research'
+                WHEN user_email = 'academic-history@example.com' THEN 'Historical Document Analysis'
+                WHEN user_email = 'sales@example.com' THEN 'Sales Pipeline Due Diligence'
+                WHEN user_email = 'marketing@example.com' THEN 'Market Competition Analysis'
+                WHEN user_email = 'sarah@ddteam.com' THEN 'TechCorp Acquisition DD'
+                ELSE 'General Investigation'
+            END,
+            CASE 
+                WHEN user_email = 'financial@example.com' THEN 'Investigation into suspected financial fraud patterns'
+                WHEN user_email = 'criminal@example.com' THEN 'Analysis of potential criminal network connections'
+                WHEN user_email = 'private@example.com' THEN 'Corporate entity background verification'
+                WHEN user_email = 'academic-ai@example.com' THEN 'Research into AI system ethical implications'
+                WHEN user_email = 'academic-history@example.com' THEN 'Analysis of historical documents and connections'
+                WHEN user_email = 'sales@example.com' THEN 'Due diligence on sales pipeline and prospects'
+                WHEN user_email = 'marketing@example.com' THEN 'Analysis of market competition and positioning'
+                WHEN user_email = 'sarah@ddteam.com' THEN 'Due diligence investigation for TechCorp acquisition'
+                ELSE 'General investigation description'
+            END,
+            user_id,
+            'private',
+            CASE 
+                WHEN user_email LIKE 'academic%' THEN 'research'
+                WHEN user_email IN ('financial@example.com', 'sales@example.com') THEN 'pre-deal'
+                WHEN user_email = 'criminal@example.com' THEN 'fraud'
+                WHEN user_email = 'private@example.com' THEN 'background'
+                WHEN user_email = 'marketing@example.com' THEN 'generic'
+                ELSE 'generic'
+            END
+        );
+    END LOOP;
+END $$;
