@@ -3,7 +3,6 @@ import NodeRenderer from './NodeRenderer';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 import { toast } from 'sonner';
-import { useKeyboardControls } from './canvas/useKeyboardControls';
 
 const Canvas = forwardRef(({ 
   nodes, 
@@ -11,7 +10,6 @@ const Canvas = forwardRef(({
   zoom, 
   position, 
   activeTool,
-  setActiveTool,
   handlePanStart, 
   handlePanMove, 
   handlePanEnd,
@@ -32,8 +30,6 @@ const Canvas = forwardRef(({
   const [selectionStart, setSelectionStart] = useState(null);
   const [selectionEnd, setSelectionEnd] = useState(null);
   const [selectedNodes, setSelectedNodes] = useState([]);
-
-  const { isSpacePressed } = useKeyboardControls(activeTool, setActiveTool);
 
   const handleKeyDown = useCallback((e) => {
     if (focusedNodeId && (e.key === 'Delete' || e.key === 'Backspace')) {
@@ -66,17 +62,12 @@ const Canvas = forwardRef(({
   }, [handleKeyDown]);
 
   const handleMouseDown = (e) => {
-    if (e.target === ref.current && (activeTool === 'select' || isSpacePressed)) {
+    if (e.target === ref.current && activeTool === 'select') {
       const rect = ref.current.getBoundingClientRect();
       const x = (e.clientX - rect.left) / zoom;
       const y = (e.clientY - rect.top) / zoom;
-      
-      if (activeTool === 'pan' || isSpacePressed) {
-        handlePanStart();
-      } else {
-        setSelectionStart({ x, y });
-        setSelectionEnd({ x, y });
-      }
+      setSelectionStart({ x, y });
+      setSelectionEnd({ x, y });
     }
   };
 
@@ -148,9 +139,7 @@ const Canvas = forwardRef(({
   return (
     <>
       <div 
-        className={`w-full h-full bg-[#594BFF] overflow-hidden ${
-          isSpacePressed ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'
-        }`}
+        className="w-full h-full bg-[#594BFF] overflow-hidden cursor-default"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
