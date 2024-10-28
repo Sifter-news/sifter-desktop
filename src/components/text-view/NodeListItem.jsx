@@ -1,7 +1,7 @@
 import React from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { getNodeTypeIcon } from './NodeTypeIcon';
-import { GripVertical, Pencil, Trash2, MoreVertical, MessageCircle, Layout, FileText } from 'lucide-react';
+import { GripVertical, Pencil, Trash2, MoreVertical, MessageCircle } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Draggable } from 'react-beautiful-dnd';
+import { toast } from 'sonner';
 
 const NodeListItem = ({ 
   node, 
@@ -24,6 +25,15 @@ const NodeListItem = ({
   onDelete 
 }) => {
   if (!node) return null;
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    if (typeof onDelete === 'function') {
+      onDelete(node.id);
+    } else {
+      toast.error("Delete functionality is not available");
+    }
+  };
 
   return (
     <Draggable draggableId={node.id} index={index}>
@@ -73,13 +83,20 @@ const NodeListItem = ({
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={(e) => {
                   e.stopPropagation();
-                  onEdit(node);
+                  if (typeof onEdit === 'function') {
+                    onEdit(node);
+                  }
                 }}>
                   <Pencil className="h-4 w-4 mr-2" />
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem 
-                  onClick={() => onAIConversation(node)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (typeof onAIConversation === 'function') {
+                      onAIConversation(node);
+                    }
+                  }}
                   className="bg-purple-600 hover:bg-purple-700 text-white focus:bg-purple-700 focus:text-white"
                 >
                   <MessageCircle className="h-4 w-4 mr-2" />
@@ -87,10 +104,7 @@ const NodeListItem = ({
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-red-600"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(node.id);
-                  }}
+                  onClick={handleDelete}
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete
