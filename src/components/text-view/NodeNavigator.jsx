@@ -13,7 +13,8 @@ const NodeNavigator = ({
   selectedNode, 
   onAddNode,
   onAIConversation,
-  focusedNodeId 
+  focusedNodeId,
+  onDeleteNode 
 }) => {
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -73,6 +74,7 @@ const NodeNavigator = ({
               onAIConversation={onAIConversation}
               isFocused={focusedNodeId === node.id || index === currentIndex}
               onEdit={setEditingNode}
+              onDelete={onDeleteNode}
             />
           </div>
         ))}
@@ -87,6 +89,7 @@ const NodeNavigator = ({
             onUpdateNode(id, updates);
             setEditingNode(null);
           }}
+          onDelete={onDeleteNode}
         />
       )}
     </div>
