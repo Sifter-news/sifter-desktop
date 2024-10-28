@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { supabase } from '@/integrations/supabase/supabase';
 import NodeMetadataFields from './NodeMetadataFields';
 import NodeTypeSelect from './NodeTypeSelect';
 import NodeStyleSelect from './NodeStyleSelect';
@@ -21,6 +22,7 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
     avatar: ''
   });
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (node) {
@@ -46,12 +48,26 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
   };
 
   const handleDelete = async () => {
+    if (!node?.id) return;
+    
+    setIsDeleting(true);
     try {
-      await onDelete(node.id);
+      const { error } = await supabase
+        .from('node')
+        .delete()
+        .eq('id', node.id);
+
+      if (error) throw error;
+
       toast.success("Node deleted successfully");
+      onDelete(node.id);
       onClose();
     } catch (error) {
+      console.error('Error deleting node:', error);
       toast.error("Failed to delete node");
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteDialog(false);
     }
   };
 
@@ -65,11 +81,6 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
             <DialogTitle>Edit Node</DialogTitle>
           </DialogHeader>
           
-          <NodeAvatar 
-            avatar={formData.avatar}
-            onAvatarChange={(avatar) => setFormData(prev => ({ ...prev, avatar }))}
-          />
-
           <div className="grid gap-4 py-4">
             <div className="grid w-full items-center gap-1.5">
               <Label htmlFor="title">Title</Label>
@@ -115,8 +126,9 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
             <Button 
               variant="destructive" 
               onClick={() => setShowDeleteDialog(true)}
+              disabled={isDeleting}
             >
-              Delete
+              {isDeleting ? "Deleting..." : "Delete"}
             </Button>
             <div className="space-x-2">
               <Button variant="outline" onClick={onClose}>Cancel</Button>
@@ -137,7 +149,9 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+            <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
