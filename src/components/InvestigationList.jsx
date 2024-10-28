@@ -1,5 +1,6 @@
 import React from 'react';
 import InvestigationCard from './InvestigationCard';
+import ReportCard from './ReportCard';
 import { MoreVertical, Pencil, Trash } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
