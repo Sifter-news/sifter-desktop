@@ -6,6 +6,7 @@ import NodeListItem from './NodeListItem';
 import NodeTypeSelector from './NodeTypeSelector';
 import NodeEditDialog from '../node/NodeEditDialog';
 import { toast } from 'sonner';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const NodeNavigator = ({ 
   nodes = [], 
@@ -60,37 +61,46 @@ const NodeNavigator = ({
 
   return (
     <div className="w-full h-full flex flex-col p-4">
-      <div className="space-y-4 mb-4">
-        <SearchInput value={searchQuery} onChange={setSearchQuery} />
-        <NodeTypeSelector selectedType={selectedType} setSelectedType={setSelectedType} />
-      </div>
-
-      <div className="flex-grow overflow-y-auto">
-        {filteredNodes.map((node, index) => node && (
-          <div 
-            key={node.id}
-            ref={el => nodeRefs.current[node.id] = el}
-            className="mb-1"
-          >
-            <NodeListItem
-              node={node}
-              isSelected={selectedNodes.includes(node.id)}
-              onSelect={(nodeId) => {
-                const index = filteredNodes.findIndex(n => n.id === nodeId);
-                setCurrentIndex(index);
-                setSelectedNodes([nodeId]);
-                onNodeFocus(nodeId);
-              }}
-              onFocus={onNodeFocus}
-              onUpdateNode={onUpdateNode}
-              onAIConversation={onAIConversation}
-              isFocused={focusedNodeId === node.id || index === currentIndex}
-              onEdit={setEditingNode}
-              onDelete={handleDeleteNode}
-            />
+      <Tabs defaultValue="nodes" className="w-full">
+        <TabsList className="w-full mb-4">
+          <TabsTrigger value="nodes" className="flex-1">Nodes</TabsTrigger>
+          <TabsTrigger value="search" className="flex-1">Search</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="nodes" className="space-y-4">
+          <div className="flex-grow overflow-y-auto">
+            {filteredNodes.map((node, index) => node && (
+              <div 
+                key={node.id}
+                ref={el => nodeRefs.current[node.id] = el}
+                className="mb-1"
+              >
+                <NodeListItem
+                  node={node}
+                  isSelected={selectedNodes.includes(node.id)}
+                  onSelect={(nodeId) => {
+                    const index = filteredNodes.findIndex(n => n.id === nodeId);
+                    setCurrentIndex(index);
+                    setSelectedNodes([nodeId]);
+                    onNodeFocus(nodeId);
+                  }}
+                  onFocus={onNodeFocus}
+                  onUpdateNode={onUpdateNode}
+                  onAIConversation={onAIConversation}
+                  isFocused={focusedNodeId === node.id || index === currentIndex}
+                  onEdit={setEditingNode}
+                  onDelete={handleDeleteNode}
+                />
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </TabsContent>
+
+        <TabsContent value="search" className="space-y-4">
+          <SearchInput value={searchQuery} onChange={setSearchQuery} />
+          <NodeTypeSelector selectedType={selectedType} setSelectedType={setSelectedType} />
+        </TabsContent>
+      </Tabs>
 
       {editingNode && (
         <NodeEditDialog
