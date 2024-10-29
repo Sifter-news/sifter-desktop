@@ -49,10 +49,9 @@ const ThreeDCanvas = () => {
   });
   const controlsRef = useRef();
 
-  // Calculate camera position based on view mode
   const cameraPosition = viewMode === '3d' 
-    ? [70.71, 70.71, 70.71] // Isometric position
-    : [0, 0, 200]; // 2D front view position
+    ? [70.71, 70.71, 70.71] 
+    : [0, 0, 200];
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -70,8 +69,8 @@ const ThreeDCanvas = () => {
             description: node.description || '',
             position: [
               node.position_x || 0,
-              0,
-              node.position_y || 0
+              0,  // Always set y to 0
+              0   // Always set z to 0 for 2D view
             ],
             type: node.type || 'generic',
             visualStyle: node.visual_style || 'default'
@@ -93,14 +92,14 @@ const ThreeDCanvas = () => {
         .from('node')
         .update({
           position_x: newPosition[0],
-          position_y: newPosition[2]
+          position_y: 0  // Always set y to 0
         })
         .eq('id', nodeId);
 
       if (error) throw error;
 
       setNodes(prev => prev.map(node =>
-        node.id === nodeId ? { ...node, position: newPosition } : node
+        node.id === nodeId ? { ...node, position: [newPosition[0], 0, 0] } : node
       ));
     } catch (error) {
       console.error('Error updating node position:', error);
