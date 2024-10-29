@@ -1,8 +1,15 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, Hand, Orbit, MousePointer, CirclePlus, Download, Circle, Square, StickyNote } from 'lucide-react';
+import { Minus, Plus, Hand, Orbit, MousePointer, CirclePlus, Download, Circle, Square, StickyNote, ChevronDown } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import ToolbarButton from './ToolbarButton';
 import ExportDialog from './ExportDialog';
 import { findNonCollidingPosition } from '@/utils/collisionUtils';
@@ -40,66 +47,69 @@ const Toolbar = ({
   };
 
   return (
-    <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-sm rounded-full shadow-lg p-1">
+    <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-sm rounded-full shadow-lg p-3">
       <div className="bg-white/90 rounded-full p-1 flex items-center space-x-1 h-10">
-        {/* Perspective Toggle Group */}
-        <div className="flex items-center space-x-1 pl-2 h-8 bg-gray-200/80 rounded-full">
-          <Button 
-            variant="ghost"
-            size="sm"
-            className={`h-8 w-8 rounded-full text-sm font-medium transition-colors ${viewMode === '2d' ? 'bg-white text-black' : 'hover:bg-gray-200'}`}
-            onClick={() => onViewModeChange(viewMode === '2d' ? '3d' : '2d')}
-          >
-            {viewMode.toUpperCase()}
-          </Button>
-        </div>
+        {/* Perspective Toggle */}
+        <Button 
+          variant="ghost"
+          size="sm"
+          className={`h-8 rounded-full text-sm font-medium transition-colors ${viewMode === '2d' ? 'bg-gray-200 text-black' : 'hover:bg-gray-200'}`}
+          onClick={() => onViewModeChange(viewMode === '2d' ? '3d' : '2d')}
+        >
+          {viewMode.toUpperCase()}
+        </Button>
 
         <Separator orientation="vertical" className="h-6" />
 
-        {/* Navigation Tools Group */}
-        <div className="flex items-center space-x-1 pl-2 h-8 bg-gray-300/80 rounded-full">
-          <ToolbarButton 
-            icon={<MousePointer className="h-3 w-3" />} 
-            label="Select & Move Nodes"
-            shortcut="V"
-            onClick={() => setActiveTool('select')}
-            isActive={activeTool === 'select'}
-            activeClassName="bg-black text-white"
-          />
-          <ToolbarButton 
-            icon={viewMode === '3d' ? <Orbit className="h-3 w-3" /> : <Hand className="h-3 w-3" />}
-            label={viewMode === '3d' ? "Pan & Orbit" : "Pan"}
-            shortcut="Space"
-            onClick={() => setActiveTool('pan')}
-            isActive={activeTool === 'pan'}
-            activeClassName="bg-black text-white"
-          />
-        </div>
+        {/* Navigation Tools Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 rounded-full">
+              {activeTool === 'select' ? <MousePointer className="h-3 w-3 mr-1" /> : <Hand className="h-3 w-3 mr-1" />}
+              {activeTool === 'select' ? 'Select' : 'Pan'}
+              <ChevronDown className="h-3 w-3 ml-1" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-black text-white" align="top">
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => setActiveTool('select')}>
+                <MousePointer className="h-3 w-3 mr-2" />
+                Select & Move (V)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setActiveTool('pan')}>
+                {viewMode === '3d' ? <Orbit className="h-3 w-3 mr-2" /> : <Hand className="h-3 w-3 mr-2" />}
+                {viewMode === '3d' ? "Pan & Orbit" : "Pan"} (Space)
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-        {/* Node Creation Tools */}
-        <div className="flex items-center space-x-1 pl-2 h-8 bg-gray-200/80 rounded-full">
-          <ToolbarButton 
-            icon={<Circle className="h-3 w-3" />}
-            label="Add Compact Node"
-            shortcut="1"
-            onClick={() => handleAddNodeWithStyle('compact')}
-            activeClassName="bg-black text-white"
-          />
-          <ToolbarButton 
-            icon={<Square className="h-3 w-3" />}
-            label="Add Default Node"
-            shortcut="2"
-            onClick={() => handleAddNodeWithStyle('default')}
-            activeClassName="bg-black text-white"
-          />
-          <ToolbarButton 
-            icon={<StickyNote className="h-3 w-3" />}
-            label="Add Post-it Node"
-            shortcut="3"
-            onClick={() => handleAddNodeWithStyle('postit')}
-            activeClassName="bg-black text-white"
-          />
-        </div>
+        {/* Node Creation Tools Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 rounded-full">
+              <Circle className="h-3 w-3 mr-1" />
+              Add Node
+              <ChevronDown className="h-3 w-3 ml-1" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-black text-white" align="top">
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('compact')}>
+                <Circle className="h-3 w-3 mr-2" />
+                Compact Node (1)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('default')}>
+                <Square className="h-3 w-3 mr-2" />
+                Default Node (2)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('postit')}>
+                <StickyNote className="h-3 w-3 mr-2" />
+                Post-it Node (3)
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <Separator orientation="vertical" className="h-6" />
 
