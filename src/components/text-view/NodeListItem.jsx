@@ -77,10 +77,10 @@ const NodeListItem = ({
           } ${isFocused ? 'ring-2 ring-blue-600' : ''}`}
           onClick={() => onSelect(node.id)}
         >
-          <div className="flex items-center gap-2 flex-grow pl-0 group-hover:pl-2 transition-all">
+          <div className="flex items-center gap-2 flex-grow transition-all">
             <div
               {...provided.dragHandleProps}
-              className="opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
+              className="w-0 group-hover:w-4 opacity-0 group-hover:opacity-100 transition-all duration-200 overflow-hidden cursor-grab active:cursor-grabbing"
             >
               <GripVertical className="h-4 w-4 text-gray-400" />
             </div>
@@ -111,7 +111,7 @@ const NodeListItem = ({
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent>
                 <DropdownMenuItem onClick={handleEdit}>
                   <Pencil className="h-4 w-4 mr-2" />
                   Edit
