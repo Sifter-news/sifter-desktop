@@ -51,16 +51,25 @@ const DebugStateSection = ({ debugData }) => {
         </div>
         {debugData?.nodes?.list && debugData.nodes.list.length > 0 && (
           <div className="space-y-1">
-            <p className="text-xs font-medium text-white/80">Nodes</p>
-            <div className="pl-2 space-y-1">
+            <p className="text-xs font-medium text-white/80">Nodes ({debugData.nodes.list.length})</p>
+            <div className="pl-2 space-y-2">
               {debugData.nodes.list.map((node, index) => (
-                <div key={node.id} className="text-xs">
-                  Node {index + 1}: {node.type} 
-                  <div className="pl-2 font-mono">
-                    pos: (
-                    <span className="text-red-400">{node.position?.x || '0'}</span>, 
-                    <span className="text-green-400">{node.position?.y || '0'}</span>, 
-                    <span className="text-blue-400">{node.position?.z || '0'}</span>)
+                <div key={node.id} className="text-xs space-y-1 border-l border-white/10 pl-2">
+                  <p className="font-medium">Node {index + 1}: {node.type}</p>
+                  <div className="pl-2 space-y-0.5">
+                    <p className="font-mono">ID: {node.id}</p>
+                    <p>Title: {node.title || 'Untitled'}</p>
+                    <p>Description: {node.description || 'No description'}</p>
+                    <p>Type: {node.nodeType || node.type || 'generic'}</p>
+                    <p>Style: {node.visualStyle || 'default'}</p>
+                    <div className="font-mono">
+                      Position: (
+                      <span className="text-red-400">{node.position?.x || '0'}</span>, 
+                      <span className="text-green-400">{node.position?.y || '0'}</span>, 
+                      <span className="text-blue-400">{node.position?.z || '0'}</span>)
+                    </div>
+                    <p>Width: {node.width || '200'}</p>
+                    <p>Height: {node.height || '100'}</p>
                   </div>
                 </div>
               ))}
