@@ -5,6 +5,7 @@ import Grid from '../Grid';
 import ThreeDNode from '../ThreeDNode';
 import ConnectionLine from '../ConnectionLine';
 import DebugAxes from './DebugAxes';
+import { useDebug } from '@/contexts/DebugContext';
 
 const ThreeScene = ({ 
   nodes = [], 
@@ -19,6 +20,7 @@ const ThreeScene = ({
   setActiveConnection = () => {}
 }) => {
   const { camera } = useThree();
+  const { showGuides } = useDebug();
 
   const handlePointerMove = (event) => {
     if (activeConnection) {
@@ -36,7 +38,7 @@ const ThreeScene = ({
       <ambientLight intensity={0.5} />
       <pointLight position={[10, 10, 10]} />
       <Grid size={100} divisions={24} />
-      <DebugAxes />
+      {showGuides && <DebugAxes />}
       
       {nodes?.map(node => (
         <ThreeDNode 
