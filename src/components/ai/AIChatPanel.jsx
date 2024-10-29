@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bot, User, X, Upload, Paperclip } from 'lucide-react';
+import { MessageCircle, User, X, Upload, Paperclip } from 'lucide-react';
 import { toast } from "sonner";
 
 const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
@@ -76,7 +76,7 @@ const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
     <div className="fixed top-[72px] right-[8px] bottom-8 w-[360px] bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col">
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-2">
-          <Bot className="h-5 w-5 text-blue-500" />
+          <MessageCircle className="h-5 w-5 text-purple-500" />
           <h2 className="font-semibold">Sift Assist</h2>
         </div>
         <Button variant="ghost" size="icon" onClick={onClose}>
@@ -94,12 +94,12 @@ const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
               }`}
             >
               {message.role === 'assistant' && (
-                <Bot className="h-6 w-6 text-blue-500" />
+                <MessageCircle className="h-6 w-6 text-purple-500" />
               )}
               <div
                 className={`rounded-lg p-3 max-w-[80%] ${
                   message.role === 'user'
-                    ? 'bg-blue-500 text-white'
+                    ? 'bg-purple-500 text-white'
                     : message.role === 'system'
                     ? 'bg-gray-100 text-gray-700'
                     : 'bg-gray-100'
@@ -108,7 +108,7 @@ const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
                 {message.content}
               </div>
               {message.role === 'user' && (
-                <User className="h-6 w-6 text-blue-500" />
+                <User className="h-6 w-6 text-purple-500" />
               )}
             </div>
           ))}
@@ -139,7 +139,7 @@ const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
             placeholder="Type your message..."
             className="flex-1"
           />
-          <Button type="submit">Send</Button>
+          <Button type="submit" className="bg-purple-500 hover:bg-purple-600 text-white">Send</Button>
         </div>
         {selectedFile && (
           <div className="mt-2 text-sm text-gray-500 flex items-center gap-2">
