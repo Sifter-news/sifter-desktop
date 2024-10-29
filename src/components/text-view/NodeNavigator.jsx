@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Plus, Filter, FolderPlus, FolderOpen, File } from 'lucide-react';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { FolderPlus, FolderOpen } from 'lucide-react';
+import { DragDropContext } from 'react-beautiful-dnd';
 import SearchInput from './SearchInput';
-import NodeListItem from './NodeListItem';
 import NodeEditDialog from '../node/NodeEditDialog';
 import CreateFolderDialog from './CreateFolderDialog';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
 import { useFolderManagement } from './hooks/useFolderManagement';
-import { ScrollArea } from "@/components/ui/scroll-area";
+import FileTreeView from './FileTreeView';
+import NodeList from './NodeList';
 import {
   Tabs,
   TabsContent,
@@ -27,7 +27,6 @@ const NodeNavigator = ({
   onDeleteNode,
   onNodeHover
 }) => {
-  const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [navigatorNodes, setNavigatorNodes] = useState([]);
   const [selectedNodes, setSelectedNodes] = useState([]);
@@ -38,6 +37,7 @@ const NodeNavigator = ({
   const [activeView, setActiveView] = useState('nodes');
   const [selectedFiles, setSelectedFiles] = useState(null);
   const fileInputRef = useRef(null);
+
   const { handleDragEnd } = useDragAndDrop(navigatorNodes, setNavigatorNodes);
   const {
     openFolders,
@@ -51,10 +51,6 @@ const NodeNavigator = ({
   useEffect(() => {
     setNavigatorNodes(nodes);
   }, [nodes]);
-
-  const handleNodeHover = (nodeId) => {
-    onNodeHover?.(nodeId);
-  };
 
   const handleCreateNewFolder = (folderName) => {
     const newFolder = handleCreateFolder(folderName);
@@ -76,36 +72,11 @@ const NodeNavigator = ({
     }
   };
 
-  const renderFileTree = (files) => {
-    if (!files) return null;
-
-    return (
-      <ScrollArea className="h-[calc(100vh-250px)]">
-        <div className="space-y-2 p-2">
-          {files.map((file, index) => (
-            <div 
-              key={file.path} 
-              className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md transition-colors"
-            >
-              {file.type === 'folder' ? (
-                <FolderOpen className="h-4 w-4 text-blue-500" />
-              ) : (
-                <File className="h-4 w-4 text-gray-500" />
-              )}
-              <span className="text-sm truncate">{file.name}</span>
-            </div>
-          ))}
-        </div>
-      </ScrollArea>
-    );
-  };
-
   const filteredNodes = navigatorNodes.filter(node => {
     if (!node) return false;
-    const matchesType = selectedType === 'all' || node.nodeType === selectedType;
     const matchesSearch = (node.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                         (node.description || '').toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesType && matchesSearch;
+    return matchesSearch;
   });
 
   const handleNodeClick = (nodeId) => {
@@ -143,40 +114,16 @@ const NodeNavigator = ({
             onDragUpdate={handleDragUpdate}
           >
             <div className="flex-grow overflow-y-auto">
-              <Droppable droppableId="root" type="node">
-                {(provided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                  >
-                    {filteredNodes.map((node, index) => node && (
-                      <div 
-                        key={node.id}
-                        ref={el => nodeRefs.current[node.id] = el}
-                        onMouseEnter={() => handleNodeHover(node.id)}
-                        onMouseLeave={() => handleNodeHover(null)}
-                        className={`transition-all duration-200 ${
-                          focusedNodeId === node.id ? 'ring-2 ring-blue-500 rounded-lg' : ''
-                        }`}
-                      >
-                        <NodeListItem
-                          node={node}
-                          index={index}
-                          isSelected={selectedNodes.includes(node.id)}
-                          onSelect={handleNodeClick}
-                          onFocus={onNodeFocus}
-                          onUpdateNode={onUpdateNode}
-                          onAIConversation={onAIConversation}
-                          isFocused={focusedNodeId === node.id}
-                          onEdit={setEditingNode}
-                          onDelete={onDeleteNode}
-                        />
-                      </div>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
+              <NodeList
+                nodes={filteredNodes}
+                onNodeFocus={onNodeFocus}
+                selectedNodes={selectedNodes}
+                handleNodeClick={handleNodeClick}
+                onUpdateNode={onUpdateNode}
+                onAIConversation={onAIConversation}
+                focusedNodeId={focusedNodeId}
+                onDeleteNode={onDeleteNode}
+              />
             </div>
           </DragDropContext>
         </TabsContent>
@@ -201,7 +148,7 @@ const NodeNavigator = ({
                 Select Folder
               </Button>
             </div>
-            {renderFileTree(selectedFiles)}
+            <FileTreeView files={selectedFiles} />
           </div>
         </TabsContent>
       </Tabs>
