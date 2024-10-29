@@ -4,26 +4,32 @@ import { supabase } from '../supabase';
 export const useInvestigation = (id) => useQuery({
   queryKey: ['investigations', id],
   queryFn: async () => {
-    const { data: investigation, error: investigationError } = await supabase
-      .from('investigations')
-      .select('*')
-      .eq('id', id)
-      .single();
-      
-    if (investigationError) throw investigationError;
+    try {
+      // First fetch the investigation
+      const { data: investigation, error: investigationError } = await supabase
+        .from('investigations')
+        .select('*')
+        .eq('id', id)
+        .single();
+        
+      if (investigationError) throw investigationError;
 
-    // Fetch reports separately
-    const { data: reports, error: reportsError } = await supabase
-      .from('reports')
-      .select('*')
-      .eq('investigation_id', id);
-      
-    if (reportsError) throw reportsError;
+      // Then fetch associated reports separately
+      const { data: reports, error: reportsError } = await supabase
+        .from('reports')
+        .select('*')
+        .eq('investigation_id', id);
+        
+      if (reportsError) throw reportsError;
 
-    return {
-      ...investigation,
-      reports: reports || []
-    };
+      return {
+        ...investigation,
+        reports: reports || []
+      };
+    } catch (error) {
+      console.error('Investigation query error:', error);
+      throw error;
+    }
   },
   enabled: !!id,
 });
@@ -33,12 +39,8 @@ export const useInvestigations = ({ select, filter } = {}) => {
     queryKey: ['investigations', { select, filter }],
     queryFn: async () => {
       try {
-        let query = supabase
-          .from('investigations')
-          .select(`
-            *,
-            reports (*)
-          `);
+        // First fetch investigations
+        let query = supabase.from('investigations').select('*');
         
         if (filter?.startsWith('owner_id.eq.')) {
           const userId = filter.replace('owner_id.eq.', '');
@@ -47,11 +49,22 @@ export const useInvestigations = ({ select, filter } = {}) => {
           }
         }
         
-        const { data, error } = await query;
-        if (error) throw error;
-        return data || [];
+        const { data: investigations, error: investigationsError } = await query;
+        if (investigationsError) throw investigationsError;
+
+        // Then fetch all reports
+        const { data: reports, error: reportsError } = await supabase
+          .from('reports')
+          .select('*');
+        if (reportsError) throw reportsError;
+
+        // Combine investigations with their reports
+        return (investigations || []).map(investigation => ({
+          ...investigation,
+          reports: reports.filter(report => report.investigation_id === investigation.id) || []
+        }));
       } catch (error) {
-        console.error('Investigation query error:', error);
+        console.error('Investigations query error:', error);
         throw error;
       }
     },
