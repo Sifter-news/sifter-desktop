@@ -14,6 +14,11 @@ const ThreeDCanvas = () => {
   const [viewMode, setViewMode] = useState('2d');
   const controlsRef = useRef();
 
+  // Calculate isometric camera position
+  const cameraPosition = viewMode === '3d' 
+    ? [70.71, 70.71, 70.71] // Isometric position (approximately 45° angles)
+    : [0, 50, 100];
+
   useEffect(() => {
     const fetchNodes = async () => {
       try {
@@ -83,11 +88,11 @@ const ThreeDCanvas = () => {
       </div>
       <Canvas
         camera={{ 
-          position: [0, 50, 100], // Changed from [0, 100, 0] to provide a front view
+          position: cameraPosition,
           fov: 45,
           near: 0.1,
           far: 1000,
-          up: [0, 1, 0] // Ensures correct orientation
+          up: [0, 1, 0]
         }}
         style={{ background: 'black' }}
       >
