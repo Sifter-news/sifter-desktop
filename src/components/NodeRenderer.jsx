@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Rnd } from 'react-rnd';
+import { GripVertical } from 'lucide-react';
 import NodeContent from './node/NodeContent';
 import NodeStyleTooltip from './node/NodeStyleTooltip';
 import { isColliding, findNonCollidingPosition } from '@/utils/collisionUtils';
@@ -24,6 +25,7 @@ const NodeRenderer = ({
   const [localDescription, setLocalDescription] = useState(node.description);
   const [showTooltip, setShowTooltip] = useState(false);
   const [position, setPosition] = useState({ x: node.x, y: node.y });
+  const [isHovered, setIsHovered] = useState(false);
   const [textSize, setTextSize] = useState(node.textSize || 'medium');
   const [textAlign, setTextAlign] = useState(node.textAlign || 'left');
   const [nodeColor, setNodeColor] = useState(node.color || 'white');
@@ -80,27 +82,12 @@ const NodeRenderer = ({
     });
   };
 
-  const handleStyleChange = (style) => {
-    onNodeUpdate(node.id, { visualStyle: style });
-  };
-
-  const handleTextSizeChange = (size) => {
-    setTextSize(size);
-    onNodeUpdate(node.id, { textSize: size });
-  };
-
-  const handleAlignmentChange = (align) => {
-    setTextAlign(align);
-    onNodeUpdate(node.id, { textAlign: align });
-  };
-
-  const handleColorChange = (color) => {
-    setNodeColor(color);
-    onNodeUpdate(node.id, { color });
-  };
-
   return (
-    <div className="group">
+    <div 
+      className="group"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <Rnd
         size={{ width: node.width || 200, height: node.height || 100 }}
         position={position}
@@ -108,23 +95,33 @@ const NodeRenderer = ({
         onDrag={handleDrag}
         onDragStop={handleDragStop}
         scale={zoom}
-        className={`relative ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+        className={`relative transition-all duration-200 ${
+          isFocused ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' : 
+          isHovered ? 'ring-1 ring-blue-300 ring-offset-1 shadow-md scale-[1.01]' : ''
+        } ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         onClick={handleNodeClick}
         enableResizing={false}
         bounds="parent"
       >
+        {isHovered && (
+          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-white/90 rounded-t-md px-2 py-1 cursor-grab active:cursor-grabbing">
+            <GripVertical className="h-4 w-4 text-gray-400" />
+          </div>
+        )}
+        
         {showTooltip && (
           <NodeStyleTooltip
             position={position}
-            onStyleChange={handleStyleChange}
-            onTextSizeChange={handleTextSizeChange}
-            onAlignmentChange={handleAlignmentChange}
+            onStyleChange={(style) => onNodeUpdate(node.id, { visualStyle: style })}
+            onTextSizeChange={setTextSize}
+            onAlignmentChange={setTextAlign}
             onTypeChange={(type) => onNodeUpdate(node.id, { nodeType: type })}
-            onColorChange={handleColorChange}
+            onColorChange={setNodeColor}
             onEdit={() => setIsEditing(true)}
             onAIChat={() => onAIConversation(node)}
           />
         )}
+        
         <NodeContent
           style={node.visualStyle}
           isEditing={isEditing}
