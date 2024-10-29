@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { MessageCircle, User, X, Upload, Paperclip } from 'lucide-react';
+import { MessageCircle, User, X, Paperclip } from 'lucide-react';
 import { toast } from "sonner";
 
 const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
@@ -13,14 +13,15 @@ const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    if (initialContext) {
-      setMessages([
-        {
-          role: 'system',
-          content: `Context: ${initialContext}`
-        }
-      ]);
-    }
+    const defaultContext = "Viewing the entire project canvas";
+    const contextMessage = initialContext || defaultContext;
+    
+    setMessages([
+      {
+        role: 'system',
+        content: `Currently focused on: ${contextMessage}`
+      }
+    ]);
   }, [initialContext]);
 
   const scrollToBottom = () => {
