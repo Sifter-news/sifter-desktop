@@ -7,6 +7,7 @@ import InvestigationModal from './modals/InvestigationModal';
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ThemeToggle } from './ThemeToggle';
 import {
   Select,
   SelectContent,
@@ -65,14 +66,14 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
   };
 
   return (
-    <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
+    <header className="bg-background border-b border-border fixed top-0 left-0 right-0 z-50">
       <div className="mx-auto px-12 py-2 flex items-center">
         {/* Left section with fixed width */}
         <div className="w-[200px] flex items-center space-x-4">
           <div className="flex items-center space-x-2">
             <img src="/favicon.ico" alt="Sifter Logo" className="h-8 w-8" />
             <span className="text-sm font-normal">Sifter</span>
-            <span className="text-sm font-normal text-gray-400">Beta</span>
+            <span className="text-sm font-normal text-muted-foreground">Beta</span>
           </div>
         </div>
 
@@ -85,7 +86,7 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
                 <AvatarFallback>P</AvatarFallback>
               </Avatar>
               <span 
-                className="text-sm font-normal text-[#4B25F3] cursor-pointer hover:underline"
+                className="text-sm font-normal text-primary cursor-pointer hover:underline"
                 onClick={() => setIsEditModalOpen(true)}
               >
                 {projectName}
@@ -96,9 +97,10 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
 
         {/* Right section with fixed width */}
         <div className="ml-auto w-[200px] flex justify-end items-center space-x-2">
+          <ThemeToggle />
           {projectName && (
             <>
-              <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
+              <Link to="/" className="text-sm font-normal text-muted-foreground hover:text-foreground transition-colors">
                 Dashboard
               </Link>
               <Separator orientation="vertical" className="h-4 mx-2" />
@@ -133,7 +135,6 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
               </Select>
             </>
           )}
-          
           <UserProfile user={user} onUpdateUser={onUpdateUser} />
         </div>
       </div>
