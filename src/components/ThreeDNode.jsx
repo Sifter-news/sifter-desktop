@@ -13,6 +13,7 @@ const ThreeDNode = ({
 }) => {
   const meshRef = useRef();
   const [isDragging, setIsDragging] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [dragStart, setDragStart] = useState(null);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -47,7 +48,7 @@ const ThreeDNode = ({
       return;
     }
     setIsDragging(false);
-    gl.domElement.style.cursor = 'grab';
+    gl.domElement.style.cursor = activeTool === 'select' ? 'default' : 'grab';
   };
 
   const handlePointerMove = (e) => {
@@ -62,6 +63,20 @@ const ThreeDNode = ({
 
     const newPosition = [newX, dragStart.position[1], newZ];
     onUpdate(newPosition);
+  };
+
+  const handlePointerEnter = () => {
+    setIsHovered(true);
+    if (activeTool === 'select') {
+      gl.domElement.style.cursor = 'pointer';
+    }
+  };
+
+  const handlePointerLeave = () => {
+    setIsHovered(false);
+    if (activeTool === 'select') {
+      gl.domElement.style.cursor = 'default';
+    }
   };
 
   const handleClick = (e) => {
@@ -82,11 +97,17 @@ const ThreeDNode = ({
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
       onPointerMove={handlePointerMove}
-      onPointerLeave={handlePointerUp}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
       onClick={handleClick}
     >
       <boxGeometry args={[5, 5, 0.2]} />
-      <meshStandardMaterial color="#4A90E2" />
+      <meshStandardMaterial 
+        color="#4A90E2"
+        transparent
+        opacity={isHovered ? 0.8 : 1}
+        wireframe={isHovered && !isDragging}
+      />
       
       {/* Node Content */}
       <Html
