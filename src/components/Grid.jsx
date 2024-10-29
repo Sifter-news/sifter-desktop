@@ -2,12 +2,13 @@ import React from 'react';
 import * as THREE from 'three';
 import { Text } from '@react-three/drei';
 
-const GridLayer = ({ y = 0, opacity = 0.2, size = 100, divisions = 24, showLabels = true }) => {
+const GridLayer = ({ y = 0, opacity = 0.2, size = 100, divisions = 24, showLabels = true, rotation = [0, 0, 0] }) => {
   // Create grid helper with reduced opacity for center lines
   const gridHelper = new THREE.GridHelper(size, divisions, 0xffffff, 0x333333);
   gridHelper.position.y = y;
   gridHelper.material.transparent = true;
   gridHelper.material.opacity = opacity;
+  gridHelper.rotation.setFromVector3(new THREE.Vector3(...rotation));
   
   // Reduce opacity of center lines by 30%
   if (gridHelper.material instanceof THREE.LineBasicMaterial) {
@@ -34,7 +35,7 @@ const GridLayer = ({ y = 0, opacity = 0.2, size = 100, divisions = 24, showLabel
 
   if (!showLabels) {
     return (
-      <group>
+      <group rotation={rotation}>
         <primitive object={gridHelper} />
         <points>
           <bufferGeometry attach="geometry" {...dotGeometry} />
@@ -55,12 +56,16 @@ const GridLayer = ({ y = 0, opacity = 0.2, size = 100, divisions = 24, showLabel
   const labels = [];
   const step = 16;
   
+  // Adjust label positions based on grid rotation
+  const labelRotation = rotation.map(r => -r);
+  
   // X axis labels (red)
   for (let x = -halfSize; x <= halfSize; x += step) {
     labels.push(
       <Text
         key={`x${x}${y}`}
-        position={[x, y + 0.5, -halfSize - 5]}
+        position={[x, -halfSize - 5, y]}
+        rotation={labelRotation}
         color="red"
         fontSize={4}
         anchorX="center"
@@ -71,38 +76,25 @@ const GridLayer = ({ y = 0, opacity = 0.2, size = 100, divisions = 24, showLabel
     );
   }
   
-  // Z axis labels (blue)
+  // Y axis labels (blue)
   for (let z = -halfSize; z <= halfSize; z += step) {
     labels.push(
       <Text
-        key={`z${z}${y}`}
-        position={[-halfSize - 5, y + 0.5, z]}
+        key={`y${z}${y}`}
+        position={[-halfSize - 5, z, y]}
+        rotation={labelRotation}
         color="blue"
         fontSize={4}
         anchorX="center"
         anchorY="middle"
       >
-        {`Z: ${Math.round(z)}`}
+        {`Y: ${Math.round(z)}`}
       </Text>
     );
   }
-  
-  // Y axis label (green)
-  labels.push(
-    <Text
-      key={`y${y}`}
-      position={[-halfSize - 10, y, -halfSize - 10]}
-      color="green"
-      fontSize={4}
-      anchorX="center"
-      anchorY="middle"
-    >
-      {`Y: ${Math.round(y)}`}
-    </Text>
-  );
 
   return (
-    <group>
+    <group rotation={rotation}>
       <primitive object={gridHelper} />
       <points>
         <bufferGeometry attach="geometry" {...dotGeometry} />
@@ -120,14 +112,14 @@ const GridLayer = ({ y = 0, opacity = 0.2, size = 100, divisions = 24, showLabel
   );
 };
 
-const Grid = ({ size = 100, divisions = 24 }) => {
+const Grid = ({ size = 100, divisions = 24, rotation = [0, 0, 0] }) => {
   return (
-    <group>
-      <GridLayer y={0} opacity={0.2} size={size} divisions={divisions} />
-      <GridLayer y={16} opacity={0.16} size={size} divisions={divisions} />
-      <GridLayer y={32} opacity={0.12} size={size} divisions={divisions} />
-      <GridLayer y={48} opacity={0.08} size={size} divisions={divisions} />
-      <GridLayer y={64} opacity={0.04} size={size} divisions={divisions} />
+    <group rotation={rotation}>
+      <GridLayer y={0} opacity={0.2} size={size} divisions={divisions} rotation={rotation} />
+      <GridLayer y={16} opacity={0.16} size={size} divisions={divisions} rotation={rotation} />
+      <GridLayer y={32} opacity={0.12} size={size} divisions={divisions} rotation={rotation} />
+      <GridLayer y={48} opacity={0.08} size={size} divisions={divisions} rotation={rotation} />
+      <GridLayer y={64} opacity={0.04} size={size} divisions={divisions} rotation={rotation} />
     </group>
   );
 };
