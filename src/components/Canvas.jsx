@@ -29,7 +29,7 @@ const Canvas = forwardRef(({
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
   const [previousTool, setPreviousTool] = useState(null);
-  const [startPanPosition, setStartPanPosition] = useState({ x: 0, y: 0 });
+  const [panStartPosition, setPanStartPosition] = useState({ x: 0, y: 0 });
 
   const handleKeyDown = useCallback((e) => {
     if (e.code === 'Space' && !e.repeat && !isSpacePressed) {
@@ -81,7 +81,7 @@ const Canvas = forwardRef(({
   const handleMouseDown = useCallback((e) => {
     if (isSpacePressed || activeTool === 'pan') {
       setIsPanning(true);
-      setStartPanPosition({ x: e.clientX, y: e.clientY });
+      setPanStartPosition({ x: e.clientX, y: e.clientY });
       handlePanStart();
       e.preventDefault();
     }
@@ -89,12 +89,18 @@ const Canvas = forwardRef(({
 
   const handleMouseMove = useCallback((e) => {
     if (isPanning) {
-      const deltaX = e.clientX - startPanPosition.x;
-      const deltaY = e.clientY - startPanPosition.y;
-      handlePanMove({ movementX: deltaX, movementY: deltaY });
-      setStartPanPosition({ x: e.clientX, y: e.clientY });
+      const deltaX = e.clientX - panStartPosition.x;
+      const deltaY = e.clientY - panStartPosition.y;
+      
+      // Only update position, no rotation
+      handlePanMove({ 
+        movementX: deltaX, 
+        movementY: deltaY 
+      });
+      
+      setPanStartPosition({ x: e.clientX, y: e.clientY });
     }
-  }, [isPanning, handlePanMove, startPanPosition]);
+  }, [isPanning, handlePanMove, panStartPosition]);
 
   const handleMouseUp = useCallback(() => {
     if (isPanning) {
@@ -114,6 +120,7 @@ const Canvas = forwardRef(({
         onWheel={handleWheel}
         ref={ref}
         tabIndex={0}
+        style={{ cursor: isPanning ? 'grabbing' : 'default' }}
       >
         <div 
           className="absolute inset-0" 
