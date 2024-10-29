@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FileText } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { useDebug } from '@/contexts/DebugContext';
 
 const DEFAULT_IMAGE = '/default-image.png';
 
@@ -28,7 +29,10 @@ const NodeContent = ({
   textAlign = "left",
   color = "white"
 }) => {
+  const { showGuides } = useDebug();
   const focusClasses = isFocused ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' : '';
+  const debugFocusClasses = showGuides ? 'outline outline-2 outline-blue-500/50' : '';
+  
   const colorClasses = {
     white: "bg-white",
     yellow: "bg-yellow-100",
@@ -41,7 +45,8 @@ const NodeContent = ({
     colorClasses[color],
     `text-${textAlign}`,
     "transition-all duration-200",
-    focusClasses
+    focusClasses,
+    debugFocusClasses
   );
 
   const renderNode = () => {
