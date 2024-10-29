@@ -4,6 +4,11 @@ import { toast } from 'sonner';
 export const useNodeOperations = (setNodes) => {
   const handleAddNode = async (newNode, projectId) => {
     try {
+      if (!newNode.title?.trim()) {
+        toast.error('Node title is required');
+        return;
+      }
+
       const nodeData = {
         title: newNode.title,
         description: newNode.description,
