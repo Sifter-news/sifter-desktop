@@ -1,12 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import Grid from './Grid';
 import TestNodes from './TestNodes';
+import Toolbar from './Toolbar';
 
 const ThreeDCanvas = () => {
+  const [activeTool, setActiveTool] = useState('select');
+  const [zoom, setZoom] = useState(1);
+
+  const handleZoom = (delta) => {
+    setZoom(prev => Math.max(0.1, Math.min(2, prev + delta)));
+  };
+
   return (
-    <div className="w-full h-[calc(100vh-64px)] bg-black">
+    <div className="relative w-full h-[calc(100vh-64px)] bg-black">
+      <div className="absolute top-0 left-0 right-0 z-10">
+        <Toolbar 
+          activeTool={activeTool}
+          setActiveTool={setActiveTool}
+          handleZoom={handleZoom}
+          zoom={zoom}
+          nodes={[]}
+          onAddNode={() => {}}
+        />
+      </div>
       <Canvas
         camera={{ 
           position: [0, 100, 0],
