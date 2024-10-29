@@ -6,7 +6,6 @@ import { Separator } from "@/components/ui/separator";
 import ToolbarButton from './ToolbarButton';
 import ExportDialog from './ExportDialog';
 import { findNonCollidingPosition } from '@/utils/collisionUtils';
-import { NODE_STYLES } from '@/utils/nodeStyles';
 
 const Toolbar = ({ 
   activeTool, 
@@ -22,15 +21,14 @@ const Toolbar = ({
   const zoomPercentage = Math.round(100 - (zoom / 2));
 
   const handleAddNodeWithStyle = (visualStyle) => {
-    const dimensions = NODE_STYLES[visualStyle];
     const newNode = { 
       visualStyle,
       x: window.innerWidth / 2,
       y: window.innerHeight / 2,
       title: 'New Node',
       description: 'Description',
-      width: dimensions.width,
-      height: dimensions.height
+      width: visualStyle === 'postit' ? 256 : 40,
+      height: visualStyle === 'postit' ? 256 : visualStyle === 'compact' ? 40 : 128
     };
 
     const position = findNonCollidingPosition(newNode, nodes);
@@ -66,7 +64,7 @@ const Toolbar = ({
             shortcut="V"
             onClick={() => setActiveTool('select')}
             isActive={activeTool === 'select'}
-            activeClassName="bg-black/10 text-black"
+            activeClassName="bg-black text-white"
           />
           <ToolbarButton 
             icon={viewMode === '3d' ? <Orbit className="h-3 w-3" /> : <Hand className="h-3 w-3" />}
@@ -74,7 +72,7 @@ const Toolbar = ({
             shortcut="Space"
             onClick={() => setActiveTool('pan')}
             isActive={activeTool === 'pan'}
-            activeClassName="bg-black/10 text-black"
+            activeClassName="bg-black text-white"
           />
         </div>
 
@@ -85,21 +83,21 @@ const Toolbar = ({
             label="Add Compact Node"
             shortcut="1"
             onClick={() => handleAddNodeWithStyle('compact')}
-            activeClassName="bg-black/10 text-black"
+            activeClassName="bg-black text-white"
           />
           <ToolbarButton 
             icon={<Square className="h-3 w-3" />}
             label="Add Default Node"
             shortcut="2"
             onClick={() => handleAddNodeWithStyle('default')}
-            activeClassName="bg-black/10 text-black"
+            activeClassName="bg-black text-white"
           />
           <ToolbarButton 
             icon={<StickyNote className="h-3 w-3" />}
             label="Add Post-it Node"
             shortcut="3"
             onClick={() => handleAddNodeWithStyle('postit')}
-            activeClassName="bg-black/10 text-black"
+            activeClassName="bg-black text-white"
           />
         </div>
 

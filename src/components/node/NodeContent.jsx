@@ -5,7 +5,6 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FileText } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useDebug } from '@/contexts/DebugContext';
-import { NODE_STYLES } from '@/utils/nodeStyles';
 
 const DEFAULT_IMAGE = '/default-image.png';
 
@@ -17,7 +16,7 @@ const textSizeClasses = {
 };
 
 const NodeContent = ({ 
-  style = 'default', 
+  style, 
   isEditing, 
   node, 
   localTitle, 
@@ -31,7 +30,6 @@ const NodeContent = ({
   color = "white"
 }) => {
   const { showGuides, setHoveredElement } = useDebug();
-  const nodeStyle = NODE_STYLES[style] || NODE_STYLES.default;
   
   const handleMouseEnter = () => {
     setHoveredElement({
@@ -67,8 +65,7 @@ const NodeContent = ({
     `text-${textAlign}`,
     "transition-all duration-200",
     focusClasses,
-    debugFocusClasses,
-    nodeStyle.className
+    debugFocusClasses
   );
 
   const renderNode = () => {
@@ -76,13 +73,12 @@ const NodeContent = ({
       case 'compact':
         return (
           <div 
-            className={cn("flex items-center justify-center", baseClasses)}
+            className={cn("w-10 h-10 rounded-full flex items-center justify-center", baseClasses)}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             data-component="NodeContent:Compact"
-            style={{ width: nodeStyle.width, height: nodeStyle.height }}
           >
-            <Avatar className="h-full w-full">
+            <Avatar className="h-10 w-10">
               <AvatarImage src={node.avatar || DEFAULT_IMAGE} alt={node.title} />
               <AvatarFallback><FileText className="h-4 w-4" /></AvatarFallback>
             </Avatar>
@@ -91,11 +87,10 @@ const NodeContent = ({
       case 'postit':
         return (
           <div 
-            className={cn("p-4", baseClasses)}
+            className={cn("w-[256px] h-[256px] p-4 rotate-1", baseClasses)}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             data-component="NodeContent:PostIt"
-            style={{ width: nodeStyle.width, height: nodeStyle.height }}
           >
             <div className="flex items-center gap-2 mb-2">
               <Avatar className="h-8 w-8">
@@ -131,11 +126,10 @@ const NodeContent = ({
       default:
         return (
           <div 
-            className={cn("p-3", baseClasses)}
+            className={cn("min-w-[40px] h-[128px] p-3", baseClasses)}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             data-component="NodeContent:Default"
-            style={{ width: nodeStyle.width, height: nodeStyle.height }}
           >
             <div className="flex items-center gap-2 mb-2">
               <Avatar className="h-8 w-8">
