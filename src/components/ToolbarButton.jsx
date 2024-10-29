@@ -16,7 +16,7 @@ const ToolbarButton = ({
   isActive, 
   onDragStart, 
   draggable,
-  activeClassName = 'bg-black text-white',
+  activeClassName = 'bg-blue-600 text-white',
   text
 }) => {
   // Clone the icon and modify its color when active
@@ -42,14 +42,6 @@ const ToolbarButton = ({
             onDragStart={onDragStart}
             draggable={draggable}
           >
-            <motion.div
-              className="absolute inset-0 rounded-full"
-              initial={false}
-              animate={{
-                backgroundColor: isActive ? 'rgba(0, 0, 0, 0.95)' : 'rgba(0, 0, 0, 0)',
-              }}
-              transition={{ duration: 0.2 }}
-            />
             <motion.div
               className="flex items-center gap-2"
               initial={false}
