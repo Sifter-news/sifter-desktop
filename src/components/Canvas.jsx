@@ -83,6 +83,7 @@ const Canvas = forwardRef(({
       setIsPanning(true);
       setStartPanPosition({ x: e.clientX, y: e.clientY });
       handlePanStart();
+      document.body.style.cursor = 'grabbing';
       e.preventDefault();
     }
   }, [isSpacePressed, activeTool, handlePanStart]);
@@ -91,15 +92,16 @@ const Canvas = forwardRef(({
     if (isPanning) {
       const deltaX = e.clientX - startPanPosition.x;
       const deltaY = e.clientY - startPanPosition.y;
-      handlePanMove({ movementX: deltaX, movementY: deltaY });
+      handlePanMove({ movementX: deltaX / zoom, movementY: deltaY / zoom });
       setStartPanPosition({ x: e.clientX, y: e.clientY });
     }
-  }, [isPanning, handlePanMove, startPanPosition]);
+  }, [isPanning, handlePanMove, startPanPosition, zoom]);
 
   const handleMouseUp = useCallback(() => {
     if (isPanning) {
       setIsPanning(false);
       handlePanEnd();
+      document.body.style.cursor = 'default';
     }
   }, [isPanning, handlePanEnd]);
 
@@ -114,6 +116,7 @@ const Canvas = forwardRef(({
         onWheel={handleWheel}
         ref={ref}
         tabIndex={0}
+        style={{ cursor: isPanning ? 'grabbing' : (isSpacePressed || activeTool === 'pan' ? 'grab' : 'default') }}
       >
         <div 
           className="absolute inset-0" 
