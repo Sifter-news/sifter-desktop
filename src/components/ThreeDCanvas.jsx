@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import Grid from './Grid';
@@ -12,6 +12,7 @@ const ThreeDCanvas = () => {
   const [nodes, setNodes] = useState([]);
   const [connections, setConnections] = useState([]);
   const [activeConnection, setActiveConnection] = useState(null);
+  const controlsRef = useRef();
 
   const handleZoom = (delta) => {
     setZoom(prev => Math.max(0.1, Math.min(2, prev + delta)));
@@ -55,8 +56,6 @@ const ThreeDCanvas = () => {
   const handlePointerMove = (event) => {
     if (activeConnection) {
       const { clientX, clientY } = event;
-      // Convert screen coordinates to world coordinates
-      // This is a simplified version, you might want to implement proper coordinate conversion
       setActiveConnection(prev => ({
         ...prev,
         targetPosition: [clientX / 100 - 5, 10, clientY / 100 - 5]
@@ -96,11 +95,11 @@ const ThreeDCanvas = () => {
           <ThreeDNode 
             key={node.id}
             node={node}
+            activeTool={activeTool}
             onUpdate={(newPosition) => {
               setNodes(prev => prev.map(n => 
                 n.id === node.id ? { ...n, position: newPosition } : n
               ));
-              // Update connections when nodes move
               setConnections(prev => prev.map(conn => {
                 if (conn.sourceId === node.id) {
                   return { ...conn, sourcePosition: newPosition };
@@ -132,8 +131,10 @@ const ThreeDCanvas = () => {
         )}
 
         <OrbitControls 
+          ref={controlsRef}
           enableZoom={true}
-          enablePan={true}
+          enablePan={activeTool === 'pan'}
+          enableRotate={activeTool === 'pan'}
           maxDistance={200}
           minDistance={10}
         />

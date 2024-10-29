@@ -3,7 +3,7 @@ import { useThree, useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 
-const ThreeDNode = ({ node, onUpdate, onStartConnection, onEndConnection }) => {
+const ThreeDNode = ({ node, activeTool, onUpdate, onStartConnection, onEndConnection }) => {
   const meshRef = useRef();
   const [isDragging, setIsDragging] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -11,6 +11,8 @@ const ThreeDNode = ({ node, onUpdate, onStartConnection, onEndConnection }) => {
   const { camera, gl } = useThree();
 
   const handlePointerDown = (e) => {
+    if (activeTool !== 'select') return;
+
     if (e.button === 2) { // Right click
       e.stopPropagation();
       setIsConnecting(true);
@@ -29,6 +31,8 @@ const ThreeDNode = ({ node, onUpdate, onStartConnection, onEndConnection }) => {
   };
 
   const handlePointerUp = (e) => {
+    if (activeTool !== 'select') return;
+
     if (isConnecting) {
       setIsConnecting(false);
       onEndConnection(node.id);
@@ -39,7 +43,7 @@ const ThreeDNode = ({ node, onUpdate, onStartConnection, onEndConnection }) => {
   };
 
   const handlePointerMove = (e) => {
-    if (!isDragging || !dragStart) return;
+    if (!isDragging || !dragStart || activeTool !== 'select') return;
 
     const deltaX = (e.clientX - dragStart.x) * 0.1;
     const deltaZ = (e.clientY - dragStart.y) * 0.1;
