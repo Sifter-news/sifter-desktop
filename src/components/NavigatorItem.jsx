@@ -35,17 +35,18 @@ const NavigatorItem = ({
     if (setDragTimer) clearTimeout(setDragTimer);
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (e) => {
+    e.stopPropagation();
     try {
       const { error } = await supabase
-        .from('node')
+        .from('nodes')  // Changed from 'node' to 'nodes' to match the table name
         .delete()
         .eq('id', item.id);
 
       if (error) throw error;
       
       toast.success('Node deleted successfully');
-      // Refresh the page to update the node list
+      // Use window.location.reload() as a temporary solution
       window.location.reload();
     } catch (error) {
       console.error('Error deleting node:', error);
@@ -102,10 +103,7 @@ const NavigatorItem = ({
                   <span>Create Group</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete();
-                  }}
+                  onClick={handleDelete}
                   className="text-red-600 hover:text-red-700 hover:bg-red-50"
                 >
                   <Trash className="mr-2 h-4 w-4" />
