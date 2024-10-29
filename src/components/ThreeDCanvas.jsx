@@ -4,13 +4,24 @@ import { OrbitControls } from '@react-three/drei';
 import Grid from './Grid';
 import TestNodes from './TestNodes';
 import Toolbar from './Toolbar';
+import ThreeDNode from './ThreeDNode';
 
 const ThreeDCanvas = () => {
   const [activeTool, setActiveTool] = useState('select');
   const [zoom, setZoom] = useState(1);
+  const [nodes, setNodes] = useState([]);
 
   const handleZoom = (delta) => {
     setZoom(prev => Math.max(0.1, Math.min(2, prev + delta)));
+  };
+
+  const handleAddNode = () => {
+    const newNode = {
+      id: Date.now(),
+      position: [0, 10, 0], // Start slightly above the grid
+      title: 'New Node'
+    };
+    setNodes(prev => [...prev, newNode]);
   };
 
   return (
@@ -21,8 +32,8 @@ const ThreeDCanvas = () => {
           setActiveTool={setActiveTool}
           handleZoom={handleZoom}
           zoom={zoom}
-          nodes={[]}
-          onAddNode={() => {}}
+          nodes={nodes}
+          onAddNode={handleAddNode}
         />
       </div>
       <Canvas
@@ -37,7 +48,17 @@ const ThreeDCanvas = () => {
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} />
         <Grid size={100} divisions={24} />
-        <TestNodes />
+        {nodes.map(node => (
+          <ThreeDNode 
+            key={node.id}
+            node={node}
+            onUpdate={(newPosition) => {
+              setNodes(prev => prev.map(n => 
+                n.id === node.id ? { ...n, position: newPosition } : n
+              ));
+            }}
+          />
+        ))}
         <OrbitControls 
           enableZoom={true}
           enablePan={true}
