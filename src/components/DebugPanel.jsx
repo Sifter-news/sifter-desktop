@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDebug } from '@/contexts/DebugContext';
-import { X, Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { X, Maximize2, Minimize2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAuth } from '@/components/AuthProvider';
 import { useInvestigations } from '@/integrations/supabase/hooks/useInvestigations';
@@ -22,6 +22,17 @@ const DebugPanel = () => {
   });
 
   if (!isDebugOpen) return null;
+
+  const getCurrentView = () => {
+    const path = location.pathname;
+    if (path === '/') return 'Dashboard';
+    if (path.startsWith('/project/')) return 'Project View';
+    if (path === '/projects') return 'Projects List';
+    return path;
+  };
+
+  const currentProjectId = location.pathname.split('/project/')[1];
+  const currentProject = investigations?.find(inv => inv.id === currentProjectId);
 
   const panelContent = isCollapsed ? (
     <Button
