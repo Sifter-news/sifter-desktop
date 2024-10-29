@@ -1,22 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { 
-  Plus, 
-  Hand, 
-  Orbit, 
-  MousePointer, 
-  Download, 
-  Circle, 
-  Square, 
-  StickyNote, 
-  ChevronDown,
-  Move,
-  Maximize,
-  Target,
-  Pencil,
-  Link2,
-  ArrowRight
-} from 'lucide-react';
+import { Minus, Plus, Hand, Orbit, MousePointer, CirclePlus, Download, Circle, Square, StickyNote, ChevronDown } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -26,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import ToolbarButton from './ToolbarButton';
 import ExportDialog from './ExportDialog';
 import { findNonCollidingPosition } from '@/utils/collisionUtils';
 
@@ -40,7 +25,7 @@ const Toolbar = ({
   onAddNode 
 }) => {
   const [isExportDialogOpen, setIsExportDialogOpen] = React.useState(false);
-  const zoomPercentage = Math.round(zoom * 100);
+  const zoomPercentage = Math.round(100 - (zoom / 2));
 
   const handleAddNodeWithStyle = (visualStyle) => {
     const newNode = { 
@@ -62,87 +47,118 @@ const Toolbar = ({
   };
 
   return (
-    <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-sm rounded-full shadow-lg px-2 py-1.5">
-      <div className="flex items-center space-x-0.5">
+    <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-sm rounded-full shadow-lg p-3">
+      <div className="bg-white/90 rounded-full p-1 flex items-center space-x-1 h-10">
+        {/* Perspective Toggle */}
+        <Button 
+          variant="ghost"
+          size="sm"
+          className={`h-8 rounded-full text-sm font-medium transition-colors ${viewMode === '2d' ? 'bg-gray-200 text-black' : 'hover:bg-gray-200'}`}
+          onClick={() => onViewModeChange(viewMode === '2d' ? '3d' : '2d')}
+        >
+          {viewMode.toUpperCase()}
+        </Button>
+
+        <Separator orientation="vertical" className="h-6" />
+
+        {/* Navigation Tools Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 rounded-full">
+              {activeTool === 'select' ? <MousePointer className="h-3 w-3 mr-1" /> : <Hand className="h-3 w-3 mr-1" />}
+              {activeTool === 'select' ? 'Select' : 'Pan'}
+              <ChevronDown className="h-3 w-3 ml-1" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-black text-white" align="top">
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => setActiveTool('select')}>
+                <MousePointer className="h-3 w-3 mr-2" />
+                Select & Move (V)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setActiveTool('pan')}>
+                {viewMode === '3d' ? <Orbit className="h-3 w-3 mr-2" /> : <Hand className="h-3 w-3 mr-2" />}
+                {viewMode === '3d' ? "Pan & Orbit" : "Pan"} (Space)
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Node Creation Tools Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 rounded-full">
+              <Circle className="h-3 w-3 mr-1" />
+              Add Node
+              <ChevronDown className="h-3 w-3 ml-1" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-black text-white" align="top">
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('compact')}>
+                <Circle className="h-3 w-3 mr-2" />
+                Compact Node (1)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('default')}>
+                <Square className="h-3 w-3 mr-2" />
+                Default Node (2)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('postit')}>
+                <StickyNote className="h-3 w-3 mr-2" />
+                Post-it Node (3)
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <Separator orientation="vertical" className="h-6" />
+
+        {/* Zoom Controls */}
+        <div className="flex items-center space-x-1 pl-2 h-8 bg-gray-200/80 rounded-full">
+          <div className="flex flex-col items-center space-y-0.5">
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              className="rounded-full h-3 w-3 bg-black bg-opacity-5 hover:bg-gray-200 p-0" 
+              onClick={() => handleZoom(-10)}
+            >
+              <Plus className="h-2 w-2" />
+            </Button>
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              className="rounded-full h-3 w-3 bg-black bg-opacity-5 hover:bg-gray-200 p-0" 
+              onClick={() => handleZoom(10)}
+            >
+              <Minus className="h-2 w-2" />
+            </Button>
+          </div>
+          <div className="flex items-center justify-center w-8">
+            <span className="text-xs font-medium">{zoomPercentage}%</span>
+          </div>
+        </div>
+
+        <Separator orientation="vertical" className="h-6" />
+
+        {/* Export Tool */}
         <TooltipProvider>
-          <Button 
-            variant="ghost" 
-            size="icon"
-            className="h-8 w-8 rounded-full text-white hover:bg-white/10"
-            onClick={() => handleAddNodeWithStyle('default')}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/10">
-                <Move className="h-4 w-4" />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="rounded-full h-8 w-8 bg-white hover:bg-gray-100 active:scale-95 transition-all duration-200 p-0"
+                onClick={() => setIsExportDialogOpen(true)}
+              >
+                <Download className="h-3 w-3" />
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-black/90 text-white border-white/20" align="top">
-              <DropdownMenuGroup>
-                <DropdownMenuItem onClick={() => setActiveTool('select')}>
-                  <MousePointer className="h-4 w-4 mr-2" />
-                  Select (V)
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setActiveTool('pan')}>
-                  {viewMode === '3d' ? <Orbit className="h-4 w-4 mr-2" /> : <Hand className="h-4 w-4 mr-2" />}
-                  {viewMode === '3d' ? "Orbit" : "Pan"} (Space)
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/10">
-            <Square className="h-4 w-4" />
-          </Button>
-
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/10">
-            <Circle className="h-4 w-4" />
-          </Button>
-
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/10">
-            <Target className="h-4 w-4" />
-          </Button>
-
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/10">
-            <Pencil className="h-4 w-4" />
-          </Button>
-
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/10">
-            <Link2 className="h-4 w-4" />
-          </Button>
-
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-8 w-8 rounded-full bg-blue-500 text-white hover:bg-blue-600"
-          >
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-
-          <Separator orientation="vertical" className="h-6 bg-white/20" />
-
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/10">
-            <Maximize className="h-4 w-4" />
-          </Button>
-
-          <span className="text-white/90 text-sm font-medium px-2">
-            {zoomPercentage}%
-          </span>
-
-          <Button 
-            variant="ghost" 
-            size="sm"
-            className="h-8 rounded-full text-white hover:bg-white/10 px-3"
-            onClick={() => setIsExportDialogOpen(true)}
-          >
-            Export
-          </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="bg-gray-900 text-white px-3 py-1.5 rounded-md text-sm">
+              <p>Export Mind Map (⌘E)</p>
+            </TooltipContent>
+          </Tooltip>
         </TooltipProvider>
       </div>
-
       <ExportDialog 
         isOpen={isExportDialogOpen} 
         onClose={() => setIsExportDialogOpen(false)} 
