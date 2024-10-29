@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, Hand, MousePointer, CirclePlus, Download, Circle, Square, StickyNote, View } from 'lucide-react';
+import { Minus, Plus, Hand, MousePointer, CirclePlus, Download, Circle, Square, StickyNote } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import ToolbarButton from './ToolbarButton';
@@ -59,15 +59,13 @@ const Toolbar = ({
             isActive={activeTool === 'pan'}
             activeClassName="bg-blue-600 text-white"
           />
-          <ToolbarButton 
-            icon={<View className="h-4 w-4" />} 
-            label="Toggle 2D/3D View"
-            shortcut="Tab"
+          <Button 
+            variant="ghost"
+            className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${viewMode === '2d' ? 'bg-blue-600 text-white' : 'hover:bg-gray-200'}`}
             onClick={() => onViewModeChange(viewMode === '2d' ? '3d' : '2d')}
-            isActive={viewMode === '2d'}
-            activeClassName="bg-purple-600 text-white"
-            text={viewMode.toUpperCase()}
-          />
+          >
+            {viewMode.toUpperCase()}
+          </Button>
         </div>
 
         {/* Node Creation Tools */}
