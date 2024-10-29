@@ -67,21 +67,21 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
 
         if (error) throw error;
 
-        const nodesWithRandomPositions = data.map(node => ({
+        const nodesWithPositions = data.map(node => ({
           ...node,
           position: [
-            Math.random() * 100 - 50,
-            Math.random() * 100 - 50,
-            0
+            node.position_x || 0,
+            node.position_y || 0,
+            node.position_z || 0
           ]
         }));
 
-        setNodes(nodesWithRandomPositions);
+        setNodes(nodesWithPositions);
         setDebugData(prev => ({
           ...prev,
           nodes: {
-            count: nodesWithRandomPositions.length,
-            list: nodesWithRandomPositions
+            count: nodesWithPositions.length,
+            list: nodesWithPositions
           }
         }));
       } catch (error) {
@@ -95,22 +95,13 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
     }
   }, [projectId, setDebugData]);
 
-  useEffect(() => {
-    setDebugData(prev => ({
-      ...prev,
-      activeTool,
-      currentView: 'mindmap',
-      viewMode: viewMode
-    }));
-  }, [activeTool, viewMode, setDebugData]);
-
   const handleNodeUpdate = async (nodeId, newPosition) => {
     try {
       if (onNodeUpdate) {
         await onNodeUpdate(nodeId, {
           position_x: newPosition[0],
           position_y: newPosition[1],
-          position_z: 0
+          position_z: newPosition[2]
         });
       }
     } catch (error) {
