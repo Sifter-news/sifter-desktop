@@ -6,10 +6,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAuth } from '@/components/AuthProvider';
 import { useInvestigations } from '@/integrations/supabase/hooks/useInvestigations';
 import { useLocation } from 'react-router-dom';
-import { Rnd } from 'react-rnd';
 import DebugStateSection from './debug/DebugStateSection';
 import DebugPositionSection from './debug/DebugPositionSection';
 import DebugViewOptions from './debug/DebugViewOptions';
+import { Rnd } from 'react-rnd';
 
 const DebugPanel = () => {
   const { isDebugOpen, setIsDebugOpen, debugData, showGuides, setShowGuides } = useDebug();
@@ -68,43 +68,7 @@ const DebugPanel = () => {
       
       <ScrollArea className="h-[500px] p-4">
         <div className="space-y-4">
-          <DebugStateSection debugData={debugData} />
-          <DebugPositionSection debugData={debugData} />
-          <DebugViewOptions showGuides={showGuides} setShowGuides={setShowGuides} />
-
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-white/80">Current View</h3>
-            <div className="bg-black/50 p-2 rounded">
-              <p className="text-xs">Page: {getCurrentView()}</p>
-              {currentProject && (
-                <>
-                  <p className="text-xs mt-1">Project: {currentProject.title}</p>
-                  <p className="text-xs">Project ID: {currentProject.id}</p>
-                  <div className="mt-2">
-                    <p className="text-xs font-medium">Reports ({currentProject.reports?.length || 0}):</p>
-                    <ul className="pl-2">
-                      {currentProject.reports?.map(report => (
-                        <li key={report.id} className="text-xs text-gray-400">
-                          • {report.title}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="mt-2">
-                    <p className="text-xs font-medium">Nodes ({debugData.nodes?.count || 0}):</p>
-                    <ul className="pl-2">
-                      {debugData.nodes?.list?.map(node => (
-                        <li key={node.id} className="text-xs text-gray-400">
-                          • {node.type}: {node.id}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-
+          {/* Authentication Section */}
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-white/80">Authentication</h3>
             <div className="bg-black/50 p-2 rounded">
@@ -118,6 +82,56 @@ const DebugPanel = () => {
             </div>
           </div>
 
+          {/* Current View Section */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-white/80">Current View</h3>
+            <div className="bg-black/50 p-2 rounded">
+              <p className="text-xs">Page: {getCurrentView()}</p>
+              {currentProject && (
+                <>
+                  <p className="text-xs mt-1">Project: {currentProject.title}</p>
+                  <p className="text-xs">Project ID: {currentProject.id}</p>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Current State Section */}
+          <DebugStateSection debugData={debugData} />
+
+          {/* Position Section */}
+          <DebugPositionSection debugData={debugData} />
+
+          {/* View Options Section */}
+          <DebugViewOptions showGuides={showGuides} setShowGuides={setShowGuides} />
+
+          {/* Project Details Section */}
+          {currentProject && (
+            <>
+              <div className="mt-2">
+                <p className="text-xs font-medium">Reports ({currentProject.reports?.length || 0}):</p>
+                <ul className="pl-2">
+                  {currentProject.reports?.map(report => (
+                    <li key={report.id} className="text-xs text-gray-400">
+                      • {report.title}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="mt-2">
+                <p className="text-xs font-medium">Nodes ({debugData.nodes?.count || 0}):</p>
+                <ul className="pl-2">
+                  {debugData.nodes?.list?.map(node => (
+                    <li key={node.id} className="text-xs text-gray-400">
+                      • {node.type}: {node.id}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </>
+          )}
+
+          {/* Projects Section */}
           {user && (
             <div className="space-y-2">
               <h3 className="text-sm font-medium text-white/80">Projects</h3>
@@ -137,6 +151,7 @@ const DebugPanel = () => {
             </div>
           )}
 
+          {/* Additional Debug Data */}
           {Object.entries(debugData).map(([key, value]) => (
             <div key={key} className="space-y-2">
               <h3 className="text-sm font-medium text-white/80">{key}</h3>
