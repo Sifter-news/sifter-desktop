@@ -43,6 +43,12 @@ const DebugStateSection = ({ debugData }) => {
             )}
           </div>
         </div>
+        <div className="space-y-1">
+          <p className="text-xs font-medium text-white/80">State</p>
+          <div className="pl-2">
+            <p className="text-xs">Current Perspective: {debugData?.viewMode || '2D'}</p>
+          </div>
+        </div>
       </div>
     </div>
   );
