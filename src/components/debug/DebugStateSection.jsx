@@ -1,4 +1,3 @@
-```jsx
 import React from 'react';
 import { NODE_STYLES } from '@/utils/nodeStyles';
 
@@ -119,7 +118,6 @@ const DebugStateSection = ({ debugData }) => {
           </div>
         </div>
 
-        {/* Canvas Nodes Section */}
         {debugData?.nodes?.list && debugData.nodes.list.length > 0 && (
           <div className="space-y-1">
             <p className="text-xs font-medium text-white/80">Canvas Nodes ({debugData.nodes.list.length})</p>
@@ -148,7 +146,6 @@ const DebugStateSection = ({ debugData }) => {
           </div>
         )}
 
-        {/* Navigator Nodes Section */}
         {debugData?.navigatorNodes?.length > 0 && (
           <div className="space-y-1">
             <p className="text-xs font-medium text-white/80">Navigator Nodes ({debugData.navigatorNodes.length})</p>
@@ -180,4 +177,3 @@ const DebugStateSection = ({ debugData }) => {
 };
 
 export default DebugStateSection;
-```
