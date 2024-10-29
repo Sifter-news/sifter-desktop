@@ -106,58 +106,26 @@ const NodeNavigator = ({
         </Button>
       </div>
       
-      <Tabs value={activeView} onValueChange={setActiveView} className="w-full">
-        <TabsList className="w-full mb-4">
-          <TabsTrigger value="nodes" className="flex-1">Nodes</TabsTrigger>
-          <TabsTrigger value="files" className="flex-1">Files</TabsTrigger>
-        </TabsList>
-        <TabsContent value="nodes">
-          <DragDropContext 
-            onDragEnd={(result) => {
-              setDraggedOverFolderId(null);
-              handleDragEnd(result);
-            }}
-            onDragUpdate={handleDragUpdate}
-          >
-            <div className="flex-grow overflow-y-auto">
-              <NodeList
-                nodes={filteredNodes}
-                onNodeFocus={onNodeFocus}
-                selectedNodes={selectedNodes}
-                handleNodeClick={handleNodeClick}
-                onUpdateNode={onUpdateNode}
-                onAIConversation={onAIConversation}
-                focusedNodeId={focusedNodeId}
-                onDeleteNode={onDeleteNode}
-              />
-            </div>
-          </DragDropContext>
-        </TabsContent>
-        <TabsContent value="files" className="h-full">
-          <div className="flex flex-col gap-4">
-            <div className="flex justify-center">
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFolderSelect}
-                className="hidden"
-                webkitdirectory=""
-                directory=""
-                multiple
-              />
-              <Button 
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
-                className="w-full max-w-xs"
-              >
-                <FolderOpen className="h-4 w-4 mr-2" />
-                Select Folder
-              </Button>
-            </div>
-            <FileTreeView files={selectedFiles} />
-          </div>
-        </TabsContent>
-      </Tabs>
+      <DragDropContext 
+        onDragEnd={(result) => {
+          setDraggedOverFolderId(null);
+          handleDragEnd(result);
+        }}
+        onDragUpdate={handleDragUpdate}
+      >
+        <div className="flex-grow overflow-y-auto">
+          <NodeList
+            nodes={filteredNodes}
+            onNodeFocus={onNodeFocus}
+            selectedNodes={selectedNodes}
+            handleNodeClick={handleNodeClick}
+            onUpdateNode={onUpdateNode}
+            onAIConversation={onAIConversation}
+            focusedNodeId={focusedNodeId}
+            onDeleteNode={onDeleteNode}
+          />
+        </div>
+      </DragDropContext>
 
       {editingNode && (
         <NodeEditDialog
