@@ -5,7 +5,7 @@ const DebugContext = createContext({
   setIsDebugOpen: () => {},
   debugData: {},
   setDebugData: () => {},
-  showGuides: true,
+  showGuides: false,
   setShowGuides: () => {},
   hoveredElement: null,
   setHoveredElement: () => {},
@@ -14,7 +14,7 @@ const DebugContext = createContext({
 export const DebugProvider = ({ children }) => {
   const [isDebugOpen, setIsDebugOpen] = useState(true);
   const [debugData, setDebugData] = useState({});
-  const [showGuides, setShowGuides] = useState(true);
+  const [showGuides, setShowGuides] = useState(false);
   const [hoveredElement, setHoveredElement] = useState(null);
 
   useEffect(() => {
