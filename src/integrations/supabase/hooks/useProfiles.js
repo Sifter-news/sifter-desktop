@@ -13,12 +13,13 @@ export const useProfile = (id) => useQuery({
     if (!id) return null;
     
     try {
-      // First check if profile exists
-      const { data: existingProfile } = await supabase
+      const { data: existingProfile, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', id)
-        .maybeSingle();
+        .single();
+      
+      if (error) throw error;
       
       if (existingProfile) {
         return existingProfile;
@@ -33,16 +34,18 @@ export const useProfile = (id) => useQuery({
         created_at: new Date().toISOString()
       };
       
-      const { data: createdProfile } = await supabase
+      const { data: createdProfile, error: insertError } = await supabase
         .from('profiles')
         .insert([newProfile])
         .select()
-        .maybeSingle();
+        .single();
+      
+      if (insertError) throw insertError;
       
       return createdProfile || newProfile;
     } catch (error) {
       console.error('Profile fetch/create error:', error);
-      return null;
+      throw error;
     }
   },
   enabled: !!id,
@@ -54,23 +57,23 @@ export const useProfiles = () => useQuery({
   queryFn: () => fromSupabase(supabase.from('profiles').select('*')),
 });
 
-export const useAddProfile = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (newProfile) => fromSupabase(supabase.from('profiles').insert([newProfile])),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profiles'] });
-    },
-  });
-};
-
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, ...updates }) => 
-      fromSupabase(supabase.from('profiles').update(updates).eq('id', id)),
-    onSuccess: () => {
+    mutationFn: async ({ id, ...updates }) => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+        
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
+      queryClient.setQueryData(['profiles', data.id], data);
     },
   });
 };
@@ -78,9 +81,18 @@ export const useUpdateProfile = () => {
 export const useDeleteProfile = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id) => fromSupabase(supabase.from('profiles').delete().eq('id', id)),
-    onSuccess: () => {
+    mutationFn: async (id) => {
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', id);
+        
+      if (error) throw error;
+      return id;
+    },
+    onSuccess: (deletedId) => {
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
+      queryClient.removeQueries({ queryKey: ['profiles', deletedId] });
     },
   });
 };
