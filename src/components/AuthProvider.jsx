@@ -14,8 +14,11 @@ export const AuthProvider = ({ children }) => {
   const location = useLocation();
 
   const handleAuthError = async () => {
+    // Clear any existing session data
     await supabase.auth.signOut();
     setUser(null);
+    localStorage.removeItem('sb-dzzkeiacwaddihxavrhy-auth-token');
+    
     if (location.pathname !== '/login') {
       navigate('/login');
       toast.error('Session expired. Please sign in again.');
@@ -27,21 +30,19 @@ export const AuthProvider = ({ children }) => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         
-        if (error) {
-          console.error('Session error:', error);
+        if (error || !session) {
           await handleAuthError();
           return;
         }
 
-        if (!session) {
-          setUser(null);
-          if (location.pathname !== '/login') {
-            navigate('/login');
-          }
+        // Verify the session is still valid
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        if (userError || !userData.user) {
+          await handleAuthError();
           return;
         }
 
-        setUser(session.user);
+        setUser(userData.user);
       } catch (error) {
         console.error('Auth error:', error);
         await handleAuthError();
@@ -63,8 +64,6 @@ export const AuthProvider = ({ children }) => {
       } else if (event === 'TOKEN_REFRESHED') {
         setUser(session?.user ?? null);
       } else if (event === 'USER_UPDATED') {
-        setUser(session?.user ?? null);
-      } else if (event === 'INITIAL_SESSION') {
         setUser(session?.user ?? null);
       }
       setLoading(false);
