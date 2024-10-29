@@ -19,6 +19,9 @@ const Toolbar = ({
 }) => {
   const [isExportDialogOpen, setIsExportDialogOpen] = React.useState(false);
 
+  // Calculate zoom percentage based on Z position (0-200 range)
+  const zoomPercentage = Math.round((200 - zoom) / 2);
+
   const handleAddNodeWithStyle = (visualStyle) => {
     const newNode = { 
       visualStyle,
@@ -57,7 +60,7 @@ const Toolbar = ({
         <Separator orientation="vertical" className="h-6" />
 
         {/* Navigation Tools Group */}
-        <div className="flex items-center space-x-1 px-2 h-8 bg-gray-300/80 rounded-full">
+        <div className="flex items-center space-x-1 pl-2 h-8 bg-gray-300/80 rounded-full">
           <ToolbarButton 
             icon={<MousePointer className="h-3 w-3" />} 
             label="Select & Move Nodes"
@@ -106,7 +109,7 @@ const Toolbar = ({
               size="icon" 
               variant="ghost" 
               className="rounded-full h-3 w-3 bg-black bg-opacity-5 hover:bg-gray-200 p-0" 
-              onClick={() => handleZoom(0.1)}
+              onClick={() => handleZoom(-10)}
             >
               <Plus className="h-2 w-2" />
             </Button>
@@ -114,13 +117,13 @@ const Toolbar = ({
               size="icon" 
               variant="ghost" 
               className="rounded-full h-3 w-3 bg-black bg-opacity-5 hover:bg-gray-200 p-0" 
-              onClick={() => handleZoom(-0.1)}
+              onClick={() => handleZoom(10)}
             >
               <Minus className="h-2 w-2" />
             </Button>
           </div>
           <div className="flex items-center justify-center w-8">
-            <span className="text-xs font-medium">{Math.round(zoom * 100)}%</span>
+            <span className="text-xs font-medium">{zoomPercentage}%</span>
           </div>
         </div>
 
