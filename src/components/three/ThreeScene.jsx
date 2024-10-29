@@ -7,15 +7,15 @@ import DebugAxes from './DebugAxes';
 
 const ThreeScene = ({ 
   nodes = [], 
-  connections = [], // Add default empty array
-  activeConnection = null, // Add default null
+  connections = [],
+  activeConnection = null,
   viewMode, 
   activeTool, 
   controlsRef, 
   handleNodeUpdate,
-  onStartConnection = () => {}, // Add default noop function
-  onEndConnection = () => {}, // Add default noop function
-  setActiveConnection = () => {} // Add default noop function
+  onStartConnection = () => {},
+  onEndConnection = () => {},
+  setActiveConnection = () => {}
 }) => {
   const handlePointerMove = (event) => {
     if (activeConnection) {
@@ -75,10 +75,9 @@ const ThreeScene = ({
         ref={controlsRef}
         enableZoom={true}
         enablePan={activeTool === 'pan'}
-        enableRotate={viewMode === '3d' && activeTool === 'pan'}
+        enableRotate={activeTool === 'pan'}
         maxDistance={200}
         minDistance={10}
-        maxPolarAngle={viewMode === '2d' ? 0 : Math.PI / 2}
       />
     </group>
   );
