@@ -1,9 +1,10 @@
 import React, { forwardRef, useCallback, useEffect, useState } from 'react';
-import NodeRenderer from './NodeRenderer';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 import { toast } from 'sonner';
 import { useDebug } from '@/contexts/DebugContext';
+import TwoDNode from './node/TwoDNode';
+import CanvasBackground from './canvas/CanvasBackground';
+import CanvasControls from './canvas/CanvasControls';
+import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 
 const Canvas = forwardRef(({ 
   nodes, 
@@ -30,9 +31,6 @@ const Canvas = forwardRef(({
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
   const [previousTool, setPreviousTool] = useState(null);
-  const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
-  const [clickCount, setClickCount] = useState(0);
-  const [clickTimeout, setClickTimeout] = useState(null);
   const { setDebugData } = useDebug();
 
   const updateDebugInfo = useCallback((action) => {
@@ -153,20 +151,11 @@ const Canvas = forwardRef(({
         tabIndex={0}
         style={{ cursor: isPanning ? 'grabbing' : 'default' }}
       >
-        <div 
-          className="absolute inset-0" 
-          style={{
-            width: '100%',
-            height: '100%',
-            border: '2px solid rgba(255, 255, 255, 0.2)',
-            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)',
-            backgroundSize: '120px 120px',
-            transformOrigin: '0 0',
-            transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
-          }}
-        >
+        <CanvasBackground zoom={zoom} position={position} />
+        
+        <div className="relative">
           {nodes.map(node => (
-            <NodeRenderer
+            <TwoDNode
               key={node.id}
               node={node}
               zoom={zoom}
@@ -174,39 +163,19 @@ const Canvas = forwardRef(({
               onFocus={onNodeFocus}
               isFocused={focusedNodeId === node.id}
               onDelete={onNodeDelete}
-              onAIConversation={onAIConversation}
-              onNodePositionUpdate={onNodePositionUpdate}
               isDraggable={activeTool !== 'pan'}
-              allNodes={nodes}
-              className={focusedNodeId === node.id ? 'ring-2 ring-blue-500 ring-offset-2 transition-all duration-200' : ''}
+              position={{ x: node.x, y: node.y }}
             />
           ))}
         </div>
       </div>
 
-      <AlertDialog open={showDeleteConfirmation} onOpenChange={setShowDeleteConfirmation}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure you want to delete this AI node?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the AI node and its associated data.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowDeleteConfirmation(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => {
-              if (nodeToDelete) {
-                onNodeDelete(nodeToDelete.id);
-                toast.success("AI node deleted");
-              }
-              setShowDeleteConfirmation(false);
-              setNodeToDelete(null);
-            }}>
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <CanvasControls 
+        showDeleteConfirmation={showDeleteConfirmation}
+        setShowDeleteConfirmation={setShowDeleteConfirmation}
+        nodeToDelete={nodeToDelete}
+        onNodeDelete={onNodeDelete}
+      />
     </>
   );
 });
