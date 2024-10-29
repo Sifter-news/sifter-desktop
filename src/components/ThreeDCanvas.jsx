@@ -83,10 +83,11 @@ const ThreeDCanvas = () => {
       </div>
       <Canvas
         camera={{ 
-          position: [0, 100, 0],
+          position: [0, 50, 100], // Changed from [0, 100, 0] to provide a front view
           fov: 45,
           near: 0.1,
-          far: 1000
+          far: 1000,
+          up: [0, 1, 0] // Ensures correct orientation
         }}
         style={{ background: 'black' }}
       >
