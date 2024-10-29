@@ -43,7 +43,7 @@ const Toolbar = ({
     <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-sm rounded-full shadow-lg p-1">
       <div className="bg-white/90 rounded-full p-1 flex items-center space-x-1 h-10">
         {/* Perspective Toggle Group */}
-        <div className="flex items-center space-x-1 px-2 h-8 bg-gray-200/80 rounded-full">
+        <div className="flex items-center space-x-1 pl-2 h-8 bg-gray-200/80 rounded-full">
           <Button 
             variant="ghost"
             size="sm"
@@ -76,7 +76,7 @@ const Toolbar = ({
         </div>
 
         {/* Node Creation Tools */}
-        <div className="flex items-center space-x-1 px-2 h-8 bg-gray-200/80 rounded-full">
+        <div className="flex items-center space-x-1 pl-2 h-8 bg-gray-200/80 rounded-full">
           <ToolbarButton 
             icon={<Circle className="h-3 w-3" />}
             label="Add Compact Node"
@@ -100,7 +100,7 @@ const Toolbar = ({
         <Separator orientation="vertical" className="h-6" />
 
         {/* Zoom Controls */}
-        <div className="flex items-center space-x-1 px-2 h-8 bg-gray-200/80 rounded-full">
+        <div className="flex items-center space-x-1 pl-2 h-8 bg-gray-200/80 rounded-full">
           <div className="flex flex-col items-center space-y-0.5">
             <Button 
               size="icon" 
