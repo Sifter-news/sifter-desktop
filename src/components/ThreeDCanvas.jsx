@@ -28,15 +28,11 @@ const CameraDebugInfo = () => {
       });
     };
 
-    // Update initial state
     updateCameraState();
-
-    // Subscribe to camera changes
     camera.addEventListener('change', updateCameraState);
     return () => camera.removeEventListener('change', updateCameraState);
   }, [camera]);
 
-  // Pass camera state up to parent component
   return null;
 };
 
@@ -55,8 +51,8 @@ const ThreeDCanvas = () => {
 
   // Calculate camera position based on view mode
   const cameraPosition = viewMode === '3d' 
-    ? [70.71, 70.71, 70.71] // Isometric position (approximately 45° angles)
-    : [0, 0, 148]; // Looking down the Z axis from 148 units high
+    ? [70.71, 70.71, 70.71] // Isometric position
+    : [0, 0, 200]; // 2D front view position
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -132,6 +128,7 @@ const ThreeDCanvas = () => {
       <Canvas
         camera={{ 
           position: cameraPosition,
+          rotation: [0, 0, 0],
           fov: 45,
           near: 0.1,
           far: 2000,
