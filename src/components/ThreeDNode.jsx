@@ -6,6 +6,7 @@ import { useDebug } from '@/contexts/DebugContext';
 import NodeStyleTooltip from './node/NodeStyleTooltip';
 import ConnectionDot from './node/ConnectionDot';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { getNodeDimensions } from '@/utils/nodeStyles';
 
 const getNodeTypeDisplay = (nodeType) => {
   const types = {
@@ -43,12 +44,16 @@ const ThreeDNode = ({
     node?.position?.[2] || 0
   ];
 
+  const dimensions = getNodeDimensions(node?.visualStyle || 'default');
+  const boxWidth = dimensions.width / 40; // Scale down for Three.js scene
+  const boxHeight = dimensions.height / 40;
+
   const handleConnectionStart = (point) => {
     const connectionPosition = [...nodePosition];
     if (point === 'top') {
-      connectionPosition[1] += 2.5;
+      connectionPosition[1] += boxHeight/2;
     } else if (point === 'bottom') {
-      connectionPosition[1] -= 2.5;
+      connectionPosition[1] -= boxHeight/2;
     }
     onStartConnection?.(node.id, connectionPosition, point);
   };
@@ -97,7 +102,7 @@ const ThreeDNode = ({
         onPointerEnter={handlePointerEnter}
         onPointerLeave={handlePointerLeave}
       >
-        <boxGeometry args={[5, 5, 0.2]} />
+        <boxGeometry args={[boxWidth, boxHeight, 0.2]} />
         <meshStandardMaterial 
           color="#4A90E2"
           transparent
@@ -107,8 +112,7 @@ const ThreeDNode = ({
           emissiveIntensity={isHighlighted ? 0.5 : 0}
         />
         
-        {/* Connection Points */}
-        <group position={[0, 2.5, 0.1]}>
+        <group position={[0, boxHeight/2, 0.1]}>
           <mesh
             onPointerEnter={() => setHoveredConnectionPoint('top')}
             onPointerLeave={() => setHoveredConnectionPoint(null)}
@@ -119,7 +123,7 @@ const ThreeDNode = ({
           </mesh>
         </group>
         
-        <group position={[0, -2.5, 0.1]}>
+        <group position={[0, -boxHeight/2, 0.1]}>
           <mesh
             onPointerEnter={() => setHoveredConnectionPoint('bottom')}
             onPointerLeave={() => setHoveredConnectionPoint(null)}
@@ -140,7 +144,8 @@ const ThreeDNode = ({
             whiteSpace: 'nowrap',
             pointerEvents: 'none',
             userSelect: 'none',
-            minWidth: '200px'
+            width: `${dimensions.width}px`,
+            minHeight: `${dimensions.height}px`
           }}
         >
           <div className="flex items-center gap-2">
@@ -158,6 +163,8 @@ const ThreeDNode = ({
               <div>Type: {node?.type || 'generic'}</div>
               <div>Style: {node?.visualStyle || 'default'}</div>
               <div>Pos: ({nodePosition.join(', ')})</div>
+              <div>Size: {dimensions.width}x{dimensions.height}</div>
+              <div>Resizable: {dimensions.resizable ? 'Yes' : 'No'}</div>
             </div>
           )}
         </Html>

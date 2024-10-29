@@ -5,6 +5,7 @@ import NodeContent from './node/NodeContent';
 import NodeStyleTooltip from './node/NodeStyleTooltip';
 import { isColliding, findNonCollidingPosition } from '@/utils/collisionUtils';
 import { snapToGrid, snapToSingleAxis } from '@/utils/canvasUtils';
+import { getNodeDimensions } from '@/utils/nodeStyles';
 
 const NodeRenderer = ({ 
   node, 
@@ -30,6 +31,8 @@ const NodeRenderer = ({
   const [textAlign, setTextAlign] = useState(node.textAlign || 'left');
   const [nodeColor, setNodeColor] = useState(node.color || 'white');
   const dragStartPos = useRef(null);
+
+  const dimensions = getNodeDimensions(node?.visualStyle || 'default');
 
   useEffect(() => {
     if (!isFocused) {
@@ -89,7 +92,7 @@ const NodeRenderer = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <Rnd
-        size={{ width: node.width || 200, height: node.height || 100 }}
+        size={{ width: dimensions.width, height: dimensions.height }}
         position={position}
         onDragStart={handleDragStart}
         onDrag={handleDrag}
@@ -100,7 +103,7 @@ const NodeRenderer = ({
           isHovered ? 'ring-1 ring-blue-300 ring-offset-1 shadow-md scale-[1.01]' : ''
         } ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         onClick={handleNodeClick}
-        enableResizing={false}
+        enableResizing={dimensions.resizable}
         bounds="parent"
       >
         {isHovered && (
@@ -112,7 +115,14 @@ const NodeRenderer = ({
         {showTooltip && (
           <NodeStyleTooltip
             position={position}
-            onStyleChange={(style) => onNodeUpdate(node.id, { visualStyle: style })}
+            onStyleChange={(style) => {
+              const newDimensions = getNodeDimensions(style);
+              onNodeUpdate(node.id, { 
+                visualStyle: style,
+                width: newDimensions.width,
+                height: newDimensions.height
+              });
+            }}
             onTextSizeChange={setTextSize}
             onAlignmentChange={setTextAlign}
             onTypeChange={(type) => onNodeUpdate(node.id, { nodeType: type })}
@@ -135,6 +145,7 @@ const NodeRenderer = ({
           textSize={textSize}
           textAlign={textAlign}
           color={nodeColor}
+          dimensions={dimensions}
         />
       </Rnd>
     </div>
