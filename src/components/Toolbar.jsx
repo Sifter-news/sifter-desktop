@@ -112,8 +112,8 @@ const Toolbar = ({
               <Minus className="h-2 w-2" />
             </Button>
           </div>
-          <div className="flex items-center justify-center w-12">
-            <span className="text-xs font-medium">{Math.round(zoom * 100)}%</span>
+          <div className="flex items-center justify-center min-w-[4rem] px-2">
+            <span className="text-xs font-medium tabular-nums">{Math.round(zoom * 100)}%</span>
           </div>
         </div>
 
