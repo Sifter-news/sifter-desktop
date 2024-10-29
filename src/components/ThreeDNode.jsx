@@ -1,8 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useDebug } from '@/contexts/DebugContext';
 import { NODE_STYLES } from '@/utils/nodeStyles';
+import { findNonCollidingPosition3D } from '@/utils/collision3DUtils';
 
 const ThreeDNode = ({ 
   node, 
@@ -10,7 +11,8 @@ const ThreeDNode = ({
   onUpdate, 
   onStartConnection,
   onEndConnection,
-  isHighlighted 
+  isHighlighted,
+  allNodes = []
 }) => {
   const meshRef = useRef();
   const [isDragging, setIsDragging] = useState(false);
@@ -19,14 +21,26 @@ const ThreeDNode = ({
   const { gl } = useThree();
   const { showNodeDebug } = useDebug();
 
-  const nodePosition = [
+  const [position, setPosition] = useState([
     node?.position?.[0] || 0,
     node?.position?.[1] || 0,
     node?.position?.[2] || 0
-  ];
+  ]);
+
+  useEffect(() => {
+    if (node && allNodes.length > 0) {
+      const otherNodes = allNodes.filter(n => n.id !== node.id);
+      const newPosition = findNonCollidingPosition3D(
+        { ...node, position },
+        otherNodes
+      );
+      setPosition(newPosition);
+      onUpdate?.(node.id, { position: newPosition });
+    }
+  }, [node?.id, allNodes]);
 
   const style = NODE_STYLES[node?.visualStyle || 'default'];
-  const boxWidth = style.width / 20; // Scale down for Three.js scene
+  const boxWidth = style.width / 20;
   const boxHeight = style.height / 20;
   const boxDepth = style.visualStyle === 'postit' ? 0.5 : 0.2;
 
@@ -71,7 +85,7 @@ const ThreeDNode = ({
   };
 
   return (
-    <group position={nodePosition}>
+    <group position={position}>
       <mesh
         ref={meshRef}
         onPointerDown={handlePointerDown}
@@ -95,7 +109,7 @@ const ThreeDNode = ({
           <mesh
             onPointerEnter={() => setHoveredConnectionPoint('top')}
             onPointerLeave={() => setHoveredConnectionPoint(null)}
-            onPointerDown={() => onStartConnection?.(node.id, nodePosition, 'top')}
+            onPointerDown={() => onStartConnection?.(node.id, position, 'top')}
           >
             <sphereGeometry args={[0.2, 16, 16]} />
             <meshBasicMaterial color={hoveredConnectionPoint === 'top' ? '#00ff00' : '#ffffff'} />
@@ -106,7 +120,7 @@ const ThreeDNode = ({
           <mesh
             onPointerEnter={() => setHoveredConnectionPoint('bottom')}
             onPointerLeave={() => setHoveredConnectionPoint(null)}
-            onPointerDown={() => onStartConnection?.(node.id, nodePosition, 'bottom')}
+            onPointerDown={() => onStartConnection?.(node.id, position, 'bottom')}
           >
             <sphereGeometry args={[0.2, 16, 16]} />
             <meshBasicMaterial color={hoveredConnectionPoint === 'bottom' ? '#00ff00' : '#ffffff'} />
