@@ -171,8 +171,9 @@ const DebugPanel = () => {
       minHeight={isCollapsed ? 40 : 200}
       bounds="window"
       enableResizing={!isCollapsed}
+      style={{ zIndex: 99999 }}
     >
-      <div className={`bg-black/90 text-white rounded-lg shadow-xl z-[9999] backdrop-blur-sm ${
+      <div className={`bg-black/90 text-white rounded-lg shadow-xl backdrop-blur-sm border border-white/20 ${
         isCollapsed ? 'w-10 h-10' : 'w-full h-full'
       }`}>
         {panelContent}
