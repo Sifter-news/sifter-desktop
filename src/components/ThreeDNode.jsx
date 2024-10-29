@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useDebug } from '@/contexts/DebugContext';
+import { NODE_STYLES } from '@/utils/nodeStyles';
 
 const ThreeDNode = ({ 
   node, 
@@ -23,6 +24,22 @@ const ThreeDNode = ({
     node?.position?.[1] || 0,
     node?.position?.[2] || 0
   ];
+
+  const style = NODE_STYLES[node?.visualStyle || 'default'];
+  const boxWidth = style.width / 20; // Scale down for Three.js scene
+  const boxHeight = style.height / 20;
+  const boxDepth = style.visualStyle === 'postit' ? 0.5 : 0.2;
+
+  const getNodeColor = () => {
+    switch (node?.visualStyle) {
+      case 'compact':
+        return '#4A90E2';
+      case 'postit':
+        return '#FFE082';
+      default:
+        return '#FFFFFF';
+    }
+  };
 
   const handlePointerDown = (e) => {
     if (activeTool !== 'select') return;
@@ -62,17 +79,19 @@ const ThreeDNode = ({
         onPointerEnter={handlePointerEnter}
         onPointerLeave={handlePointerLeave}
       >
-        <boxGeometry args={[4, 2, 0.2]} />
+        <boxGeometry args={[boxWidth, boxHeight, boxDepth]} />
         <meshStandardMaterial 
-          color="#4A90E2"
+          color={getNodeColor()}
           transparent
           opacity={isHovered ? 0.8 : 1}
           wireframe={isHovered && !isDragging}
           emissive={isHighlighted ? "#ffffff" : "#000000"}
           emissiveIntensity={isHighlighted ? 0.5 : 0}
+          roughness={0.3}
+          metalness={0.1}
         />
         
-        <group position={[0, 1, 0.1]}>
+        <group position={[0, boxHeight/2, boxDepth/2]}>
           <mesh
             onPointerEnter={() => setHoveredConnectionPoint('top')}
             onPointerLeave={() => setHoveredConnectionPoint(null)}
@@ -83,7 +102,7 @@ const ThreeDNode = ({
           </mesh>
         </group>
         
-        <group position={[0, -1, 0.1]}>
+        <group position={[0, -boxHeight/2, boxDepth/2]}>
           <mesh
             onPointerEnter={() => setHoveredConnectionPoint('bottom')}
             onPointerLeave={() => setHoveredConnectionPoint(null)}
