@@ -99,7 +99,7 @@ const NodeListItem = ({
               <div>
                 <div className="font-medium text-sm">{node.title}</div>
                 <div className="text-xs text-gray-500">{node.nodeType || 'Generic Note'}</div>
-                <div className="text-sm text-gray-500">{node.description}</div>
+                <div className="text-sm text-gray-500 h-0 group-hover:h-auto overflow-hidden transition-all duration-200">{node.description}</div>
               </div>
             </div>
           </div>
