@@ -115,6 +115,7 @@ const ThreeDCanvas = () => {
       <Canvas
         camera={{ 
           position: [0, 0, 200],
+          up: [0, 0, 1],
           fov: 45,
           near: 0.1,
           far: 2000
