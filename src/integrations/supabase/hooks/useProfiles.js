@@ -57,6 +57,26 @@ export const useProfiles = () => useQuery({
   queryFn: () => fromSupabase(supabase.from('profiles').select('*')),
 });
 
+export const useAddProfile = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (newProfile) => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .insert([newProfile])
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['profiles'] });
+      queryClient.setQueryData(['profiles', data.id], data);
+    },
+  });
+};
+
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
   return useMutation({
