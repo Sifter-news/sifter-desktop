@@ -49,6 +49,24 @@ const DebugStateSection = ({ debugData }) => {
             <p className="text-xs">Current Perspective: {debugData?.viewMode || '2D'}</p>
           </div>
         </div>
+        {debugData?.nodes?.list && debugData.nodes.list.length > 0 && (
+          <div className="space-y-1">
+            <p className="text-xs font-medium text-white/80">Nodes</p>
+            <div className="pl-2 space-y-1">
+              {debugData.nodes.list.map((node, index) => (
+                <div key={node.id} className="text-xs">
+                  Node {index + 1}: {node.type} 
+                  <div className="pl-2 font-mono">
+                    pos: (
+                    <span className="text-red-400">{node.position?.x || '0'}</span>, 
+                    <span className="text-green-400">{node.position?.y || '0'}</span>, 
+                    <span className="text-blue-400">{node.position?.z || '0'}</span>)
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
