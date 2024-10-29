@@ -14,14 +14,11 @@ import AIChatPanel from './ai/AIChatPanel';
 const Toolbar = ({ 
   activeTool, 
   setActiveTool, 
-  handleZoom, 
-  zoom, 
   viewMode,
-  setViewMode,
+  onViewModeChange,
   onAddNode 
 }) => {
   const [isAIPanelOpen, setIsAIPanelOpen] = React.useState(false);
-  const zoomPercentage = Math.round(100 - (zoom / 2));
 
   const handleAddNode = (style, type = 'generic') => {
     const nodeTypes = {
@@ -55,29 +52,10 @@ const Toolbar = ({
             activeTool={activeTool}
             setActiveTool={setActiveTool}
             viewMode={viewMode}
-            onViewModeChange={setViewMode}
+            setViewMode={onViewModeChange}
           />
 
           <Separator orientation="vertical" className="h-6 bg-white/20 mx-2" />
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                className="h-8 rounded-lg text-white hover:bg-white/10 bg-white/[0.0625] flex items-center gap-1 [&>svg]:text-white hover:[&>svg]:text-white"
-              >
-                {zoomPercentage}%
-                <ChevronDown className="h-3 w-3 ml-1" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-black text-white" align="top">
-              <DropdownMenuItem onClick={() => handleZoom(0.5)}>50%</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleZoom(1)}>100%</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleZoom(1.5)}>150%</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleZoom(2)}>200%</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
 
           <div className="flex-grow" />
 

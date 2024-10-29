@@ -77,7 +77,7 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
           activeTool={activeTool}
           setActiveTool={setActiveTool}
           viewMode={viewMode}
-          setViewMode={handleViewModeChange}
+          onViewModeChange={handleViewModeChange}
           onAddNode={onAddNode}
         />
       </nav>
