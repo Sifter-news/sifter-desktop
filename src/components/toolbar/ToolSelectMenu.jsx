@@ -1,14 +1,14 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { MousePointer2, Move3d, Orbit, LayoutGrid, Axis3D } from 'lucide-react';
+import { MousePointer2, Move3d, Orbit, Grid2x2, Axis3D } from 'lucide-react';
 
-const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode, setViewMode }) => {
+const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode, onViewModeChange }) => {
   const handleToolToggle = () => {
     setActiveTool(activeTool === 'select' ? 'pan' : 'select');
   };
 
   const handleViewToggle = () => {
-    setViewMode(viewMode === '2d' ? '3d' : '2d');
+    onViewModeChange(viewMode === '2d' ? '3d' : '2d');
   };
 
   return (
@@ -39,7 +39,7 @@ const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode, setViewMode }) =>
         {viewMode === '3d' ? (
           <Axis3D className="h-4 w-4" />
         ) : (
-          <LayoutGrid className="h-4 w-4" />
+          <Grid2x2 className="h-4 w-4" />
         )}
       </Button>
     </div>
