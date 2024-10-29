@@ -1,61 +1,18 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
 import { toast } from 'sonner';
-import { Bug } from "lucide-react";
-import * as THREE from 'three';
-import Toolbar from './Toolbar';
 import ThreeScene from './three/ThreeScene';
-import { useNodes } from '@/hooks/useNodes';
-import { useZoomPan } from '@/hooks/useZoomPan';
+import Toolbar from './Toolbar';
 import { useDebug } from '@/contexts/DebugContext';
 import { supabase } from '@/integrations/supabase/supabase';
 
-const CameraDebug = () => {
-  const { camera, mouse } = useThree();
-  const { setDebugData } = useDebug();
-
-  useEffect(() => {
-    const updateDebug = () => {
-      setDebugData(prev => ({
-        ...prev,
-        camera: {
-          position: {
-            x: camera.position.x.toFixed(2),
-            y: camera.position.y.toFixed(2),
-            z: camera.position.z.toFixed(2)
-          },
-          rotation: {
-            x: camera.rotation.x.toFixed(2),
-            y: camera.rotation.y.toFixed(2),
-            z: camera.rotation.z.toFixed(2)
-          }
-        },
-        mouse: {
-          x: mouse.x.toFixed(2),
-          y: mouse.y.toFixed(2),
-          z: camera.position.z.toFixed(2)
-        }
-      }));
-    };
-
-    const interval = setInterval(updateDebug, 100);
-    return () => clearInterval(interval);
-  }, [camera, mouse, setDebugData]);
-
-  return null;
-};
-
 const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
   const [nodes, setNodes] = useState([]);
-  const [activeTool, setActiveTool] = React.useState('pan');
-  const [viewMode, setViewMode] = React.useState('2d');
+  const [activeTool, setActiveTool] = useState('pan');
+  const [viewMode, setViewMode] = useState('2d');
   const controlsRef = useRef();
   const { setDebugData } = useDebug();
-
-  const {
-    zoom,
-    handleZoom
-  } = useZoomPan(1);
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -77,13 +34,6 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
         }));
 
         setNodes(nodesWithPositions);
-        setDebugData(prev => ({
-          ...prev,
-          nodes: {
-            count: nodesWithPositions.length,
-            list: nodesWithPositions
-          }
-        }));
       } catch (error) {
         console.error('Error fetching nodes:', error);
         toast.error('Failed to load nodes');
@@ -93,22 +43,7 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
     if (projectId) {
       fetchNodes();
     }
-  }, [projectId, setDebugData]);
-
-  const handleNodeUpdate = async (nodeId, newPosition) => {
-    try {
-      if (onNodeUpdate) {
-        await onNodeUpdate(nodeId, {
-          position_x: newPosition[0],
-          position_y: newPosition[1],
-          position_z: newPosition[2]
-        });
-      }
-    } catch (error) {
-      console.error('Error updating node position:', error);
-      toast.error('Failed to update node position');
-    }
-  };
+  }, [projectId]);
 
   const handleViewModeChange = (mode) => {
     setViewMode(mode);
@@ -118,14 +53,22 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
     }));
   };
 
-  // Set up isometric camera position
-  const isometricPosition = viewMode === '3d' 
-    ? [100, 100, 100]  // Equal distance on all axes for isometric view
-    : [0, 0, 200];     // 2D view position
-
-  const isometricRotation = viewMode === '3d'
-    ? [-Math.PI / 6, Math.PI / 4, 0] // Isometric angles
-    : [0, 0, 0];                     // 2D view rotation
+  // Camera settings for different view modes
+  const cameraSettings = viewMode === '3d' 
+    ? {
+        position: [100, 100, 100], // Isometric position
+        rotation: [-Math.PI / 6, Math.PI / 4, 0], // Isometric rotation
+        fov: 50,
+        near: 0.1,
+        far: 5000
+      }
+    : {
+        position: [0, 0, 200],
+        rotation: [0, 0, 0],
+        fov: 50,
+        near: 0.1,
+        far: 5000
+      };
 
   return (
     <div className="fixed inset-0 bg-black">
@@ -133,31 +76,27 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
         <Toolbar 
           activeTool={activeTool}
           setActiveTool={setActiveTool}
-          handleZoom={handleZoom}
-          zoom={zoom}
           viewMode={viewMode}
           setViewMode={handleViewModeChange}
           onAddNode={onAddNode}
         />
       </nav>
 
-      <Canvas
-        camera={{ 
-          position: isometricPosition,
-          rotation: isometricRotation,
-          fov: 50,
-          near: 0.1,
-          far: 5000
-        }}
-        style={{ background: 'black' }}
-      >
-        <CameraDebug />
+      <Canvas camera={cameraSettings}>
         <ThreeScene 
           nodes={nodes}
           viewMode={viewMode}
           activeTool={activeTool}
           controlsRef={controlsRef}
-          handleNodeUpdate={handleNodeUpdate}
+          handleNodeUpdate={onNodeUpdate}
+        />
+        <OrbitControls 
+          ref={controlsRef}
+          enableZoom={true}
+          enablePan={true}
+          enableRotate={viewMode === '3d'}
+          maxDistance={5000}
+          minDistance={1}
         />
       </Canvas>
     </div>
