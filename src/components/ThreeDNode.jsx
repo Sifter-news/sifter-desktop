@@ -5,6 +5,21 @@ import * as THREE from 'three';
 import { useDebug } from '@/contexts/DebugContext';
 import NodeStyleTooltip from './node/NodeStyleTooltip';
 import ConnectionDot from './node/ConnectionDot';
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
+const getNodeTypeDisplay = (nodeType) => {
+  const types = {
+    'node_person': 'Person',
+    'node_organization': 'Organization',
+    'node_object': 'Object',
+    'node_concept': 'Concept',
+    'node_location': 'Location',
+    'node_event': 'Event',
+    'node': 'Generic Note',
+    'generic': 'Generic Note'
+  };
+  return types[nodeType] || 'Generic Note';
+};
 
 const ThreeDNode = ({ 
   node, 
@@ -124,19 +139,27 @@ const ThreeDNode = ({
             borderRadius: '4px',
             whiteSpace: 'nowrap',
             pointerEvents: 'none',
-            userSelect: 'none'
+            userSelect: 'none',
+            minWidth: '200px'
           }}
         >
-          <div className="flex flex-col items-center">
-            <span>{node?.title || 'Untitled Node'}</span>
-            {showNodeDebug && (
-              <div className="text-xs text-gray-500 mt-1">
-                <div>Type: {node?.type || 'generic'}</div>
-                <div>Style: {node?.visualStyle || 'default'}</div>
-                <div>Pos: ({nodePosition.join(', ')})</div>
-              </div>
-            )}
+          <div className="flex items-center gap-2">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={node?.avatar || '/default-image.png'} alt={node?.title} />
+              <AvatarFallback>NA</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <span className="font-medium">{node?.title || 'Untitled Node'}</span>
+              <span className="text-xs text-gray-500">{getNodeTypeDisplay(node?.nodeType)}</span>
+            </div>
           </div>
+          {showNodeDebug && (
+            <div className="text-xs text-gray-500 mt-1">
+              <div>Type: {node?.type || 'generic'}</div>
+              <div>Style: {node?.visualStyle || 'default'}</div>
+              <div>Pos: ({nodePosition.join(', ')})</div>
+            </div>
+          )}
         </Html>
       </mesh>
     </group>
