@@ -42,17 +42,6 @@ const Toolbar = ({
   return (
     <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-sm rounded-full shadow-lg p-2">
       <div className="bg-white/90 rounded-full p-2 flex items-center space-x-2">
-        {/* View Perspective Button - Moved to far left */}
-        <Button 
-          variant="ghost"
-          className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${viewMode === '2d' ? 'bg-blue-600 text-white' : 'hover:bg-gray-200'}`}
-          onClick={() => onViewModeChange(viewMode === '2d' ? '3d' : '2d')}
-        >
-          View Perspective
-        </Button>
-
-        <Separator orientation="vertical" className="h-6" />
-
         {/* Navigation Tools Group */}
         <div className="flex items-center space-x-1 px-2 py-1 bg-gray-300/80 rounded-full">
           <ToolbarButton 
@@ -70,6 +59,13 @@ const Toolbar = ({
             isActive={activeTool === 'pan'}
             activeClassName="bg-blue-600 text-white"
           />
+          <Button 
+            variant="ghost"
+            className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${viewMode === '2d' ? 'bg-blue-600 text-white' : 'hover:bg-gray-200'}`}
+            onClick={() => onViewModeChange(viewMode === '2d' ? '3d' : '2d')}
+          >
+            {viewMode.toUpperCase()}
+          </Button>
         </div>
 
         {/* Node Creation Tools */}
