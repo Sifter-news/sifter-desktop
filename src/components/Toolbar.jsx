@@ -54,7 +54,7 @@ const Toolbar = ({
         <Button 
           variant="ghost" 
           size="icon"
-          className="h-8 px-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-0.5"
+          className="h-8 px-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-0.5 [&>svg]:text-white hover:[&>svg]:text-white"
           onClick={() => setIsAIPanelOpen(true)}
         >
           <MessageCircle className="h-4 w-4" />
@@ -76,7 +76,7 @@ const Toolbar = ({
             <Button 
               variant="ghost" 
               size="sm"
-              className="h-8 rounded-lg text-white hover:bg-white/10 bg-white/[0.0625] flex items-center gap-1"
+              className="h-8 rounded-lg text-white hover:bg-white/10 bg-white/[0.0625] flex items-center gap-1 [&>svg]:text-white hover:[&>svg]:text-white"
             >
               {zoomPercentage}%
               <ChevronDown className="h-3 w-3 ml-1" />
@@ -97,7 +97,7 @@ const Toolbar = ({
             <Button 
               variant="ghost" 
               size="icon"
-              className="h-8 w-8 rounded-lg text-white hover:bg-white/10 bg-white/[0.0625]"
+              className="h-8 w-8 rounded-lg text-white hover:bg-white/10 bg-white/[0.0625] [&>svg]:text-white hover:[&>svg]:text-white"
             >
               <Plus className="h-4 w-4" />
             </Button>
