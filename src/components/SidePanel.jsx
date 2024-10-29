@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import NodeNavigator from './text-view/NodeNavigator';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useDebug } from '@/contexts/DebugContext';
 
 const SidePanel = ({ 
   nodes, 
@@ -13,6 +14,21 @@ const SidePanel = ({
   onAddNode 
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { setHoveredElement } = useDebug();
+
+  const handleTabMouseEnter = (tabName) => {
+    setHoveredElement({
+      component: `SidePanel:${tabName}Tab`,
+      metadata: {
+        type: 'Tab Content',
+        isExpanded
+      }
+    });
+  };
+
+  const handleTabMouseLeave = () => {
+    setHoveredElement(null);
+  };
 
   return (
     <div className="relative">
@@ -30,7 +46,12 @@ const SidePanel = ({
                 <TabsTrigger value="nodes" className="flex-1">Nodes</TabsTrigger>
                 <TabsTrigger value="suggested" className="flex-1">Add</TabsTrigger>
               </TabsList>
-              <TabsContent value="nodes">
+              <TabsContent 
+                value="nodes"
+                onMouseEnter={() => handleTabMouseEnter('Nodes')}
+                onMouseLeave={handleTabMouseLeave}
+                data-component="SidePanel:NodesTab"
+              >
                 <NodeNavigator
                   nodes={nodes}
                   onUpdateNode={onUpdateNode}
@@ -39,7 +60,13 @@ const SidePanel = ({
                   onAddNode={onAddNode}
                 />
               </TabsContent>
-              <TabsContent value="suggested" className="p-4">
+              <TabsContent 
+                value="suggested" 
+                className="p-4"
+                onMouseEnter={() => handleTabMouseEnter('Add')}
+                onMouseLeave={handleTabMouseLeave}
+                data-component="SidePanel:AddTab"
+              >
                 <div className="space-y-4">
                   <input
                     type="search"
