@@ -3,7 +3,8 @@ export const NODE_STYLES = {
     width: 48,
     height: 48,
     resizable: false,
-    label: "Compact",
+    title: "Compact Note",
+    description: "A minimal note style showing only the avatar",
     display: {
       avatar: true,
       title: false,
@@ -30,7 +31,8 @@ export const NODE_STYLES = {
     width: 128,
     height: 48,
     resizable: false,
-    label: "Default",
+    title: "Default Note",
+    description: "A standard note style with avatar and title",
     display: {
       avatar: true,
       title: true,
@@ -58,7 +60,8 @@ export const NODE_STYLES = {
     width: 256,
     height: 256,
     resizable: true,
-    label: "Post-it",
+    title: "Post-it Note",
+    description: "A larger note style with full content display",
     display: {
       avatar: true,
       title: true,
