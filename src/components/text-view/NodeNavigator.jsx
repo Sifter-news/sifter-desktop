@@ -59,7 +59,7 @@ const NodeNavigator = ({
   };
 
   return (
-    <div className="w-full h-full flex flex-col p-4 pl-[4px] rounded-2xl">
+    <div className="w-full h-full flex flex-col p-4 rounded-2xl">
       <div className="flex items-center gap-2 mb-4">
         <div className="flex-1">
           <SearchInput value={searchQuery} onChange={setSearchQuery} />
