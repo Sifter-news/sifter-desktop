@@ -74,13 +74,28 @@ const Toolbar = ({
   return (
     <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-sm rounded-xl shadow-lg p-1.5 border border-white/20">
       <div className="bg-black/90 rounded-xl p-0.5 flex items-center space-x-2 h-10">
-        <ToolbarButton
-          icon={activeTool === 'select' ? MousePointer2 : (viewMode === '3d' ? Orbit : Move3d)}
-          label="Navigation"
-          options={navigationOptions}
-          isActive={activeTool === 'select' || activeTool === 'pan'}
-          onClick={setActiveTool}
-        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="h-8 rounded-lg text-white hover:bg-white/10 flex items-center gap-1"
+            >
+              {activeTool === 'select' ? <MousePointer2 className="h-4 w-4" /> : (viewMode === '3d' ? <Orbit className="h-4 w-4" /> : <Move3d className="h-4 w-4" />)}
+              <ChevronDown className="h-3 w-3" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-black text-white" align="top">
+            <DropdownMenuItem onClick={() => setActiveTool('select')}>
+              <MousePointer2 className="h-4 w-4 mr-2" />
+              Select & Move
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setActiveTool('pan')}>
+              {viewMode === '3d' ? <Orbit className="h-4 w-4 mr-2" /> : <Move3d className="h-4 w-4 mr-2" />}
+              {viewMode === '3d' ? "Pan & Orbit" : "Pan"}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <Separator orientation="vertical" className="h-6 bg-white/20" />
 
@@ -89,10 +104,11 @@ const Toolbar = ({
           <DropdownMenuTrigger asChild>
             <Button 
               variant="ghost" 
-              size="icon"
-              className="h-8 w-8 rounded-lg text-white hover:bg-white/10"
+              size="sm"
+              className="h-8 rounded-lg text-white hover:bg-white/10 flex items-center gap-1"
             >
               <Square className="h-4 w-4" />
+              <ChevronDown className="h-3 w-3" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-black text-white" align="top">
