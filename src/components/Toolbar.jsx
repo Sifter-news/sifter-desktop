@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, Hand, MousePointer, CirclePlus, Download, Circle, Square, StickyNote } from 'lucide-react';
+import { Minus, Plus, Orbit, MousePointer, CirclePlus, Download, Circle, Square, StickyNote } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import ToolbarButton from './ToolbarButton';
@@ -13,7 +13,6 @@ const Toolbar = ({
   handleZoom, 
   zoom, 
   nodes, 
-  onAddNode,
   viewMode = '3d',
   onViewModeChange 
 }) => {
@@ -51,7 +50,7 @@ const Toolbar = ({
           <Button 
             variant="ghost"
             size="sm"
-            className={`h-8 w-8 rounded-full text-sm font-medium transition-colors ${viewMode === '2d' ? 'bg-blue-600 text-white' : 'hover:bg-gray-200'}`}
+            className={`h-8 w-8 rounded-full text-sm font-medium transition-colors ${viewMode === '2d' ? 'bg-white text-black' : 'hover:bg-gray-200'}`}
             onClick={() => onViewModeChange(viewMode === '2d' ? '3d' : '2d')}
           >
             {viewMode.toUpperCase()}
@@ -68,14 +67,15 @@ const Toolbar = ({
             shortcut="V"
             onClick={() => setActiveTool('select')}
             isActive={activeTool === 'select'}
+            activeClassName="bg-black text-white"
           />
           <ToolbarButton 
-            icon={<Hand className="h-3 w-3" />} 
+            icon={<Orbit className="h-3 w-3" />} 
             label="Pan & Orbit"
             shortcut="Space"
             onClick={() => setActiveTool('pan')}
             isActive={activeTool === 'pan'}
-            activeClassName="bg-blue-600 text-white"
+            activeClassName="bg-black text-white"
           />
         </div>
 
@@ -86,18 +86,21 @@ const Toolbar = ({
             label="Add Compact Node"
             shortcut="1"
             onClick={() => handleAddNodeWithStyle('compact')}
+            activeClassName="bg-black text-white"
           />
           <ToolbarButton 
             icon={<Square className="h-3 w-3" />}
             label="Add Default Node"
             shortcut="2"
             onClick={() => handleAddNodeWithStyle('default')}
+            activeClassName="bg-black text-white"
           />
           <ToolbarButton 
             icon={<StickyNote className="h-3 w-3" />}
             label="Add Post-it Node"
             shortcut="3"
             onClick={() => handleAddNodeWithStyle('postit')}
+            activeClassName="bg-black text-white"
           />
         </div>
 
