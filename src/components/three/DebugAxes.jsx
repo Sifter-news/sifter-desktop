@@ -16,6 +16,55 @@ const DebugAxes = () => {
   const yLineVertices = new Float32Array([0, 0, 0, 0, 5000, 0]);
   const zLineVertices = new Float32Array([0, 0, 0, 0, 0, 5000]);
 
+  // Generate markers every 8 units
+  const generateMarkers = (axis) => {
+    const markers = [];
+    for (let i = 8; i <= 5000; i += 8) {
+      // Create marker position based on axis
+      const position = axis === 'x' ? [i, 0, 0] 
+                    : axis === 'y' ? [0, i, 0]
+                    : [0, 0, i];
+      
+      // Add marker text
+      markers.push(
+        <Text
+          key={`${axis}-${i}`}
+          position={position}
+          color={axis === 'x' ? 'red' : axis === 'y' ? 'green' : 'blue'}
+          fontSize={4}
+          anchorX="left"
+          anchorY="middle"
+        >
+          {`${i}`}
+        </Text>
+      );
+
+      // Add small line marker
+      const markerVertices = new Float32Array([
+        ...position,
+        ...(axis === 'x' ? [i, 2, 0] : axis === 'y' ? [2, i, 0] : [0, 2, i])
+      ]);
+
+      markers.push(
+        <line key={`${axis}-line-${i}`}>
+          <bufferGeometry attach="geometry">
+            <bufferAttribute
+              attach="attributes-position"
+              array={markerVertices}
+              count={2}
+              itemSize={3}
+            />
+          </bufferGeometry>
+          <lineBasicMaterial 
+            attach="material" 
+            color={axis === 'x' ? 'red' : axis === 'y' ? 'green' : 'blue'} 
+          />
+        </line>
+      );
+    }
+    return markers;
+  };
+
   return (
     <>
       {/* X axis line and label */}
@@ -39,6 +88,7 @@ const DebugAxes = () => {
       >
         X
       </Text>
+      {generateMarkers('x')}
       
       {/* Y axis line and label */}
       <line>
@@ -61,6 +111,7 @@ const DebugAxes = () => {
       >
         Y
       </Text>
+      {generateMarkers('y')}
       
       {/* Z axis line and label */}
       <line>
@@ -83,6 +134,7 @@ const DebugAxes = () => {
       >
         Z
       </Text>
+      {generateMarkers('z')}
     </>
   );
 };
