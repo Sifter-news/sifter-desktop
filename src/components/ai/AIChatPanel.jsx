@@ -74,6 +74,7 @@ const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
 
   return (
     <div className="fixed top-[72px] right-[8px] bottom-8 w-[360px] bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col">
+      <div className="flex items-center justify-between p-2 border-b">
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-2">
           <MessageCircle className="h-5 w-5 text-purple-500" />
