@@ -39,13 +39,18 @@ const ThreeDNode = ({
     }
   }, [node?.id, allNodes]);
 
-  const style = NODE_STYLES[node?.visualStyle || 'default'];
-  const boxWidth = style.width / 20;
-  const boxHeight = style.height / 20;
-  const boxDepth = style.visualStyle === 'postit' ? 0.5 : 0.2;
+  // Get style with fallback to default
+  const style = NODE_STYLES[node?.visualStyle || 'default'] || NODE_STYLES.default;
+  
+  // Calculate dimensions with safe defaults
+  const boxWidth = (style?.width || 200) / 20;
+  const boxHeight = (style?.height || 100) / 20;
+  const boxDepth = style?.visualStyle === 'postit' ? 0.5 : 0.2;
 
   const getNodeColor = () => {
-    switch (node?.visualStyle) {
+    if (!node?.visualStyle) return '#FFFFFF';
+    
+    switch (node.visualStyle) {
       case 'compact':
         return '#4A90E2';
       case 'postit':
