@@ -120,7 +120,7 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
   };
 
   return (
-    <div className="relative w-full h-[calc(100vh-64px)] bg-black">
+    <div className="relative w-full h-screen bg-black">
       <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-start p-4">
         <Toolbar 
           activeTool={activeTool}
