@@ -6,15 +6,28 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/components/AuthProvider';
 import { useInvestigations } from '@/integrations/supabase/hooks/useInvestigations';
+import { useLocation } from 'react-router-dom';
 
 const DebugPanel = () => {
   const { isDebugOpen, setIsDebugOpen, debugData, showNodeDebug, setShowNodeDebug } = useDebug();
   const { user } = useAuth();
+  const location = useLocation();
   const { data: investigations } = useInvestigations({ 
     filter: user ? `owner_id.eq.${user?.id}` : undefined 
   });
 
   if (!isDebugOpen) return null;
+
+  const getCurrentView = () => {
+    const path = location.pathname;
+    if (path === '/') return 'Dashboard';
+    if (path.startsWith('/project/')) return 'Project View';
+    if (path === '/projects') return 'Projects List';
+    return path;
+  };
+
+  const currentProjectId = location.pathname.split('/project/')[1];
+  const currentProject = investigations?.find(inv => inv.id === currentProjectId);
 
   return (
     <div className="fixed top-4 right-4 w-96 bg-black/90 text-white rounded-lg shadow-xl z-[9999] backdrop-blur-sm">
@@ -42,6 +55,40 @@ const DebugPanel = () => {
       
       <ScrollArea className="h-[500px] p-4">
         <div className="space-y-4">
+          {/* Current View Section */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-white/80">Current View</h3>
+            <div className="bg-black/50 p-2 rounded">
+              <p className="text-xs">Page: {getCurrentView()}</p>
+              {currentProject && (
+                <>
+                  <p className="text-xs mt-1">Project: {currentProject.title}</p>
+                  <p className="text-xs">Project ID: {currentProject.id}</p>
+                  <div className="mt-2">
+                    <p className="text-xs font-medium">Reports ({currentProject.reports?.length || 0}):</p>
+                    <ul className="pl-2">
+                      {currentProject.reports?.map(report => (
+                        <li key={report.id} className="text-xs text-gray-400">
+                          • {report.title}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="mt-2">
+                    <p className="text-xs font-medium">Nodes ({debugData.nodes?.count || 0}):</p>
+                    <ul className="pl-2">
+                      {debugData.nodes?.list?.map(node => (
+                        <li key={node.id} className="text-xs text-gray-400">
+                          • {node.type}: {node.id}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
           {/* Authentication Section */}
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-white/80">Authentication</h3>
