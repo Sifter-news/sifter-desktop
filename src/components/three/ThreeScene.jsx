@@ -37,7 +37,7 @@ const ThreeScene = ({
     <group onPointerMove={handlePointerMove}>
       <ambientLight intensity={0.5} />
       <pointLight position={[10, 10, 10]} />
-      <Grid size={100} divisions={24} />
+      <Grid size={1000} divisions={100} />
       {showGuides && <DebugAxes />}
       
       {nodes?.map(node => (
@@ -52,23 +52,13 @@ const ThreeScene = ({
         />
       ))}
 
-      {connections?.map((connection, index) => {
-        const sourceNode = nodes?.find(n => n.id === connection.source_id);
-        const targetNode = nodes?.find(n => n.id === connection.target_id);
-        
-        if (!sourceNode || !targetNode) return null;
-
-        const sourceY = connection.source_point === 'top' ? 2.5 : -2.5;
-        const targetY = connection.target_point === 'top' ? 2.5 : -2.5;
-
-        return (
-          <ConnectionLine
-            key={index}
-            start={[sourceNode.position[0], sourceNode.position[1] + sourceY, viewMode === '3d' ? sourceNode.position[2] || 0 : 0]}
-            end={[targetNode.position[0], targetNode.position[1] + targetY, viewMode === '3d' ? targetNode.position[2] || 0 : 0]}
-          />
-        );
-      })}
+      {connections?.map((connection, index) => (
+        <ConnectionLine
+          key={index}
+          start={connection.sourcePosition}
+          end={connection.targetPosition}
+        />
+      ))}
 
       {activeConnection && (
         <ConnectionLine
@@ -80,10 +70,10 @@ const ThreeScene = ({
       <OrbitControls 
         ref={controlsRef}
         enableZoom={true}
-        enablePan={activeTool === 'pan'}
-        enableRotate={viewMode === '3d' && activeTool === 'pan'}
-        maxDistance={200}
-        minDistance={10}
+        enablePan={true}
+        enableRotate={viewMode === '3d'}
+        maxDistance={5000}
+        minDistance={1}
         camera={camera}
       />
     </group>

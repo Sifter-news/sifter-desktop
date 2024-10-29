@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { toast } from 'sonner';
 import { Bug } from "lucide-react";
+import * as THREE from 'three';
 import Toolbar from './Toolbar';
 import ThreeScene from './three/ThreeScene';
 import { useNodes } from '@/hooks/useNodes';
@@ -48,7 +49,6 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
   const [nodes, setNodes] = useState([]);
   const [activeTool, setActiveTool] = React.useState('pan');
   const [viewMode, setViewMode] = React.useState('2d');
-  const [showDebug, setShowDebug] = React.useState(false);
   const controlsRef = useRef();
   const { setDebugData } = useDebug();
 
@@ -110,6 +110,15 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
     }
   };
 
+  // Set up isometric camera position
+  const isometricPosition = viewMode === '3d' 
+    ? [100, 100, 100]  // Equal distance on all axes for isometric view
+    : [0, 0, 200];     // 2D view position
+
+  const isometricRotation = viewMode === '3d'
+    ? [-Math.PI / 6, Math.PI / 4, 0] // Isometric angles
+    : [0, 0, 0];                     // 2D view rotation
+
   return (
     <div className="fixed inset-0 bg-black">
       <nav className="fixed top-0 left-0 right-0 z-10">
@@ -126,10 +135,11 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
 
       <Canvas
         camera={{ 
-          position: viewMode === '3d' ? [100, 100, 100] : [0, 0, 200],
-          fov: 45,
+          position: isometricPosition,
+          rotation: isometricRotation,
+          fov: 50,
           near: 0.1,
-          far: 2000
+          far: 5000
         }}
         style={{ background: 'black' }}
       >
