@@ -1,5 +1,5 @@
-import React from 'react';
-import { Square, ChevronDown, FileText, User, Building2, Package, Brain, MapPin, Calendar } from 'lucide-react';
+import React, { useState } from 'react';
+import { Square, ChevronDown, Star } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +11,7 @@ import {
 import { findNonCollidingPosition } from '@/utils/collisionUtils';
 import ToolSelectMenu from './toolbar/ToolSelectMenu';
 import AddNodeButton from './toolbar/AddNodeButton';
+import AISidePanel from './AISidePanel';
 
 const Toolbar = ({ 
   activeTool, 
@@ -23,6 +24,7 @@ const Toolbar = ({
   onAddNode,
   isSpacePressed 
 }) => {
+  const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
   const zoomPercentage = Math.round(100 - (zoom / 2));
 
   const handleAddNodeWithStyle = (visualStyle, nodeType = 'generic') => {
@@ -48,6 +50,17 @@ const Toolbar = ({
   return (
     <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-sm rounded-xl shadow-lg p-1.5 border border-white/20">
       <div className="bg-black/90 rounded-xl p-0.5 flex items-center space-x-2 h-10">
+        <Button 
+          variant="ghost" 
+          size="icon"
+          className="h-8 w-8 rounded-lg bg-purple-600 hover:bg-purple-700 text-white"
+          onClick={() => setIsAIPanelOpen(true)}
+        >
+          <Star className="h-4 w-4" />
+        </Button>
+
+        <Separator orientation="vertical" className="h-6 bg-white/20" />
+
         <ToolSelectMenu 
           activeTool={activeTool}
           setActiveTool={setActiveTool}
@@ -56,58 +69,13 @@ const Toolbar = ({
         />
 
         <Separator orientation="vertical" className="h-6 bg-white/20" />
-        
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
               variant="ghost" 
               size="sm"
               className="h-8 rounded-lg text-white hover:bg-white/10 bg-white/[0.0625] flex items-center gap-1"
-            >
-              <Square className="h-4 w-4" />
-              <ChevronDown className="h-3 w-3" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-black text-white" align="top">
-            <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'generic')}>
-              <FileText className="h-4 w-4 mr-2" />
-              Generic Note
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_person')}>
-              <User className="h-4 w-4 mr-2" />
-              Person
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_organization')}>
-              <Building2 className="h-4 w-4 mr-2" />
-              Organization
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_object')}>
-              <Package className="h-4 w-4 mr-2" />
-              Object
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_concept')}>
-              <Brain className="h-4 w-4 mr-2" />
-              Concept
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_location')}>
-              <MapPin className="h-4 w-4 mr-2" />
-              Location
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_event')}>
-              <Calendar className="h-4 w-4 mr-2" />
-              Event
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <Separator orientation="vertical" className="h-6 bg-white/20" />
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-8 rounded-lg text-white hover:bg-white/10"
             >
               {zoomPercentage}%
               <ChevronDown className="h-3 w-3 ml-1" />
@@ -123,27 +91,15 @@ const Toolbar = ({
 
         <Separator orientation="vertical" className="h-6 bg-white/20" />
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              variant="ghost"
-              size="sm"
-              className="h-8 rounded-lg text-sm font-medium transition-colors flex items-center gap-1 text-white hover:bg-white/10"
-            >
-              {viewMode.toUpperCase()}
-              <ChevronDown className="h-3 w-3" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-black text-white" align="top">
-            <DropdownMenuItem onClick={() => onViewModeChange('2d')}>2D</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onViewModeChange('3d')}>3D</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <Separator orientation="vertical" className="h-6 bg-white/20" />
-
         <AddNodeButton handleAddNodeWithStyle={handleAddNodeWithStyle} />
       </div>
+
+      <AISidePanel 
+        isOpen={isAIPanelOpen}
+        onClose={() => setIsAIPanelOpen(false)}
+        title="AI Assistant"
+        placeholder="Ask me anything about your investigation..."
+      />
     </div>
   );
 };
