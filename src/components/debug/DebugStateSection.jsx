@@ -26,10 +26,30 @@ const DebugStateSection = ({ debugData }) => {
     }
   };
 
+  const getFocusedElement = () => {
+    if (debugData?.focusedNodeId) {
+      const node = debugData?.nodes?.list?.find(n => n.id === debugData.focusedNodeId);
+      return `Node: ${node?.title || node?.id || 'Unknown Node'}`;
+    }
+    
+    if (debugData?.focusedElement?.type) {
+      return `${debugData.focusedElement.type}: ${debugData.focusedElement.label || 'Unnamed'}`;
+    }
+
+    return 'None';
+  };
+
   return (
     <div className="space-y-2">
       <h3 className="text-sm font-medium text-white/80">Current State</h3>
       <div className="bg-black/50 p-2 rounded space-y-2">
+        <div className="space-y-1">
+          <p className="text-xs font-medium text-white/80">Focus</p>
+          <div className="pl-2">
+            <p className="text-xs">Focused Element: {getFocusedElement()}</p>
+          </div>
+        </div>
+
         <div className="space-y-1">
           <p className="text-xs font-medium text-white/80">Project View</p>
           <div className="pl-2">
