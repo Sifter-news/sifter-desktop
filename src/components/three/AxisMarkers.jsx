@@ -4,6 +4,7 @@ import * as THREE from 'three';
 
 const AxisMarkers = ({ axis, color, fadedColor }) => {
   const markers = [];
+  const axisLetter = axis.toUpperCase();
   
   // Positive markers
   for (let i = 8; i <= 5000; i += 8) {
@@ -20,7 +21,7 @@ const AxisMarkers = ({ axis, color, fadedColor }) => {
         anchorX="left"
         anchorY="middle"
       >
-        {`${i}`}
+        {`${i}${axisLetter}`}
       </Text>
     );
 
@@ -59,7 +60,7 @@ const AxisMarkers = ({ axis, color, fadedColor }) => {
         anchorX="left"
         anchorY="middle"
       >
-        {`${i}`}
+        {`${i}${axisLetter}`}
       </Text>
     );
 
