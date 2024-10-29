@@ -43,7 +43,7 @@ const CameraDebug = () => {
   return null;
 };
 
-const ThreeDCanvas = ({ nodes = [], onAddNode, onNodeUpdate }) => {
+const ThreeDCanvas = ({ onAddNode, onNodeUpdate }) => {
   const [activeTool, setActiveTool] = React.useState('pan');
   const [viewMode, setViewMode] = React.useState('2d');
   const [showDebug, setShowDebug] = React.useState(false);
@@ -89,36 +89,6 @@ const ThreeDCanvas = ({ nodes = [], onAddNode, onNodeUpdate }) => {
     }));
   }, [activeTool, viewMode, setDebugData]);
 
-  useEffect(() => {
-    setDebugData(prev => ({
-      ...prev,
-      nodes: {
-        count: nodes.length,
-        list: nodes.map(node => ({
-          id: node.id,
-          type: node.type,
-          visualStyle: node.visualStyle,
-          component: node.component || 'ThreeDNode'
-        }))
-      }
-    }));
-  }, [nodes, setDebugData]);
-
-  const handleNodeUpdate = async (nodeId, newPosition) => {
-    try {
-      if (onNodeUpdate) {
-        await onNodeUpdate(nodeId, {
-          position_x: newPosition[0],
-          position_y: newPosition[1],
-          position_z: 0
-        });
-      }
-    } catch (error) {
-      console.error('Error updating node position:', error);
-      toast.error('Failed to update node position');
-    }
-  };
-
   return (
     <div className="relative w-full h-[calc(100vh-64px)] bg-black">
       <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-start p-4">
@@ -127,7 +97,6 @@ const ThreeDCanvas = ({ nodes = [], onAddNode, onNodeUpdate }) => {
           setActiveTool={setActiveTool}
           handleZoom={handleZoom}
           zoom={zoom}
-          nodes={nodes}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
           onAddNode={onAddNode}
@@ -146,11 +115,11 @@ const ThreeDCanvas = ({ nodes = [], onAddNode, onNodeUpdate }) => {
       >
         <CameraDebug />
         <ThreeScene 
-          nodes={nodes}
+          nodes={[]}
           viewMode={viewMode}
           activeTool={isSpacePressed ? 'pan' : activeTool}
           controlsRef={controlsRef}
-          handleNodeUpdate={handleNodeUpdate}
+          handleNodeUpdate={onNodeUpdate}
         />
       </Canvas>
     </div>
