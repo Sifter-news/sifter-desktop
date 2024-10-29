@@ -7,6 +7,7 @@ import ThreeScene from './three/ThreeScene';
 import { useNodes } from '@/hooks/useNodes';
 import { useZoomPan } from '@/hooks/useZoomPan';
 import { useDebug } from '@/contexts/DebugContext';
+import { supabase } from '@/integrations/supabase/supabase';
 
 const CameraDebug = () => {
   const { camera, mouse } = useThree();
@@ -43,7 +44,8 @@ const CameraDebug = () => {
   return null;
 };
 
-const ThreeDCanvas = ({ onAddNode, onNodeUpdate }) => {
+const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
+  const [nodes, setNodes] = useState([]);
   const [activeTool, setActiveTool] = React.useState('pan');
   const [viewMode, setViewMode] = React.useState('2d');
   const [showDebug, setShowDebug] = React.useState(false);
@@ -55,6 +57,45 @@ const ThreeDCanvas = ({ onAddNode, onNodeUpdate }) => {
     zoom,
     handleZoom
   } = useZoomPan(1);
+
+  useEffect(() => {
+    const fetchNodes = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('node')
+          .select('*')
+          .eq('investigation_id', projectId);
+
+        if (error) throw error;
+
+        // Map nodes with random positions
+        const nodesWithRandomPositions = data.map(node => ({
+          ...node,
+          position: [
+            Math.random() * 100 - 50, // Random X between -50 and 50
+            Math.random() * 100 - 50, // Random Y between -50 and 50
+            0 // Keep Z at 0
+          ]
+        }));
+
+        setNodes(nodesWithRandomPositions);
+        setDebugData(prev => ({
+          ...prev,
+          nodes: {
+            count: nodesWithRandomPositions.length,
+            list: nodesWithRandomPositions
+          }
+        }));
+      } catch (error) {
+        console.error('Error fetching nodes:', error);
+        toast.error('Failed to load nodes');
+      }
+    };
+
+    if (projectId) {
+      fetchNodes();
+    }
+  }, [projectId, setDebugData]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -89,6 +130,21 @@ const ThreeDCanvas = ({ onAddNode, onNodeUpdate }) => {
     }));
   }, [activeTool, viewMode, setDebugData]);
 
+  const handleNodeUpdate = async (nodeId, newPosition) => {
+    try {
+      if (onNodeUpdate) {
+        await onNodeUpdate(nodeId, {
+          position_x: newPosition[0],
+          position_y: newPosition[1],
+          position_z: 0
+        });
+      }
+    } catch (error) {
+      console.error('Error updating node position:', error);
+      toast.error('Failed to update node position');
+    }
+  };
+
   return (
     <div className="relative w-full h-[calc(100vh-64px)] bg-black">
       <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-start p-4">
@@ -115,11 +171,11 @@ const ThreeDCanvas = ({ onAddNode, onNodeUpdate }) => {
       >
         <CameraDebug />
         <ThreeScene 
-          nodes={[]}
+          nodes={nodes}
           viewMode={viewMode}
           activeTool={isSpacePressed ? 'pan' : activeTool}
           controlsRef={controlsRef}
-          handleNodeUpdate={onNodeUpdate}
+          handleNodeUpdate={handleNodeUpdate}
         />
       </Canvas>
     </div>
