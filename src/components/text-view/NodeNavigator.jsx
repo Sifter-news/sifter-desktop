@@ -5,9 +5,7 @@ import NodeEditDialog from '../node/NodeEditDialog';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
 import NodeList from './NodeList';
 import { useDebug } from '@/contexts/DebugContext';
-import {
-  TabsContent,
-} from "@/components/ui/tabs";
+import { toast } from 'sonner';
 
 const NodeNavigator = ({ 
   nodes = [], 
@@ -34,7 +32,6 @@ const NodeNavigator = ({
       ...prev,
       navigatorNodes: nodes
     }));
-    console.log('Navigator nodes updated:', nodes);
   }, [nodes, setDebugData]);
 
   const filteredNodes = nodes.filter(node => {
@@ -50,17 +47,27 @@ const NodeNavigator = ({
     onNodeFocus(nodeId);
   };
 
+  const handleNodeDelete = async (nodeId) => {
+    try {
+      await onDeleteNode(nodeId);
+      setSelectedNodes(prev => prev.filter(id => id !== nodeId));
+      if (focusedNodeId === nodeId) {
+        onNodeFocus(null);
+      }
+      toast.success('Node deleted successfully');
+    } catch (error) {
+      console.error('Error deleting node:', error);
+      toast.error('Failed to delete node');
+    }
+  };
+
   return (
     <div className="w-full h-full flex flex-col p-4 rounded-2xl">
       <div className="flex-1">
         <SearchInput value={searchQuery} onChange={setSearchQuery} />
       </div>
       
-      <DragDropContext 
-        onDragEnd={(result) => {
-          handleDragEnd(result);
-        }}
-      >
+      <DragDropContext onDragEnd={handleDragEnd}>
         <div className="flex-grow overflow-y-auto mt-4">
           <NodeList
             nodes={filteredNodes}
@@ -70,7 +77,7 @@ const NodeNavigator = ({
             onUpdateNode={onUpdateNode}
             onAIConversation={onAIConversation}
             focusedNodeId={focusedNodeId}
-            onDeleteNode={onDeleteNode}
+            onDeleteNode={handleNodeDelete}
           />
         </div>
       </DragDropContext>
@@ -84,7 +91,7 @@ const NodeNavigator = ({
             onUpdateNode(id, updates);
             setEditingNode(null);
           }}
-          onDelete={onDeleteNode}
+          onDelete={handleNodeDelete}
         />
       )}
     </div>
