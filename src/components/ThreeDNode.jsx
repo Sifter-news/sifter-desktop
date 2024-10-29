@@ -87,6 +87,8 @@ const ThreeDNode = ({
     >
       <boxGeometry args={[5, 5, 0.2]} />
       <meshStandardMaterial color="#4A90E2" />
+      
+      {/* Node Content */}
       <Html
         position={[0, 0, 0.1]}
         center
@@ -101,9 +103,28 @@ const ThreeDNode = ({
       >
         {node.title}
       </Html>
+
+      {/* Debug Info */}
+      <Html
+        position={[0, -4, 0]}
+        center
+        style={{
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          color: '#00ff00',
+          padding: '4px',
+          borderRadius: '2px',
+          fontFamily: 'monospace',
+          fontSize: '10px',
+          whiteSpace: 'pre-wrap',
+          pointerEvents: 'none'
+        }}
+      >
+        {`Component: ThreeDNode\nPos: [${node.position[0].toFixed(2)}, ${node.position[1].toFixed(2)}, ${node.position[2].toFixed(2)}]`}
+      </Html>
+
       {showTooltip && (
         <Html
-          position={[0, 3, 0]} // Position 8px above the node
+          position={[0, 3, 0]}
           center
           style={{
             pointerEvents: 'auto',
