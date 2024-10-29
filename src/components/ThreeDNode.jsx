@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { useThree } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
+import { useDebug } from '@/contexts/DebugContext';
 import NodeStyleTooltip from './node/NodeStyleTooltip';
 import ConnectionDot from './node/ConnectionDot';
 
@@ -19,6 +20,7 @@ const ThreeDNode = ({
   const [hoveredConnectionPoint, setHoveredConnectionPoint] = useState(null);
   const [showTooltip, setShowTooltip] = useState(false);
   const { camera, gl } = useThree();
+  const { showNodeDebug } = useDebug();
 
   const nodePosition = [
     node?.position?.[0] || 0,
@@ -125,7 +127,16 @@ const ThreeDNode = ({
             userSelect: 'none'
           }}
         >
-          {node?.title || 'Untitled Node'}
+          <div className="flex flex-col items-center">
+            <span>{node?.title || 'Untitled Node'}</span>
+            {showNodeDebug && (
+              <div className="text-xs text-gray-500 mt-1">
+                <div>Type: {node?.type || 'generic'}</div>
+                <div>Style: {node?.visualStyle || 'default'}</div>
+                <div>Pos: ({nodePosition.join(', ')})</div>
+              </div>
+            )}
+          </div>
         </Html>
       </mesh>
     </group>

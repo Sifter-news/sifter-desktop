@@ -1,15 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const DebugContext = createContext({
-  isDebugOpen: false,
+  isDebugOpen: true, // Changed default to true
   setIsDebugOpen: () => {},
   debugData: {},
   setDebugData: () => {},
+  showNodeDebug: false,
+  setShowNodeDebug: () => {},
 });
 
 export const DebugProvider = ({ children }) => {
-  const [isDebugOpen, setIsDebugOpen] = useState(false);
+  const [isDebugOpen, setIsDebugOpen] = useState(true); // Changed default to true
   const [debugData, setDebugData] = useState({});
+  const [showNodeDebug, setShowNodeDebug] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -24,7 +27,14 @@ export const DebugProvider = ({ children }) => {
   }, []);
 
   return (
-    <DebugContext.Provider value={{ isDebugOpen, setIsDebugOpen, debugData, setDebugData }}>
+    <DebugContext.Provider value={{ 
+      isDebugOpen, 
+      setIsDebugOpen, 
+      debugData, 
+      setDebugData,
+      showNodeDebug,
+      setShowNodeDebug
+    }}>
       {children}
     </DebugContext.Provider>
   );

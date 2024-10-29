@@ -1,11 +1,12 @@
 import React from 'react';
 import { useDebug } from '@/contexts/DebugContext';
-import { X } from 'lucide-react';
+import { X, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Switch } from '@/components/ui/switch';
 
 const DebugPanel = () => {
-  const { isDebugOpen, setIsDebugOpen, debugData } = useDebug();
+  const { isDebugOpen, setIsDebugOpen, debugData, showNodeDebug, setShowNodeDebug } = useDebug();
 
   if (!isDebugOpen) return null;
 
@@ -13,14 +14,24 @@ const DebugPanel = () => {
     <div className="fixed top-4 right-4 w-96 bg-black/90 text-white rounded-lg shadow-xl z-[9999] backdrop-blur-sm">
       <div className="flex items-center justify-between p-4 border-b border-white/10">
         <h2 className="text-lg font-semibold">Debug Panel</h2>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsDebugOpen(false)}
-          className="text-white hover:text-white/80"
-        >
-          <X className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={showNodeDebug}
+              onCheckedChange={setShowNodeDebug}
+              className="data-[state=checked]:bg-green-500"
+            />
+            <span className="text-sm">Show Node Debug</span>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsDebugOpen(false)}
+            className="text-white hover:text-white/80"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
       
       <ScrollArea className="h-[500px] p-4">
