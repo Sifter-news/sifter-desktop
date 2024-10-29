@@ -4,6 +4,11 @@ export const NODE_STYLES = {
     height: 48,
     resizable: false,
     label: "Compact",
+    display: {
+      avatar: true,
+      title: false,
+      description: false
+    },
     colors: {
       yellow: "bg-yellow-100",
       blue: "bg-blue-100",
@@ -26,6 +31,11 @@ export const NODE_STYLES = {
     height: 48,
     resizable: false,
     label: "Default",
+    display: {
+      avatar: true,
+      title: true,
+      description: false
+    },
     colors: {
       yellow: "bg-yellow-100",
       blue: "bg-blue-100",
@@ -49,6 +59,11 @@ export const NODE_STYLES = {
     height: 256,
     resizable: true,
     label: "Post-it",
+    display: {
+      avatar: true,
+      title: true,
+      description: true
+    },
     colors: {
       yellow: "bg-yellow-100",
       blue: "bg-blue-100",
