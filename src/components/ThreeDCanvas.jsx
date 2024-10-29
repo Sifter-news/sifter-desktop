@@ -1,22 +1,43 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
 import Toolbar from './Toolbar';
 import ThreeScene from './three/ThreeScene';
 
-const CameraDebug = () => {
+const CameraDebugInfo = () => {
   const { camera } = useThree();
-  
-  return (
-    <Html position={[-5, 3, 0]} transform>
-      <div className="bg-black/50 text-white p-2 font-mono text-sm">
-        <div>Position: x:{camera.position.x.toFixed(2)} y:{camera.position.y.toFixed(2)} z:{camera.position.z.toFixed(2)}</div>
-        <div>Rotation: x:{camera.rotation.x.toFixed(2)} y:{camera.rotation.y.toFixed(2)} z:{camera.rotation.z.toFixed(2)}</div>
-      </div>
-    </Html>
-  );
+  const [cameraState, setCameraState] = useState({
+    position: { x: 0, y: 0, z: 0 },
+    rotation: { x: 0, y: 0, z: 0 }
+  });
+
+  useEffect(() => {
+    const updateCameraState = () => {
+      setCameraState({
+        position: {
+          x: camera.position.x,
+          y: camera.position.y,
+          z: camera.position.z
+        },
+        rotation: {
+          x: camera.rotation.x,
+          y: camera.rotation.y,
+          z: camera.rotation.z
+        }
+      });
+    };
+
+    // Update initial state
+    updateCameraState();
+
+    // Subscribe to camera changes
+    camera.addEventListener('change', updateCameraState);
+    return () => camera.removeEventListener('change', updateCameraState);
+  }, [camera]);
+
+  // Pass camera state up to parent component
+  return null;
 };
 
 const ThreeDCanvas = () => {
@@ -26,6 +47,10 @@ const ThreeDCanvas = () => {
   const [connections, setConnections] = useState([]);
   const [activeConnection, setActiveConnection] = useState(null);
   const [viewMode, setViewMode] = useState('2d');
+  const [cameraDebug, setCameraDebug] = useState({
+    position: { x: 0, y: 0, z: 0 },
+    rotation: { x: 0, y: 0, z: 0 }
+  });
   const controlsRef = useRef();
 
   // Calculate camera position based on view mode
@@ -89,7 +114,7 @@ const ThreeDCanvas = () => {
 
   return (
     <div className="relative w-full h-[calc(100vh-64px)] bg-black">
-      <div className="absolute top-0 left-0 right-0 z-10">
+      <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-start">
         <Toolbar 
           activeTool={activeTool}
           setActiveTool={setActiveTool}
@@ -99,6 +124,10 @@ const ThreeDCanvas = () => {
           viewMode={viewMode}
           onViewModeChange={setViewMode}
         />
+        <div className="bg-black/50 text-white p-2 font-mono text-xs rounded-bl-lg">
+          <div>Pos: x:{cameraDebug.position.x.toFixed(2)} y:{cameraDebug.position.y.toFixed(2)} z:{cameraDebug.position.z.toFixed(2)}</div>
+          <div>Rot: x:{cameraDebug.rotation.x.toFixed(2)} y:{cameraDebug.rotation.y.toFixed(2)} z:{cameraDebug.rotation.z.toFixed(2)}</div>
+        </div>
       </div>
       <Canvas
         camera={{ 
@@ -109,8 +138,22 @@ const ThreeDCanvas = () => {
           up: [0, 1, 0]
         }}
         style={{ background: 'black' }}
+        onCreated={({ camera }) => {
+          setCameraDebug({
+            position: {
+              x: camera.position.x,
+              y: camera.position.y,
+              z: camera.position.z
+            },
+            rotation: {
+              x: camera.rotation.x,
+              y: camera.rotation.y,
+              z: camera.rotation.z
+            }
+          });
+        }}
       >
-        <CameraDebug />
+        <CameraDebugInfo />
         <ThreeScene 
           nodes={nodes}
           connections={connections}
