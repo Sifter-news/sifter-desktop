@@ -17,7 +17,9 @@ const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode, setViewMode }) =>
         variant="ghost" 
         size="sm"
         onClick={handleToolToggle}
-        className="h-8 px-2 rounded-lg text-white hover:bg-white/10 bg-white/[0.0625]"
+        className={`h-8 px-2 rounded-lg text-white hover:bg-white/10 ${
+          activeTool === 'select' ? 'bg-blue-600' : 'bg-white/[0.0625]'
+        }`}
       >
         {activeTool === 'select' ? (
           <MousePointer2 className="h-4 w-4" />
@@ -30,7 +32,9 @@ const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode, setViewMode }) =>
         variant="ghost" 
         size="sm"
         onClick={handleViewToggle}
-        className="h-8 px-2 rounded-lg text-white hover:bg-white/10 bg-white/[0.0625]"
+        className={`h-8 px-2 rounded-lg text-white hover:bg-white/10 ${
+          viewMode === '3d' ? 'bg-blue-600' : 'bg-white/[0.0625]'
+        }`}
       >
         {viewMode === '3d' ? (
           <Axis3D className="h-4 w-4" />
