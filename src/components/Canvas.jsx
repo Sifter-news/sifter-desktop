@@ -139,6 +139,7 @@ const Canvas = forwardRef(({
               onAIConversation={onAIConversation}
               onNodePositionUpdate={onNodePositionUpdate}
               isDraggable={activeTool !== 'pan'}
+              allNodes={nodes}
             />
           ))}
         </div>
