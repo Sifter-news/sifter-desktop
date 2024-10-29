@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
+import { Html } from '@react-three/drei';
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
 import Toolbar from './Toolbar';
@@ -9,10 +10,12 @@ const CameraDebug = () => {
   const { camera } = useThree();
   
   return (
-    <div className="absolute top-0 left-0 bg-black/50 text-white p-2 font-mono text-sm z-20">
-      <div>Position: x:{camera.position.x.toFixed(2)} y:{camera.position.y.toFixed(2)} z:{camera.position.z.toFixed(2)}</div>
-      <div>Rotation: x:{camera.rotation.x.toFixed(2)} y:{camera.rotation.y.toFixed(2)} z:{camera.rotation.z.toFixed(2)}</div>
-    </div>
+    <Html position={[-5, 3, 0]} transform>
+      <div className="bg-black/50 text-white p-2 font-mono text-sm">
+        <div>Position: x:{camera.position.x.toFixed(2)} y:{camera.position.y.toFixed(2)} z:{camera.position.z.toFixed(2)}</div>
+        <div>Rotation: x:{camera.rotation.x.toFixed(2)} y:{camera.rotation.y.toFixed(2)} z:{camera.rotation.z.toFixed(2)}</div>
+      </div>
+    </Html>
   );
 };
 
@@ -103,7 +106,7 @@ const ThreeDCanvas = () => {
           fov: 45,
           near: 0.1,
           far: 2000,
-          up: [0, 1, 0] // Updated to maintain correct orientation in 2D view
+          up: [0, 1, 0]
         }}
         style={{ background: 'black' }}
       >
