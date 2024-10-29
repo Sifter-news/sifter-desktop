@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS public.profiles;
 CREATE TABLE public.profiles (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username VARCHAR(255) NOT NULL UNIQUE,
+    full_name VARCHAR(255),
     email VARCHAR(255) UNIQUE,
     avatar_url TEXT DEFAULT '/default-image.png',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
