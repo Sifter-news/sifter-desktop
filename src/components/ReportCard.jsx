@@ -5,9 +5,9 @@ import { FileText } from 'lucide-react';
 const ReportCard = ({ report }) => {
   return (
     <Card 
-      className="w-full h-full bg-white hover:bg-gray-50 transition-colors cursor-pointer p-4"
+      className="w-full h-[300px] bg-white hover:bg-gray-50 transition-colors cursor-pointer"
     >
-      <div className="w-full h-1/3 bg-gray-200 relative overflow-hidden">
+      <div className="w-full h-[100px] bg-gray-200 relative overflow-hidden">
         <img 
           src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
           alt="Report Banner"
@@ -17,7 +17,7 @@ const ReportCard = ({ report }) => {
           }}
         />
       </div>
-      <CardContent className="h-2/3 flex flex-col">
+      <CardContent className="p-4 h-[200px] flex flex-col">
         <div className="flex items-center gap-2 mb-2">
           <FileText className="h-4 w-4 text-purple-500" />
           <h3 className="text-sm font-medium text-gray-800 line-clamp-1">
