@@ -1,35 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const DebugContext = createContext({
-  isDebugOpen: true,
+  isDebugOpen: true, // Changed default to true
   setIsDebugOpen: () => {},
   debugData: {},
   setDebugData: () => {},
   showNodeDebug: false,
   setShowNodeDebug: () => {},
-  addError: () => {},
-  clearErrors: () => {},
 });
 
 export const DebugProvider = ({ children }) => {
-  const [isDebugOpen, setIsDebugOpen] = useState(true);
-  const [debugData, setDebugData] = useState({ errors: [] });
+  const [isDebugOpen, setIsDebugOpen] = useState(true); // Changed default to true
+  const [debugData, setDebugData] = useState({});
   const [showNodeDebug, setShowNodeDebug] = useState(false);
-
-  const addError = (error) => {
-    setDebugData(prev => ({
-      ...prev,
-      errors: [...(prev.errors || []), {
-        timestamp: new Date().toISOString(),
-        message: error.message || String(error),
-        stack: error.stack,
-      }]
-    }));
-  };
-
-  const clearErrors = () => {
-    setDebugData(prev => ({ ...prev, errors: [] }));
-  };
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -50,9 +33,7 @@ export const DebugProvider = ({ children }) => {
       debugData, 
       setDebugData,
       showNodeDebug,
-      setShowNodeDebug,
-      addError,
-      clearErrors
+      setShowNodeDebug
     }}>
       {children}
     </DebugContext.Provider>

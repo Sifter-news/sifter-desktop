@@ -1,7 +1,5 @@
 import React from 'react';
 import { useDebug } from '@/contexts/DebugContext';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useSupabaseAuth } from '@/integrations/supabase/auth';
 import { X, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -9,39 +7,8 @@ import { Switch } from '@/components/ui/switch';
 
 const DebugPanel = () => {
   const { isDebugOpen, setIsDebugOpen, debugData, showNodeDebug, setShowNodeDebug } = useDebug();
-  const location = useLocation();
-  const { session } = useSupabaseAuth();
-  
+
   if (!isDebugOpen) return null;
-
-  const routes = [
-    { path: '/', name: 'Home' },
-    { path: '/login', name: 'Login' },
-    { path: '/project/:id', name: 'Project View' },
-    { path: '/:username/project/:projectName', name: 'Public Project Page' },
-    { path: '/subscription-plans', name: 'Subscription Plans' },
-    { path: '/auth/callback', name: 'Auth Callback' }
-  ];
-
-  const authInfo = {
-    isAuthenticated: !!session,
-    userId: session?.user?.id || null,
-    userEmail: session?.user?.email || null,
-    lastSignInAt: session?.user?.last_sign_in_at || null,
-    provider: session?.user?.app_metadata?.provider || null
-  };
-
-  const debugSections = {
-    routing: {
-      currentPath: location.pathname,
-      availableRoutes: routes,
-      params: location.search,
-      hash: location.hash
-    },
-    auth: authInfo,
-    errors: debugData.errors || [],
-    ...debugData
-  };
 
   return (
     <div className="fixed top-4 right-4 w-96 bg-black/90 text-white rounded-lg shadow-xl z-[9999] backdrop-blur-sm">
@@ -69,18 +36,17 @@ const DebugPanel = () => {
       
       <ScrollArea className="h-[500px] p-4">
         <div className="space-y-4">
-          {Object.entries(debugSections).map(([key, value]) => (
+          {Object.entries(debugData).map(([key, value]) => (
             <div key={key} className="space-y-2">
-              <h3 className="text-sm font-medium text-white/80 capitalize">{key}</h3>
-              {key === 'errors' && Array.isArray(value) && value.length === 0 ? (
-                <p className="text-green-400 text-xs">No errors reported</p>
-              ) : (
-                <pre className="bg-black/50 p-2 rounded text-xs overflow-auto">
-                  {JSON.stringify(value, null, 2)}
-                </pre>
-              )}
+              <h3 className="text-sm font-medium text-white/80">{key}</h3>
+              <pre className="bg-black/50 p-2 rounded text-xs overflow-auto">
+                {JSON.stringify(value, null, 2)}
+              </pre>
             </div>
           ))}
+          {Object.keys(debugData).length === 0 && (
+            <p className="text-white/60 text-sm">No debug data available</p>
+          )}
         </div>
       </ScrollArea>
     </div>
