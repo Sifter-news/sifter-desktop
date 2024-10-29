@@ -17,7 +17,7 @@ const Toolbar = ({
   setActiveTool, 
   handleZoom, 
   zoom, 
-  nodes = [], // Add default empty array
+  nodes = [], 
   viewMode = '3d',
   onViewModeChange,
   onAddNode,
@@ -38,7 +38,6 @@ const Toolbar = ({
       height: visualStyle === 'postit' ? 256 : visualStyle === 'compact' ? 40 : 128
     };
 
-    // Only try to find non-colliding position if we have nodes
     const position = nodes ? findNonCollidingPosition(newNode, nodes) : { x: newNode.x, y: newNode.y };
     
     onAddNode?.({ 
@@ -49,7 +48,7 @@ const Toolbar = ({
   };
 
   return (
-    <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-sm rounded-xl shadow-lg p-1.5 border border-white/20">
+    <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-sm rounded-xl shadow-lg p-0.75 border border-white/20">
       <div className="bg-black/90 rounded-xl p-0.5 flex items-center space-x-2 h-10">
         <Button 
           variant="ghost" 
