@@ -24,7 +24,18 @@ const Toolbar = ({
   const zoomPercentage = Math.round(100 - (zoom / 2));
 
   const handleAddNode = (style, type = 'generic') => {
+    const nodeTypes = {
+      'generic': 'Generic Note',
+      'node_person': 'Person',
+      'node_organization': 'Organization',
+      'node_object': 'Object',
+      'node_concept': 'Concept',
+      'node_location': 'Location',
+      'node_event': 'Event'
+    };
+
     onAddNode({
+      title: `New ${nodeTypes[type]}`,
       visualStyle: style,
       nodeType: type,
       geometry: 'plane',
@@ -82,17 +93,33 @@ const Toolbar = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="bg-black text-white" align="top">
-                <DropdownMenuItem onClick={() => handleAddNode('postit')}>
+                <DropdownMenuItem onClick={() => handleAddNode('postit', 'generic')}>
                   <Square className="h-4 w-4 mr-2" />
                   Post-it Note
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAddNode('default')}>
+                <DropdownMenuItem onClick={() => handleAddNode('default', 'node_person')}>
                   <Square className="h-4 w-4 mr-2" />
-                  Default Note
+                  Person Note
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAddNode('compact')}>
+                <DropdownMenuItem onClick={() => handleAddNode('default', 'node_organization')}>
                   <Square className="h-4 w-4 mr-2" />
-                  Compact Note
+                  Organization Note
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddNode('default', 'node_object')}>
+                  <Square className="h-4 w-4 mr-2" />
+                  Object Note
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddNode('default', 'node_concept')}>
+                  <Square className="h-4 w-4 mr-2" />
+                  Concept Note
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddNode('default', 'node_location')}>
+                  <Square className="h-4 w-4 mr-2" />
+                  Location Note
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddNode('default', 'node_event')}>
+                  <Square className="h-4 w-4 mr-2" />
+                  Event Note
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
