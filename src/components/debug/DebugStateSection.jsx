@@ -65,30 +65,40 @@ const DebugStateSection = ({ debugData }) => {
         <p>Dimensions: {style.width}x{style.height}</p>
         <p>Resizable: {style.resizable ? 'Yes' : 'No'}</p>
         <div className="space-y-1">
-          <p className="font-medium">Display:</p>
+          <p className="font-medium">Display Settings:</p>
           <div className="pl-2">
-            <p>Avatar: {style.display.avatar ? 'Yes' : 'No'}</p>
-            <p>Title: {style.display.title ? 'Yes' : 'No'}</p>
-            <p>Description: {style.display.description ? 'Yes' : 'No'}</p>
+            {style.display.avatar && <p>Shows Avatar</p>}
+            {style.display.title && <p>Shows Title</p>}
+            {style.display.description && <p>Shows Description</p>}
           </div>
         </div>
-        <div className="space-y-1">
-          <p className="font-medium">Available Colors:</p>
-          <div className="pl-2 flex flex-wrap gap-1">
-            {Object.entries(style.colors).map(([name, className]) => (
-              <span key={name} className={`px-2 py-0.5 rounded ${className}`}>
-                {name}
+        {node.color && (
+          <div className="space-y-1">
+            <p className="font-medium">Selected Color:</p>
+            <div className="pl-2">
+              <span className={`px-2 py-0.5 rounded ${style.colors[node.color]}`}>
+                {node.color}
               </span>
-            ))}
+            </div>
           </div>
-        </div>
-        <div className="space-y-1">
-          <p className="font-medium">Text Options:</p>
-          <div className="pl-2">
-            <p>Sizes: {Object.keys(style.textSizes).join(', ')}</p>
-            <p>Alignments: {Object.keys(style.textAlignments).join(', ')}</p>
+        )}
+        {node.textSize && (
+          <div className="space-y-1">
+            <p className="font-medium">Text Size:</p>
+            <div className="pl-2">
+              <p>Current: {node.textSize}</p>
+              <p className={style.textSizes[node.textSize]}>Sample Text</p>
+            </div>
           </div>
-        </div>
+        )}
+        {node.textAlign && (
+          <div className="space-y-1">
+            <p className="font-medium">Text Alignment:</p>
+            <div className="pl-2">
+              <p>Current: {node.textAlign}</p>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
