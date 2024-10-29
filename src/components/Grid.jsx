@@ -43,9 +43,9 @@ const GridLayer = ({ y = 0, opacity = 0.2, size = 100, divisions = 24, showLabel
     );
   }
 
-  // Create coordinate labels
+  // Create coordinate labels in 16px increments
   const labels = [];
-  const step = size / 4; // Show fewer labels for clarity
+  const step = 16; // 16px increments
   
   // X axis labels (red)
   for (let x = -halfSize; x <= halfSize; x += step) {
@@ -58,7 +58,7 @@ const GridLayer = ({ y = 0, opacity = 0.2, size = 100, divisions = 24, showLabel
         anchorX="center"
         anchorY="middle"
       >
-        {Math.round(x)}
+        {`X: ${Math.round(x)}`}
       </Text>
     );
   }
@@ -74,7 +74,7 @@ const GridLayer = ({ y = 0, opacity = 0.2, size = 100, divisions = 24, showLabel
         anchorX="center"
         anchorY="middle"
       >
-        {Math.round(z)}
+        {`Z: ${Math.round(z)}`}
       </Text>
     );
   }
@@ -89,7 +89,7 @@ const GridLayer = ({ y = 0, opacity = 0.2, size = 100, divisions = 24, showLabel
       anchorX="center"
       anchorY="middle"
     >
-      Y: {Math.round(y)}
+      {`Y: ${Math.round(y)}`}
     </Text>
   );
 
@@ -116,10 +116,10 @@ const Grid = ({ size = 100, divisions = 24 }) => {
   return (
     <group>
       <GridLayer y={0} opacity={0.2} size={size} divisions={divisions} />
-      <GridLayer y={12} opacity={0.16} size={size} divisions={divisions} />
-      <GridLayer y={24} opacity={0.12} size={size} divisions={divisions} />
-      <GridLayer y={36} opacity={0.08} size={size} divisions={divisions} />
-      <GridLayer y={48} opacity={0.04} size={size} divisions={divisions} />
+      <GridLayer y={16} opacity={0.16} size={size} divisions={divisions} />
+      <GridLayer y={32} opacity={0.12} size={size} divisions={divisions} />
+      <GridLayer y={48} opacity={0.08} size={size} divisions={divisions} />
+      <GridLayer y={64} opacity={0.04} size={size} divisions={divisions} />
     </group>
   );
 };
