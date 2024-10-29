@@ -12,7 +12,7 @@ const ThreeDCanvas = () => {
   const [nodes, setNodes] = useState([]);
   const [connections, setConnections] = useState([]);
   const [activeConnection, setActiveConnection] = useState(null);
-  const [viewMode, setViewMode] = useState('3d');
+  const [viewMode, setViewMode] = useState('2d'); // Start in 2D mode
   const controlsRef = useRef();
 
   useEffect(() => {
@@ -99,7 +99,7 @@ const ThreeDCanvas = () => {
       </div>
       <Canvas
         camera={{ 
-          position: viewMode === '2d' ? [0, 100, 0] : [50, 50, 50],
+          position: [0, 100, 0], // Start with top-down view
           fov: 45,
           near: 0.1,
           far: 1000
@@ -116,15 +116,20 @@ const ThreeDCanvas = () => {
             node={node}
             activeTool={activeTool}
             onUpdate={(newPosition) => {
+              // Lock Y position to 0 in 2D mode
+              const lockedPosition = viewMode === '2d' 
+                ? [newPosition[0], 0, newPosition[2]]
+                : newPosition;
+              
               setNodes(prev => prev.map(n => 
-                n.id === node.id ? { ...n, position: newPosition } : n
+                n.id === node.id ? { ...n, position: lockedPosition } : n
               ));
               setConnections(prev => prev.map(conn => {
                 if (conn.sourceId === node.id) {
-                  return { ...conn, sourcePosition: newPosition };
+                  return { ...conn, sourcePosition: lockedPosition };
                 }
                 if (conn.targetId === node.id) {
-                  return { ...conn, targetPosition: newPosition };
+                  return { ...conn, targetPosition: lockedPosition };
                 }
                 return conn;
               }));
@@ -156,6 +161,7 @@ const ThreeDCanvas = () => {
           enableRotate={viewMode === '3d' && activeTool === 'pan'}
           maxDistance={200}
           minDistance={10}
+          maxPolarAngle={viewMode === '2d' ? 0 : Math.PI / 2}
         />
       </Canvas>
     </div>
