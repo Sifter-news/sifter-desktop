@@ -3,10 +3,18 @@ import * as THREE from 'three';
 import { Text } from '@react-three/drei';
 
 const GridLayer = ({ y = 0, opacity = 0.2, size = 100, divisions = 24, showLabels = true }) => {
+  // Create grid helper with reduced opacity for center lines
   const gridHelper = new THREE.GridHelper(size, divisions, 0xffffff, 0x333333);
   gridHelper.position.y = y;
   gridHelper.material.transparent = true;
   gridHelper.material.opacity = opacity;
+  
+  // Reduce opacity of center lines by 30%
+  if (gridHelper.material instanceof THREE.LineBasicMaterial) {
+    const centerLineMaterial = gridHelper.material.clone();
+    centerLineMaterial.opacity = opacity * 0.7; // 30% reduction
+    gridHelper.material = [centerLineMaterial, gridHelper.material];
+  }
 
   const dotGeometry = new THREE.BufferGeometry();
   const positions = [];
@@ -45,7 +53,7 @@ const GridLayer = ({ y = 0, opacity = 0.2, size = 100, divisions = 24, showLabel
 
   // Create coordinate labels in 16px increments
   const labels = [];
-  const step = 16; // 16px increments
+  const step = 16;
   
   // X axis labels (red)
   for (let x = -halfSize; x <= halfSize; x += step) {
