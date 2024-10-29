@@ -7,6 +7,13 @@ import { cn } from "@/lib/utils";
 
 const DEFAULT_IMAGE = '/default-image.png';
 
+const textSizeClasses = {
+  small: "text-sm",
+  medium: "text-base",
+  large: "text-lg",
+  huge: "text-xl"
+};
+
 const NodeContent = ({ 
   style, 
   isEditing, 
@@ -16,33 +23,44 @@ const NodeContent = ({
   handleBlur, 
   setLocalTitle, 
   setLocalDescription, 
-  isFocused 
+  isFocused,
+  textSize = "medium",
+  textAlign = "left",
+  color = "white"
 }) => {
   const focusClasses = isFocused ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' : '';
+  const colorClasses = {
+    white: "bg-white",
+    yellow: "bg-yellow-100",
+    green: "bg-green-100",
+    blue: "bg-blue-100"
+  };
+
+  const baseClasses = cn(
+    textSizeClasses[textSize],
+    colorClasses[color],
+    `text-${textAlign}`,
+    "transition-all duration-200",
+    focusClasses
+  );
 
   const renderNode = () => {
     switch (style) {
       case 'compact':
         return (
-          <div className={cn("w-10 h-10 bg-white rounded-full flex items-center justify-center transition-all duration-200", focusClasses)}>
+          <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", baseClasses)}>
             <Avatar className="h-10 w-10">
-              <AvatarImage 
-                src={node.avatar || DEFAULT_IMAGE} 
-                alt={node.title} 
-              />
+              <AvatarImage src={node.avatar || DEFAULT_IMAGE} alt={node.title} />
               <AvatarFallback><FileText className="h-4 w-4" /></AvatarFallback>
             </Avatar>
           </div>
         );
       case 'postit':
         return (
-          <div className={cn("w-[256px] h-[256px] p-4 bg-yellow-100 rotate-1 transition-all duration-200", focusClasses)}>
+          <div className={cn("w-[256px] h-[256px] p-4 rotate-1", baseClasses)}>
             <div className="flex items-center gap-2 mb-2">
               <Avatar className="h-8 w-8">
-                <AvatarImage 
-                  src={node.avatar || DEFAULT_IMAGE} 
-                  alt={node.title} 
-                />
+                <AvatarImage src={node.avatar || DEFAULT_IMAGE} alt={node.title} />
                 <AvatarFallback><FileText className="h-4 w-4" /></AvatarFallback>
               </Avatar>
               {isEditing ? (
@@ -73,13 +91,10 @@ const NodeContent = ({
         );
       default:
         return (
-          <div className={cn("min-w-[40px] h-[128px] p-3 bg-white transition-all duration-200", focusClasses)}>
+          <div className={cn("min-w-[40px] h-[128px] p-3", baseClasses)}>
             <div className="flex items-center gap-2 mb-2">
               <Avatar className="h-8 w-8">
-                <AvatarImage 
-                  src={node.avatar || DEFAULT_IMAGE} 
-                  alt={node.title} 
-                />
+                <AvatarImage src={node.avatar || DEFAULT_IMAGE} alt={node.title} />
                 <AvatarFallback><FileText className="h-4 w-4" /></AvatarFallback>
               </Avatar>
               {isEditing ? (
