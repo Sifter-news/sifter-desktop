@@ -135,7 +135,7 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
 
       <Canvas
         camera={{ 
-          position: [0, 0, 200],
+          position: viewMode === '3d' ? [100, 100, 100] : [0, 0, 200],
           fov: 45,
           near: 0.1,
           far: 2000

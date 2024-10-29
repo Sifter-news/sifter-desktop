@@ -48,6 +48,7 @@ const ThreeScene = ({
           onUpdate={handleNodeUpdate}
           onStartConnection={onStartConnection}
           onEndConnection={onEndConnection}
+          viewMode={viewMode}
         />
       ))}
 
@@ -63,8 +64,8 @@ const ThreeScene = ({
         return (
           <ConnectionLine
             key={index}
-            start={[sourceNode.position[0], sourceNode.position[1] + sourceY, 0]}
-            end={[targetNode.position[0], targetNode.position[1] + targetY, 0]}
+            start={[sourceNode.position[0], sourceNode.position[1] + sourceY, viewMode === '3d' ? sourceNode.position[2] || 0 : 0]}
+            end={[targetNode.position[0], targetNode.position[1] + targetY, viewMode === '3d' ? targetNode.position[2] || 0 : 0]}
           />
         );
       })}
@@ -76,17 +77,15 @@ const ThreeScene = ({
         />
       )}
 
-      {camera && (
-        <OrbitControls 
-          ref={controlsRef}
-          enableZoom={true}
-          enablePan={activeTool === 'pan'}
-          enableRotate={activeTool === 'pan'}
-          maxDistance={200}
-          minDistance={10}
-          camera={camera}
-        />
-      )}
+      <OrbitControls 
+        ref={controlsRef}
+        enableZoom={true}
+        enablePan={activeTool === 'pan'}
+        enableRotate={viewMode === '3d' && activeTool === 'pan'}
+        maxDistance={200}
+        minDistance={10}
+        camera={camera}
+      />
     </group>
   );
 };
