@@ -1,40 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
 import Toolbar from './Toolbar';
 import ThreeScene from './three/ThreeScene';
-
-const CameraDebugInfo = () => {
-  const { camera } = useThree();
-  const [cameraState, setCameraState] = useState({
-    position: { x: 0, y: 0, z: 0 },
-    rotation: { x: 0, y: 0, z: 0 }
-  });
-
-  useEffect(() => {
-    const updateCameraState = () => {
-      setCameraState({
-        position: {
-          x: camera.position.x,
-          y: camera.position.y,
-          z: camera.position.z
-        },
-        rotation: {
-          x: camera.rotation.x,
-          y: camera.rotation.y,
-          z: camera.rotation.z
-        }
-      });
-    };
-
-    updateCameraState();
-    camera.addEventListener('change', updateCameraState);
-    return () => camera.removeEventListener('change', updateCameraState);
-  }, [camera]);
-
-  return null;
-};
 
 const ThreeDCanvas = () => {
   const [activeTool, setActiveTool] = useState('pan');
@@ -43,15 +12,55 @@ const ThreeDCanvas = () => {
   const [connections, setConnections] = useState([]);
   const [activeConnection, setActiveConnection] = useState(null);
   const [viewMode, setViewMode] = useState('2d');
-  const [cameraDebug, setCameraDebug] = useState({
-    position: { x: 0, y: 0, z: 0 },
-    rotation: { x: 0, y: 0, z: 0 }
-  });
   const controlsRef = useRef();
 
-  const cameraPosition = viewMode === '3d' 
-    ? [70.71, 70.71, 70.71] 
-    : [0, 0, 200];
+  const handleStartConnection = (sourceId, sourcePosition, connectionPoint) => {
+    setActiveConnection({
+      sourceId,
+      sourcePosition,
+      sourcePoint: connectionPoint,
+      targetPosition: sourcePosition // Initially same as source
+    });
+  };
+
+  const handleEndConnection = async (targetId, targetPoint) => {
+    if (!activeConnection || targetId === activeConnection.sourceId) {
+      setActiveConnection(null);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('connections')
+        .insert([{
+          source_id: activeConnection.sourceId,
+          target_id: targetId,
+          source_point: activeConnection.sourcePoint,
+          target_point: targetPoint
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setConnections(prev => [...prev, {
+        id: data.id,
+        sourceId: activeConnection.sourceId,
+        targetId: targetId,
+        sourcePosition: activeConnection.sourcePosition,
+        targetPosition: nodes.find(n => n.id === targetId)?.position || [0, 0, 0],
+        sourcePoint: activeConnection.sourcePoint,
+        targetPoint: targetPoint
+      }]);
+
+      toast.success('Connection created');
+    } catch (error) {
+      console.error('Error creating connection:', error);
+      toast.error('Failed to create connection');
+    }
+
+    setActiveConnection(null);
+  };
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -109,47 +118,24 @@ const ThreeDCanvas = () => {
 
   return (
     <div className="relative w-full h-[calc(100vh-64px)] bg-black">
-      <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-start">
-        <Toolbar 
-          activeTool={activeTool}
-          setActiveTool={setActiveTool}
-          handleZoom={setZoom}
-          zoom={zoom}
-          nodes={nodes}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-        />
-        <div className="bg-black/50 text-white p-2 font-mono text-xs rounded-bl-lg">
-          <div>Pos: x:{cameraDebug.position.x.toFixed(2)} y:{cameraDebug.position.y.toFixed(2)} z:{cameraDebug.position.z.toFixed(2)}</div>
-          <div>Rot: x:{cameraDebug.rotation.x.toFixed(2)} y:{cameraDebug.rotation.y.toFixed(2)} z:{cameraDebug.rotation.z.toFixed(2)}</div>
-        </div>
-      </div>
+      <Toolbar 
+        activeTool={activeTool}
+        setActiveTool={setActiveTool}
+        handleZoom={setZoom}
+        zoom={zoom}
+        nodes={nodes}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+      />
       <Canvas
         camera={{ 
-          position: cameraPosition,
-          rotation: [0, 0, 0],
+          position: viewMode === '3d' ? [70.71, 70.71, 70.71] : [0, 0, 200],
           fov: 45,
           near: 0.1,
-          far: 2000,
-          up: [0, 1, 0]
+          far: 2000
         }}
         style={{ background: 'black' }}
-        onCreated={({ camera }) => {
-          setCameraDebug({
-            position: {
-              x: camera.position.x,
-              y: camera.position.y,
-              z: camera.position.z
-            },
-            rotation: {
-              x: camera.rotation.x,
-              y: camera.rotation.y,
-              z: camera.rotation.z
-            }
-          });
-        }}
       >
-        <CameraDebugInfo />
         <ThreeScene 
           nodes={nodes}
           connections={connections}
@@ -158,6 +144,8 @@ const ThreeDCanvas = () => {
           activeTool={activeTool}
           controlsRef={controlsRef}
           handleNodeUpdate={handleNodeUpdate}
+          onStartConnection={handleStartConnection}
+          onEndConnection={handleEndConnection}
         />
       </Canvas>
     </div>

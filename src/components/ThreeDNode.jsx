@@ -3,6 +3,7 @@ import { useThree } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import NodeStyleTooltip from './node/NodeStyleTooltip';
+import ConnectionDot from './node/ConnectionDot';
 
 const ThreeDNode = ({ 
   node, 
@@ -10,22 +11,14 @@ const ThreeDNode = ({
   onUpdate, 
   onStartConnection, 
   onEndConnection,
-  isHighlighted // Add this prop
+  isHighlighted 
 }) => {
   const meshRef = useRef();
   const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
-  const [dragStart, setDragStart] = useState(null);
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [hoveredConnectionPoint, setHoveredConnectionPoint] = useState(null);
   const { camera, gl } = useThree();
-
-  // Ensure node position has default values
-  const nodePosition = [
-    node?.position?.[0] || 0,
-    node?.position?.[1] || 0,
-    node?.position?.[2] || 0
-  ];
 
   const handlePointerDown = (e) => {
     if (activeTool !== 'select') return;
@@ -33,17 +26,13 @@ const ThreeDNode = ({
     if (e.button === 2) {
       e.stopPropagation();
       setIsConnecting(true);
-      onStartConnection(node.id, nodePosition);
+      const connectionPoint = hoveredConnectionPoint || 'top';
+      onStartConnection(node.id, node.position, connectionPoint);
       return;
     }
 
     e.stopPropagation();
     setIsDragging(true);
-    setDragStart({
-      x: e.clientX,
-      y: e.clientY,
-      position: [...nodePosition]
-    });
     gl.domElement.style.cursor = 'grabbing';
   };
 
@@ -52,50 +41,21 @@ const ThreeDNode = ({
 
     if (isConnecting) {
       setIsConnecting(false);
-      onEndConnection(node.id);
+      onEndConnection(node.id, hoveredConnectionPoint || 'bottom');
       return;
     }
     setIsDragging(false);
     gl.domElement.style.cursor = activeTool === 'select' ? 'default' : 'grab';
   };
 
-  const handlePointerMove = (e) => {
-    if (!isDragging || !dragStart || activeTool !== 'select') return;
-
-    const deltaX = (e.clientX - dragStart.x) * 0.1;
-    const deltaY = (e.clientY - dragStart.y) * 0.1;
-
-    // Get camera rotation around Y axis (yaw)
-    const cameraRotation = camera.rotation.y;
-
-    // Calculate new position based on camera rotation
-    // This ensures movement is relative to the camera view
-    const newX = dragStart.position[0] + (deltaX * Math.cos(cameraRotation) - deltaY * Math.sin(cameraRotation));
-    const newY = dragStart.position[1]; // Lock Y axis in 3D space
-    const newZ = dragStart.position[2] + (deltaX * Math.sin(cameraRotation) + deltaY * Math.cos(cameraRotation));
-
-    // Keep the original Y position, only update X and Z
-    const newPosition = [newX, dragStart.position[1], newZ];
-    onUpdate(newPosition);
+  const handleConnectionPointHover = (point) => {
+    setHoveredConnectionPoint(point);
+    gl.domElement.style.cursor = 'crosshair';
   };
 
-  const handlePointerEnter = () => {
-    setIsHovered(true);
-    if (activeTool === 'select') {
-      gl.domElement.style.cursor = 'pointer';
-    }
-  };
-
-  const handlePointerLeave = () => {
-    setIsHovered(false);
-    if (activeTool === 'select') {
-      gl.domElement.style.cursor = 'default';
-    }
-  };
-
-  const handleClick = (e) => {
-    e.stopPropagation();
-    setShowTooltip(!showTooltip);
+  const handleConnectionPointLeave = () => {
+    setHoveredConnectionPoint(null);
+    gl.domElement.style.cursor = 'default';
   };
 
   // Keep node facing camera
@@ -108,13 +68,11 @@ const ThreeDNode = ({
   return (
     <mesh
       ref={meshRef}
-      position={nodePosition}
+      position={node.position}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
-      onPointerMove={handlePointerMove}
-      onPointerEnter={handlePointerEnter}
-      onPointerLeave={handlePointerLeave}
-      onClick={handleClick}
+      onPointerEnter={() => setIsHovered(true)}
+      onPointerLeave={() => setIsHovered(false)}
     >
       <boxGeometry args={[5, 5, 0.2]} />
       <meshStandardMaterial 
@@ -125,6 +83,26 @@ const ThreeDNode = ({
         emissive={isHighlighted ? "#ffffff" : "#000000"}
         emissiveIntensity={isHighlighted ? 0.5 : 0}
       />
+      
+      <Html position={[0, 2.5, 0.1]}>
+        <ConnectionDot 
+          position="top"
+          isHovered={hoveredConnectionPoint === 'top'}
+          onHover={() => handleConnectionPointHover('top')}
+          onLeaveHover={handleConnectionPointLeave}
+          onStartConnection={(point) => onStartConnection(node.id, node.position, point)}
+        />
+      </Html>
+
+      <Html position={[0, -2.5, 0.1]}>
+        <ConnectionDot 
+          position="bottom"
+          isHovered={hoveredConnectionPoint === 'bottom'}
+          onHover={() => handleConnectionPointHover('bottom')}
+          onLeaveHover={handleConnectionPointLeave}
+          onStartConnection={(point) => onStartConnection(node.id, node.position, point)}
+        />
+      </Html>
       
       <Html
         position={[0, 0, 0.1]}
@@ -140,29 +118,6 @@ const ThreeDNode = ({
       >
         {node?.title || 'Untitled Node'}
       </Html>
-
-      {showTooltip && (
-        <Html
-          position={[0, 3, 0]}
-          center
-          style={{
-            pointerEvents: 'auto',
-            transform: 'translateY(-100%)',
-            zIndex: 1000
-          }}
-        >
-          <NodeStyleTooltip
-            onStyleChange={(style) => onUpdate({ ...node, visualStyle: style })}
-            onTextSizeChange={(size) => onUpdate({ ...node, textSize: size })}
-            onAlignmentChange={(align) => onUpdate({ ...node, textAlign: align })}
-            onTypeChange={(type) => onUpdate({ ...node, nodeType: type })}
-            onColorChange={(color) => onUpdate({ ...node, color })}
-            onEdit={() => {/* Implement edit modal trigger */}}
-            onAIChat={() => {/* Implement AI chat panel trigger */}}
-            position={{ x: 0, y: -8 }}
-          />
-        </Html>
-      )}
     </mesh>
   );
 };

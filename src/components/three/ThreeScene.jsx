@@ -12,7 +12,9 @@ const ThreeScene = ({
   viewMode, 
   activeTool, 
   controlsRef, 
-  handleNodeUpdate 
+  handleNodeUpdate,
+  onStartConnection,
+  onEndConnection
 }) => {
   return (
     <>
@@ -30,15 +32,16 @@ const ThreeScene = ({
             const lockedPosition = viewMode === '2d' 
               ? [newPosition[0], 0, newPosition[2]]
               : newPosition;
-            
             handleNodeUpdate(node.id, lockedPosition);
           }}
+          onStartConnection={onStartConnection}
+          onEndConnection={onEndConnection}
         />
       ))}
 
       {connections.map(connection => (
         <ConnectionLine
-          key={connection.id}
+          key={`${connection.source}-${connection.target}`}
           start={connection.sourcePosition}
           end={connection.targetPosition}
         />
