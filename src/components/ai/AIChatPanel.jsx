@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { MessageCircle, User, X, Paperclip } from 'lucide-react';
-import { toast } from "sonner";
+import { MessageCircle, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/supabase';
+import ChatMessage from './ChatMessage';
+import ChatInput from './ChatInput';
+import { processMessage } from '@/utils/chatUtils';
 
 const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
   const [messages, setMessages] = useState([]);
@@ -16,13 +17,12 @@ const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
   useEffect(() => {
     const fetchProjectInfo = async () => {
       try {
-        // Extract investigation ID from initialContext if it exists
         const investigationId = initialContext?.match(/investigation_id: ([^,\s]+)/)?.[1];
         
         if (!investigationId) {
           setMessages([{
             role: 'system',
-            content: 'Viewing the entire project canvas. Please select an investigation to begin.'
+            content: 'Viewing the entire project canvas. Please select an investigation type and focus to begin. You can set these from this chat by typing "type: [type]" or "focus: [focus]".'
           }]);
           return;
         }
@@ -35,46 +35,19 @@ const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
 
         if (error) throw error;
 
-        const focusLabels = {
-          'node_person': 'Person',
-          'node_organization': 'Organization',
-          'node_object': 'Object',
-          'node_concept': 'Concept',
-          'node_location': 'Location',
-          'node_event': 'Event'
-        };
-
-        const typeLabels = {
-          'generic': 'Generic Investigation',
-          'research': 'Research',
-          'pre-deal': 'Pre-Deal Due Diligence',
-          'post-deal': 'Post-Deal Due Diligence',
-          'aml': 'Anti-Money Laundering',
-          'kyc': 'Know Your Customer',
-          'regulatory': 'Regulatory Compliance',
-          'fraud': 'Fraud Investigation',
-          'background': 'Background Check',
-          'asset': 'Asset Tracing'
-        };
-
-        const title = investigation.title;
-        const type = investigation.investigation_type ? 
-          typeLabels[investigation.investigation_type] : 
-          'Type not set - please configure investigation type';
-        const focus = investigation.investigation_focus ? 
-          focusLabels[investigation.investigation_focus] : 
-          'Focus not set - please configure investigation focus';
+        const message = investigation.investigation_type && investigation.investigation_focus
+          ? `Project: ${investigation.title}\nType: ${investigation.investigation_type}\nFocus: ${investigation.investigation_focus}`
+          : 'Viewing the entire project canvas. Please select an investigation type and focus to begin. You can set these from this chat by typing "type: [type]" or "focus: [focus]".';
 
         setMessages([{
           role: 'system',
-          content: `Project: ${title}\nType: ${type}\nFocus: ${focus}\n\n${initialContext || ''}`
+          content: message
         }]);
-
       } catch (error) {
         console.error('Error fetching investigation details:', error);
         setMessages([{
           role: 'system',
-          content: 'Error loading project details. Viewing the entire canvas.'
+          content: 'Error loading project details. Please try again later.'
         }]);
       }
     };
@@ -98,35 +71,32 @@ const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
         role: 'system',
         content: `File attached: ${file.name}`
       }]);
-      toast.success(`File "${file.name}" attached successfully`);
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim() && !selectedFile) return;
 
-    const newMessages = [];
-    
-    if (input.trim()) {
-      newMessages.push({
-        role: 'user',
-        content: input
-      });
-    }
+    const userMessage = {
+      role: 'user',
+      content: input
+    };
 
-    setMessages(prev => [...prev, ...newMessages]);
+    setMessages(prev => [...prev, userMessage]);
     setInput('');
     setSelectedFile(null);
-    fileInputRef.current.value = '';
+    if (fileInputRef.current) fileInputRef.current.value = '';
 
-    // Simulate AI response (replace with actual API call)
-    setTimeout(() => {
+    const investigationId = initialContext?.match(/investigation_id: ([^,\s]+)/)?.[1];
+    const { wasCommand, response } = await processMessage(input, investigationId);
+
+    if (wasCommand && response) {
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: 'This is a simulated AI response. Replace with actual API integration.'
+        content: response
       }]);
-    }, 1000);
+    }
   };
 
   if (!isOpen) return null;
@@ -146,67 +116,20 @@ const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
           {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`flex gap-2 ${
-                message.role === 'user' ? 'justify-end' : 'justify-start'
-              }`}
-            >
-              {message.role === 'assistant' && (
-                <MessageCircle className="h-6 w-6 text-purple-500" />
-              )}
-              <div
-                className={`rounded-lg p-3 max-w-[80%] ${
-                  message.role === 'user'
-                    ? 'bg-purple-500 text-white'
-                    : message.role === 'system'
-                    ? 'bg-gray-100 text-gray-700'
-                    : 'bg-gray-100'
-                }`}
-              >
-                {message.content}
-              </div>
-              {message.role === 'user' && (
-                <User className="h-6 w-6 text-purple-500" />
-              )}
-            </div>
+            <ChatMessage key={index} message={message} />
           ))}
           <div ref={messagesEndRef} />
         </div>
       </ScrollArea>
 
-      <form onSubmit={handleSubmit} className="p-4 border-t">
-        <div className="flex gap-2">
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileSelect}
-            className="hidden"
-          />
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={() => fileInputRef.current.click()}
-            className="flex-shrink-0"
-          >
-            <Paperclip className="h-4 w-4" />
-          </Button>
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your message..."
-            className="flex-1"
-          />
-          <Button type="submit" className="bg-purple-500 hover:bg-purple-600 text-white">Send</Button>
-        </div>
-        {selectedFile && (
-          <div className="mt-2 text-sm text-gray-500 flex items-center gap-2">
-            <Paperclip className="h-3 w-3" />
-            {selectedFile.name}
-          </div>
-        )}
-      </form>
+      <ChatInput
+        input={input}
+        setInput={setInput}
+        handleSubmit={handleSubmit}
+        handleFileSelect={handleFileSelect}
+        fileInputRef={fileInputRef}
+        selectedFile={selectedFile}
+      />
     </div>
   );
 };
