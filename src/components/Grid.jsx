@@ -1,7 +1,7 @@
 import React from 'react';
 import * as THREE from 'three';
 
-const GridLayer = ({ z = 0, opacity = 0.3, size = 200, divisions = 24 }) => {
+const GridLayer = ({ z = 0, opacity = 0.3, size = 400, divisions = 24 }) => {
   const gridHelper = new THREE.GridHelper(size, divisions, 0xffffff, 0x333333);
   gridHelper.position.z = z;
   gridHelper.rotation.x = Math.PI / 2; // Rotate to make it vertical on Z axis
@@ -48,7 +48,7 @@ const GridLayer = ({ z = 0, opacity = 0.3, size = 200, divisions = 24 }) => {
   );
 };
 
-const Grid = ({ size = 200, divisions = 24 }) => {
+const Grid = ({ size = 400, divisions = 24 }) => {
   return (
     <group>
       {/* Single grid at z=0 with 0.3 opacity */}
