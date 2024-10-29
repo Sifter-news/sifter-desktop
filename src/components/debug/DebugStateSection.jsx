@@ -12,11 +12,25 @@ const DebugStateSection = ({ debugData }) => {
     }
   };
 
+  const getCurrentView = () => {
+    const view = debugData?.currentView;
+    switch (view) {
+      case 'mindmap':
+        return 'Mind Map View';
+      case 'timeline':
+        return 'Timeline View';
+      case 'map':
+        return 'Map View';
+      default:
+        return view || 'Unknown View';
+    }
+  };
+
   return (
     <div className="space-y-2">
       <h3 className="text-sm font-medium text-white/80">Current State</h3>
       <div className="bg-black/50 p-2 rounded space-y-2">
-        <p className="text-xs">View: {debugData?.currentView || 'mind'}</p>
+        <p className="text-xs">Project View: {getCurrentView()}</p>
         <p className="text-xs">Active Tool: {debugData?.activeTool || 'select'}</p>
         <p className="text-xs text-gray-400">{getToolDescription(debugData?.activeTool)}</p>
       </div>
