@@ -55,6 +55,15 @@ const NodeListItem = ({
     }
   };
 
+  const handleEdit = (e) => {
+    e.stopPropagation();
+    if (typeof onEdit === 'function') {
+      onEdit(node);
+    } else {
+      toast.error("Edit functionality is not available");
+    }
+  };
+
   return (
     <Draggable draggableId={node.id} index={index}>
       {(provided, snapshot) => (
@@ -103,10 +112,7 @@ const NodeListItem = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit(node);
-                }}>
+                <DropdownMenuItem onClick={handleEdit}>
                   <Pencil className="h-4 w-4 mr-2" />
                   Edit
                 </DropdownMenuItem>
@@ -123,6 +129,8 @@ const NodeListItem = ({
                     e.stopPropagation();
                     if (typeof onDelete === 'function') {
                       onDelete(node.id);
+                    } else {
+                      toast.error("Delete functionality is not available");
                     }
                   }}
                 >
