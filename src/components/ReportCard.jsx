@@ -2,9 +2,12 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText } from 'lucide-react';
 
-const ReportCard = ({ report, onUpdate }) => {
+const ReportCard = ({ report, onUpdate, onDelete }) => {
   return (
-    <Card className="w-full h-[200px] bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-colors">
+    <Card 
+      className="w-full h-[200px] bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-colors cursor-pointer"
+      onClick={() => onUpdate(report)}
+    >
       <CardContent className="p-4 h-full flex flex-col">
         <div className="flex items-center gap-2 mb-2">
           <FileText className="h-4 w-4 text-purple-500" />

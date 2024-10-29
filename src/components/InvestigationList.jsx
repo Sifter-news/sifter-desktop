@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import InvestigationCard from './InvestigationCard';
 import ReportCard from './ReportCard';
+import ReportEditModal from './modals/ReportEditModal';
 import { MoreVertical, Pencil, Trash } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
@@ -17,12 +18,32 @@ const InvestigationList = ({
   onDeleteProject,
   onUpdateInvestigation 
 }) => {
+  const [editingReport, setEditingReport] = useState(null);
+
   // Sort investigations by updated_at in descending order (most recent first)
   const sortedInvestigations = [...(investigations || [])].sort((a, b) => {
     const dateA = new Date(a.updated_at || a.created_at);
     const dateB = new Date(b.updated_at || b.created_at);
     return dateB - dateA;
   });
+
+  const handleReportUpdate = (investigation, updatedReport) => {
+    const updatedReports = investigation.reports.map(r =>
+      r.id === updatedReport.id ? updatedReport : r
+    );
+    onUpdateInvestigation({
+      ...investigation,
+      reports: updatedReports
+    });
+  };
+
+  const handleReportDelete = (investigation, reportId) => {
+    const updatedReports = investigation.reports.filter(r => r.id !== reportId);
+    onUpdateInvestigation({
+      ...investigation,
+      reports: updatedReports
+    });
+  };
 
   return (
     <div className="flex-grow overflow-y-auto scrollbar-hide">
@@ -67,15 +88,7 @@ const InvestigationList = ({
                       <div key={report.id} className="w-64 flex-shrink-0">
                         <ReportCard 
                           report={report} 
-                          onUpdate={(updatedReport) => {
-                            const updatedReports = investigation.reports.map(r =>
-                              r.id === updatedReport.id ? updatedReport : r
-                            );
-                            onUpdateInvestigation({
-                              ...investigation,
-                              reports: updatedReports
-                            });
-                          }}
+                          onUpdate={() => setEditingReport({ report, investigation })}
                         />
                       </div>
                     ))}
@@ -90,6 +103,16 @@ const InvestigationList = ({
           </div>
         ))}
       </div>
+
+      {editingReport && (
+        <ReportEditModal
+          isOpen={!!editingReport}
+          onClose={() => setEditingReport(null)}
+          report={editingReport.report}
+          onUpdate={(updatedReport) => handleReportUpdate(editingReport.investigation, updatedReport)}
+          onDelete={(reportId) => handleReportDelete(editingReport.investigation, reportId)}
+        />
+      )}
     </div>
   );
 };
