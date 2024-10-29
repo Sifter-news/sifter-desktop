@@ -77,7 +77,7 @@ const NodeListItem = ({
           } ${isFocused ? 'ring-2 ring-blue-600' : ''}`}
           onClick={() => onSelect(node.id)}
         >
-          <div className="flex items-center gap-2 flex-grow">
+          <div className="flex items-center gap-2 flex-grow pl-0 group-hover:pl-2 transition-all">
             <div
               {...provided.dragHandleProps}
               className="opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
