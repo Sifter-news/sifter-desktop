@@ -3,6 +3,7 @@ import { useThree, useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import NodeStyleTooltip from './node/NodeStyleTooltip';
+import AISidePanel from './AISidePanel';
 
 const ThreeDNode = ({ 
   node, 
@@ -17,6 +18,7 @@ const ThreeDNode = ({
   const [isConnecting, setIsConnecting] = useState(false);
   const [dragStart, setDragStart] = useState(null);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [showAIPanel, setShowAIPanel] = useState(false);
   const { camera, gl } = useThree();
 
   // Ensure node position has default values
@@ -91,6 +93,11 @@ const ThreeDNode = ({
     setShowTooltip(!showTooltip);
   };
 
+  const handleAIChat = () => {
+    setShowAIPanel(true);
+    setShowTooltip(false);
+  };
+
   useFrame(() => {
     if (meshRef.current) {
       meshRef.current.quaternion.copy(camera.quaternion);
@@ -98,79 +105,87 @@ const ThreeDNode = ({
   });
 
   return (
-    <mesh
-      ref={meshRef}
-      position={nodePosition}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
-      onPointerMove={handlePointerMove}
-      onPointerEnter={handlePointerEnter}
-      onPointerLeave={handlePointerLeave}
-      onClick={handleClick}
-    >
-      <boxGeometry args={[5, 5, 0.2]} />
-      <meshStandardMaterial 
-        color="#4A90E2"
-        transparent
-        opacity={isHovered ? 0.8 : 1}
-        wireframe={isHovered && !isDragging}
-      />
-      
-      <Html
-        position={[0, 0, 0.1]}
-        center
-        style={{
-          backgroundColor: 'white',
-          padding: '8px',
-          borderRadius: '4px',
-          whiteSpace: 'nowrap',
-          pointerEvents: 'none',
-          userSelect: 'none'
-        }}
+    <>
+      <mesh
+        ref={meshRef}
+        position={nodePosition}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerMove={handlePointerMove}
+        onPointerEnter={handlePointerEnter}
+        onPointerLeave={handlePointerLeave}
+        onClick={handleClick}
       >
-        {node?.title || 'Untitled Node'}
-      </Html>
-
-      <Html
-        position={[0, -4, 0]}
-        center
-        style={{
-          backgroundColor: 'rgba(0,0,0,0.7)',
-          color: '#00ff00',
-          padding: '4px',
-          borderRadius: '2px',
-          fontFamily: 'monospace',
-          fontSize: '10px',
-          whiteSpace: 'pre-wrap',
-          pointerEvents: 'none'
-        }}
-      >
-        {`Component: ThreeDNode\nPos: [${nodePosition[0].toFixed(2)}, ${nodePosition[1].toFixed(2)}, ${nodePosition[2].toFixed(2)}]`}
-      </Html>
-
-      {showTooltip && (
+        <boxGeometry args={[5, 5, 0.2]} />
+        <meshStandardMaterial 
+          color="#4A90E2"
+          transparent
+          opacity={isHovered ? 0.8 : 1}
+          wireframe={isHovered && !isDragging}
+        />
+        
         <Html
-          position={[0, 3, 0]}
+          position={[0, 0, 0.1]}
           center
           style={{
-            pointerEvents: 'auto',
-            transform: 'translateY(-100%)',
-            zIndex: 1000
+            backgroundColor: 'white',
+            padding: '8px',
+            borderRadius: '4px',
+            whiteSpace: 'nowrap',
+            pointerEvents: 'none',
+            userSelect: 'none'
           }}
         >
-          <NodeStyleTooltip
-            onStyleChange={(style) => onUpdate({ ...node, visualStyle: style })}
-            onTextSizeChange={(size) => onUpdate({ ...node, textSize: size })}
-            onAlignmentChange={(align) => onUpdate({ ...node, textAlign: align })}
-            onTypeChange={(type) => onUpdate({ ...node, nodeType: type })}
-            onColorChange={(color) => onUpdate({ ...node, color })}
-            onEdit={() => {/* Implement edit modal trigger */}}
-            onAIChat={() => {/* Implement AI chat panel trigger */}}
-            position={{ x: 0, y: -8 }}
-          />
+          {node?.title || 'Untitled Node'}
         </Html>
-      )}
-    </mesh>
+
+        <Html
+          position={[0, -4, 0]}
+          center
+          style={{
+            backgroundColor: 'rgba(0,0,0,0.7)',
+            color: '#00ff00',
+            padding: '4px',
+            borderRadius: '2px',
+            fontFamily: 'monospace',
+            fontSize: '10px',
+            whiteSpace: 'pre-wrap',
+            pointerEvents: 'none'
+          }}
+        >
+          {`Component: ThreeDNode\nPos: [${nodePosition[0].toFixed(2)}, ${nodePosition[1].toFixed(2)}, ${nodePosition[2].toFixed(2)}]`}
+        </Html>
+
+        {showTooltip && (
+          <Html
+            position={[0, 4, 0]}
+            center
+            style={{
+              pointerEvents: 'auto',
+              transform: 'translate(-50%, -100%)',
+              zIndex: 1000
+            }}
+          >
+            <NodeStyleTooltip
+              onStyleChange={(style) => onUpdate({ ...node, visualStyle: style })}
+              onTextSizeChange={(size) => onUpdate({ ...node, textSize: size })}
+              onAlignmentChange={(align) => onUpdate({ ...node, textAlign: align })}
+              onTypeChange={(type) => onUpdate({ ...node, nodeType: type })}
+              onColorChange={(color) => onUpdate({ ...node, color })}
+              onEdit={() => {/* Implement edit modal trigger */}}
+              onAIChat={handleAIChat}
+              position={{ x: 0, y: 0 }}
+            />
+          </Html>
+        )}
+      </mesh>
+
+      <AISidePanel
+        isOpen={showAIPanel}
+        onClose={() => setShowAIPanel(false)}
+        initialQuestion={`Tell me about the node: ${node?.title}`}
+      />
+    </>
   );
 };
 
