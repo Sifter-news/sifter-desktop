@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, ChevronDown, MessageCircle, File, Folder } from 'lucide-react';
+import { Plus, ChevronDown, MessageCircle, File, Folder, Square } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +22,19 @@ const Toolbar = ({
 }) => {
   const [isAIPanelOpen, setIsAIPanelOpen] = React.useState(false);
   const zoomPercentage = Math.round(100 - (zoom / 2));
+
+  const handleAddNode = (style, type = 'generic') => {
+    onAddNode({
+      visualStyle: style,
+      nodeType: type,
+      geometry: 'plane',
+      dimensions: {
+        width: style === 'compact' ? 4 : style === 'postit' ? 8 : 6,
+        height: style === 'compact' ? 4 : style === 'postit' ? 8 : 3,
+        depth: 0.1
+      }
+    });
+  };
 
   return (
     <>
@@ -69,16 +82,16 @@ const Toolbar = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="bg-black text-white" align="top">
-                <DropdownMenuItem onClick={() => onAddNode('postit')}>
-                  <File className="h-4 w-4 mr-2" />
+                <DropdownMenuItem onClick={() => handleAddNode('postit')}>
+                  <Square className="h-4 w-4 mr-2" />
                   Post-it Note
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onAddNode('default')}>
-                  <File className="h-4 w-4 mr-2" />
+                <DropdownMenuItem onClick={() => handleAddNode('default')}>
+                  <Square className="h-4 w-4 mr-2" />
                   Default Note
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onAddNode('compact')}>
-                  <Folder className="h-4 w-4 mr-2" />
+                <DropdownMenuItem onClick={() => handleAddNode('compact')}>
+                  <Square className="h-4 w-4 mr-2" />
                   Compact Note
                 </DropdownMenuItem>
               </DropdownMenuContent>

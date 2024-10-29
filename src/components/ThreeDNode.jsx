@@ -39,13 +39,11 @@ const ThreeDNode = ({
     }
   }, [node?.id, allNodes]);
 
-  // Get style with fallback to default
-  const style = NODE_STYLES[node?.visualStyle || 'default'] || NODE_STYLES.default;
-  
-  // Calculate dimensions with safe defaults
-  const boxWidth = (style?.width || 200) / 20;
-  const boxHeight = (style?.height || 100) / 20;
-  const boxDepth = style?.visualStyle === 'postit' ? 0.5 : 0.2;
+  const dimensions = node?.dimensions || {
+    width: 6,
+    height: 3,
+    depth: 0.1
+  };
 
   const getNodeColor = () => {
     if (!node?.visualStyle) return '#FFFFFF';
@@ -98,40 +96,41 @@ const ThreeDNode = ({
         onPointerEnter={handlePointerEnter}
         onPointerLeave={handlePointerLeave}
       >
-        <boxGeometry args={[boxWidth, boxHeight, boxDepth]} />
+        <planeGeometry args={[dimensions.width, dimensions.height]} />
         <meshStandardMaterial 
           color={getNodeColor()}
           transparent
           opacity={isHovered ? 0.8 : 1}
-          wireframe={isHovered && !isDragging}
+          side={THREE.DoubleSide}
           emissive={isHighlighted ? "#ffffff" : "#000000"}
           emissiveIntensity={isHighlighted ? 0.5 : 0}
           roughness={0.3}
           metalness={0.1}
         />
-        
-        <group position={[0, boxHeight/2, boxDepth/2]}>
-          <mesh
-            onPointerEnter={() => setHoveredConnectionPoint('top')}
-            onPointerLeave={() => setHoveredConnectionPoint(null)}
-            onPointerDown={() => onStartConnection?.(node.id, position, 'top')}
-          >
-            <sphereGeometry args={[0.2, 16, 16]} />
-            <meshBasicMaterial color={hoveredConnectionPoint === 'top' ? '#00ff00' : '#ffffff'} />
-          </mesh>
-        </group>
-        
-        <group position={[0, -boxHeight/2, boxDepth/2]}>
-          <mesh
-            onPointerEnter={() => setHoveredConnectionPoint('bottom')}
-            onPointerLeave={() => setHoveredConnectionPoint(null)}
-            onPointerDown={() => onStartConnection?.(node.id, position, 'bottom')}
-          >
-            <sphereGeometry args={[0.2, 16, 16]} />
-            <meshBasicMaterial color={hoveredConnectionPoint === 'bottom' ? '#00ff00' : '#ffffff'} />
-          </mesh>
-        </group>
       </mesh>
+      
+      {/* Connection points */}
+      <group position={[0, dimensions.height/2, 0]}>
+        <mesh
+          onPointerEnter={() => setHoveredConnectionPoint('top')}
+          onPointerLeave={() => setHoveredConnectionPoint(null)}
+          onPointerDown={() => onStartConnection?.(node.id, position, 'top')}
+        >
+          <sphereGeometry args={[0.2, 16, 16]} />
+          <meshBasicMaterial color={hoveredConnectionPoint === 'top' ? '#00ff00' : '#ffffff'} />
+        </mesh>
+      </group>
+      
+      <group position={[0, -dimensions.height/2, 0]}>
+        <mesh
+          onPointerEnter={() => setHoveredConnectionPoint('bottom')}
+          onPointerLeave={() => setHoveredConnectionPoint(null)}
+          onPointerDown={() => onStartConnection?.(node.id, position, 'bottom')}
+        >
+          <sphereGeometry args={[0.2, 16, 16]} />
+          <meshBasicMaterial color={hoveredConnectionPoint === 'bottom' ? '#00ff00' : '#ffffff'} />
+        </mesh>
+      </group>
     </group>
   );
 };
