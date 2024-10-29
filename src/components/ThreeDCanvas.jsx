@@ -1,9 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
 import Toolbar from './Toolbar';
 import ThreeScene from './three/ThreeScene';
+
+const CameraDebug = () => {
+  const { camera } = useThree();
+  
+  return (
+    <div className="absolute top-0 left-0 bg-black/50 text-white p-2 font-mono text-sm z-20">
+      <div>Position: x:{camera.position.x.toFixed(2)} y:{camera.position.y.toFixed(2)} z:{camera.position.z.toFixed(2)}</div>
+      <div>Rotation: x:{camera.rotation.x.toFixed(2)} y:{camera.rotation.y.toFixed(2)} z:{camera.rotation.z.toFixed(2)}</div>
+    </div>
+  );
+};
 
 const ThreeDCanvas = () => {
   const [activeTool, setActiveTool] = useState('pan');
@@ -96,6 +107,7 @@ const ThreeDCanvas = () => {
         }}
         style={{ background: 'black' }}
       >
+        <CameraDebug />
         <ThreeScene 
           nodes={nodes}
           connections={connections}
