@@ -1,11 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useZoomPan } from '../utils/canvasUtils';
-import Canvas from './Canvas';
-import Toolbar from './Toolbar';
-import AISidePanel from './AISidePanel';
-import NodeEditorModal from './node/NodeEditorModal';
-import { supabase } from '@/integrations/supabase/supabase';
-import { toast } from 'sonner';
+import React from 'react';
 import ThreeDCanvas from './ThreeDCanvas';
 
 const MindMapView = ({ 
@@ -20,7 +13,14 @@ const MindMapView = ({
 }) => {
   return (
     <div className="h-full w-full relative">
-      <ThreeDCanvas />
+      <ThreeDCanvas 
+        nodes={nodes}
+        setNodes={setNodes}
+        onNodeUpdate={onUpdateNode}
+        onNodeDelete={onDeleteNode}
+        focusedNodeId={focusedNodeId}
+        onNodeFocus={onNodeFocus}
+      />
     </div>
   );
 };

@@ -177,6 +177,7 @@ This report represents our current findings and may be updated as new informatio
                         node_type,
                         position_x,
                         position_y,
+                        position_z,
                         metadata
                     ) VALUES (
                         CASE node_type
@@ -194,6 +195,7 @@ This report represents our current findings and may be updated as new informatio
                         node_type,
                         (random() * 1000)::numeric(10,2),
                         (random() * 1000)::numeric(10,2),
+                        0::numeric(10,2),
                         jsonb_build_object(
                             'created_date', NOW() - (random() * 365 || ' days')::interval,
                             'last_modified', NOW() - (random() * 30 || ' days')::interval,
