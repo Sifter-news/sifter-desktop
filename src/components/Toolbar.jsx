@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, Hand, Orbit, MousePointer, CirclePlus, Download, Circle, Square, StickyNote, ChevronDown } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Hand, Orbit, MousePointer, CirclePlus, Circle, Square, StickyNote, ChevronDown } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import {
   DropdownMenu,
@@ -11,7 +10,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import ToolbarButton from './ToolbarButton';
-import ExportDialog from './ExportDialog';
 import { findNonCollidingPosition } from '@/utils/collisionUtils';
 
 const Toolbar = ({ 
@@ -24,7 +22,6 @@ const Toolbar = ({
   onViewModeChange,
   onAddNode 
 }) => {
-  const [isExportDialogOpen, setIsExportDialogOpen] = React.useState(false);
   const zoomPercentage = Math.round(100 - (zoom / 2));
 
   const handleAddNodeWithStyle = (visualStyle) => {
@@ -49,15 +46,23 @@ const Toolbar = ({
   return (
     <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-sm rounded-full shadow-lg p-3">
       <div className="bg-white/90 rounded-full p-1 flex items-center space-x-1 h-10">
-        {/* Perspective Toggle */}
-        <Button 
-          variant="ghost"
-          size="sm"
-          className={`h-8 rounded-full text-sm font-medium transition-colors ${viewMode === '2d' ? 'bg-gray-200 text-black' : 'hover:bg-gray-200'}`}
-          onClick={() => onViewModeChange(viewMode === '2d' ? '3d' : '2d')}
-        >
-          {viewMode.toUpperCase()}
-        </Button>
+        {/* Perspective Toggle Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="ghost"
+              size="sm"
+              className="h-8 rounded-full text-sm font-medium transition-colors flex items-center gap-1"
+            >
+              {viewMode.toUpperCase()}
+              <ChevronDown className="h-3 w-3" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-black text-white" align="top">
+            <DropdownMenuItem onClick={() => onViewModeChange('2d')}>2D</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onViewModeChange('3d')}>3D</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <Separator orientation="vertical" className="h-6" />
 
@@ -113,57 +118,22 @@ const Toolbar = ({
 
         <Separator orientation="vertical" className="h-6" />
 
-        {/* Zoom Controls */}
-        <div className="flex items-center space-x-1 pl-2 h-8 bg-gray-200/80 rounded-full">
-          <div className="flex flex-col items-center space-y-0.5">
-            <Button 
-              size="icon" 
-              variant="ghost" 
-              className="rounded-full h-3 w-3 bg-black bg-opacity-5 hover:bg-gray-200 p-0" 
-              onClick={() => handleZoom(-10)}
-            >
-              <Plus className="h-2 w-2" />
+        {/* Zoom Level Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 rounded-full">
+              {zoomPercentage}%
+              <ChevronDown className="h-3 w-3 ml-1" />
             </Button>
-            <Button 
-              size="icon" 
-              variant="ghost" 
-              className="rounded-full h-3 w-3 bg-black bg-opacity-5 hover:bg-gray-200 p-0" 
-              onClick={() => handleZoom(10)}
-            >
-              <Minus className="h-2 w-2" />
-            </Button>
-          </div>
-          <div className="flex items-center justify-center w-8">
-            <span className="text-xs font-medium">{zoomPercentage}%</span>
-          </div>
-        </div>
-
-        <Separator orientation="vertical" className="h-6" />
-
-        {/* Export Tool */}
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="rounded-full h-8 w-8 bg-white hover:bg-gray-100 active:scale-95 transition-all duration-200 p-0"
-                onClick={() => setIsExportDialogOpen(true)}
-              >
-                <Download className="h-3 w-3" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-gray-900 text-white px-3 py-1.5 rounded-md text-sm">
-              <p>Export Mind Map (⌘E)</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-black text-white" align="top">
+            <DropdownMenuItem onClick={() => handleZoom(0.5)}>50%</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleZoom(1)}>100%</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleZoom(1.5)}>150%</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleZoom(2)}>200%</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
-      <ExportDialog 
-        isOpen={isExportDialogOpen} 
-        onClose={() => setIsExportDialogOpen(false)} 
-        nodes={nodes}
-      />
     </div>
   );
 };
