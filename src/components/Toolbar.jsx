@@ -7,6 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Separator } from "@/components/ui/separator";
 import ToolButton from './ToolbarButton';
 import ExportDialog from './ExportDialog';
 
@@ -20,58 +21,74 @@ const Toolbar = ({ activeTool, setActiveTool, handleZoom, zoom, nodes, onAddNode
   return (
     <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-20 backdrop-blur-sm rounded-full shadow-lg p-2">
       <div className="bg-white rounded-full p-2 flex items-center space-x-2">
-        <ToolButton 
-          icon={<MousePointer className="h-4 w-4" />} 
-          label="Select"
-          onClick={() => setActiveTool('select')}
-          isActive={activeTool === 'select'}
-        />
-        <ToolButton 
-          icon={<Hand className="h-4 w-4" />} 
-          label="Pan"
-          onClick={() => setActiveTool('pan')}
-          isActive={activeTool === 'pan'}
-        />
-        <div className="w-px h-6 bg-gray-300 mx-2" />
-        <ToolButton 
-          icon={<CirclePlus className="h-4 w-4" />}
-          label="Add Node"
-          onClick={onAddNode}
-          isActive={false}
-        />
-        <ToolButton 
-          icon={<StickyNote className="h-4 w-4" />}
-          label="Add Post-it"
-          onClick={() => onAddNode({ type: 'postit' })}
-          draggable
-          onDragStart={handleDragStart}
-          isActive={false}
-        />
-        <div className="flex items-center space-x-2">
-          <div className="flex items-center space-x-2">
-            <div className="flex flex-col items-center space-y-1">
-              <Button 
-                size="icon" 
-                variant="ghost" 
-                className="rounded-full h-3 w-3 bg-black bg-opacity-5" 
-                onClick={() => handleZoom(0.1)}
-              >
-                <Plus className="h-2 w-2" />
-              </Button>
-              <Button 
-                size="icon" 
-                variant="ghost" 
-                className="rounded-full h-3 w-3 bg-black bg-opacity-5" 
-                onClick={() => handleZoom(-0.1)}
-              >
-                <Minus className="h-2 w-2" />
-              </Button>
-            </div>
-            <div className="flex items-center justify-center w-12">
-              <span className="text-xs font-medium">{Math.round(zoom * 100)}%</span>
-            </div>
+        {/* Navigation Tools Group */}
+        <div className="flex items-center space-x-1 px-2 py-1 bg-gray-100 rounded-full">
+          <ToolButton 
+            icon={<MousePointer className="h-4 w-4" />} 
+            label="Select & Move Nodes"
+            onClick={() => setActiveTool('select')}
+            isActive={activeTool === 'select'}
+            activeClassName="bg-black text-white"
+          />
+          <ToolButton 
+            icon={<Hand className="h-4 w-4" />} 
+            label="Pan & Orbit"
+            onClick={() => setActiveTool('pan')}
+            isActive={activeTool === 'pan'}
+            activeClassName="bg-blue-500"
+          />
+        </div>
+
+        <Separator orientation="vertical" className="h-6" />
+
+        {/* Node Creation Tools */}
+        <div className="flex items-center space-x-1 px-2 py-1 bg-gray-100 rounded-full">
+          <ToolButton 
+            icon={<CirclePlus className="h-4 w-4" />}
+            label="Add Node"
+            onClick={onAddNode}
+            isActive={false}
+          />
+          <ToolButton 
+            icon={<StickyNote className="h-4 w-4" />}
+            label="Add Post-it"
+            onClick={() => onAddNode({ type: 'postit' })}
+            draggable
+            onDragStart={handleDragStart}
+            isActive={false}
+          />
+        </div>
+
+        <Separator orientation="vertical" className="h-6" />
+
+        {/* Zoom Controls */}
+        <div className="flex items-center space-x-1 px-2 py-1 bg-gray-100 rounded-full">
+          <div className="flex flex-col items-center space-y-1">
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              className="rounded-full h-3 w-3 bg-black bg-opacity-5" 
+              onClick={() => handleZoom(0.1)}
+            >
+              <Plus className="h-2 w-2" />
+            </Button>
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              className="rounded-full h-3 w-3 bg-black bg-opacity-5" 
+              onClick={() => handleZoom(-0.1)}
+            >
+              <Minus className="h-2 w-2" />
+            </Button>
+          </div>
+          <div className="flex items-center justify-center w-12">
+            <span className="text-xs font-medium">{Math.round(zoom * 100)}%</span>
           </div>
         </div>
+
+        <Separator orientation="vertical" className="h-6" />
+
+        {/* Export Tool */}
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
