@@ -1,8 +1,7 @@
 import React from 'react';
-import { Button } from "@/components/ui/button";
 import { 
   MousePointer2, 
-  Hand, 
+  Move3d, 
   Orbit, 
   Square, 
   ChevronDown,
@@ -23,7 +22,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { findNonCollidingPosition } from '@/utils/collisionUtils';
+import ToolbarButton from './toolbar/ToolbarButton';
 
 const Toolbar = ({ 
   activeTool, 
@@ -57,37 +58,29 @@ const Toolbar = ({
     });
   };
 
+  const navigationOptions = [
+    { 
+      label: 'Select & Move',
+      value: 'select',
+      icon: MousePointer2
+    },
+    { 
+      label: viewMode === '3d' ? 'Pan & Orbit' : 'Pan',
+      value: 'pan',
+      icon: viewMode === '3d' ? Orbit : Move3d
+    }
+  ];
+
   return (
     <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-sm rounded-xl shadow-lg p-1.5 border border-white/20">
-      <div className="bg-black/90 rounded-xl p-0.5 flex items-center space-x-1 h-10">
-        {/* Navigation Tools Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className={`h-8 w-8 rounded-lg transition-colors ${
-                activeTool === 'select' || activeTool === 'pan' 
-                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                  : 'text-white hover:bg-white/10'
-              }`}
-            >
-              {activeTool === 'select' ? <MousePointer2 className="h-4 w-4" /> : <Hand className="h-4 w-4" />}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-black text-white" align="top">
-            <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => setActiveTool('select')}>
-                <MousePointer2 className="h-4 w-4 mr-2" />
-                Select & Move
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setActiveTool('pan')}>
-                {viewMode === '3d' ? <Orbit className="h-4 w-4 mr-2" /> : <Hand className="h-4 w-4 mr-2" />}
-                {viewMode === '3d' ? "Pan & Orbit" : "Pan"}
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="bg-black/90 rounded-xl p-0.5 flex items-center space-x-2 h-10">
+        <ToolbarButton
+          icon={activeTool === 'select' ? MousePointer2 : (viewMode === '3d' ? Orbit : Move3d)}
+          label="Navigation"
+          options={navigationOptions}
+          isActive={activeTool === 'select' || activeTool === 'pan'}
+          onClick={setActiveTool}
+        />
 
         <Separator orientation="vertical" className="h-6 bg-white/20" />
 
