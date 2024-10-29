@@ -7,38 +7,112 @@ import Grid from './Grid';
 import Toolbar from './Toolbar';
 import ThreeDNode from './ThreeDNode';
 import ConnectionLine from './ConnectionLine';
-import { useNodes } from '../hooks/useNodes';
-import { useConnections } from '../hooks/useConnections';
-import { useViewControls } from '../hooks/useViewControls';
 
 const ThreeDCanvas = () => {
-  const {
-    nodes,
-    setNodes,
-    handleNodeUpdate
-  } = useNodes();
+  const [activeTool, setActiveTool] = useState('select');
+  const [zoom, setZoom] = useState(1);
+  const [nodes, setNodes] = useState([]);
+  const [connections, setConnections] = useState([]);
+  const [activeConnection, setActiveConnection] = useState(null);
+  const [viewMode, setViewMode] = useState('2d'); // Start in 2D mode
+  const controlsRef = useRef();
 
-  const {
-    connections,
-    setConnections,
-    activeConnection,
-    setActiveConnection,
-    handleStartConnection,
-    handleEndConnection
-  } = useConnections();
+  useEffect(() => {
+    const fetchNodes = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('node')
+          .select('*');
+          
+        if (error) throw error;
+        
+        if (data) {
+          const mappedNodes = data.map(node => ({
+            id: node.id,
+            title: node.title || '',
+            description: node.description || '',
+            position: [
+              node.position_x || 0,
+              0, // Y position is locked to 0 in 2D mode
+              node.position_y || 0 // Using position_y as Z coordinate
+            ],
+            type: node.type || 'generic',
+            visualStyle: node.visual_style || 'default'
+          }));
+          setNodes(mappedNodes);
+        }
+      } catch (error) {
+        console.error('Error loading nodes:', error);
+        toast.error('Failed to load nodes');
+      }
+    };
 
-  const {
-    activeTool,
-    setActiveTool,
-    zoom,
-    setZoom,
-    viewMode,
-    setViewMode,
-    controlsRef
-  } = useViewControls();
+    fetchNodes();
+  }, []);
+
+  useEffect(() => {
+    if (controlsRef.current) {
+      if (viewMode === '2d') {
+        controlsRef.current.setAzimuthalAngle(0);
+        controlsRef.current.setPolarAngle(0);
+        controlsRef.current.enableRotate = false;
+      } else {
+        controlsRef.current.setAzimuthalAngle(Math.PI / 4);
+        controlsRef.current.setPolarAngle(Math.PI / 4);
+        controlsRef.current.enableRotate = true;
+      }
+    }
+  }, [viewMode]);
 
   const handleZoom = (delta) => {
     setZoom(prev => Math.max(0.1, Math.min(2, prev + delta)));
+  };
+
+  const handleNodeUpdate = async (nodeId, newPosition) => {
+    try {
+      const { error } = await supabase
+        .from('node')
+        .update({
+          position_x: newPosition[0],
+          position_y: newPosition[2] // Z coordinate maps to Y in database
+        })
+        .eq('id', nodeId);
+
+      if (error) throw error;
+
+      setNodes(prev => prev.map(node =>
+        node.id === nodeId ? { ...node, position: newPosition } : node
+      ));
+    } catch (error) {
+      console.error('Error updating node position:', error);
+      toast.error('Failed to update node position');
+    }
+  };
+
+  const handleStartConnection = (sourceId, sourcePosition) => {
+    setActiveConnection({
+      sourceId,
+      sourcePosition,
+      targetPosition: sourcePosition
+    });
+  };
+
+  const handleEndConnection = (targetId) => {
+    if (activeConnection && activeConnection.sourceId !== targetId) {
+      const sourceNode = nodes.find(n => n.id === activeConnection.sourceId);
+      const targetNode = nodes.find(n => n.id === targetId);
+      
+      if (sourceNode && targetNode) {
+        setConnections(prev => [...prev, {
+          id: Date.now(),
+          sourceId: activeConnection.sourceId,
+          targetId: targetId,
+          sourcePosition: sourceNode.position,
+          targetPosition: targetNode.position
+        }]);
+      }
+    }
+    setActiveConnection(null);
   };
 
   const handlePointerMove = (event) => {
@@ -85,7 +159,13 @@ const ThreeDCanvas = () => {
             key={node.id}
             node={node}
             activeTool={activeTool}
-            onUpdate={handleNodeUpdate}
+            onUpdate={(newPosition) => {
+              const lockedPosition = viewMode === '2d' 
+                ? [newPosition[0], 0, newPosition[2]]
+                : newPosition;
+              
+              handleNodeUpdate(node.id, lockedPosition);
+            }}
             onStartConnection={handleStartConnection}
             onEndConnection={handleEndConnection}
           />
