@@ -29,17 +29,16 @@ const Toolbar = ({
   };
 
   return (
-    <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/30 backdrop-blur-sm rounded-full shadow-lg p-2">
+    <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-sm rounded-full shadow-lg p-2">
       <div className="bg-white/90 rounded-full p-2 flex items-center space-x-2">
         {/* Navigation Tools Group */}
-        <div className="flex items-center space-x-1 px-2 py-1 bg-gray-200/80 rounded-full">
+        <div className="flex items-center space-x-1 px-2 py-1 bg-gray-300/80 rounded-full">
           <ToolbarButton 
             icon={<MousePointer className="h-4 w-4" />} 
             label="Select & Move Nodes"
             shortcut="V"
             onClick={() => setActiveTool('select')}
             isActive={activeTool === 'select'}
-            activeClassName="bg-black text-white"
           />
           <ToolbarButton 
             icon={<Hand className="h-4 w-4" />} 
@@ -47,7 +46,7 @@ const Toolbar = ({
             shortcut="Space"
             onClick={() => setActiveTool('pan')}
             isActive={activeTool === 'pan'}
-            activeClassName="bg-blue-500 text-white"
+            activeClassName="bg-blue-600 text-white"
           />
           <ToolbarButton 
             icon={<View className="h-4 w-4" />} 
@@ -55,11 +54,10 @@ const Toolbar = ({
             shortcut="Tab"
             onClick={() => onViewModeChange(viewMode === '2d' ? '3d' : '2d')}
             isActive={viewMode === '2d'}
-            activeClassName="bg-purple-500 text-white"
+            activeClassName="bg-purple-600 text-white"
+            text={viewMode.toUpperCase()}
           />
         </div>
-
-        <Separator orientation="vertical" className="h-6" />
 
         {/* Node Creation Tools */}
         <div className="flex items-center space-x-1 px-2 py-1 bg-gray-200/80 rounded-full">

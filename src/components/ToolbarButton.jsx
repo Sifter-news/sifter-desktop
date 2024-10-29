@@ -16,13 +16,14 @@ const ToolbarButton = ({
   isActive, 
   onDragStart, 
   draggable,
-  activeClassName = 'bg-black text-white'
+  activeClassName = 'bg-black text-white',
+  text
 }) => (
   <TooltipProvider>
     <Tooltip>
       <TooltipTrigger asChild>
         <Button 
-          size="icon" 
+          size={text ? "default" : "icon"}
           variant="ghost" 
           className={`
             relative rounded-full 
@@ -39,11 +40,12 @@ const ToolbarButton = ({
             className="absolute inset-0 rounded-full"
             initial={false}
             animate={{
-              backgroundColor: isActive ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 0, 0)',
+              backgroundColor: isActive ? 'rgba(0, 0, 0, 0.95)' : 'rgba(0, 0, 0, 0)',
             }}
             transition={{ duration: 0.2 }}
           />
           <motion.div
+            className="flex items-center gap-2"
             initial={false}
             animate={{
               color: isActive ? 'white' : 'black',
@@ -51,6 +53,7 @@ const ToolbarButton = ({
             transition={{ duration: 0.2 }}
           >
             {icon}
+            {text && <span className="text-sm font-medium">{text}</span>}
           </motion.div>
         </Button>
       </TooltipTrigger>
