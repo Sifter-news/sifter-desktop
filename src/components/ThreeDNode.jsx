@@ -9,7 +9,8 @@ const ThreeDNode = ({
   activeTool, 
   onUpdate, 
   onStartConnection, 
-  onEndConnection 
+  onEndConnection,
+  isHighlighted // Add this prop
 }) => {
   const meshRef = useRef();
   const [isDragging, setIsDragging] = useState(false);
@@ -121,6 +122,8 @@ const ThreeDNode = ({
         transparent
         opacity={isHovered ? 0.8 : 1}
         wireframe={isHovered && !isDragging}
+        emissive={isHighlighted ? "#ffffff" : "#000000"}
+        emissiveIntensity={isHighlighted ? 0.5 : 0}
       />
       
       <Html

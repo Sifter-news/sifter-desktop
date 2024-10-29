@@ -24,7 +24,8 @@ const NodeNavigator = ({
   onAddNode,
   onAIConversation,
   focusedNodeId,
-  onDeleteNode 
+  onDeleteNode,
+  onNodeHover // Add this prop
 }) => {
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -50,20 +51,8 @@ const NodeNavigator = ({
     setNavigatorNodes(nodes);
   }, [nodes]);
 
-  useEffect(() => {
-    if (focusedNodeId && nodeRefs.current[focusedNodeId]) {
-      nodeRefs.current[focusedNodeId].scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest'
-      });
-      setSelectedNodes([focusedNodeId]);
-    }
-  }, [focusedNodeId]);
-
-  const handleCreateNewFolder = (folderName) => {
-    const newFolder = handleCreateFolder(folderName);
-    setFolders([...folders, newFolder]);
-    setShowCreateFolder(false);
+  const handleNodeHover = (nodeId) => {
+    onNodeHover?.(nodeId);
   };
 
   const filteredNodes = navigatorNodes.filter(node => {
@@ -113,53 +102,12 @@ const NodeNavigator = ({
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
-                {folders.map((folder, index) => (
-                  <FolderItem
-                    key={folder.id}
-                    folder={folder}
-                    index={index}
-                    isOpen={openFolders[folder.id]}
-                    onToggle={() => handleToggleFolder(folder.id)}
-                    isDraggedOver={draggedOverFolderId === folder.id}
-                  >
-                    <Droppable droppableId={folder.id} type="node">
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.droppableProps}
-                        >
-                          {folder.children?.map((node, nodeIndex) => (
-                            node && (
-                              <div key={node.id} ref={el => nodeRefs.current[node.id] = el}>
-                                <NodeListItem
-                                  node={node}
-                                  index={nodeIndex}
-                                  isSelected={selectedNodes.includes(node.id)}
-                                  onSelect={(nodeId) => {
-                                    setCurrentIndex(nodeIndex);
-                                    setSelectedNodes([nodeId]);
-                                    onNodeFocus(nodeId);
-                                  }}
-                                  onFocus={onNodeFocus}
-                                  onUpdateNode={onUpdateNode}
-                                  onAIConversation={onAIConversation}
-                                  isFocused={focusedNodeId === node.id}
-                                  onEdit={setEditingNode}
-                                  onDelete={onDeleteNode}
-                                />
-                              </div>
-                            )
-                          ))}
-                          {provided.placeholder}
-                        </div>
-                      )}
-                    </Droppable>
-                  </FolderItem>
-                ))}
                 {filteredNodes.map((node, index) => node && (
                   <div 
                     key={node.id}
                     ref={el => nodeRefs.current[node.id] = el}
+                    onMouseEnter={() => handleNodeHover(node.id)}
+                    onMouseLeave={() => handleNodeHover(null)}
                   >
                     <NodeListItem
                       node={node}
