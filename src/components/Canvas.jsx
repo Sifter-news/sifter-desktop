@@ -28,19 +28,11 @@ const Canvas = forwardRef(({
 }, ref) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [nodeToDelete, setNodeToDelete] = useState(null);
-  const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
-  const [previousTool, setPreviousTool] = useState(null);
-  const [isHovered, setIsHovered] = useState(false);
   const { setDebugData } = useDebug();
 
   const handleKeyDown = useCallback((e) => {
-    if (e.code === 'Space' && !e.repeat && !isSpacePressed && isHovered) {
-      e.preventDefault();
-      setIsSpacePressed(true);
-      setPreviousTool(activeTool);
-      setActiveTool('pan');
-    } else if (focusedNodeId && (e.key === 'Delete' || e.key === 'Backspace')) {
+    if (focusedNodeId && (e.key === 'Delete' || e.key === 'Backspace')) {
       const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
       if (nodeToDelete?.type === 'ai') {
         setNodeToDelete(nodeToDelete);
@@ -62,69 +54,38 @@ const Canvas = forwardRef(({
         toast.success("Node pasted from clipboard");
       }
     }
-  }, [focusedNodeId, nodes, onNodeDelete, setNodes, isSpacePressed, activeTool, setActiveTool, isHovered]);
-
-  const handleKeyUp = useCallback((e) => {
-    if (e.code === 'Space') {
-      e.preventDefault();
-      setIsSpacePressed(false);
-      setActiveTool(previousTool || 'select');
-    }
-  }, [previousTool, setActiveTool]);
+  }, [focusedNodeId, nodes, onNodeDelete, setNodes]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [handleKeyDown, handleKeyUp]);
+  }, [handleKeyDown]);
 
   const handleMouseDown = useCallback((e) => {
-    if (isSpacePressed || activeTool === 'pan') {
-      setClickCount(prev => prev + 1);
-      
-      if (clickTimeout) {
-        clearTimeout(clickTimeout);
-      }
-      
-      const newTimeout = setTimeout(() => {
-        setClickCount(0);
-      }, 300);
-      
-      setClickTimeout(newTimeout);
-      
+    if (activeTool === 'pan') {
       setIsPanning(true);
-      setLastMousePosition({ x: e.clientX, y: e.clientY });
       handlePanStart?.();
-      updateDebugInfo('Pan Start');
       e.preventDefault();
     }
-  }, [isSpacePressed, activeTool, handlePanStart, clickTimeout, updateDebugInfo]);
+  }, [activeTool, handlePanStart]);
 
   const handleMouseMove = useCallback((e) => {
     if (isPanning) {
-      const dx = e.clientX - lastMousePosition.x;
-      const dy = e.clientY - lastMousePosition.y;
-      
       handlePanMove?.({
-        movementX: dx,
-        movementY: dy
+        movementX: e.movementX,
+        movementY: e.movementY
       });
-      
-      setLastMousePosition({ x: e.clientX, y: e.clientY });
-      updateDebugInfo('Panning');
     }
-  }, [isPanning, handlePanMove, lastMousePosition, updateDebugInfo]);
+  }, [isPanning, handlePanMove]);
 
   const handleMouseUp = useCallback(() => {
     if (isPanning) {
       setIsPanning(false);
       handlePanEnd?.();
-      updateDebugInfo('Pan End');
     }
-  }, [isPanning, handlePanEnd, updateDebugInfo]);
+  }, [isPanning, handlePanEnd]);
 
   return (
     <>
@@ -133,11 +94,7 @@ const Canvas = forwardRef(({
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        onMouseLeave={() => {
-          handleMouseUp();
-          setIsHovered(false);
-        }}
-        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={handleMouseUp}
         onWheel={handleWheel}
         ref={ref}
         tabIndex={0}
