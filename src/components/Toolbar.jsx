@@ -1,4 +1,3 @@
-```jsx
 import React, { useState } from 'react';
 import { Square, ChevronDown, MessageCircle } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
@@ -108,4 +107,3 @@ const Toolbar = ({
 };
 
 export default Toolbar;
-```
