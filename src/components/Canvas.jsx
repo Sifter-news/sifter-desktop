@@ -8,7 +8,8 @@ const Canvas = forwardRef(({
   nodes, 
   setNodes, 
   zoom, 
-  position, 
+  position,
+  setPosition, // Make sure this prop is passed from parent
   activeTool,
   setActiveTool,
   handlePanStart, 
@@ -82,28 +83,31 @@ const Canvas = forwardRef(({
     if (isSpacePressed || activeTool === 'pan') {
       setIsPanning(true);
       setStartPanPosition({ x: e.clientX, y: e.clientY });
-      handlePanStart();
       document.body.style.cursor = 'grabbing';
       e.preventDefault();
     }
-  }, [isSpacePressed, activeTool, handlePanStart]);
+  }, [isSpacePressed, activeTool]);
 
   const handleMouseMove = useCallback((e) => {
     if (isPanning) {
       const deltaX = e.clientX - startPanPosition.x;
       const deltaY = e.clientY - startPanPosition.y;
-      handlePanMove({ movementX: deltaX / zoom, movementY: deltaY / zoom });
+      
+      setPosition(prev => ({
+        x: prev.x + deltaX / zoom,
+        y: prev.y + deltaY / zoom
+      }));
+      
       setStartPanPosition({ x: e.clientX, y: e.clientY });
     }
-  }, [isPanning, handlePanMove, startPanPosition, zoom]);
+  }, [isPanning, setPosition, startPanPosition, zoom]);
 
   const handleMouseUp = useCallback(() => {
     if (isPanning) {
       setIsPanning(false);
-      handlePanEnd();
       document.body.style.cursor = 'default';
     }
-  }, [isPanning, handlePanEnd]);
+  }, [isPanning]);
 
   return (
     <>
