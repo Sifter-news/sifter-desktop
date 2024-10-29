@@ -9,6 +9,30 @@ export const useProjectData = (id) => {
   const [loading, setLoading] = useState(true);
   const { setDebugData } = useDebug();
 
+  const serializeNode = (node) => ({
+    id: node.id,
+    title: node.title || '',
+    description: node.description || '',
+    type: node.type || 'generic',
+    investigation_id: node.investigation_id,
+    x: node.position_x || 0,
+    y: node.position_y || 0,
+    z: node.position_z || 0,
+    width: node.width || 200,
+    height: node.height || 100,
+    visualStyle: node.visual_style || 'default',
+    nodeType: node.node_type || 'generic',
+    parent_id: node.parent_id || null,
+    avatar: node.avatar || '/default-image.png',
+    textSize: node.text_size || 'medium',
+    textAlign: node.text_align || 'left',
+    color: node.color || 'white',
+    orderIndex: node.order_index || 0,
+    metadata: node.metadata || {},
+    created_at: node.created_at || new Date().toISOString(),
+    updated_at: node.updated_at || new Date().toISOString()
+  });
+
   useEffect(() => {
     const loadProject = async () => {
       try {
@@ -48,24 +72,10 @@ export const useProjectData = (id) => {
         if (error) throw error;
         
         if (data) {
-          const serializedNodes = data.map(node => ({
-            id: node.id,
-            title: node.title || '',
-            description: node.description || '',
-            type: node.type || 'generic',
-            investigation_id: node.investigation_id,
-            x: node.position_x || 0,
-            y: node.position_y || 0,
-            z: node.position_z || 0,
-            width: node.width || 200,
-            height: node.height || 100,
-            visualStyle: node.visual_style || 'default',
-            nodeType: node.node_type || 'generic',
-            parent_id: node.parent_id || null
-          }));
+          const serializedNodes = data.map(serializeNode);
           setNodes(serializedNodes);
           
-          // Update debug data
+          // Update debug data with the same serialized nodes for both views
           setDebugData(prev => ({
             ...prev,
             nodes: {
