@@ -1,4 +1,6 @@
+```jsx
 import React from 'react';
+import { NODE_STYLES } from '@/utils/nodeStyles';
 
 const DebugStateSection = ({ debugData }) => {
   const getToolDescription = (tool) => {
@@ -52,6 +54,46 @@ const DebugStateSection = ({ debugData }) => {
     return dataTypes[nodeType] || 'generic';
   };
 
+  const getNodeStyleProperties = (node) => {
+    if (!node?.visualStyle) return null;
+    const style = NODE_STYLES[node.visualStyle];
+    if (!style) return null;
+
+    return (
+      <div className="pl-2 space-y-0.5 text-xs">
+        <p>Style Type: {style.title}</p>
+        <p>Description: {style.description}</p>
+        <p>Dimensions: {style.width}x{style.height}</p>
+        <p>Resizable: {style.resizable ? 'Yes' : 'No'}</p>
+        <div className="space-y-1">
+          <p className="font-medium">Display:</p>
+          <div className="pl-2">
+            <p>Avatar: {style.display.avatar ? 'Yes' : 'No'}</p>
+            <p>Title: {style.display.title ? 'Yes' : 'No'}</p>
+            <p>Description: {style.display.description ? 'Yes' : 'No'}</p>
+          </div>
+        </div>
+        <div className="space-y-1">
+          <p className="font-medium">Available Colors:</p>
+          <div className="pl-2 flex flex-wrap gap-1">
+            {Object.entries(style.colors).map(([name, className]) => (
+              <span key={name} className={`px-2 py-0.5 rounded ${className}`}>
+                {name}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="space-y-1">
+          <p className="font-medium">Text Options:</p>
+          <div className="pl-2">
+            <p>Sizes: {Object.keys(style.textSizes).join(', ')}</p>
+            <p>Alignments: {Object.keys(style.textAlignments).join(', ')}</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-2">
       <h3 className="text-sm font-medium text-white/80">Current State</h3>
@@ -77,13 +119,6 @@ const DebugStateSection = ({ debugData }) => {
           </div>
         </div>
 
-        <div className="space-y-1">
-          <p className="text-xs font-medium text-white/80">State</p>
-          <div className="pl-2">
-            <p className="text-xs">Current Perspective: {debugData?.viewMode || '2D'}</p>
-          </div>
-        </div>
-
         {/* Canvas Nodes Section */}
         {debugData?.nodes?.list && debugData.nodes.list.length > 0 && (
           <div className="space-y-1">
@@ -97,6 +132,7 @@ const DebugStateSection = ({ debugData }) => {
                     <p>Description: {node.description || 'No description'}</p>
                     <p>Data Type: {getNodeDataType(node.nodeType)}</p>
                     <p>Style: {node.visualStyle || 'default'}</p>
+                    {getNodeStyleProperties(node)}
                     <div className="font-mono">
                       Position: (
                       <span className="text-red-400">{node.position?.x || '0'}</span>, 
@@ -125,6 +161,7 @@ const DebugStateSection = ({ debugData }) => {
                     <p>Description: {node.description || 'No description'}</p>
                     <p>Data Type: {getNodeDataType(node.nodeType)}</p>
                     <p>Style: {node.visualStyle || 'default'}</p>
+                    {getNodeStyleProperties(node)}
                     {node.children && (
                       <p>Children: {node.children.length}</p>
                     )}
@@ -143,3 +180,4 @@ const DebugStateSection = ({ debugData }) => {
 };
 
 export default DebugStateSection;
+```
