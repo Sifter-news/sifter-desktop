@@ -19,13 +19,20 @@ const ThreeDNode = ({
   const [showTooltip, setShowTooltip] = useState(false);
   const { camera, gl } = useThree();
 
+  // Ensure node position has default values
+  const nodePosition = [
+    node?.position?.[0] || 0,
+    node?.position?.[1] || 0,
+    node?.position?.[2] || 0
+  ];
+
   const handlePointerDown = (e) => {
     if (activeTool !== 'select') return;
 
-    if (e.button === 2) { // Right click
+    if (e.button === 2) {
       e.stopPropagation();
       setIsConnecting(true);
-      onStartConnection(node.id, node.position);
+      onStartConnection(node.id, nodePosition);
       return;
     }
 
@@ -34,7 +41,7 @@ const ThreeDNode = ({
     setDragStart({
       x: e.clientX,
       y: e.clientY,
-      position: [...node.position]
+      position: [...nodePosition]
     });
     gl.domElement.style.cursor = 'grabbing';
   };
@@ -93,7 +100,7 @@ const ThreeDNode = ({
   return (
     <mesh
       ref={meshRef}
-      position={node.position}
+      position={nodePosition}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
       onPointerMove={handlePointerMove}
@@ -109,7 +116,6 @@ const ThreeDNode = ({
         wireframe={isHovered && !isDragging}
       />
       
-      {/* Node Content */}
       <Html
         position={[0, 0, 0.1]}
         center
@@ -122,10 +128,9 @@ const ThreeDNode = ({
           userSelect: 'none'
         }}
       >
-        {node.title}
+        {node?.title || 'Untitled Node'}
       </Html>
 
-      {/* Debug Info */}
       <Html
         position={[0, -4, 0]}
         center
@@ -140,7 +145,7 @@ const ThreeDNode = ({
           pointerEvents: 'none'
         }}
       >
-        {`Component: ThreeDNode\nPos: [${node.position[0].toFixed(2)}, ${node.position[1].toFixed(2)}, ${node.position[2].toFixed(2)}]`}
+        {`Component: ThreeDNode\nPos: [${nodePosition[0].toFixed(2)}, ${nodePosition[1].toFixed(2)}, ${nodePosition[2].toFixed(2)}]`}
       </Html>
 
       {showTooltip && (
