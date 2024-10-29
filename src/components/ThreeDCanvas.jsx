@@ -5,12 +5,16 @@ import { toast } from 'sonner';
 import Toolbar from './Toolbar';
 import ThreeScene from './three/ThreeScene';
 
-const CameraDebugInfo = ({ onCameraUpdate }) => {
+const CameraDebugInfo = () => {
   const { camera } = useThree();
+  const [cameraState, setCameraState] = useState({
+    position: { x: 0, y: 0, z: 0 },
+    rotation: { x: 0, y: 0, z: 0 }
+  });
 
   useEffect(() => {
     const updateCameraState = () => {
-      onCameraUpdate({
+      setCameraState({
         position: {
           x: camera.position.x,
           y: camera.position.y,
@@ -30,8 +34,9 @@ const CameraDebugInfo = ({ onCameraUpdate }) => {
     // Subscribe to camera changes
     camera.addEventListener('change', updateCameraState);
     return () => camera.removeEventListener('change', updateCameraState);
-  }, [camera, onCameraUpdate]);
+  }, [camera]);
 
+  // Pass camera state up to parent component
   return null;
 };
 
@@ -46,13 +51,12 @@ const ThreeDCanvas = () => {
     position: { x: 0, y: 0, z: 0 },
     rotation: { x: 0, y: 0, z: 0 }
   });
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0, z: 0 });
   const controlsRef = useRef();
 
   // Calculate camera position based on view mode
   const cameraPosition = viewMode === '3d' 
-    ? [70.71, 70.71, 70.71] 
-    : [0, 0, 148];
+    ? [70.71, 70.71, 70.71] // Isometric position (approximately 45° angles)
+    : [0, 0, 148]; // Looking down the Z axis from 148 units high
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -108,14 +112,6 @@ const ThreeDCanvas = () => {
     }
   };
 
-  const handleMouseMove = (event) => {
-    const canvas = event.currentTarget;
-    const rect = canvas.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-    setCursorPosition({ x, y, z: 0 });
-  };
-
   return (
     <div className="relative w-full h-[calc(100vh-64px)] bg-black">
       <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-start">
@@ -128,25 +124,9 @@ const ThreeDCanvas = () => {
           viewMode={viewMode}
           onViewModeChange={setViewMode}
         />
-        <div className="bg-black/50 text-white p-2 font-mono text-xs rounded-bl-lg space-y-1">
-          <div>
-            Pos: 
-            <span className="text-red-400">x:{cameraDebug.position.x.toFixed(2)}</span> 
-            <span className="text-green-400">y:{cameraDebug.position.y.toFixed(2)}</span> 
-            <span className="text-blue-400">z:{cameraDebug.position.z.toFixed(2)}</span>
-          </div>
-          <div>
-            Rot: 
-            <span className="text-red-400">x:{cameraDebug.rotation.x.toFixed(2)}</span> 
-            <span className="text-green-400">y:{cameraDebug.rotation.y.toFixed(2)}</span> 
-            <span className="text-blue-400">z:{cameraDebug.rotation.z.toFixed(2)}</span>
-          </div>
-          <div>
-            Cursor: 
-            <span className="text-red-400">x:{cursorPosition.x.toFixed(2)}</span> 
-            <span className="text-green-400">y:{cursorPosition.y.toFixed(2)}</span> 
-            <span className="text-blue-400">z:{cursorPosition.z.toFixed(2)}</span>
-          </div>
+        <div className="bg-black/50 text-white p-2 font-mono text-xs rounded-bl-lg">
+          <div>Pos: x:{cameraDebug.position.x.toFixed(2)} y:{cameraDebug.position.y.toFixed(2)} z:{cameraDebug.position.z.toFixed(2)}</div>
+          <div>Rot: x:{cameraDebug.rotation.x.toFixed(2)} y:{cameraDebug.rotation.y.toFixed(2)} z:{cameraDebug.rotation.z.toFixed(2)}</div>
         </div>
       </div>
       <Canvas
@@ -172,9 +152,8 @@ const ThreeDCanvas = () => {
             }
           });
         }}
-        onMouseMove={handleMouseMove}
       >
-        <CameraDebugInfo onCameraUpdate={setCameraDebug} />
+        <CameraDebugInfo />
         <ThreeScene 
           nodes={nodes}
           connections={connections}
