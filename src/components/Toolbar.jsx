@@ -31,7 +31,7 @@ const Toolbar = ({
             activeTool={activeTool}
             setActiveTool={setActiveTool}
             viewMode={viewMode}
-            onViewModeChange={setViewMode}
+            setViewMode={setViewMode}
           />
 
           <Separator orientation="vertical" className="h-6 bg-white/20" />
@@ -44,7 +44,7 @@ const Toolbar = ({
                 className="h-8 rounded-lg text-white hover:bg-white/10 bg-white/[0.0625] flex items-center gap-1 [&>svg]:text-white hover:[&>svg]:text-white"
               >
                 {zoomPercentage}%
-                <ChevronDown className="h-3 w-3 ml-1" />
+                <ChevronDown className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-black text-white" align="top">
@@ -63,9 +63,10 @@ const Toolbar = ({
                 <Button 
                   variant="ghost" 
                   size="icon"
-                  className="h-8 w-8 rounded-lg text-white hover:bg-white/40 bg-white/30 [&>svg]:text-white hover:[&>svg]:text-white"
+                  className="h-8 w-8 rounded-lg text-white hover:bg-white/40 bg-white/30"
                 >
                   <Plus className="h-4 w-4" />
+                  <ChevronDown className="h-3 w-3 ml-0.5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="bg-black text-white" align="top">
