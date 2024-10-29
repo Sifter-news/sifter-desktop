@@ -12,10 +12,24 @@ const ThreeScene = ({
   viewMode, 
   activeTool, 
   controlsRef, 
-  handleNodeUpdate 
+  handleNodeUpdate,
+  onStartConnection,
+  onEndConnection,
+  setActiveConnection
 }) => {
+  const handlePointerMove = (event) => {
+    if (activeConnection) {
+      event.stopPropagation();
+      const { point } = event;
+      setActiveConnection(prev => ({
+        ...prev,
+        targetPosition: [point.x, point.y, point.z]
+      }));
+    }
+  };
+
   return (
-    <>
+    <group onPointerMove={handlePointerMove}>
       <ambientLight intensity={0.5} />
       <pointLight position={[10, 10, 10]} />
       <Grid size={100} divisions={24} />
@@ -26,23 +40,29 @@ const ThreeScene = ({
           key={node.id}
           node={node}
           activeTool={activeTool}
-          onUpdate={(newPosition) => {
-            const lockedPosition = viewMode === '2d' 
-              ? [newPosition[0], 0, newPosition[2]]
-              : newPosition;
-            
-            handleNodeUpdate(node.id, lockedPosition);
-          }}
+          onUpdate={handleNodeUpdate}
+          onStartConnection={onStartConnection}
+          onEndConnection={onEndConnection}
         />
       ))}
 
-      {connections.map(connection => (
-        <ConnectionLine
-          key={connection.id}
-          start={connection.sourcePosition}
-          end={connection.targetPosition}
-        />
-      ))}
+      {connections.map((connection, index) => {
+        const sourceNode = nodes.find(n => n.id === connection.source_id);
+        const targetNode = nodes.find(n => n.id === connection.target_id);
+        
+        if (!sourceNode || !targetNode) return null;
+
+        const sourceY = connection.source_point === 'top' ? 2.5 : -2.5;
+        const targetY = connection.target_point === 'top' ? 2.5 : -2.5;
+
+        return (
+          <ConnectionLine
+            key={index}
+            start={[sourceNode.position[0], sourceNode.position[1] + sourceY, 0]}
+            end={[targetNode.position[0], targetNode.position[1] + targetY, 0]}
+          />
+        );
+      })}
 
       {activeConnection && (
         <ConnectionLine
@@ -60,7 +80,7 @@ const ThreeScene = ({
         minDistance={10}
         maxPolarAngle={viewMode === '2d' ? 0 : Math.PI / 2}
       />
-    </>
+    </group>
   );
 };
 

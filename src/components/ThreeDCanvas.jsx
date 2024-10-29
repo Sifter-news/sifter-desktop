@@ -7,37 +7,6 @@ import { Bug } from "lucide-react";
 import Toolbar from './Toolbar';
 import ThreeScene from './three/ThreeScene';
 
-const CameraDebugInfo = () => {
-  const { camera } = useThree();
-  const [cameraState, setCameraState] = useState({
-    position: { x: 0, y: 0, z: 0 },
-    rotation: { x: 0, y: 0, z: 0 }
-  });
-
-  useEffect(() => {
-    const updateCameraState = () => {
-      setCameraState({
-        position: {
-          x: camera.position.x,
-          y: camera.position.y,
-          z: camera.position.z
-        },
-        rotation: {
-          x: camera.rotation.x,
-          y: camera.rotation.y,
-          z: camera.rotation.z
-        }
-      });
-    };
-
-    updateCameraState();
-    camera.addEventListener('change', updateCameraState);
-    return () => camera.removeEventListener('change', updateCameraState);
-  }, [camera]);
-
-  return null;
-};
-
 const ThreeDCanvas = () => {
   const [activeTool, setActiveTool] = useState('pan');
   const [zoom, setZoom] = useState(1);
@@ -46,48 +15,88 @@ const ThreeDCanvas = () => {
   const [activeConnection, setActiveConnection] = useState(null);
   const [viewMode, setViewMode] = useState('2d');
   const [showDebug, setShowDebug] = useState(false);
-  const [cameraDebug, setCameraDebug] = useState({
-    position: { x: 0, y: 0, z: 0 },
-    rotation: { x: 0, y: 0, z: 0 }
-  });
   const controlsRef = useRef();
-
-  const cameraPosition = viewMode === '3d' 
-    ? [70.71, 70.71, 70.71] 
-    : [0, 0, 200];
 
   useEffect(() => {
     const fetchNodes = async () => {
       try {
-        const { data, error } = await supabase
+        const { data: nodesData, error: nodesError } = await supabase
           .from('node')
           .select('*');
           
-        if (error) throw error;
+        if (nodesError) throw nodesError;
         
-        if (data) {
-          const mappedNodes = data.map(node => ({
-            id: node.id,
-            title: node.title || '',
-            description: node.description || '',
-            position: [
-              node.position_x || 0,
-              0,
-              0
-            ],
-            type: node.type || 'generic',
-            visualStyle: node.visual_style || 'default'
-          }));
-          setNodes(mappedNodes);
-        }
+        const { data: connectionsData, error: connectionsError } = await supabase
+          .from('connections')
+          .select('*');
+
+        if (connectionsError) throw connectionsError;
+        
+        setNodes(nodesData.map(node => ({
+          id: node.id,
+          title: node.title || '',
+          description: node.description || '',
+          position: [
+            node.position_x || 0,
+            node.position_y || 0,
+            0
+          ],
+          type: node.type || 'generic',
+          visualStyle: node.visual_style || 'default'
+        })));
+
+        setConnections(connectionsData || []);
       } catch (error) {
-        console.error('Error loading nodes:', error);
-        toast.error('Failed to load nodes');
+        console.error('Error loading data:', error);
+        toast.error('Failed to load data');
       }
     };
 
     fetchNodes();
   }, []);
+
+  const handleStartConnection = (sourceId, position, connectionPoint) => {
+    setActiveConnection({
+      sourceId,
+      sourcePosition: position,
+      sourcePoint: connectionPoint,
+      targetPosition: position
+    });
+  };
+
+  const handleEndConnection = async (targetId, targetPoint) => {
+    if (!activeConnection || targetId === activeConnection.sourceId) {
+      setActiveConnection(null);
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('connections')
+        .insert({
+          source_id: activeConnection.sourceId,
+          target_id: targetId,
+          source_point: activeConnection.sourcePoint,
+          target_point: targetPoint
+        });
+
+      if (error) throw error;
+
+      setConnections(prev => [...prev, {
+        source_id: activeConnection.sourceId,
+        target_id: targetId,
+        source_point: activeConnection.sourcePoint,
+        target_point: targetPoint
+      }]);
+
+      toast.success('Connection created');
+    } catch (error) {
+      console.error('Error creating connection:', error);
+      toast.error('Failed to create connection');
+    }
+
+    setActiveConnection(null);
+  };
 
   const handleNodeUpdate = async (nodeId, newPosition) => {
     try {
@@ -95,14 +104,15 @@ const ThreeDCanvas = () => {
         .from('node')
         .update({
           position_x: newPosition[0],
-          position_y: 0
+          position_y: newPosition[1],
+          position_z: 0
         })
         .eq('id', nodeId);
 
       if (error) throw error;
 
       setNodes(prev => prev.map(node =>
-        node.id === nodeId ? { ...node, position: [newPosition[0], 0, 0] } : node
+        node.id === nodeId ? { ...node, position: [newPosition[0], newPosition[1], 0] } : node
       ));
     } catch (error) {
       console.error('Error updating node position:', error);
@@ -122,47 +132,17 @@ const ThreeDCanvas = () => {
           viewMode={viewMode}
           onViewModeChange={setViewMode}
         />
-        <Button
-          variant="outline"
-          size="icon"
-          className="bg-black/50 text-white hover:bg-black/70"
-          onClick={() => setShowDebug(!showDebug)}
-        >
-          <Bug className="h-4 w-4" />
-        </Button>
       </div>
-      {showDebug && (
-        <div className="absolute top-4 right-16 bg-black/50 text-white p-2 font-mono text-xs rounded-lg">
-          <div>Pos: x:{cameraDebug.position.x.toFixed(2)} y:{cameraDebug.position.y.toFixed(2)} z:{cameraDebug.position.z.toFixed(2)}</div>
-          <div>Rot: x:{cameraDebug.rotation.x.toFixed(2)} y:{cameraDebug.rotation.y.toFixed(2)} z:{cameraDebug.rotation.z.toFixed(2)}</div>
-        </div>
-      )}
+
       <Canvas
         camera={{ 
-          position: cameraPosition,
-          rotation: [0, 0, 0],
+          position: [0, 0, 200],
           fov: 45,
           near: 0.1,
-          far: 2000,
-          up: [0, 1, 0]
+          far: 2000
         }}
         style={{ background: 'black' }}
-        onCreated={({ camera }) => {
-          setCameraDebug({
-            position: {
-              x: camera.position.x,
-              y: camera.position.y,
-              z: camera.position.z
-            },
-            rotation: {
-              x: camera.rotation.x,
-              y: camera.rotation.y,
-              z: camera.rotation.z
-            }
-          });
-        }}
       >
-        <CameraDebugInfo />
         <ThreeScene 
           nodes={nodes}
           connections={connections}
@@ -171,6 +151,9 @@ const ThreeDCanvas = () => {
           activeTool={activeTool}
           controlsRef={controlsRef}
           handleNodeUpdate={handleNodeUpdate}
+          onStartConnection={handleStartConnection}
+          onEndConnection={handleEndConnection}
+          setActiveConnection={setActiveConnection}
         />
       </Canvas>
     </div>
