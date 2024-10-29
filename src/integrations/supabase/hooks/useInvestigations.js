@@ -4,32 +4,23 @@ import { supabase } from '../supabase';
 export const useInvestigation = (id) => useQuery({
   queryKey: ['investigations', id],
   queryFn: async () => {
-    try {
-      // First fetch the investigation
-      const { data: investigation, error: investigationError } = await supabase
-        .from('investigations')
-        .select('*')
-        .eq('id', id)
-        .single();
-        
-      if (investigationError) throw investigationError;
-
-      // Then fetch associated reports separately
-      const { data: reports, error: reportsError } = await supabase
-        .from('reports')
-        .select('*')
-        .eq('investigation_id', id);
-        
-      if (reportsError) throw reportsError;
-
-      return {
-        ...investigation,
-        reports: reports || []
-      };
-    } catch (error) {
+    if (!id) return null;
+    
+    const { data, error } = await supabase
+      .from('investigations')
+      .select(`
+        *,
+        reports:reports(*)
+      `)
+      .eq('id', id)
+      .single();
+      
+    if (error) {
       console.error('Investigation query error:', error);
       throw error;
     }
+    
+    return data;
   },
   enabled: !!id,
 });
@@ -38,35 +29,28 @@ export const useInvestigations = ({ select, filter } = {}) => {
   return useQuery({
     queryKey: ['investigations', { select, filter }],
     queryFn: async () => {
-      try {
-        // First fetch investigations
-        let query = supabase.from('investigations').select('*');
-        
-        if (filter?.startsWith('owner_id.eq.')) {
-          const userId = filter.replace('owner_id.eq.', '');
-          if (userId && userId !== 'undefined') {
-            query = query.eq('owner_id', userId);
-          }
+      let query = supabase
+        .from('investigations')
+        .select(`
+          *,
+          reports:reports(*)
+        `);
+      
+      if (filter?.startsWith('owner_id.eq.')) {
+        const userId = filter.replace('owner_id.eq.', '');
+        if (userId && userId !== 'undefined') {
+          query = query.eq('owner_id', userId);
         }
-        
-        const { data: investigations, error: investigationsError } = await query;
-        if (investigationsError) throw investigationsError;
-
-        // Then fetch all reports
-        const { data: reports, error: reportsError } = await supabase
-          .from('reports')
-          .select('*');
-        if (reportsError) throw reportsError;
-
-        // Combine investigations with their reports
-        return (investigations || []).map(investigation => ({
-          ...investigation,
-          reports: reports.filter(report => report.investigation_id === investigation.id) || []
-        }));
-      } catch (error) {
+      }
+      
+      const { data, error } = await query;
+      
+      if (error) {
         console.error('Investigations query error:', error);
         throw error;
       }
+      
+      return data || [];
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: 3,
