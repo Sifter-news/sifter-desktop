@@ -79,7 +79,7 @@ const ThreeScene = ({
           ref={controlsRef}
           enableZoom={true}
           enablePan={activeTool === 'pan'}
-          enableRotate={activeTool === 'pan'}
+          enableRotate={activeTool === 'pan' && viewMode === '3d'}
           maxDistance={200}
           minDistance={10}
           camera={camera}
