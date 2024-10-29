@@ -73,7 +73,7 @@ const NodeNavigator = ({
   };
 
   return (
-    <div className="w-full h-full flex flex-col p-4 rounded-2xl">
+    <div className="w-full h-full flex flex-col p-4 rounded-2xl m-4">
       <div className="flex-1">
         <SearchInput value={searchQuery} onChange={setSearchQuery} />
       </div>

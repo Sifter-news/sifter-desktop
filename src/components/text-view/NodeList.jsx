@@ -18,7 +18,7 @@ const NodeList = ({
         <div
           ref={provided.innerRef}
           {...provided.droppableProps}
-          className="space-y-1" // Changed from space-y-0 to space-y-1 for minimal spacing
+          className="space-y-1 mx-4"
         >
           {nodes.map((node, index) => node && (
             <div 
