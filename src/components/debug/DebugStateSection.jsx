@@ -92,7 +92,7 @@ const DebugStateSection = ({ debugData }) => {
                   <div className="pl-2 space-y-0.5">
                     <p className="font-mono">ID: {node.id}</p>
                     <p>Description: {node.description || 'No description'}</p>
-                    <p>Data Type: {getNodeDataType(node.nodeType || node.type)}</p>
+                    <p>Data Type: {getNodeDataType(node.nodeType)}</p>
                     <p>Style: {node.visualStyle || 'default'}</p>
                     <div className="font-mono">
                       Position: (
