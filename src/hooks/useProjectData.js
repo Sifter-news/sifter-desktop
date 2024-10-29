@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
+import { useDebug } from '@/contexts/DebugContext';
 
 export const useProjectData = (id) => {
   const [project, setProject] = useState(null);
   const [nodes, setNodes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { setDebugData } = useDebug();
 
   useEffect(() => {
     const loadProject = async () => {
@@ -58,9 +60,22 @@ export const useProjectData = (id) => {
             width: node.width || 200,
             height: node.height || 100,
             visualStyle: node.visual_style || 'default',
-            nodeType: node.node_type || 'generic'
+            nodeType: node.node_type || 'generic',
+            parent_id: node.parent_id || null
           }));
           setNodes(serializedNodes);
+          
+          // Update debug data
+          setDebugData(prev => ({
+            ...prev,
+            nodes: {
+              count: serializedNodes.length,
+              list: serializedNodes
+            },
+            navigatorNodes: serializedNodes
+          }));
+          
+          console.log('Nodes loaded:', serializedNodes);
         }
       } catch (error) {
         console.error('Error loading nodes:', error);
@@ -74,7 +89,7 @@ export const useProjectData = (id) => {
       loadProject();
       loadNodes();
     }
-  }, [id]);
+  }, [id, setDebugData]);
 
   return { project, setProject, nodes, setNodes, loading };
 };

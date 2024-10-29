@@ -29,7 +29,6 @@ const NodeNavigator = ({
   onNodeHover
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [navigatorNodes, setNavigatorNodes] = useState([]);
   const [selectedNodes, setSelectedNodes] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [editingNode, setEditingNode] = useState(null);
@@ -39,7 +38,7 @@ const NodeNavigator = ({
   const [selectedFiles, setSelectedFiles] = useState(null);
   const fileInputRef = useRef(null);
 
-  const { handleDragEnd } = useDragAndDrop(navigatorNodes, setNavigatorNodes);
+  const { handleDragEnd } = useDragAndDrop(nodes, onUpdateNode);
   const {
     openFolders,
     draggedOverFolderId,
@@ -52,15 +51,12 @@ const NodeNavigator = ({
   const { setDebugData } = useDebug();
 
   useEffect(() => {
-    setNavigatorNodes(nodes);
-  }, [nodes]);
-
-  useEffect(() => {
     setDebugData(prev => ({
       ...prev,
-      navigatorNodes: navigatorNodes
+      navigatorNodes: nodes
     }));
-  }, [navigatorNodes, setDebugData]);
+    console.log('Navigator nodes updated:', nodes);
+  }, [nodes, setDebugData]);
 
   const handleCreateNewFolder = (folderName) => {
     const newFolder = handleCreateFolder(folderName);
@@ -82,7 +78,7 @@ const NodeNavigator = ({
     }
   };
 
-  const filteredNodes = navigatorNodes.filter(node => {
+  const filteredNodes = nodes.filter(node => {
     if (!node) return false;
     const matchesSearch = (node.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                         (node.description || '').toLowerCase().includes(searchQuery.toLowerCase());
@@ -109,7 +105,7 @@ const NodeNavigator = ({
           <FolderPlus className="h-4 w-4" />
         </Button>
       </div>
-
+      
       <Tabs value={activeView} onValueChange={setActiveView} className="w-full">
         <TabsList className="w-full mb-4">
           <TabsTrigger value="nodes" className="flex-1">Nodes</TabsTrigger>
