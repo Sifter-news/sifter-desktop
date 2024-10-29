@@ -44,7 +44,7 @@ const CameraDebug = () => {
   return null;
 };
 
-const ThreeDCanvas = () => {
+const ThreeDCanvas = ({ onAddNode }) => {
   const [activeTool, setActiveTool] = React.useState('pan');
   const [viewMode, setViewMode] = React.useState('2d');
   const [showDebug, setShowDebug] = React.useState(false);
@@ -110,6 +110,7 @@ const ThreeDCanvas = () => {
           nodes={nodes}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
+          onAddNode={onAddNode}
         />
       </div>
 

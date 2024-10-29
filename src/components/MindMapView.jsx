@@ -20,6 +20,7 @@ const MindMapView = ({
         onNodeDelete={onDeleteNode}
         focusedNodeId={focusedNodeId}
         onNodeFocus={onNodeFocus}
+        onAddNode={onAddNode}
       />
     </div>
   );
