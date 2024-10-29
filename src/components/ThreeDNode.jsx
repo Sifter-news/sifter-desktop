@@ -1,26 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useThree } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { useDebug } from '@/contexts/DebugContext';
-import NodeStyleTooltip from './node/NodeStyleTooltip';
-import ConnectionDot from './node/ConnectionDot';
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { getNodeDimensions } from '@/utils/nodeStyles';
-
-const getNodeTypeDisplay = (nodeType) => {
-  const types = {
-    'node_person': 'Person',
-    'node_organization': 'Organization',
-    'node_object': 'Object',
-    'node_concept': 'Concept',
-    'node_location': 'Location',
-    'node_event': 'Event',
-    'node': 'Generic Note',
-    'generic': 'Generic Note'
-  };
-  return types[nodeType] || 'Generic Note';
-};
 
 const ThreeDNode = ({ 
   node, 
@@ -34,8 +15,7 @@ const ThreeDNode = ({
   const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredConnectionPoint, setHoveredConnectionPoint] = useState(null);
-  const [showTooltip, setShowTooltip] = useState(false);
-  const { camera, gl } = useThree();
+  const { gl } = useThree();
   const { showNodeDebug } = useDebug();
 
   const nodePosition = [
@@ -43,24 +23,6 @@ const ThreeDNode = ({
     node?.position?.[1] || 0,
     node?.position?.[2] || 0
   ];
-
-  const dimensions = getNodeDimensions(node?.visualStyle || 'default');
-  const boxWidth = dimensions.width / 40; // Scale down for Three.js scene
-  const boxHeight = dimensions.height / 40;
-
-  const handleConnectionStart = (point) => {
-    const connectionPosition = [...nodePosition];
-    if (point === 'top') {
-      connectionPosition[1] += boxHeight/2;
-    } else if (point === 'bottom') {
-      connectionPosition[1] -= boxHeight/2;
-    }
-    onStartConnection?.(node.id, connectionPosition, point);
-  };
-
-  const handleConnectionEnd = () => {
-    onEndConnection?.(node.id, hoveredConnectionPoint);
-  };
 
   const handlePointerDown = (e) => {
     if (activeTool !== 'select') return;
@@ -87,11 +49,9 @@ const ThreeDNode = ({
     gl.domElement.style.cursor = 'default';
   };
 
-  React.useEffect(() => {
-    if (meshRef.current) {
-      meshRef.current.quaternion.copy(camera.quaternion);
-    }
-  });
+  const handleConnectionEnd = () => {
+    onEndConnection?.(node.id, hoveredConnectionPoint);
+  };
 
   return (
     <group position={nodePosition}>
@@ -102,7 +62,7 @@ const ThreeDNode = ({
         onPointerEnter={handlePointerEnter}
         onPointerLeave={handlePointerLeave}
       >
-        <boxGeometry args={[boxWidth, boxHeight, 0.2]} />
+        <boxGeometry args={[4, 2, 0.2]} />
         <meshStandardMaterial 
           color="#4A90E2"
           transparent
@@ -112,62 +72,27 @@ const ThreeDNode = ({
           emissiveIntensity={isHighlighted ? 0.5 : 0}
         />
         
-        <group position={[0, boxHeight/2, 0.1]}>
+        <group position={[0, 1, 0.1]}>
           <mesh
             onPointerEnter={() => setHoveredConnectionPoint('top')}
             onPointerLeave={() => setHoveredConnectionPoint(null)}
-            onPointerDown={() => handleConnectionStart('top')}
+            onPointerDown={() => onStartConnection?.(node.id, nodePosition, 'top')}
           >
             <sphereGeometry args={[0.2, 16, 16]} />
             <meshBasicMaterial color={hoveredConnectionPoint === 'top' ? '#00ff00' : '#ffffff'} />
           </mesh>
         </group>
         
-        <group position={[0, -boxHeight/2, 0.1]}>
+        <group position={[0, -1, 0.1]}>
           <mesh
             onPointerEnter={() => setHoveredConnectionPoint('bottom')}
             onPointerLeave={() => setHoveredConnectionPoint(null)}
-            onPointerDown={() => handleConnectionStart('bottom')}
+            onPointerDown={() => onStartConnection?.(node.id, nodePosition, 'bottom')}
           >
             <sphereGeometry args={[0.2, 16, 16]} />
             <meshBasicMaterial color={hoveredConnectionPoint === 'bottom' ? '#00ff00' : '#ffffff'} />
           </mesh>
         </group>
-
-        <Html
-          position={[0, 0, 0.1]}
-          center
-          style={{
-            backgroundColor: 'white',
-            padding: '8px',
-            borderRadius: '4px',
-            whiteSpace: 'nowrap',
-            pointerEvents: 'none',
-            userSelect: 'none',
-            width: `${dimensions.width}px`,
-            minHeight: `${dimensions.height}px`
-          }}
-        >
-          <div className="flex items-center gap-2">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={node?.avatar || '/default-image.png'} alt={node?.title} />
-              <AvatarFallback>NA</AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-              <span className="font-medium">{node?.title || 'Untitled Node'}</span>
-              <span className="text-xs text-gray-500">{getNodeTypeDisplay(node?.nodeType)}</span>
-            </div>
-          </div>
-          {showNodeDebug && (
-            <div className="text-xs text-gray-500 mt-1">
-              <div>Type: {node?.type || 'generic'}</div>
-              <div>Style: {node?.visualStyle || 'default'}</div>
-              <div>Pos: ({nodePosition.join(', ')})</div>
-              <div>Size: {dimensions.width}x{dimensions.height}</div>
-              <div>Resizable: {dimensions.resizable ? 'Yes' : 'No'}</div>
-            </div>
-          )}
-        </Html>
       </mesh>
     </group>
   );
