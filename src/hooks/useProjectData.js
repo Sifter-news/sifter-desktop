@@ -54,6 +54,7 @@ export const useProjectData = (id) => {
             investigation_id: node.investigation_id,
             x: node.position_x || 0,
             y: node.position_y || 0,
+            z: node.position_z || 0,
             width: node.width || 200,
             height: node.height || 100,
             visualStyle: node.visual_style || 'default',
