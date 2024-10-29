@@ -15,7 +15,7 @@ const AddNodeButton = ({ handleAddNodeWithStyle }) => {
         <Button 
           variant="ghost" 
           size="icon"
-          className="h-8 w-8 rounded-lg text-white hover:bg-white/10"
+          className="h-8 w-8 rounded-lg text-white hover:bg-white/10 bg-white/5"
         >
           <Plus className="h-4 w-4" />
         </Button>

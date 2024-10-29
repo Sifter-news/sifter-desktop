@@ -61,7 +61,7 @@ const Toolbar = ({
             <Button 
               variant="ghost" 
               size="sm"
-              className="h-8 rounded-lg text-white hover:bg-white/10 flex items-center gap-1"
+              className="h-8 rounded-lg text-white hover:bg-white/10 bg-white/5 flex items-center gap-1"
             >
               <Square className="h-4 w-4" />
               <ChevronDown className="h-3 w-3" />
