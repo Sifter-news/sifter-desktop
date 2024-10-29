@@ -9,10 +9,11 @@ import { useLocation } from 'react-router-dom';
 import DebugStateSection from './debug/DebugStateSection';
 import DebugPositionSection from './debug/DebugPositionSection';
 import DebugViewOptions from './debug/DebugViewOptions';
+import DebugHoverSection from './debug/DebugHoverSection';
 import { Rnd } from 'react-rnd';
 
 const DebugPanel = () => {
-  const { isDebugOpen, setIsDebugOpen, debugData, showGuides, setShowGuides } = useDebug();
+  const { isDebugOpen, setIsDebugOpen, debugData, showGuides, setShowGuides, hoveredElement } = useDebug();
   const { user } = useAuth();
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -21,17 +22,6 @@ const DebugPanel = () => {
   });
 
   if (!isDebugOpen) return null;
-
-  const getCurrentView = () => {
-    const path = location.pathname;
-    if (path === '/') return 'Dashboard';
-    if (path.startsWith('/project/')) return 'Project View';
-    if (path === '/projects') return 'Projects List';
-    return path;
-  };
-
-  const currentProjectId = location.pathname.split('/project/')[1];
-  const currentProject = investigations?.find(inv => inv.id === currentProjectId);
 
   const panelContent = isCollapsed ? (
     <Button
@@ -68,7 +58,8 @@ const DebugPanel = () => {
       
       <ScrollArea className="h-[500px] p-4">
         <div className="space-y-4">
-          {/* Authentication Section */}
+          <DebugHoverSection hoveredElement={hoveredElement} />
+          
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-white/80">Authentication</h3>
             <div className="bg-black/50 p-2 rounded">
@@ -82,7 +73,6 @@ const DebugPanel = () => {
             </div>
           </div>
 
-          {/* Current View Section */}
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-white/80">Current View</h3>
             <div className="bg-black/50 p-2 rounded">
@@ -105,16 +95,10 @@ const DebugPanel = () => {
             </div>
           </div>
 
-          {/* Current State Section */}
           <DebugStateSection debugData={debugData} />
-
-          {/* Position Section */}
           <DebugPositionSection debugData={debugData} />
-
-          {/* View Options Section */}
           <DebugViewOptions showGuides={showGuides} setShowGuides={setShowGuides} />
 
-          {/* Project Details Section */}
           {currentProject && (
             <>
               <div className="mt-2">
@@ -140,7 +124,6 @@ const DebugPanel = () => {
             </>
           )}
 
-          {/* Projects Section */}
           {user && (
             <div className="space-y-2">
               <h3 className="text-sm font-medium text-white/80">Projects</h3>
@@ -160,7 +143,6 @@ const DebugPanel = () => {
             </div>
           )}
 
-          {/* Additional Debug Data */}
           {Object.entries(debugData).map(([key, value]) => (
             <div key={key} className="space-y-2">
               <h3 className="text-sm font-medium text-white/80">{key}</h3>

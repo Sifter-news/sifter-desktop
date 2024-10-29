@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Draggable } from 'react-beautiful-dnd';
 import { toast } from "sonner";
+import { useDebug } from '@/contexts/DebugContext';
 
 const NodeListItem = ({ 
   node, 
@@ -24,7 +25,26 @@ const NodeListItem = ({
   onEdit,
   onDelete 
 }) => {
+  const { setHoveredElement } = useDebug();
   if (!node) return null;
+
+  const handleMouseEnter = () => {
+    setHoveredElement({
+      component: 'NodeListItem',
+      metadata: {
+        id: node.id,
+        type: node.nodeType || 'Generic Note',
+        title: node.title,
+        description: node.description,
+        isSelected,
+        isFocused
+      }
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredElement(null);
+  };
 
   const handleAIConversation = (e) => {
     e.stopPropagation();
@@ -41,6 +61,8 @@ const NodeListItem = ({
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           className={`group flex items-center justify-between p-2 hover:bg-gray-100 rounded-lg mb-2 transition-all duration-200 ${
             isSelected ? 'bg-blue-50 ring-2 ring-blue-500' : ''
           } ${isFocused ? 'ring-2 ring-blue-600' : ''}`}

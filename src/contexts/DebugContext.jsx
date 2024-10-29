@@ -7,12 +7,15 @@ const DebugContext = createContext({
   setDebugData: () => {},
   showGuides: true,
   setShowGuides: () => {},
+  hoveredElement: null,
+  setHoveredElement: () => {},
 });
 
 export const DebugProvider = ({ children }) => {
   const [isDebugOpen, setIsDebugOpen] = useState(true);
   const [debugData, setDebugData] = useState({});
   const [showGuides, setShowGuides] = useState(true);
+  const [hoveredElement, setHoveredElement] = useState(null);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -33,7 +36,9 @@ export const DebugProvider = ({ children }) => {
       debugData, 
       setDebugData,
       showGuides,
-      setShowGuides
+      setShowGuides,
+      hoveredElement,
+      setHoveredElement
     }}>
       {children}
     </DebugContext.Provider>
