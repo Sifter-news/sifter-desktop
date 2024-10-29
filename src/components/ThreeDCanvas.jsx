@@ -6,8 +6,15 @@ import ThreeScene from './three/ThreeScene';
 import Toolbar from './Toolbar';
 import { useDebug } from '@/contexts/DebugContext';
 import { supabase } from '@/integrations/supabase/supabase';
+import { getNodeDimensions } from '@/utils/nodeStyles';
 
-const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
+const ThreeDCanvas = ({ 
+  projectId, 
+  onAddNode, 
+  onNodeUpdate,
+  focusedNodeId,
+  onNodeFocus 
+}) => {
   const [nodes, setNodes] = useState([]);
   const [activeTool, setActiveTool] = useState('pan');
   const [viewMode, setViewMode] = useState('2d');
@@ -24,16 +31,33 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
 
         if (error) throw error;
 
-        const nodesWithPositions = data.map(node => ({
-          ...node,
-          position: [
-            node.position_x || 0,
-            node.position_y || 0,
-            node.position_z || 0
-          ]
-        }));
+        // Transform nodes and position them sequentially on X axis
+        const nodesWithPositions = data.map((node, index) => {
+          const dimensions = getNodeDimensions(node.visual_style || 'default');
+          const spacing = Math.max(dimensions.width, 8); // Minimum spacing of 8 units
+          
+          return {
+            ...node,
+            position: [index * spacing, 0, 0], // Sequential X positioning
+            dimensions: {
+              width: dimensions.width / 20, // Scale down for 3D space
+              height: dimensions.height / 20,
+              depth: 0.1
+            },
+            visualStyle: node.visual_style || 'default',
+            title: node.title || 'Untitled Node',
+            avatar: node.avatar || '/default-image.png'
+          };
+        });
 
         setNodes(nodesWithPositions);
+        setDebugData(prev => ({
+          ...prev,
+          nodes: {
+            count: nodesWithPositions.length,
+            list: nodesWithPositions
+          }
+        }));
       } catch (error) {
         console.error('Error fetching nodes:', error);
         toast.error('Failed to load nodes');
@@ -43,32 +67,7 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
     if (projectId) {
       fetchNodes();
     }
-  }, [projectId]);
-
-  const handleViewModeChange = (mode) => {
-    setViewMode(mode);
-    setDebugData(prev => ({
-      ...prev,
-      viewMode: mode
-    }));
-  };
-
-  // Camera settings for different view modes
-  const cameraSettings = viewMode === '3d' 
-    ? {
-        position: [100, 100, 100], // Isometric position
-        rotation: [-Math.PI / 6, Math.PI / 4, 0], // Isometric rotation
-        fov: 50,
-        near: 0.1,
-        far: 5000
-      }
-    : {
-        position: [0, 0, 200],
-        rotation: [0, 0, 0],
-        fov: 50,
-        near: 0.1,
-        far: 5000
-      };
+  }, [projectId, setDebugData]);
 
   return (
     <div className="fixed inset-0 bg-black">
@@ -77,18 +76,27 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
           activeTool={activeTool}
           setActiveTool={setActiveTool}
           viewMode={viewMode}
-          onViewModeChange={handleViewModeChange}
+          onViewModeChange={setViewMode}
           onAddNode={onAddNode}
         />
       </nav>
 
-      <Canvas camera={cameraSettings}>
+      <Canvas
+        camera={{
+          position: [50, 50, 50],
+          fov: 50,
+          near: 0.1,
+          far: 5000
+        }}
+      >
         <ThreeScene 
           nodes={nodes}
           viewMode={viewMode}
           activeTool={activeTool}
           controlsRef={controlsRef}
           handleNodeUpdate={onNodeUpdate}
+          focusedNodeId={focusedNodeId}
+          onNodeFocus={onNodeFocus}
         />
         <OrbitControls 
           ref={controlsRef}

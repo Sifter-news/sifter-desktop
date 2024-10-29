@@ -13,8 +13,10 @@ const ThreeScene = ({
   activeConnection = null,
   viewMode, 
   activeTool, 
-  controlsRef, 
+  controlsRef,
   handleNodeUpdate,
+  focusedNodeId,
+  onNodeFocus,
   onStartConnection = () => {},
   onEndConnection = () => {},
   setActiveConnection = () => {}
@@ -49,6 +51,8 @@ const ThreeScene = ({
           onStartConnection={onStartConnection}
           onEndConnection={onEndConnection}
           viewMode={viewMode}
+          isHighlighted={focusedNodeId === node.id}
+          onFocus={onNodeFocus}
         />
       ))}
 
@@ -66,16 +70,6 @@ const ThreeScene = ({
           end={activeConnection.targetPosition}
         />
       )}
-
-      <OrbitControls 
-        ref={controlsRef}
-        enableZoom={true}
-        enablePan={true}
-        enableRotate={viewMode === '3d'}
-        maxDistance={5000}
-        minDistance={1}
-        camera={camera}
-      />
     </group>
   );
 };
