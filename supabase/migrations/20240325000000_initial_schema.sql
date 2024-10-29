@@ -10,7 +10,6 @@ CREATE TABLE public.profiles (
     username VARCHAR(255) NOT NULL UNIQUE,
     full_name VARCHAR(255),
     email VARCHAR(255) UNIQUE,
-    avatar_url TEXT DEFAULT '/default-image.png',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     subscription_plan_id UUID,
     subscription_start_date TIMESTAMP,
@@ -118,3 +117,4 @@ CREATE INDEX idx_reports_investigation_id ON public.reports(investigation_id);
 CREATE INDEX idx_investigations_owner_id ON public.investigations(owner_id);
 CREATE INDEX idx_node_investigation_id ON public.node(investigation_id);
 CREATE INDEX idx_node_coordinates ON public.node(position_x, position_y);
+
