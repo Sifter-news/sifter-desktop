@@ -20,7 +20,8 @@ const Toolbar = ({
   const [isExportDialogOpen, setIsExportDialogOpen] = React.useState(false);
 
   // Calculate zoom percentage based on Z position (0-200 range)
-  const zoomPercentage = Math.round((200 - zoom) / 2);
+  // When z=200, zoom=0%, when z=0, zoom=100%
+  const zoomPercentage = Math.round(100 - (zoom / 2));
 
   const handleAddNodeWithStyle = (visualStyle) => {
     const newNode = { 
