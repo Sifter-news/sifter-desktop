@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
+import { Button } from "@/components/ui/button";
+import { Bug } from "lucide-react";
 import Toolbar from './Toolbar';
 import ThreeScene from './three/ThreeScene';
 
@@ -43,6 +45,7 @@ const ThreeDCanvas = () => {
   const [connections, setConnections] = useState([]);
   const [activeConnection, setActiveConnection] = useState(null);
   const [viewMode, setViewMode] = useState('2d');
+  const [showDebug, setShowDebug] = useState(false);
   const [cameraDebug, setCameraDebug] = useState({
     position: { x: 0, y: 0, z: 0 },
     rotation: { x: 0, y: 0, z: 0 }
@@ -69,8 +72,8 @@ const ThreeDCanvas = () => {
             description: node.description || '',
             position: [
               node.position_x || 0,
-              0,  // Always set y to 0
-              0   // Always set z to 0 for 2D view
+              0,
+              0
             ],
             type: node.type || 'generic',
             visualStyle: node.visual_style || 'default'
@@ -92,7 +95,7 @@ const ThreeDCanvas = () => {
         .from('node')
         .update({
           position_x: newPosition[0],
-          position_y: 0  // Always set y to 0
+          position_y: 0
         })
         .eq('id', nodeId);
 
@@ -109,7 +112,7 @@ const ThreeDCanvas = () => {
 
   return (
     <div className="relative w-full h-[calc(100vh-64px)] bg-black">
-      <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-start">
+      <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-start p-4">
         <Toolbar 
           activeTool={activeTool}
           setActiveTool={setActiveTool}
@@ -119,11 +122,21 @@ const ThreeDCanvas = () => {
           viewMode={viewMode}
           onViewModeChange={setViewMode}
         />
-        <div className="bg-black/50 text-white p-2 font-mono text-xs rounded-bl-lg">
+        <Button
+          variant="outline"
+          size="icon"
+          className="bg-black/50 text-white hover:bg-black/70"
+          onClick={() => setShowDebug(!showDebug)}
+        >
+          <Bug className="h-4 w-4" />
+        </Button>
+      </div>
+      {showDebug && (
+        <div className="absolute top-4 right-16 bg-black/50 text-white p-2 font-mono text-xs rounded-lg">
           <div>Pos: x:{cameraDebug.position.x.toFixed(2)} y:{cameraDebug.position.y.toFixed(2)} z:{cameraDebug.position.z.toFixed(2)}</div>
           <div>Rot: x:{cameraDebug.rotation.x.toFixed(2)} y:{cameraDebug.rotation.y.toFixed(2)} z:{cameraDebug.rotation.z.toFixed(2)}</div>
         </div>
-      </div>
+      )}
       <Canvas
         camera={{ 
           position: cameraPosition,
