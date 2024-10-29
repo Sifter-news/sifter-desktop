@@ -43,8 +43,8 @@ const Toolbar = ({
   };
 
   return (
-    <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-sm rounded-full shadow-lg p-3">
-      <div className="bg-black/90 rounded-full p-1 flex items-center space-x-1 h-10">
+    <div className="fixed left-12 top-1/2 transform -translate-y-1/2 bg-black/90 backdrop-blur-sm rounded-full shadow-lg p-3 border border-white/10">
+      <div className="bg-black/90 rounded-full p-1 flex flex-col items-center space-y-1">
         {/* Perspective Toggle Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -57,13 +57,13 @@ const Toolbar = ({
               <ChevronDown className="h-3 w-3" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-black text-white" align="top">
+          <DropdownMenuContent className="bg-black text-white" align="right">
             <DropdownMenuItem onClick={() => onViewModeChange('2d')}>2D</DropdownMenuItem>
             <DropdownMenuItem onClick={() => onViewModeChange('3d')}>3D</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Separator orientation="vertical" className="h-6 bg-white/20" />
+        <Separator orientation="horizontal" className="w-6 bg-white/20" />
 
         {/* Navigation Tools Dropdown */}
         <DropdownMenu>
@@ -80,7 +80,7 @@ const Toolbar = ({
               {activeTool === 'select' ? <MousePointer className="h-4 w-4" /> : <Hand className="h-4 w-4" />}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-black text-white" align="top">
+          <DropdownMenuContent className="bg-black text-white" align="right">
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={() => setActiveTool('select')}>
                 <MousePointer className="h-4 w-4 mr-2" />
@@ -105,7 +105,7 @@ const Toolbar = ({
               <CirclePlus className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-black text-white" align="top">
+          <DropdownMenuContent className="bg-black text-white" align="right">
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={() => handleAddNodeWithStyle('compact')}>
                 <Circle className="h-4 w-4 mr-2" />
@@ -123,7 +123,7 @@ const Toolbar = ({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Separator orientation="vertical" className="h-6 bg-white/20" />
+        <Separator orientation="horizontal" className="w-6 bg-white/20" />
 
         {/* Zoom Level Dropdown */}
         <DropdownMenu>
@@ -137,7 +137,7 @@ const Toolbar = ({
               <ChevronDown className="h-3 w-3 ml-1" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-black text-white" align="top">
+          <DropdownMenuContent className="bg-black text-white" align="right">
             <DropdownMenuItem onClick={() => handleZoom(0.5)}>50%</DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleZoom(1)}>100%</DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleZoom(1.5)}>150%</DropdownMenuItem>
