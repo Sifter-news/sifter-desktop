@@ -3,6 +3,7 @@ import NodeRenderer from './NodeRenderer';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 import { toast } from 'sonner';
+import { useDebug } from '@/contexts/DebugContext';
 
 const Canvas = forwardRef(({ 
   nodes, 
@@ -30,6 +31,22 @@ const Canvas = forwardRef(({
   const [isPanning, setIsPanning] = useState(false);
   const [previousTool, setPreviousTool] = useState(null);
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
+  const [clickCount, setClickCount] = useState(0);
+  const [clickTimeout, setClickTimeout] = useState(null);
+  const { setDebugData } = useDebug();
+
+  const updateDebugInfo = useCallback((action) => {
+    setDebugData(prev => ({
+      ...prev,
+      mouseInteractions: {
+        currentTool: activeTool,
+        action,
+        clickType: clickCount === 1 ? 'Single Click' : 'Double Click',
+        isPanning,
+        position: lastMousePosition
+      }
+    }));
+  }, [activeTool, clickCount, isPanning, lastMousePosition, setDebugData]);
 
   const handleKeyDown = useCallback((e) => {
     if (e.code === 'Space' && !e.repeat && !isSpacePressed) {
@@ -80,12 +97,25 @@ const Canvas = forwardRef(({
 
   const handleMouseDown = useCallback((e) => {
     if (isSpacePressed || activeTool === 'pan') {
+      setClickCount(prev => prev + 1);
+      
+      if (clickTimeout) {
+        clearTimeout(clickTimeout);
+      }
+      
+      const newTimeout = setTimeout(() => {
+        setClickCount(0);
+      }, 300);
+      
+      setClickTimeout(newTimeout);
+      
       setIsPanning(true);
       setLastMousePosition({ x: e.clientX, y: e.clientY });
       handlePanStart?.();
+      updateDebugInfo('Pan Start');
       e.preventDefault();
     }
-  }, [isSpacePressed, activeTool, handlePanStart]);
+  }, [isSpacePressed, activeTool, handlePanStart, clickTimeout, updateDebugInfo]);
 
   const handleMouseMove = useCallback((e) => {
     if (isPanning) {
@@ -98,15 +128,17 @@ const Canvas = forwardRef(({
       });
       
       setLastMousePosition({ x: e.clientX, y: e.clientY });
+      updateDebugInfo('Panning');
     }
-  }, [isPanning, handlePanMove]);
+  }, [isPanning, handlePanMove, lastMousePosition, updateDebugInfo]);
 
   const handleMouseUp = useCallback(() => {
     if (isPanning) {
       setIsPanning(false);
       handlePanEnd?.();
+      updateDebugInfo('Pan End');
     }
-  }, [isPanning, handlePanEnd]);
+  }, [isPanning, handlePanEnd, updateDebugInfo]);
 
   return (
     <>
