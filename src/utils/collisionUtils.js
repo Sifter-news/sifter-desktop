@@ -1,6 +1,13 @@
-export const BUFFER_SPACE = 20; // pixels of minimum space between nodes
+export const getBufferSpace = (node) => {
+  // Calculate 15% of node dimensions
+  const widthBuffer = (node.width || 200) * 0.15;
+  const heightBuffer = (node.height || 100) * 0.15;
+  return Math.max(widthBuffer, heightBuffer);
+};
 
 export const isColliding = (node1, node2) => {
+  const buffer = Math.max(getBufferSpace(node1), getBufferSpace(node2));
+  
   const rect1 = {
     left: node1.x,
     right: node1.x + (node1.width || 200),
@@ -15,18 +22,17 @@ export const isColliding = (node1, node2) => {
     bottom: node2.y + (node2.height || 100)
   };
 
-  // Add buffer space to the collision check
   return !(
-    rect1.right + BUFFER_SPACE < rect2.left ||
-    rect1.left > rect2.right + BUFFER_SPACE ||
-    rect1.bottom + BUFFER_SPACE < rect2.top ||
-    rect1.top > rect2.bottom + BUFFER_SPACE
+    rect1.right + buffer < rect2.left ||
+    rect1.left > rect2.right + buffer ||
+    rect1.bottom + buffer < rect2.top ||
+    rect1.top > rect2.bottom + buffer
   );
 };
 
 export const findNonCollidingPosition = (newNode, existingNodes) => {
   let position = { x: newNode.x, y: newNode.y };
-  const stepSize = BUFFER_SPACE;
+  const buffer = getBufferSpace(newNode);
   let spiralStep = 0;
   
   while (existingNodes.some(node => 
@@ -35,7 +41,7 @@ export const findNonCollidingPosition = (newNode, existingNodes) => {
     // Move in a spiral pattern to find a free spot
     spiralStep++;
     const angle = spiralStep * 0.5;
-    const radius = stepSize * spiralStep / (2 * Math.PI);
+    const radius = buffer * spiralStep / (2 * Math.PI);
     position.x = newNode.x + radius * Math.cos(angle);
     position.y = newNode.y + radius * Math.sin(angle);
   }

@@ -5,6 +5,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Separator } from "@/components/ui/separator";
 import ToolbarButton from './ToolbarButton';
 import ExportDialog from './ExportDialog';
+import { findNonCollidingPosition } from '@/utils/collisionUtils';
 
 const Toolbar = ({ 
   activeTool, 
@@ -19,12 +20,22 @@ const Toolbar = ({
   const [isExportDialogOpen, setIsExportDialogOpen] = React.useState(false);
 
   const handleAddNodeWithStyle = (visualStyle) => {
-    onAddNode({ 
+    const newNode = { 
       visualStyle,
       x: window.innerWidth / 2,
       y: window.innerHeight / 2,
       title: 'New Node',
-      description: 'Description'
+      description: 'Description',
+      width: visualStyle === 'postit' ? 256 : 40,
+      height: visualStyle === 'postit' ? 256 : visualStyle === 'compact' ? 40 : 128
+    };
+
+    // Find a non-colliding position for the new node
+    const position = findNonCollidingPosition(newNode, nodes);
+    onAddNode({ 
+      ...newNode,
+      x: position.x,
+      y: position.y
     });
   };
 
