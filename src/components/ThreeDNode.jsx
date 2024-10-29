@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useThree, useFrame } from '@react-three/fiber';
+import { useThree } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import NodeStyleTooltip from './node/NodeStyleTooltip';
@@ -62,12 +62,18 @@ const ThreeDNode = ({
     if (!isDragging || !dragStart || activeTool !== 'select') return;
 
     const deltaX = (e.clientX - dragStart.x) * 0.1;
-    const deltaZ = (e.clientY - dragStart.y) * 0.1;
+    const deltaY = (e.clientY - dragStart.y) * 0.1;
 
+    // Get camera rotation around Y axis (yaw)
     const cameraRotation = camera.rotation.y;
-    const newX = dragStart.position[0] + (deltaX * Math.cos(cameraRotation) - deltaZ * Math.sin(cameraRotation));
-    const newZ = dragStart.position[2] + (deltaX * Math.sin(cameraRotation) + deltaZ * Math.cos(cameraRotation));
 
+    // Calculate new position based on camera rotation
+    // This ensures movement is relative to the camera view
+    const newX = dragStart.position[0] + (deltaX * Math.cos(cameraRotation) - deltaY * Math.sin(cameraRotation));
+    const newY = dragStart.position[1]; // Lock Y axis in 3D space
+    const newZ = dragStart.position[2] + (deltaX * Math.sin(cameraRotation) + deltaY * Math.cos(cameraRotation));
+
+    // Keep the original Y position, only update X and Z
     const newPosition = [newX, dragStart.position[1], newZ];
     onUpdate(newPosition);
   };
@@ -91,7 +97,8 @@ const ThreeDNode = ({
     setShowTooltip(!showTooltip);
   };
 
-  useFrame(() => {
+  // Keep node facing camera
+  React.useEffect(() => {
     if (meshRef.current) {
       meshRef.current.quaternion.copy(camera.quaternion);
     }
@@ -129,23 +136,6 @@ const ThreeDNode = ({
         }}
       >
         {node?.title || 'Untitled Node'}
-      </Html>
-
-      <Html
-        position={[0, -4, 0]}
-        center
-        style={{
-          backgroundColor: 'rgba(0,0,0,0.7)',
-          color: '#00ff00',
-          padding: '4px',
-          borderRadius: '2px',
-          fontFamily: 'monospace',
-          fontSize: '10px',
-          whiteSpace: 'pre-wrap',
-          pointerEvents: 'none'
-        }}
-      >
-        {`Component: ThreeDNode\nPos: [${nodePosition[0].toFixed(2)}, ${nodePosition[1].toFixed(2)}, ${nodePosition[2].toFixed(2)}]`}
       </Html>
 
       {showTooltip && (
