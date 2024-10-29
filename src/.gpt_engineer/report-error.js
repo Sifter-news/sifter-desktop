@@ -6,7 +6,15 @@ const getCircularReplacer = () => {
       return {
         type: 'Request',
         url: value.url,
-        method: value.method
+        method: value.method,
+        headers: Object.fromEntries(value.headers.entries()),
+        // Don't include body as it's not clonable
+        cache: value.cache,
+        mode: value.mode,
+        credentials: value.credentials,
+        redirect: value.redirect,
+        referrer: value.referrer,
+        referrerPolicy: value.referrerPolicy,
       };
     }
     // Don't serialize DOM nodes or React fiber nodes
@@ -35,7 +43,7 @@ const postMessage = (message) => {
       ...(message.stack && typeof message.stack === 'string' && { stack: message.stack })
     };
 
-    window.parent.postMessage(serializableMessage, '*');
+    window.parent.postMessage(JSON.parse(JSON.stringify(serializableMessage, getCircularReplacer())), '*');
   } catch (e) {
     console.warn('Failed to post error message:', e);
     window.parent.postMessage({
@@ -56,7 +64,14 @@ const reportHTTPError = (error, requestInfo) => {
       safeRequestInfo = {
         type: 'Request',
         url: requestInfo.url,
-        method: requestInfo.method
+        method: requestInfo.method,
+        headers: Object.fromEntries(requestInfo.headers.entries()),
+        cache: requestInfo.cache,
+        mode: requestInfo.mode,
+        credentials: requestInfo.credentials,
+        redirect: requestInfo.redirect,
+        referrer: requestInfo.referrer,
+        referrerPolicy: requestInfo.referrerPolicy,
       };
     } else {
       safeRequestInfo = {
