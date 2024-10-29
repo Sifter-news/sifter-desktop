@@ -2,6 +2,8 @@ import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import { MoreVertical, Trash, FolderInput, Users, Pencil } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { supabase } from '@/integrations/supabase/supabase';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,6 +33,24 @@ const NavigatorItem = ({
   const handleDragLeave = () => {
     setDragOverFolder(null);
     if (setDragTimer) clearTimeout(setDragTimer);
+  };
+
+  const handleDelete = async () => {
+    try {
+      const { error } = await supabase
+        .from('node')
+        .delete()
+        .eq('id', item.id);
+
+      if (error) throw error;
+      
+      toast.success('Node deleted successfully');
+      // Refresh the page to update the node list
+      window.location.reload();
+    } catch (error) {
+      console.error('Error deleting node:', error);
+      toast.error('Failed to delete node');
+    }
   };
 
   const getNodeTypeDisplay = (nodeType) => {
@@ -81,7 +101,13 @@ const NavigatorItem = ({
                   <Users className="mr-2 h-4 w-4" />
                   <span>Create Group</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => console.log('Delete')}>
+                <DropdownMenuItem 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete();
+                  }}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
                   <Trash className="mr-2 h-4 w-4" />
                   <span>Delete</span>
                 </DropdownMenuItem>
