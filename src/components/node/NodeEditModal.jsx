@@ -111,20 +111,18 @@ const NodeEditModal = ({ isOpen, onClose, node, onUpdate }) => {
             />
           </div>
 
-          <DialogFooter>
-            <div className="flex w-full justify-between items-center">
-              <div>
-                <Button variant="outline" onClick={onClose}>Cancel</Button>
-                <Button onClick={handleSubmit} className="ml-2">Save changes</Button>
-              </div>
-              <Button
-                variant="outline"
-                onClick={handleOpenAIChat}
-                className="bg-purple-100 hover:bg-purple-200 text-purple-700"
-              >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Open Sift Assist
-              </Button>
+          <DialogFooter className="flex justify-between items-center">
+            <Button
+              variant="outline"
+              onClick={handleOpenAIChat}
+              className="bg-purple-100 hover:bg-purple-200 text-purple-700"
+            >
+              <MessageCircle className="w-4 h-4 mr-2" />
+              Open Sift Assist
+            </Button>
+            <div className="space-x-2">
+              <Button variant="outline" onClick={onClose}>Cancel</Button>
+              <Button onClick={handleSubmit}>Save changes</Button>
             </div>
           </DialogFooter>
         </DialogContent>
