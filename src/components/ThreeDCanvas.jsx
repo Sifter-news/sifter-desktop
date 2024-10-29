@@ -110,6 +110,14 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
     }
   };
 
+  const handleViewModeChange = (mode) => {
+    setViewMode(mode);
+    setDebugData(prev => ({
+      ...prev,
+      viewMode: mode
+    }));
+  };
+
   // Set up isometric camera position
   const isometricPosition = viewMode === '3d' 
     ? [100, 100, 100]  // Equal distance on all axes for isometric view
@@ -128,7 +136,7 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
           handleZoom={handleZoom}
           zoom={zoom}
           viewMode={viewMode}
-          onViewModeChange={setViewMode}
+          setViewMode={handleViewModeChange}
           onAddNode={onAddNode}
         />
       </nav>
