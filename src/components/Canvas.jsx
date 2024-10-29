@@ -29,7 +29,7 @@ const Canvas = forwardRef(({
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
   const [previousTool, setPreviousTool] = useState(null);
-  const [panStartPosition, setPanStartPosition] = useState({ x: 0, y: 0 });
+  const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
 
   const handleKeyDown = useCallback((e) => {
     if (e.code === 'Space' && !e.repeat && !isSpacePressed) {
@@ -81,31 +81,30 @@ const Canvas = forwardRef(({
   const handleMouseDown = useCallback((e) => {
     if (isSpacePressed || activeTool === 'pan') {
       setIsPanning(true);
-      setPanStartPosition({ x: e.clientX, y: e.clientY });
-      handlePanStart();
+      setLastMousePosition({ x: e.clientX, y: e.clientY });
+      handlePanStart?.();
       e.preventDefault();
     }
   }, [isSpacePressed, activeTool, handlePanStart]);
 
   const handleMouseMove = useCallback((e) => {
     if (isPanning) {
-      const deltaX = e.clientX - panStartPosition.x;
-      const deltaY = e.clientY - panStartPosition.y;
+      const dx = e.clientX - lastMousePosition.x;
+      const dy = e.clientY - lastMousePosition.y;
       
-      // Only update position, no rotation
-      handlePanMove({ 
-        movementX: deltaX, 
-        movementY: deltaY 
+      handlePanMove?.({
+        movementX: dx,
+        movementY: dy
       });
       
-      setPanStartPosition({ x: e.clientX, y: e.clientY });
+      setLastMousePosition({ x: e.clientX, y: e.clientY });
     }
-  }, [isPanning, handlePanMove, panStartPosition]);
+  }, [isPanning, handlePanMove]);
 
   const handleMouseUp = useCallback(() => {
     if (isPanning) {
       setIsPanning(false);
-      handlePanEnd();
+      handlePanEnd?.();
     }
   }, [isPanning, handlePanEnd]);
 
@@ -152,6 +151,7 @@ const Canvas = forwardRef(({
           ))}
         </div>
       </div>
+
       <AlertDialog open={showDeleteConfirmation} onOpenChange={setShowDeleteConfirmation}>
         <AlertDialogContent>
           <AlertDialogHeader>
