@@ -12,8 +12,7 @@ import {
   Package,
   Brain,
   MapPin,
-  Calendar,
-  ChevronRight
+  Calendar
 } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import {
@@ -72,24 +71,18 @@ const Toolbar = ({
                   : 'text-white hover:bg-white/10'
               }`}
             >
-              {activeTool === 'select' ? <MousePointer2 className="h-5 w-5" /> : <Hand className="h-5 w-5" />}
+              {activeTool === 'select' ? <MousePointer2 className="h-4 w-4" /> : <Hand className="h-4 w-4" />}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-black text-white" align="top">
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => setActiveTool('select')} className="flex justify-between">
-                <div className="flex items-center">
-                  <MousePointer2 className="h-5 w-5 mr-2" />
-                  Select & Move
-                </div>
-                <ChevronRight className="h-4 w-4 ml-2 text-gray-400" />
+              <DropdownMenuItem onClick={() => setActiveTool('select')}>
+                <MousePointer2 className="h-4 w-4 mr-2" />
+                Select & Move
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setActiveTool('pan')} className="flex justify-between">
-                <div className="flex items-center">
-                  {viewMode === '3d' ? <Orbit className="h-5 w-5 mr-2" /> : <Hand className="h-5 w-5 mr-2" />}
-                  {viewMode === '3d' ? "Pan & Orbit" : "Pan"}
-                </div>
-                <ChevronRight className="h-4 w-4 ml-2 text-gray-400" />
+              <DropdownMenuItem onClick={() => setActiveTool('pan')}>
+                {viewMode === '3d' ? <Orbit className="h-4 w-4 mr-2" /> : <Hand className="h-4 w-4 mr-2" />}
+                {viewMode === '3d' ? "Pan & Orbit" : "Pan"}
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
@@ -105,59 +98,38 @@ const Toolbar = ({
               size="icon"
               className="h-8 w-8 rounded-lg text-white hover:bg-white/10"
             >
-              <Square className="h-5 w-5" />
+              <Square className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-black text-white" align="top">
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'generic')} className="flex justify-between">
-                <div className="flex items-center">
-                  <FileText className="h-5 w-5 mr-2" />
-                  Generic Note
-                </div>
-                <ChevronRight className="h-4 w-4 ml-2 text-gray-400" />
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'generic')}>
+                <FileText className="h-4 w-4 mr-2" />
+                Generic Note
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_person')} className="flex justify-between">
-                <div className="flex items-center">
-                  <User className="h-5 w-5 mr-2" />
-                  Person
-                </div>
-                <ChevronRight className="h-4 w-4 ml-2 text-gray-400" />
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_person')}>
+                <User className="h-4 w-4 mr-2" />
+                Person
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_organization')} className="flex justify-between">
-                <div className="flex items-center">
-                  <Building2 className="h-5 w-5 mr-2" />
-                  Organization
-                </div>
-                <ChevronRight className="h-4 w-4 ml-2 text-gray-400" />
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_organization')}>
+                <Building2 className="h-4 w-4 mr-2" />
+                Organization
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_object')} className="flex justify-between">
-                <div className="flex items-center">
-                  <Package className="h-5 w-5 mr-2" />
-                  Object
-                </div>
-                <ChevronRight className="h-4 w-4 ml-2 text-gray-400" />
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_object')}>
+                <Package className="h-4 w-4 mr-2" />
+                Object
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_concept')} className="flex justify-between">
-                <div className="flex items-center">
-                  <Brain className="h-5 w-5 mr-2" />
-                  Concept
-                </div>
-                <ChevronRight className="h-4 w-4 ml-2 text-gray-400" />
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_concept')}>
+                <Brain className="h-4 w-4 mr-2" />
+                Concept
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_location')} className="flex justify-between">
-                <div className="flex items-center">
-                  <MapPin className="h-5 w-5 mr-2" />
-                  Location
-                </div>
-                <ChevronRight className="h-4 w-4 ml-2 text-gray-400" />
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_location')}>
+                <MapPin className="h-4 w-4 mr-2" />
+                Location
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_event')} className="flex justify-between">
-                <div className="flex items-center">
-                  <Calendar className="h-5 w-5 mr-2" />
-                  Event
-                </div>
-                <ChevronRight className="h-4 w-4 ml-2 text-gray-400" />
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_event')}>
+                <Calendar className="h-4 w-4 mr-2" />
+                Event
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
@@ -174,26 +146,14 @@ const Toolbar = ({
               className="h-8 rounded-lg text-white hover:bg-white/10"
             >
               {zoomPercentage}%
-              <ChevronDown className="h-4 w-4 ml-1" />
+              <ChevronDown className="h-3 w-3 ml-1" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-black text-white" align="top">
-            <DropdownMenuItem onClick={() => handleZoom(0.5)} className="flex justify-between">
-              <span>50%</span>
-              <ChevronRight className="h-4 w-4 ml-2 text-gray-400" />
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleZoom(1)} className="flex justify-between">
-              <span>100%</span>
-              <ChevronRight className="h-4 w-4 ml-2 text-gray-400" />
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleZoom(1.5)} className="flex justify-between">
-              <span>150%</span>
-              <ChevronRight className="h-4 w-4 ml-2 text-gray-400" />
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleZoom(2)} className="flex justify-between">
-              <span>200%</span>
-              <ChevronRight className="h-4 w-4 ml-2 text-gray-400" />
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleZoom(0.5)}>50%</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleZoom(1)}>100%</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleZoom(1.5)}>150%</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleZoom(2)}>200%</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -208,18 +168,12 @@ const Toolbar = ({
               className="h-8 rounded-lg text-sm font-medium transition-colors flex items-center gap-1 text-white hover:bg-white/10"
             >
               {viewMode.toUpperCase()}
-              <ChevronDown className="h-4 w-4" />
+              <ChevronDown className="h-3 w-3" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-black text-white" align="top">
-            <DropdownMenuItem onClick={() => onViewModeChange('2d')} className="flex justify-between">
-              <span>2D</span>
-              <ChevronRight className="h-4 w-4 ml-2 text-gray-400" />
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onViewModeChange('3d')} className="flex justify-between">
-              <span>3D</span>
-              <ChevronRight className="h-4 w-4 ml-2 text-gray-400" />
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onViewModeChange('2d')}>2D</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onViewModeChange('3d')}>3D</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
