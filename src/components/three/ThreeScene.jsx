@@ -1,5 +1,6 @@
 import React from 'react';
 import { OrbitControls } from '@react-three/drei';
+import { useThree } from '@react-three/fiber';
 import Grid from '../Grid';
 import ThreeDNode from '../ThreeDNode';
 import ConnectionLine from '../ConnectionLine';
@@ -17,6 +18,8 @@ const ThreeScene = ({
   onEndConnection = () => {},
   setActiveConnection = () => {}
 }) => {
+  const { camera } = useThree();
+
   const handlePointerMove = (event) => {
     if (activeConnection) {
       event.stopPropagation();
@@ -71,14 +74,17 @@ const ThreeScene = ({
         />
       )}
 
-      <OrbitControls 
-        ref={controlsRef}
-        enableZoom={true}
-        enablePan={activeTool === 'pan'}
-        enableRotate={activeTool === 'pan'}
-        maxDistance={200}
-        minDistance={10}
-      />
+      {camera && (
+        <OrbitControls 
+          ref={controlsRef}
+          enableZoom={true}
+          enablePan={activeTool === 'pan'}
+          enableRotate={activeTool === 'pan'}
+          maxDistance={200}
+          minDistance={10}
+          camera={camera}
+        />
+      )}
     </group>
   );
 };
