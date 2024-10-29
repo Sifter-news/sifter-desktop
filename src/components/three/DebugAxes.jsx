@@ -3,7 +3,6 @@ import { Text } from '@react-three/drei';
 import * as THREE from 'three';
 
 const DebugAxes = () => {
-  // Create line geometries for each axis
   const lineGeometry = new THREE.BufferGeometry();
   const lineMaterial = {
     x: new THREE.LineBasicMaterial({ color: 'red' }),
@@ -11,7 +10,6 @@ const DebugAxes = () => {
     z: new THREE.LineBasicMaterial({ color: 'blue' })
   };
 
-  // Create vertices for each axis line
   const xLineVertices = new Float32Array([0, 0, 0, 5000, 0, 0]);
   const yLineVertices = new Float32Array([0, 0, 0, 0, 5000, 0]);
   const zLineVertices = new Float32Array([0, 0, 0, 0, 0, 5000]);
@@ -25,13 +23,13 @@ const DebugAxes = () => {
                     : axis === 'y' ? [0, i, 0]
                     : [0, 0, i];
       
-      // Add marker text
+      // Add marker text with reduced size
       markers.push(
         <Text
           key={`${axis}-${i}`}
           position={position}
           color={axis === 'x' ? 'red' : axis === 'y' ? 'green' : 'blue'}
-          fontSize={4}
+          fontSize={1} // Reduced from 4 to 1 (75% reduction)
           anchorX="left"
           anchorY="middle"
         >
@@ -82,7 +80,7 @@ const DebugAxes = () => {
       <Text
         position={[8, 0, 0]}
         color="red"
-        fontSize={8}
+        fontSize={2} // Reduced from 8 to 2 (75% reduction)
         anchorX="left"
         anchorY="middle"
       >
@@ -105,7 +103,7 @@ const DebugAxes = () => {
       <Text
         position={[0, 8, 0]}
         color="green"
-        fontSize={8}
+        fontSize={2} // Reduced from 8 to 2 (75% reduction)
         anchorX="left"
         anchorY="middle"
       >
@@ -128,7 +126,7 @@ const DebugAxes = () => {
       <Text
         position={[0, 0, 8]}
         color="blue"
-        fontSize={8}
+        fontSize={2} // Reduced from 8 to 2 (75% reduction)
         anchorX="left"
         anchorY="middle"
       >
