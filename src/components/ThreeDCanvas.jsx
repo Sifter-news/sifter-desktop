@@ -17,7 +17,7 @@ const ThreeDCanvas = () => {
   // Calculate camera position based on view mode
   const cameraPosition = viewMode === '3d' 
     ? [70.71, 70.71, 70.71] // Isometric position (approximately 45° angles)
-    : [0, 1000, 0]; // Looking straight down the Z axis for 2D view
+    : [0, 0, 148]; // Looking down the Z axis from 148 units high
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -92,7 +92,7 @@ const ThreeDCanvas = () => {
           fov: 45,
           near: 0.1,
           far: 2000,
-          up: [0, 0, -1] // Updated to maintain correct orientation in 2D view
+          up: [0, 1, 0] // Updated to maintain correct orientation in 2D view
         }}
         style={{ background: 'black' }}
       >
