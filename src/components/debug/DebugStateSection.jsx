@@ -2,14 +2,52 @@ import React from 'react';
 import { NODE_STYLES } from '@/utils/nodeStyles';
 
 const DebugStateSection = ({ debugData }) => {
-  const getToolDescription = (tool) => {
+  const getToolInstructions = (tool) => {
     switch (tool) {
       case 'pan':
-        return 'Pans view in X/Y axes, Orbit in 3D (hold Space)';
+        return (
+          <div className="space-y-1 text-xs">
+            <p className="font-medium">Left Click + Drag:</p>
+            <ul className="list-disc pl-4 space-y-0.5">
+              <li>Pans the canvas in X and Y directions</li>
+              <li>Cursor changes to "grabbing" while dragging</li>
+              <li>Snaps to single axis if movement is predominantly horizontal or vertical</li>
+            </ul>
+            
+            <p className="font-medium mt-2">Right Click + Drag:</p>
+            <ul className="list-disc pl-4">
+              <li>Currently not implemented</li>
+            </ul>
+            
+            <p className="font-medium mt-2">Other Controls:</p>
+            <ul className="list-disc pl-4 space-y-0.5">
+              <li>Mouse wheel: Zooms in/out</li>
+              <li>Ctrl/Cmd + Mouse wheel: Also zooms in/out</li>
+              <li>Ctrl/Cmd + '+': Zoom in</li>
+              <li>Ctrl/Cmd + '-': Zoom out</li>
+            </ul>
+          </div>
+        );
       case 'select':
-        return 'Select and move nodes';
+        return (
+          <div className="space-y-1 text-xs">
+            <p className="font-medium">Left Click:</p>
+            <ul className="list-disc pl-4 space-y-0.5">
+              <li>Select a single node</li>
+              <li>Click and drag to move selected node</li>
+            </ul>
+            
+            <p className="font-medium mt-2">Other Controls:</p>
+            <ul className="list-disc pl-4 space-y-0.5">
+              <li>Space bar: Temporarily switches to pan tool while held down</li>
+              <li>Delete/Backspace: Delete selected node</li>
+              <li>Ctrl/Cmd + C: Copy selected node</li>
+              <li>Ctrl/Cmd + V: Paste copied node</li>
+            </ul>
+          </div>
+        );
       default:
-        return 'No tool selected';
+        return null;
     }
   };
 
@@ -40,73 +78,15 @@ const DebugStateSection = ({ debugData }) => {
     return 'None';
   };
 
-  const getNodeDataType = (nodeType) => {
-    const dataTypes = {
-      'generic': 'generic',
-      'node_person': 'person',
-      'node_organization': 'organization',
-      'node_object': 'object',
-      'node_concept': 'concept',
-      'node_location': 'location',
-      'node_event': 'event'
-    };
-    return dataTypes[nodeType] || 'generic';
-  };
-
-  const getNodeStyleProperties = (node) => {
-    if (!node?.visualStyle) return null;
-    const style = NODE_STYLES[node.visualStyle];
-    if (!style) return null;
-
-    return (
-      <div className="pl-2 space-y-0.5 text-xs">
-        <p>Style Type: {style.title}</p>
-        <p>Description: {style.description}</p>
-        <p>Dimensions: {style.width}x{style.height}</p>
-        <p>Resizable: {style.resizable ? 'Yes' : 'No'}</p>
-        <div className="space-y-1">
-          <p className="font-medium">Display Settings:</p>
-          <div className="pl-2">
-            {style.display.avatar && <p>Shows Avatar</p>}
-            {style.display.title && <p>Shows Title</p>}
-            {style.display.description && <p>Shows Description</p>}
-          </div>
-        </div>
-        {node.color && (
-          <div className="space-y-1">
-            <p className="font-medium">Selected Color:</p>
-            <div className="pl-2">
-              <span className={`px-2 py-0.5 rounded ${style.colors[node.color]}`}>
-                {node.color}
-              </span>
-            </div>
-          </div>
-        )}
-        {node.textSize && (
-          <div className="space-y-1">
-            <p className="font-medium">Text Size:</p>
-            <div className="pl-2">
-              <p>Current: {node.textSize}</p>
-              <p className={style.textSizes[node.textSize]}>Sample Text</p>
-            </div>
-          </div>
-        )}
-        {node.textAlign && (
-          <div className="space-y-1">
-            <p className="font-medium">Text Alignment:</p>
-            <div className="pl-2">
-              <p>Current: {node.textAlign}</p>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <div className="space-y-2">
       <h3 className="text-sm font-medium text-white/80">Current State</h3>
       <div className="bg-black/50 p-2 rounded space-y-2">
+        <div className="space-y-1">
+          <p className="text-xs font-medium text-white/80">Active Tool: {debugData?.activeTool || 'None'}</p>
+          {getToolInstructions(debugData?.activeTool)}
+        </div>
+
         <div className="space-y-1">
           <p className="text-xs font-medium text-white/80">Focus</p>
           <div className="pl-2">
@@ -118,13 +98,6 @@ const DebugStateSection = ({ debugData }) => {
           <p className="text-xs font-medium text-white/80">Project View</p>
           <div className="pl-2">
             <p className="text-xs">Canvas: {getCurrentView()}</p>
-            {debugData?.currentView === 'mindmap' && (
-              <>
-                <p className="text-xs pl-2">Perspective: {debugData?.viewMode || '2D'}</p>
-                <p className="text-xs pl-2">Active Tool: {debugData?.activeTool || 'select'}</p>
-                <p className="text-xs pl-2 text-gray-400">{getToolDescription(debugData?.activeTool)}</p>
-              </>
-            )}
           </div>
         </div>
 
@@ -149,32 +122,6 @@ const DebugStateSection = ({ debugData }) => {
                     </div>
                     <p>Width: {node.width || '200'}</p>
                     <p>Height: {node.height || '100'}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {debugData?.navigatorNodes?.length > 0 && (
-          <div className="space-y-1">
-            <p className="text-xs font-medium text-white/80">Navigator Nodes ({debugData.navigatorNodes.length})</p>
-            <div className="pl-2 space-y-2">
-              {debugData.navigatorNodes.map((node, index) => (
-                <div key={node.id} className="text-xs space-y-1 border-l border-white/10 pl-2">
-                  <p className="font-medium">Node {index + 1}: {node.title || 'Untitled'}</p>
-                  <div className="pl-2 space-y-0.5">
-                    <p className="font-mono">ID: {node.id}</p>
-                    <p>Description: {node.description || 'No description'}</p>
-                    <p>Data Type: {getNodeDataType(node.nodeType)}</p>
-                    <p>Style: {node.visualStyle || 'default'}</p>
-                    {getNodeStyleProperties(node)}
-                    {node.children && (
-                      <p>Children: {node.children.length}</p>
-                    )}
-                    {node.parent_id && (
-                      <p>Parent ID: {node.parent_id}</p>
-                    )}
                   </div>
                 </div>
               ))}
