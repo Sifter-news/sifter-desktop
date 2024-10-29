@@ -31,23 +31,11 @@ const Canvas = forwardRef(({
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
   const [previousTool, setPreviousTool] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
   const { setDebugData } = useDebug();
 
-  const updateDebugInfo = useCallback((action) => {
-    setDebugData(prev => ({
-      ...prev,
-      mouseInteractions: {
-        currentTool: activeTool,
-        action,
-        clickType: clickCount === 1 ? 'Single Click' : 'Double Click',
-        isPanning,
-        position: lastMousePosition
-      }
-    }));
-  }, [activeTool, clickCount, isPanning, lastMousePosition, setDebugData]);
-
   const handleKeyDown = useCallback((e) => {
-    if (e.code === 'Space' && !e.repeat && !isSpacePressed) {
+    if (e.code === 'Space' && !e.repeat && !isSpacePressed && isHovered) {
       e.preventDefault();
       setIsSpacePressed(true);
       setPreviousTool(activeTool);
@@ -74,7 +62,7 @@ const Canvas = forwardRef(({
         toast.success("Node pasted from clipboard");
       }
     }
-  }, [focusedNodeId, nodes, onNodeDelete, setNodes, isSpacePressed, activeTool, setActiveTool]);
+  }, [focusedNodeId, nodes, onNodeDelete, setNodes, isSpacePressed, activeTool, setActiveTool, isHovered]);
 
   const handleKeyUp = useCallback((e) => {
     if (e.code === 'Space') {
@@ -145,7 +133,11 @@ const Canvas = forwardRef(({
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
+        onMouseLeave={() => {
+          handleMouseUp();
+          setIsHovered(false);
+        }}
+        onMouseEnter={() => setIsHovered(true)}
         onWheel={handleWheel}
         ref={ref}
         tabIndex={0}
