@@ -6,16 +6,16 @@ import ConnectionLine from '../ConnectionLine';
 import DebugAxes from './DebugAxes';
 
 const ThreeScene = ({ 
-  nodes, 
-  connections, 
-  activeConnection, 
+  nodes = [], 
+  connections = [], // Add default empty array
+  activeConnection = null, // Add default null
   viewMode, 
   activeTool, 
   controlsRef, 
   handleNodeUpdate,
-  onStartConnection,
-  onEndConnection,
-  setActiveConnection
+  onStartConnection = () => {}, // Add default noop function
+  onEndConnection = () => {}, // Add default noop function
+  setActiveConnection = () => {} // Add default noop function
 }) => {
   const handlePointerMove = (event) => {
     if (activeConnection) {
@@ -35,7 +35,7 @@ const ThreeScene = ({
       <Grid size={100} divisions={24} />
       <DebugAxes />
       
-      {nodes.map(node => (
+      {nodes?.map(node => (
         <ThreeDNode 
           key={node.id}
           node={node}
@@ -46,9 +46,9 @@ const ThreeScene = ({
         />
       ))}
 
-      {connections.map((connection, index) => {
-        const sourceNode = nodes.find(n => n.id === connection.source_id);
-        const targetNode = nodes.find(n => n.id === connection.target_id);
+      {connections?.map((connection, index) => {
+        const sourceNode = nodes?.find(n => n.id === connection.source_id);
+        const targetNode = nodes?.find(n => n.id === connection.target_id);
         
         if (!sourceNode || !targetNode) return null;
 
