@@ -49,7 +49,6 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
   const [activeTool, setActiveTool] = React.useState('pan');
   const [viewMode, setViewMode] = React.useState('2d');
   const [showDebug, setShowDebug] = React.useState(false);
-  const [isSpacePressed, setIsSpacePressed] = useState(false);
   const controlsRef = useRef();
   const { setDebugData } = useDebug();
 
@@ -68,13 +67,12 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
 
         if (error) throw error;
 
-        // Map nodes with random positions
         const nodesWithRandomPositions = data.map(node => ({
           ...node,
           position: [
-            Math.random() * 100 - 50, // Random X between -50 and 50
-            Math.random() * 100 - 50, // Random Y between -50 and 50
-            0 // Keep Z at 0
+            Math.random() * 100 - 50,
+            Math.random() * 100 - 50,
+            0
           ]
         }));
 
@@ -96,30 +94,6 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
       fetchNodes();
     }
   }, [projectId, setDebugData]);
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.code === 'Space' && !e.repeat) {
-        e.preventDefault();
-        setIsSpacePressed(true);
-      }
-    };
-
-    const handleKeyUp = (e) => {
-      if (e.code === 'Space') {
-        e.preventDefault();
-        setIsSpacePressed(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, []);
 
   useEffect(() => {
     setDebugData(prev => ({
@@ -156,7 +130,6 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
           viewMode={viewMode}
           onViewModeChange={setViewMode}
           onAddNode={onAddNode}
-          isSpacePressed={isSpacePressed}
         />
       </div>
 
@@ -173,7 +146,7 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
         <ThreeScene 
           nodes={nodes}
           viewMode={viewMode}
-          activeTool={isSpacePressed ? 'pan' : activeTool}
+          activeTool={activeTool}
           controlsRef={controlsRef}
           handleNodeUpdate={handleNodeUpdate}
         />
