@@ -56,9 +56,9 @@ const Toolbar = ({
           className="h-8 px-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-0.5"
           onClick={() => setIsAIPanelOpen(true)}
         >
-          <Star className="h-4 w-4" />
-          <Star className="h-4 w-4" />
-          <Star className="h-4 w-4" />
+          <Star className="h-4 w-4 fill-white" />
+          <Star className="h-3.5 w-3.5 fill-white opacity-75" />
+          <Star className="h-3 w-3 fill-white opacity-50" />
         </Button>
 
         <Separator orientation="vertical" className="h-6 bg-white/20" />
