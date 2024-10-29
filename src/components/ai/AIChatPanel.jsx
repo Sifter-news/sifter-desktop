@@ -2,12 +2,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bot, User, X } from 'lucide-react';
+import { Bot, User, X, Upload, Paperclip } from 'lucide-react';
+import { toast } from "sonner";
 
 const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
   const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (initialContext) {
@@ -28,15 +31,35 @@ const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
     scrollToBottom();
   }, [messages]);
 
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setMessages(prev => [...prev, {
+        role: 'system',
+        content: `File attached: ${file.name}`
+      }]);
+      toast.success(`File "${file.name}" attached successfully`);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() && !selectedFile) return;
 
-    setMessages(prev => [...prev, {
-      role: 'user',
-      content: input
-    }]);
+    const newMessages = [];
+    
+    if (input.trim()) {
+      newMessages.push({
+        role: 'user',
+        content: input
+      });
+    }
+
+    setMessages(prev => [...prev, ...newMessages]);
     setInput('');
+    setSelectedFile(null);
+    fileInputRef.current.value = '';
 
     // Simulate AI response (replace with actual API call)
     setTimeout(() => {
@@ -95,6 +118,21 @@ const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
 
       <form onSubmit={handleSubmit} className="p-4 border-t">
         <div className="flex gap-2">
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={() => fileInputRef.current.click()}
+            className="flex-shrink-0"
+          >
+            <Paperclip className="h-4 w-4" />
+          </Button>
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -103,6 +141,12 @@ const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
           />
           <Button type="submit">Send</Button>
         </div>
+        {selectedFile && (
+          <div className="mt-2 text-sm text-gray-500 flex items-center gap-2">
+            <Paperclip className="h-3 w-3" />
+            {selectedFile.name}
+          </div>
+        )}
       </form>
     </div>
   );
