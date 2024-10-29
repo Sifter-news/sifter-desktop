@@ -76,15 +76,18 @@ const DebugStateSection = ({ debugData }) => {
             )}
           </div>
         </div>
+
         <div className="space-y-1">
           <p className="text-xs font-medium text-white/80">State</p>
           <div className="pl-2">
             <p className="text-xs">Current Perspective: {debugData?.viewMode || '2D'}</p>
           </div>
         </div>
+
+        {/* Canvas Nodes Section */}
         {debugData?.nodes?.list && debugData.nodes.list.length > 0 && (
           <div className="space-y-1">
-            <p className="text-xs font-medium text-white/80">Nodes ({debugData.nodes.list.length})</p>
+            <p className="text-xs font-medium text-white/80">Canvas Nodes ({debugData.nodes.list.length})</p>
             <div className="pl-2 space-y-2">
               {debugData.nodes.list.map((node, index) => (
                 <div key={node.id} className="text-xs space-y-1 border-l border-white/10 pl-2">
@@ -102,6 +105,32 @@ const DebugStateSection = ({ debugData }) => {
                     </div>
                     <p>Width: {node.width || '200'}</p>
                     <p>Height: {node.height || '100'}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Navigator Nodes Section */}
+        {debugData?.navigatorNodes?.length > 0 && (
+          <div className="space-y-1">
+            <p className="text-xs font-medium text-white/80">Navigator Nodes ({debugData.navigatorNodes.length})</p>
+            <div className="pl-2 space-y-2">
+              {debugData.navigatorNodes.map((node, index) => (
+                <div key={node.id} className="text-xs space-y-1 border-l border-white/10 pl-2">
+                  <p className="font-medium">Node {index + 1}: {node.title || 'Untitled'}</p>
+                  <div className="pl-2 space-y-0.5">
+                    <p className="font-mono">ID: {node.id}</p>
+                    <p>Description: {node.description || 'No description'}</p>
+                    <p>Data Type: {getNodeDataType(node.nodeType)}</p>
+                    <p>Style: {node.visualStyle || 'default'}</p>
+                    {node.children && (
+                      <p>Children: {node.children.length}</p>
+                    )}
+                    {node.parent_id && (
+                      <p>Parent ID: {node.parent_id}</p>
+                    )}
                   </div>
                 </div>
               ))}

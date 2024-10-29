@@ -9,6 +9,7 @@ import { useDragAndDrop } from './hooks/useDragAndDrop';
 import { useFolderManagement } from './hooks/useFolderManagement';
 import FileTreeView from './FileTreeView';
 import NodeList from './NodeList';
+import { useDebug } from '@/contexts/DebugContext';
 import {
   Tabs,
   TabsContent,
@@ -48,9 +49,18 @@ const NodeNavigator = ({
     setDraggedOverFolderId
   } = useFolderManagement();
 
+  const { setDebugData } = useDebug();
+
   useEffect(() => {
     setNavigatorNodes(nodes);
   }, [nodes]);
+
+  useEffect(() => {
+    setDebugData(prev => ({
+      ...prev,
+      navigatorNodes: navigatorNodes
+    }));
+  }, [navigatorNodes, setDebugData]);
 
   const handleCreateNewFolder = (folderName) => {
     const newFolder = handleCreateFolder(folderName);
