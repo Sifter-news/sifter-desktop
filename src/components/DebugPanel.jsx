@@ -88,10 +88,19 @@ const DebugPanel = () => {
             <div className="bg-black/50 p-2 rounded">
               <p className="text-xs">Page: {getCurrentView()}</p>
               {currentProject && (
-                <>
-                  <p className="text-xs mt-1">Project: {currentProject.title}</p>
-                  <p className="text-xs">Project ID: {currentProject.id}</p>
-                </>
+                <div className="mt-2 space-y-1 border-l-2 border-white/10 pl-2">
+                  <p className="text-xs font-medium">Project Details:</p>
+                  <p className="text-xs">Title: {currentProject.title}</p>
+                  <p className="text-xs">ID: {currentProject.id}</p>
+                  <p className="text-xs">Description: {currentProject.description}</p>
+                  <p className="text-xs">Investigation Type: {currentProject.investigation_type}</p>
+                  <p className="text-xs">Investigation Focus: {currentProject.investigation_focus}</p>
+                  <p className="text-xs">Created: {new Date(currentProject.created_at).toLocaleString()}</p>
+                  <p className="text-xs">Updated: {new Date(currentProject.updated_at).toLocaleString()}</p>
+                  <p className="text-xs">Owner ID: {currentProject.owner_id}</p>
+                  <p className="text-xs">Visibility: {currentProject.visibility}</p>
+                  <p className="text-xs">View Type: {currentProject.view_type}</p>
+                </div>
               )}
             </div>
           </div>
