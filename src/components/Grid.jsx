@@ -57,11 +57,19 @@ const Grid = ({ size = 100, divisions = 24 }) => {
 
   return (
     <group>
+      {/* Add center grid at z=0 with 0.3 opacity */}
+      <GridLayer 
+        key={0} 
+        z={0} 
+        opacity={0.3}
+        size={size} 
+        divisions={divisions} 
+      />
       {zPositions.map((z) => (
         <GridLayer 
           key={z} 
           z={z} 
-          opacity={0.2 * (1 - Math.abs(z) / (8 * 8))} // Fade opacity with distance
+          opacity={0.3 * (1 - Math.abs(z) / (8 * 8))} // Start from 0.3 and fade with distance
           size={size} 
           divisions={divisions} 
         />
