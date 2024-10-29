@@ -63,7 +63,7 @@ const Toolbar = ({
                 <Button 
                   variant="ghost" 
                   size="icon"
-                  className="h-8 w-8 rounded-lg text-black hover:bg-white/90 bg-white [&>svg]:text-black hover:[&>svg]:text-black"
+                  className="h-8 w-8 rounded-lg text-white hover:bg-white/40 bg-white/30 [&>svg]:text-white hover:[&>svg]:text-white"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
