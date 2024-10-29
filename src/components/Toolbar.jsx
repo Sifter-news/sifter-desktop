@@ -17,7 +17,7 @@ const Toolbar = ({
   setActiveTool, 
   handleZoom, 
   zoom, 
-  nodes, 
+  nodes = [], // Add default empty array
   viewMode = '3d',
   onViewModeChange,
   onAddNode,
@@ -38,8 +38,10 @@ const Toolbar = ({
       height: visualStyle === 'postit' ? 256 : visualStyle === 'compact' ? 40 : 128
     };
 
-    const position = findNonCollidingPosition(newNode, nodes);
-    onAddNode({ 
+    // Only try to find non-colliding position if we have nodes
+    const position = nodes ? findNonCollidingPosition(newNode, nodes) : { x: newNode.x, y: newNode.y };
+    
+    onAddNode?.({ 
       ...newNode,
       x: position.x,
       y: position.y
