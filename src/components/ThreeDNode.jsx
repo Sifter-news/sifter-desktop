@@ -2,12 +2,20 @@ import React, { useRef, useState } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
+import NodeStyleTooltip from './node/NodeStyleTooltip';
 
-const ThreeDNode = ({ node, activeTool, onUpdate, onStartConnection, onEndConnection }) => {
+const ThreeDNode = ({ 
+  node, 
+  activeTool, 
+  onUpdate, 
+  onStartConnection, 
+  onEndConnection 
+}) => {
   const meshRef = useRef();
   const [isDragging, setIsDragging] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [dragStart, setDragStart] = useState(null);
+  const [showTooltip, setShowTooltip] = useState(false);
   const { camera, gl } = useThree();
 
   const handlePointerDown = (e) => {
@@ -56,6 +64,11 @@ const ThreeDNode = ({ node, activeTool, onUpdate, onStartConnection, onEndConnec
     onUpdate(newPosition);
   };
 
+  const handleClick = (e) => {
+    e.stopPropagation();
+    setShowTooltip(!showTooltip);
+  };
+
   useFrame(() => {
     if (meshRef.current) {
       meshRef.current.quaternion.copy(camera.quaternion);
@@ -70,6 +83,7 @@ const ThreeDNode = ({ node, activeTool, onUpdate, onStartConnection, onEndConnec
       onPointerUp={handlePointerUp}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerUp}
+      onClick={handleClick}
     >
       <boxGeometry args={[5, 5, 0.2]} />
       <meshStandardMaterial color="#4A90E2" />
@@ -87,6 +101,28 @@ const ThreeDNode = ({ node, activeTool, onUpdate, onStartConnection, onEndConnec
       >
         {node.title}
       </Html>
+      {showTooltip && (
+        <Html
+          position={[0, 3, 0]} // Position 8px above the node
+          center
+          style={{
+            pointerEvents: 'auto',
+            transform: 'translateY(-100%)',
+            zIndex: 1000
+          }}
+        >
+          <NodeStyleTooltip
+            onStyleChange={(style) => onUpdate({ ...node, visualStyle: style })}
+            onTextSizeChange={(size) => onUpdate({ ...node, textSize: size })}
+            onAlignmentChange={(align) => onUpdate({ ...node, textAlign: align })}
+            onTypeChange={(type) => onUpdate({ ...node, nodeType: type })}
+            onColorChange={(color) => onUpdate({ ...node, color })}
+            onEdit={() => {/* Implement edit modal trigger */}}
+            onAIChat={() => {/* Implement AI chat panel trigger */}}
+            position={{ x: 0, y: -8 }}
+          />
+        </Html>
+      )}
     </mesh>
   );
 };
