@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Plus, Filter, FolderPlus } from 'lucide-react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
@@ -6,7 +6,6 @@ import SearchInput from './SearchInput';
 import NodeListItem from './NodeListItem';
 import NodeTypeSelector from './NodeTypeSelector';
 import NodeEditDialog from '../node/NodeEditDialog';
-import FolderItem from './FolderItem';
 import CreateFolderDialog from './CreateFolderDialog';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
 import { useFolderManagement } from './hooks/useFolderManagement';
@@ -25,7 +24,7 @@ const NodeNavigator = ({
   onAIConversation,
   focusedNodeId,
   onDeleteNode,
-  onNodeHover // Add this prop
+  onNodeHover
 }) => {
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -53,6 +52,12 @@ const NodeNavigator = ({
 
   const handleNodeHover = (nodeId) => {
     onNodeHover?.(nodeId);
+  };
+
+  const handleCreateNewFolder = (folderName) => {
+    const newFolder = handleCreateFolder(folderName);
+    setFolders([...folders, newFolder]);
+    setShowCreateFolder(false);
   };
 
   const filteredNodes = navigatorNodes.filter(node => {
