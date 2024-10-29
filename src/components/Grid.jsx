@@ -1,7 +1,7 @@
 import React from 'react';
 import * as THREE from 'three';
 
-const GridLayer = ({ z = 0, opacity = 0.2, size = 100, divisions = 24 }) => {
+const GridLayer = ({ z = 0, opacity = 0.3, size = 100, divisions = 24 }) => {
   const gridHelper = new THREE.GridHelper(size, divisions, 0xffffff, 0x333333);
   gridHelper.position.z = z;
   gridHelper.rotation.x = Math.PI / 2; // Rotate to make it vertical on Z axis
@@ -10,7 +10,7 @@ const GridLayer = ({ z = 0, opacity = 0.2, size = 100, divisions = 24 }) => {
   
   if (gridHelper.material instanceof THREE.LineBasicMaterial) {
     const centerLineMaterial = gridHelper.material.clone();
-    centerLineMaterial.opacity = opacity * 0.7;
+    centerLineMaterial.opacity = opacity;
     gridHelper.material = [centerLineMaterial, gridHelper.material];
   }
 
@@ -49,31 +49,15 @@ const GridLayer = ({ z = 0, opacity = 0.2, size = 100, divisions = 24 }) => {
 };
 
 const Grid = ({ size = 100, divisions = 24 }) => {
-  // Create array of Z positions for positive and negative sides
-  const zPositions = [
-    ...Array.from({ length: 8 }, (_, i) => -(i + 1) * 8), // Negative Z positions
-    ...Array.from({ length: 8 }, (_, i) => (i + 1) * 8),  // Positive Z positions
-  ].sort((a, b) => Math.abs(a) - Math.abs(b)); // Sort by distance from center
-
   return (
     <group>
-      {/* Add center grid at z=0 with 0.3 opacity */}
+      {/* Single grid at z=0 with 0.3 opacity */}
       <GridLayer 
-        key={0} 
         z={0} 
         opacity={0.3}
         size={size} 
         divisions={divisions} 
       />
-      {zPositions.map((z) => (
-        <GridLayer 
-          key={z} 
-          z={z} 
-          opacity={0.3 * (1 - Math.abs(z) / (8 * 8))} // Start from 0.3 and fade with distance
-          size={size} 
-          divisions={divisions} 
-        />
-      ))}
     </group>
   );
 };
