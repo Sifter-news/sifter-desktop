@@ -10,10 +10,11 @@ import CreateFolderDialog from './CreateFolderDialog';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
 import { useFolderManagement } from './hooks/useFolderManagement';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 
 const NodeNavigator = ({ 
   nodes = [], 
@@ -34,6 +35,7 @@ const NodeNavigator = ({
   const [editingNode, setEditingNode] = useState(null);
   const [folders, setFolders] = useState([]);
   const [showCreateFolder, setShowCreateFolder] = useState(false);
+  const [activeView, setActiveView] = useState('nodes');
   const nodeRefs = useRef({});
 
   const { handleDragEnd } = useDragAndDrop(navigatorNodes, setNavigatorNodes);
@@ -80,16 +82,6 @@ const NodeNavigator = ({
         <div className="flex-1">
           <SearchInput value={searchQuery} onChange={setSearchQuery} />
         </div>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="icon" className="shrink-0">
-              <Filter className="h-4 w-4" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-48">
-            <NodeTypeSelector selectedType={selectedType} setSelectedType={setSelectedType} />
-          </PopoverContent>
-        </Popover>
         <Button
           variant="outline"
           size="icon"
@@ -99,50 +91,63 @@ const NodeNavigator = ({
         </Button>
       </div>
 
-      <DragDropContext 
-        onDragEnd={(result) => {
-          setDraggedOverFolderId(null);
-          handleDragEnd(result);
-        }}
-        onDragUpdate={handleDragUpdate}
-      >
-        <div className="flex-grow overflow-y-auto">
-          <Droppable droppableId="root" type="node">
-            {(provided) => (
-              <div
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-              >
-                {filteredNodes.map((node, index) => node && (
-                  <div 
-                    key={node.id}
-                    ref={el => nodeRefs.current[node.id] = el}
-                    onMouseEnter={() => handleNodeHover(node.id)}
-                    onMouseLeave={() => handleNodeHover(null)}
-                    className={`transition-all duration-200 ${
-                      focusedNodeId === node.id ? 'ring-2 ring-blue-500 rounded-lg' : ''
-                    }`}
+      <Tabs value={activeView} onValueChange={setActiveView} className="w-full">
+        <TabsList className="w-full mb-4">
+          <TabsTrigger value="nodes" className="flex-1">Nodes</TabsTrigger>
+          <TabsTrigger value="files" className="flex-1">Files</TabsTrigger>
+        </TabsList>
+        <TabsContent value="nodes">
+          <DragDropContext 
+            onDragEnd={(result) => {
+              setDraggedOverFolderId(null);
+              handleDragEnd(result);
+            }}
+            onDragUpdate={handleDragUpdate}
+          >
+            <div className="flex-grow overflow-y-auto">
+              <Droppable droppableId="root" type="node">
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
                   >
-                    <NodeListItem
-                      node={node}
-                      index={index}
-                      isSelected={selectedNodes.includes(node.id)}
-                      onSelect={handleNodeClick}
-                      onFocus={onNodeFocus}
-                      onUpdateNode={onUpdateNode}
-                      onAIConversation={onAIConversation}
-                      isFocused={focusedNodeId === node.id}
-                      onEdit={setEditingNode}
-                      onDelete={onDeleteNode}
-                    />
+                    {filteredNodes.map((node, index) => node && (
+                      <div 
+                        key={node.id}
+                        ref={el => nodeRefs.current[node.id] = el}
+                        onMouseEnter={() => handleNodeHover(node.id)}
+                        onMouseLeave={() => handleNodeHover(null)}
+                        className={`transition-all duration-200 ${
+                          focusedNodeId === node.id ? 'ring-2 ring-blue-500 rounded-lg' : ''
+                        }`}
+                      >
+                        <NodeListItem
+                          node={node}
+                          index={index}
+                          isSelected={selectedNodes.includes(node.id)}
+                          onSelect={handleNodeClick}
+                          onFocus={onNodeFocus}
+                          onUpdateNode={onUpdateNode}
+                          onAIConversation={onAIConversation}
+                          isFocused={focusedNodeId === node.id}
+                          onEdit={setEditingNode}
+                          onDelete={onDeleteNode}
+                        />
+                      </div>
+                    ))}
+                    {provided.placeholder}
                   </div>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </div>
-      </DragDropContext>
+                )}
+              </Droppable>
+            </div>
+          </DragDropContext>
+        </TabsContent>
+        <TabsContent value="files">
+          <div className="p-4 text-center text-gray-500">
+            Files view coming soon
+          </div>
+        </TabsContent>
+      </Tabs>
 
       {editingNode && (
         <NodeEditDialog
