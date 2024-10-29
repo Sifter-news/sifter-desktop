@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { useDebug } from '@/contexts/DebugContext';
 import { X, Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAuth } from '@/components/AuthProvider';
 import { useInvestigations } from '@/integrations/supabase/hooks/useInvestigations';
 import { useLocation } from 'react-router-dom';
 import DebugStateSection from './debug/DebugStateSection';
 import DebugPositionSection from './debug/DebugPositionSection';
-import DebugViewOptions from './debug/DebugViewOptions';
 import DebugHoverSection from './debug/DebugHoverSection';
 import { Rnd } from 'react-rnd';
 
@@ -45,7 +45,17 @@ const DebugPanel = () => {
   ) : (
     <>
       <div className="flex items-center justify-between p-4 border-b border-white/10">
-        <h2 className="text-lg font-semibold">Debug Panel</h2>
+        <div className="flex items-center gap-4">
+          <h2 className="text-lg font-semibold">Debug Panel</h2>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-white/60">Guidelines</span>
+            <Switch
+              checked={showGuides}
+              onCheckedChange={setShowGuides}
+              className="data-[state=checked]:bg-green-500"
+            />
+          </div>
+        </div>
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
@@ -92,7 +102,6 @@ const DebugPanel = () => {
 
           <DebugStateSection debugData={debugData} />
           <DebugPositionSection debugData={debugData} />
-          <DebugViewOptions showGuides={showGuides} setShowGuides={setShowGuides} />
 
           {user && (
             <div className="space-y-2">
