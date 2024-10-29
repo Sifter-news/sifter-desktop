@@ -35,6 +35,7 @@ const InvestigationList = ({
       ...investigation,
       reports: updatedReports
     });
+    setEditingReport(null);
   };
 
   const handleReportDelete = (investigation, reportId) => {
@@ -43,6 +44,7 @@ const InvestigationList = ({
       ...investigation,
       reports: updatedReports
     });
+    setEditingReport(null);
   };
 
   return (
