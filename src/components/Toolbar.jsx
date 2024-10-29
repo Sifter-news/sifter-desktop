@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, Orbit, MousePointer, CirclePlus, Download, Circle, Square, StickyNote } from 'lucide-react';
+import { Minus, Plus, Orbit, Hand, CirclePlus, Download, Circle, Square, StickyNote } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import ToolbarButton from './ToolbarButton';
@@ -19,7 +19,6 @@ const Toolbar = ({
   const [isExportDialogOpen, setIsExportDialogOpen] = React.useState(false);
 
   // Calculate zoom percentage based on Z position (0-200 range)
-  // When z=200, zoom=0%, when z=0, zoom=100%
   const zoomPercentage = Math.round(100 - (zoom / 2));
 
   const handleAddNodeWithStyle = (visualStyle) => {
@@ -53,7 +52,7 @@ const Toolbar = ({
             className={`h-8 w-8 rounded-full text-sm font-medium transition-colors ${viewMode === '2d' ? 'bg-white text-black' : 'hover:bg-gray-200'}`}
             onClick={() => onViewModeChange(viewMode === '2d' ? '3d' : '2d')}
           >
-            {viewMode.toUpperCase()}
+            {viewMode === '2d' ? <Hand className="h-4 w-4" /> : <Orbit className="h-4 w-4" />}
           </Button>
         </div>
 
@@ -62,7 +61,7 @@ const Toolbar = ({
         {/* Navigation Tools Group */}
         <div className="flex items-center space-x-1 pl-2 h-8 bg-gray-300/80 rounded-full">
           <ToolbarButton 
-            icon={<MousePointer className="h-3 w-3" />} 
+            icon={<Hand className="h-3 w-3" />} 
             label="Select & Move Nodes"
             shortcut="V"
             onClick={() => setActiveTool('select')}
