@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Rnd } from 'react-rnd';
-import NodeContent from './NodeContent';
-import NodeTooltip from './NodeTooltip';
+import NodeContent from './node/NodeContent';
+import NodeTooltip from './node/NodeTooltip';
 import { isColliding, findNonCollidingPosition } from '@/utils/collisionUtils';
 import { snapToGrid, snapToSingleAxis } from '@/utils/canvasUtils';
 
