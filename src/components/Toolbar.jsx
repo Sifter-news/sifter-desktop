@@ -1,30 +1,16 @@
 import React from 'react';
-import { 
-  MousePointer2, 
-  Move3d, 
-  Orbit, 
-  Square, 
-  ChevronDown,
-  FileText,
-  User,
-  Building2,
-  Package,
-  Brain,
-  MapPin,
-  Calendar,
-  Plus
-} from 'lucide-react';
+import { Square, ChevronDown } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import { findNonCollidingPosition } from '@/utils/collisionUtils';
-import ToolbarButton from './toolbar/ToolbarButton';
+import ToolSelectMenu from './toolbar/ToolSelectMenu';
+import AddNodeButton from './toolbar/AddNodeButton';
 
 const Toolbar = ({ 
   activeTool, 
@@ -58,48 +44,18 @@ const Toolbar = ({
     });
   };
 
-  const navigationOptions = [
-    { 
-      label: 'Select & Move',
-      value: 'select',
-      icon: MousePointer2
-    },
-    { 
-      label: viewMode === '3d' ? 'Pan & Orbit' : 'Pan',
-      value: 'pan',
-      icon: viewMode === '3d' ? Orbit : Move3d
-    }
-  ];
-
   return (
     <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-sm rounded-xl shadow-lg p-1.5 border border-white/20">
       <div className="bg-black/90 rounded-xl p-0.5 flex items-center space-x-2 h-10">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="h-8 rounded-lg text-white hover:bg-white/10 flex items-center gap-1"
-            >
-              {activeTool === 'select' ? <MousePointer2 className="h-4 w-4" /> : (viewMode === '3d' ? <Orbit className="h-4 w-4" /> : <Move3d className="h-4 w-4" />)}
-              <ChevronDown className="h-3 w-3" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-black text-white" align="top">
-            <DropdownMenuItem onClick={() => setActiveTool('select')}>
-              <MousePointer2 className="h-4 w-4 mr-2" />
-              Select & Move
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setActiveTool('pan')}>
-              {viewMode === '3d' ? <Orbit className="h-4 w-4 mr-2" /> : <Move3d className="h-4 w-4 mr-2" />}
-              {viewMode === '3d' ? "Pan & Orbit" : "Pan"}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <ToolSelectMenu 
+          activeTool={activeTool}
+          setActiveTool={setActiveTool}
+          viewMode={viewMode}
+        />
 
         <Separator orientation="vertical" className="h-6 bg-white/20" />
 
-        {/* Node Creation Tools Dropdown */}
+        {/* Node Type Selector */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
@@ -112,42 +68,40 @@ const Toolbar = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-black text-white" align="top">
-            <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'generic')}>
-                <FileText className="h-4 w-4 mr-2" />
-                Generic Note
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_person')}>
-                <User className="h-4 w-4 mr-2" />
-                Person
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_organization')}>
-                <Building2 className="h-4 w-4 mr-2" />
-                Organization
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_object')}>
-                <Package className="h-4 w-4 mr-2" />
-                Object
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_concept')}>
-                <Brain className="h-4 w-4 mr-2" />
-                Concept
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_location')}>
-                <MapPin className="h-4 w-4 mr-2" />
-                Location
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_event')}>
-                <Calendar className="h-4 w-4 mr-2" />
-                Event
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
+            <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'generic')}>
+              <FileText className="h-4 w-4 mr-2" />
+              Generic Note
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_person')}>
+              <User className="h-4 w-4 mr-2" />
+              Person
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_organization')}>
+              <Building2 className="h-4 w-4 mr-2" />
+              Organization
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_object')}>
+              <Package className="h-4 w-4 mr-2" />
+              Object
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_concept')}>
+              <Brain className="h-4 w-4 mr-2" />
+              Concept
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_location')}>
+              <MapPin className="h-4 w-4 mr-2" />
+              Location
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_event')}>
+              <Calendar className="h-4 w-4 mr-2" />
+              Event
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
         <Separator orientation="vertical" className="h-6 bg-white/20" />
 
-        {/* Zoom Level Dropdown */}
+        {/* Zoom Level */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
@@ -169,7 +123,7 @@ const Toolbar = ({
 
         <Separator orientation="vertical" className="h-6 bg-white/20" />
 
-        {/* Perspective Toggle Dropdown */}
+        {/* View Mode */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
@@ -189,42 +143,7 @@ const Toolbar = ({
 
         <Separator orientation="vertical" className="h-6 bg-white/20" />
 
-        {/* Add Button Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="h-8 w-8 rounded-lg text-white hover:bg-white/10"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-black text-white" align="top">
-            <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_object')}>
-                <Package className="h-4 w-4 mr-2" />
-                Object
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_person')}>
-                <User className="h-4 w-4 mr-2" />
-                Person
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_event')}>
-                <Calendar className="h-4 w-4 mr-2" />
-                Event
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_location')}>
-                <MapPin className="h-4 w-4 mr-2" />
-                Location
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_concept')}>
-                <Brain className="h-4 w-4 mr-2" />
-                Concept
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <AddNodeButton handleAddNodeWithStyle={handleAddNodeWithStyle} />
       </div>
     </div>
   );
