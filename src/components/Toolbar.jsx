@@ -41,13 +41,13 @@ const Toolbar = ({
 
   return (
     <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-sm rounded-full shadow-lg p-1">
-      <div className="bg-white/90 rounded-full p-1 flex items-center space-x-2 h-10">
+      <div className="bg-white/90 rounded-full p-1 flex items-center space-x-1 h-10">
         {/* Perspective Toggle Group */}
         <div className="flex items-center space-x-1 px-2 h-8 bg-gray-200/80 rounded-full">
           <Button 
             variant="ghost"
             size="sm"
-            className={`rounded-full px-2 py-0.5 text-sm font-medium transition-colors ${viewMode === '2d' ? 'bg-blue-600 text-white' : 'hover:bg-gray-200'}`}
+            className={`h-8 w-8 rounded-full text-sm font-medium transition-colors ${viewMode === '2d' ? 'bg-blue-600 text-white' : 'hover:bg-gray-200'}`}
             onClick={() => onViewModeChange(viewMode === '2d' ? '3d' : '2d')}
           >
             {viewMode.toUpperCase()}
