@@ -1,12 +1,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, Hand, MousePointer, CirclePlus, Download, StickyNote } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Minus, Plus, Hand, MousePointer, CirclePlus, Download, Circle, Square, StickyNote } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import ToolButton from './ToolbarButton';
 import ExportDialog from './ExportDialog';
@@ -14,8 +9,14 @@ import ExportDialog from './ExportDialog';
 const Toolbar = ({ activeTool, setActiveTool, handleZoom, zoom, nodes, onAddNode }) => {
   const [isExportDialogOpen, setIsExportDialogOpen] = React.useState(false);
 
-  const handleDragStart = (e) => {
-    e.dataTransfer.setData('nodeType', 'postit');
+  const handleAddNodeWithStyle = (visualStyle) => {
+    onAddNode({ 
+      visualStyle,
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+      title: 'New Node',
+      description: 'Description'
+    });
   };
 
   return (
@@ -35,7 +36,7 @@ const Toolbar = ({ activeTool, setActiveTool, handleZoom, zoom, nodes, onAddNode
             label="Pan & Orbit"
             onClick={() => setActiveTool('pan')}
             isActive={activeTool === 'pan'}
-            activeClassName="bg-blue-500"
+            activeClassName="bg-blue-500 text-white"
           />
         </div>
 
@@ -44,18 +45,19 @@ const Toolbar = ({ activeTool, setActiveTool, handleZoom, zoom, nodes, onAddNode
         {/* Node Creation Tools */}
         <div className="flex items-center space-x-1 px-2 py-1 bg-gray-100 rounded-full">
           <ToolButton 
-            icon={<CirclePlus className="h-4 w-4" />}
-            label="Add Node"
-            onClick={onAddNode}
-            isActive={false}
+            icon={<Circle className="h-4 w-4" />}
+            label="Add Compact Node"
+            onClick={() => handleAddNodeWithStyle('compact')}
+          />
+          <ToolButton 
+            icon={<Square className="h-4 w-4" />}
+            label="Add Default Node"
+            onClick={() => handleAddNodeWithStyle('default')}
           />
           <ToolButton 
             icon={<StickyNote className="h-4 w-4" />}
-            label="Add Post-it"
-            onClick={() => onAddNode({ type: 'postit' })}
-            draggable
-            onDragStart={handleDragStart}
-            isActive={false}
+            label="Add Post-it Node"
+            onClick={() => handleAddNodeWithStyle('postit')}
           />
         </div>
 

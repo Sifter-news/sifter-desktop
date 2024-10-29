@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FileText } from 'lucide-react';
+import { cn } from "@/lib/utils";
 
 const DEFAULT_IMAGE = '/default-image.png';
 
@@ -17,11 +18,13 @@ const NodeContent = ({
   setLocalDescription, 
   isFocused 
 }) => {
+  const focusClasses = isFocused ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' : '';
+
   const renderNode = () => {
     switch (style) {
       case 'compact':
         return (
-          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+          <div className={cn("w-10 h-10 bg-white rounded-full flex items-center justify-center transition-all duration-200", focusClasses)}>
             <Avatar className="h-10 w-10">
               <AvatarImage 
                 src={node.avatar || DEFAULT_IMAGE} 
@@ -33,7 +36,7 @@ const NodeContent = ({
         );
       case 'postit':
         return (
-          <div className="w-[256px] h-[256px] p-4 bg-yellow-100 rotate-1">
+          <div className={cn("w-[256px] h-[256px] p-4 bg-yellow-100 rotate-1 transition-all duration-200", focusClasses)}>
             <div className="flex items-center gap-2 mb-2">
               <Avatar className="h-8 w-8">
                 <AvatarImage 
@@ -70,7 +73,7 @@ const NodeContent = ({
         );
       default:
         return (
-          <div className="min-w-[40px] h-[128px] p-3 bg-white">
+          <div className={cn("min-w-[40px] h-[128px] p-3 bg-white transition-all duration-200", focusClasses)}>
             <div className="flex items-center gap-2 mb-2">
               <Avatar className="h-8 w-8">
                 <AvatarImage 
