@@ -73,11 +73,11 @@ const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-[72px] right-8 bottom-8 w-[360px] bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col">
+    <div className="fixed top-[72px] right-[8px] bottom-8 w-[360px] bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col">
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-2">
           <Bot className="h-5 w-5 text-blue-500" />
-          <h2 className="font-semibold">AI Assistant</h2>
+          <h2 className="font-semibold">Sift Assist</h2>
         </div>
         <Button variant="ghost" size="icon" onClick={onClose}>
           <X className="h-4 w-4" />
