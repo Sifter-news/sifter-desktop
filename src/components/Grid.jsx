@@ -116,10 +116,10 @@ const Grid = ({ size = 100, divisions = 24 }) => {
   return (
     <group>
       <GridLayer y={0} opacity={0.2} size={size} divisions={divisions} />
-      <GridLayer y={24} opacity={0.16} size={size} divisions={divisions} />
-      <GridLayer y={48} opacity={0.12} size={size} divisions={divisions} />
-      <GridLayer y={72} opacity={0.08} size={size} divisions={divisions} />
-      <GridLayer y={96} opacity={0.04} size={size} divisions={divisions} />
+      <GridLayer y={12} opacity={0.16} size={size} divisions={divisions} />
+      <GridLayer y={24} opacity={0.12} size={size} divisions={divisions} />
+      <GridLayer y={36} opacity={0.08} size={size} divisions={divisions} />
+      <GridLayer y={48} opacity={0.04} size={size} divisions={divisions} />
     </group>
   );
 };
