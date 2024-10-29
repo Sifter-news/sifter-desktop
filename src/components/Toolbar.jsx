@@ -12,7 +12,8 @@ import {
   Package,
   Brain,
   MapPin,
-  Calendar
+  Calendar,
+  Plus
 } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import {
@@ -174,6 +175,45 @@ const Toolbar = ({
           <DropdownMenuContent className="bg-black text-white" align="top">
             <DropdownMenuItem onClick={() => onViewModeChange('2d')}>2D</DropdownMenuItem>
             <DropdownMenuItem onClick={() => onViewModeChange('3d')}>3D</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <Separator orientation="vertical" className="h-6 bg-white/20" />
+
+        {/* Add Button Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="h-8 w-8 rounded-lg text-white hover:bg-white/10"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-black text-white" align="top">
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_object')}>
+                <Package className="h-4 w-4 mr-2" />
+                Object
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_person')}>
+                <User className="h-4 w-4 mr-2" />
+                Person
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_event')}>
+                <Calendar className="h-4 w-4 mr-2" />
+                Event
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_location')}>
+                <MapPin className="h-4 w-4 mr-2" />
+                Location
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_concept')}>
+                <Brain className="h-4 w-4 mr-2" />
+                Concept
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
