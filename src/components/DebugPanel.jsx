@@ -3,18 +3,19 @@ import { useDebug } from '@/contexts/DebugContext';
 import { X, Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/components/AuthProvider';
 import { useInvestigations } from '@/integrations/supabase/hooks/useInvestigations';
 import { useLocation } from 'react-router-dom';
 import { Rnd } from 'react-rnd';
+import DebugStateSection from './debug/DebugStateSection';
+import DebugPositionSection from './debug/DebugPositionSection';
+import DebugViewOptions from './debug/DebugViewOptions';
 
 const DebugPanel = () => {
-  const { isDebugOpen, setIsDebugOpen, debugData } = useDebug();
+  const { isDebugOpen, setIsDebugOpen, debugData, showGuides, setShowGuides } = useDebug();
   const { user } = useAuth();
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [showGuides, setShowGuides] = useState(true);
   const { data: investigations } = useInvestigations({ 
     filter: user ? `owner_id.eq.${user?.id}` : undefined 
   });
@@ -31,22 +32,6 @@ const DebugPanel = () => {
 
   const currentProjectId = location.pathname.split('/project/')[1];
   const currentProject = investigations?.find(inv => inv.id === currentProjectId);
-
-  const getToolDescription = (tool) => {
-    switch (tool) {
-      case 'pan':
-        return 'Pans view in X/Y axes (hold Space)';
-      case 'select':
-        return 'Select and move nodes';
-      default:
-        return 'No tool selected';
-    }
-  };
-
-  const colorizeValue = (value, axis) => {
-    const color = axis === 'x' ? 'text-red-500' : axis === 'y' ? 'text-green-500' : 'text-blue-500';
-    return <span className={color}>{value}</span>;
-  };
 
   const panelContent = isCollapsed ? (
     <Button
@@ -83,42 +68,10 @@ const DebugPanel = () => {
       
       <ScrollArea className="h-[500px] p-4">
         <div className="space-y-4">
-          {/* View and Tool Section */}
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-white/80">Current State</h3>
-            <div className="bg-black/50 p-2 rounded space-y-2">
-              <p className="text-xs">View: {debugData?.currentView || 'mind'}</p>
-              <p className="text-xs">Active Tool: {debugData?.activeTool || 'select'}</p>
-              <p className="text-xs text-gray-400">{getToolDescription(debugData?.activeTool)}</p>
-            </div>
-          </div>
+          <DebugStateSection debugData={debugData} />
+          <DebugPositionSection debugData={debugData} />
+          <DebugViewOptions showGuides={showGuides} setShowGuides={setShowGuides} />
 
-          {/* Position Section with Colored Values */}
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-white/80">Position</h3>
-            <div className="bg-black/50 p-2 rounded">
-              <p className="text-xs">Position: (
-                {colorizeValue(debugData?.position?.x || '0', 'x')}, 
-                {colorizeValue(debugData?.position?.y || '0', 'y')}, 
-                {colorizeValue(debugData?.position?.z || '0', 'z')})
-              </p>
-            </div>
-          </div>
-
-          {/* Guide Controls */}
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-white/80">View Options</h3>
-            <div className="bg-black/50 p-2 rounded flex items-center justify-between">
-              <span className="text-xs">Show Guide Lines</span>
-              <Switch
-                checked={showGuides}
-                onCheckedChange={setShowGuides}
-                className="data-[state=checked]:bg-green-500"
-              />
-            </div>
-          </div>
-
-          {/* Current View Section */}
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-white/80">Current View</h3>
             <div className="bg-black/50 p-2 rounded">
@@ -152,7 +105,6 @@ const DebugPanel = () => {
             </div>
           </div>
 
-          {/* Authentication Section */}
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-white/80">Authentication</h3>
             <div className="bg-black/50 p-2 rounded">
@@ -166,7 +118,6 @@ const DebugPanel = () => {
             </div>
           </div>
 
-          {/* Projects Section */}
           {user && (
             <div className="space-y-2">
               <h3 className="text-sm font-medium text-white/80">Projects</h3>
@@ -186,7 +137,6 @@ const DebugPanel = () => {
             </div>
           )}
 
-          {/* Debug Data Section */}
           {Object.entries(debugData).map(([key, value]) => (
             <div key={key} className="space-y-2">
               <h3 className="text-sm font-medium text-white/80">{key}</h3>

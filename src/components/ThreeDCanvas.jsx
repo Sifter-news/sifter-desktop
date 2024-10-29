@@ -31,7 +31,8 @@ const CameraDebug = () => {
         },
         mouse: {
           x: mouse.x.toFixed(2),
-          y: mouse.y.toFixed(2)
+          y: mouse.y.toFixed(2),
+          z: camera.position.z.toFixed(2) // Added z coordinate for mouse
         }
       }));
     };
@@ -60,6 +61,14 @@ const ThreeDCanvas = () => {
     zoom,
     handleZoom
   } = useZoomPan(1);
+
+  useEffect(() => {
+    setDebugData(prev => ({
+      ...prev,
+      activeTool,
+      currentView: viewMode
+    }));
+  }, [activeTool, viewMode, setDebugData]);
 
   useEffect(() => {
     setDebugData(prev => ({
