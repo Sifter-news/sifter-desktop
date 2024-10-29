@@ -1,12 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import SearchInput from './SearchInput';
-import NodeEditDialog from '../node/NodeEditDialog';
+import NodeEditModal from '../node/NodeEditModal';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
 import NodeList from './NodeList';
 import { useDebug } from '@/contexts/DebugContext';
 import { toast } from 'sonner';
-import AIChatPanel from '../ai/AIChatPanel';
 
 const NodeNavigator = ({ 
   nodes = [], 
@@ -14,7 +13,6 @@ const NodeNavigator = ({
   onNodeFocus, 
   selectedNode, 
   onAddNode,
-  onAIConversation,
   focusedNodeId,
   onDeleteNode,
   onNodeHover
@@ -23,7 +21,6 @@ const NodeNavigator = ({
   const [selectedNodes, setSelectedNodes] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [editingNode, setEditingNode] = useState(null);
-  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const fileInputRef = useRef(null);
 
   const { handleDragEnd } = useDragAndDrop(nodes, onUpdateNode);
@@ -44,9 +41,11 @@ const NodeNavigator = ({
   });
 
   const handleNodeClick = (nodeId) => {
+    const node = nodes.find(n => n.id === nodeId);
     setCurrentIndex(nodes.findIndex(n => n.id === nodeId));
     setSelectedNodes([nodeId]);
     onNodeFocus(nodeId);
+    setEditingNode(node);
   };
 
   const handleNodeDelete = async (nodeId) => {
@@ -63,15 +62,6 @@ const NodeNavigator = ({
     }
   };
 
-  const handleAIChat = () => {
-    setIsAIChatOpen(true);
-    const focusedNode = nodes.find(node => node.id === focusedNodeId);
-    const context = focusedNode 
-      ? `Focused on node: ${focusedNode.title}\n${focusedNode.description || ''}`
-      : "Viewing the entire canvas";
-    onAIConversation?.(context);
-  };
-
   return (
     <div className="w-full h-full flex flex-col p-4 rounded-2xl">
       <div className="flex-1">
@@ -86,34 +76,20 @@ const NodeNavigator = ({
             selectedNodes={selectedNodes}
             handleNodeClick={handleNodeClick}
             onUpdateNode={onUpdateNode}
-            onAIConversation={handleAIChat}
             focusedNodeId={focusedNodeId}
             onDeleteNode={handleNodeDelete}
           />
         </div>
       </DragDropContext>
 
-      {editingNode && (
-        <NodeEditDialog
-          isOpen={!!editingNode}
-          onClose={() => setEditingNode(null)}
-          node={editingNode}
-          onUpdate={(id, updates) => {
-            onUpdateNode(id, updates);
-            setEditingNode(null);
-          }}
-          onDelete={handleNodeDelete}
-        />
-      )}
-
-      <AIChatPanel
-        isOpen={isAIChatOpen}
-        onClose={() => setIsAIChatOpen(false)}
-        initialContext={
-          focusedNodeId
-            ? `Focused on node: ${nodes.find(n => n.id === focusedNodeId)?.title || ''}`
-            : "Viewing the entire canvas"
-        }
+      <NodeEditModal
+        isOpen={!!editingNode}
+        onClose={() => setEditingNode(null)}
+        node={editingNode}
+        onUpdate={(id, updates) => {
+          onUpdateNode(id, updates);
+          setEditingNode(null);
+        }}
       />
     </div>
   );
