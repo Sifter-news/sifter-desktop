@@ -5,7 +5,7 @@ import { FileText } from 'lucide-react';
 const ReportCard = ({ report }) => {
   return (
     <Card 
-      className="w-full h-full bg-white hover:bg-gray-50 transition-colors cursor-pointer"
+      className="w-full h-full bg-white hover:bg-gray-50 transition-colors cursor-pointer p-4"
     >
       <div className="w-full h-1/3 bg-gray-200 relative overflow-hidden">
         <img 
@@ -17,7 +17,7 @@ const ReportCard = ({ report }) => {
           }}
         />
       </div>
-      <CardContent className="p-4 h-2/3 flex flex-col">
+      <CardContent className="h-2/3 flex flex-col">
         <div className="flex items-center gap-2 mb-2">
           <FileText className="h-4 w-4 text-purple-500" />
           <h3 className="text-sm font-medium text-gray-800 line-clamp-1">
