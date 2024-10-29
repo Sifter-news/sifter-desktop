@@ -14,7 +14,7 @@ const ToolbarButton = ({
   isActive, 
   onDragStart, 
   draggable,
-  activeClassName = 'bg-blue-500 bg-opacity-50'
+  activeClassName = 'bg-black text-white'
 }) => (
   <TooltipProvider>
     <Tooltip>

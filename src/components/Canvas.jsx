@@ -32,7 +32,7 @@ const Canvas = forwardRef(({
   const [startPanPosition, setStartPanPosition] = useState({ x: 0, y: 0 });
 
   const handleKeyDown = useCallback((e) => {
-    if (e.code === 'Space' && !isSpacePressed) {
+    if (e.code === 'Space' && !e.repeat && !isSpacePressed) {
       e.preventDefault();
       setIsSpacePressed(true);
       setPreviousTool(activeTool);
@@ -63,6 +63,7 @@ const Canvas = forwardRef(({
 
   const handleKeyUp = useCallback((e) => {
     if (e.code === 'Space') {
+      e.preventDefault();
       setIsSpacePressed(false);
       setActiveTool(previousTool || 'select');
     }
@@ -121,7 +122,7 @@ const Canvas = forwardRef(({
             height: '100%',
             border: '2px solid rgba(255, 255, 255, 0.2)',
             backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)',
-            backgroundSize: '120px 120px', // Changed from 24px to 120px (24 * 5)
+            backgroundSize: '120px 120px',
             transformOrigin: '0 0',
             transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
           }}
