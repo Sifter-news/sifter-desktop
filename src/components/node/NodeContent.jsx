@@ -29,9 +29,28 @@ const NodeContent = ({
   textAlign = "left",
   color = "white"
 }) => {
-  const { showGuides } = useDebug();
+  const { showGuides, setHoveredElement } = useDebug();
+  
+  const handleMouseEnter = () => {
+    setHoveredElement({
+      component: 'NodeContent',
+      metadata: {
+        id: node.id,
+        type: node.nodeType || 'Generic Note',
+        title: node.title,
+        description: node.description,
+        isEditing,
+        isFocused
+      }
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredElement(null);
+  };
+
   const focusClasses = isFocused ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' : '';
-  const debugFocusClasses = showGuides ? 'outline outline-2 outline-blue-500/50' : '';
+  const debugFocusClasses = showGuides ? 'outline outline-2 outline-blue-500/50 relative before:content-[attr(data-component)] before:absolute before:-top-6 before:left-0 before:bg-blue-500/90 before:text-white before:px-2 before:py-1 before:text-xs before:rounded-t-md' : '';
   
   const colorClasses = {
     white: "bg-white",
@@ -53,7 +72,12 @@ const NodeContent = ({
     switch (style) {
       case 'compact':
         return (
-          <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", baseClasses)}>
+          <div 
+            className={cn("w-10 h-10 rounded-full flex items-center justify-center", baseClasses)}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            data-component="NodeContent:Compact"
+          >
             <Avatar className="h-10 w-10">
               <AvatarImage src={node.avatar || DEFAULT_IMAGE} alt={node.title} />
               <AvatarFallback><FileText className="h-4 w-4" /></AvatarFallback>
@@ -62,7 +86,12 @@ const NodeContent = ({
         );
       case 'postit':
         return (
-          <div className={cn("w-[256px] h-[256px] p-4 rotate-1", baseClasses)}>
+          <div 
+            className={cn("w-[256px] h-[256px] p-4 rotate-1", baseClasses)}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            data-component="NodeContent:PostIt"
+          >
             <div className="flex items-center gap-2 mb-2">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={node.avatar || DEFAULT_IMAGE} alt={node.title} />
@@ -96,7 +125,12 @@ const NodeContent = ({
         );
       default:
         return (
-          <div className={cn("min-w-[40px] h-[128px] p-3", baseClasses)}>
+          <div 
+            className={cn("min-w-[40px] h-[128px] p-3", baseClasses)}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            data-component="NodeContent:Default"
+          >
             <div className="flex items-center gap-2 mb-2">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={node.avatar || DEFAULT_IMAGE} alt={node.title} />
