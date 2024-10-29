@@ -2,7 +2,6 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "postgis";
 
--- Create profiles table
 CREATE TABLE IF NOT EXISTS public.profiles (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username VARCHAR(255) NOT NULL UNIQUE,
@@ -95,6 +94,28 @@ ALTER TABLE public.investigations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reports ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.node ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.connections ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DO $$ 
+BEGIN
+    DROP POLICY IF EXISTS "Enable read access for all users" ON public.investigations;
+    DROP POLICY IF EXISTS "Enable insert for authenticated users only" ON public.investigations;
+    DROP POLICY IF EXISTS "Enable update for investigation owners" ON public.investigations;
+    DROP POLICY IF EXISTS "Enable delete for investigation owners" ON public.investigations;
+    
+    DROP POLICY IF EXISTS "Enable read access for all users" ON public.reports;
+    DROP POLICY IF EXISTS "Enable insert for authenticated users" ON public.reports;
+    DROP POLICY IF EXISTS "Enable update for report owners" ON public.reports;
+    DROP POLICY IF EXISTS "Enable delete for report owners" ON public.reports;
+    
+    DROP POLICY IF EXISTS "Enable read access for all users" ON public.connections;
+    DROP POLICY IF EXISTS "Enable insert for authenticated users" ON public.connections;
+    DROP POLICY IF EXISTS "Enable update for authenticated users" ON public.connections;
+    DROP POLICY IF EXISTS "Enable delete for authenticated users" ON public.connections;
+EXCEPTION
+    WHEN undefined_object THEN
+        NULL;
+END $$;
 
 -- Create RLS policies
 CREATE POLICY "Enable read access for all users" ON public.investigations FOR SELECT USING (true);
