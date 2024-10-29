@@ -15,7 +15,7 @@ const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode }) => {
         <Button 
           variant="ghost" 
           size="sm"
-          className="h-8 rounded-lg text-white hover:bg-white/10 bg-white/5 flex items-center gap-1"
+          className="h-8 rounded-lg text-white hover:bg-white/10 bg-white/[0.0625] flex items-center gap-1"
         >
           {activeTool === 'select' ? <MousePointer2 className="h-4 w-4" /> : (viewMode === '3d' ? <Orbit className="h-4 w-4" /> : <Move3d className="h-4 w-4" />)}
           <span>{activeTool === 'select' ? 'Select' : 'Pan'}</span>
