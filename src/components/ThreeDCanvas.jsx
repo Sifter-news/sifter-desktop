@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import Grid from './Grid';
@@ -12,7 +12,24 @@ const ThreeDCanvas = () => {
   const [nodes, setNodes] = useState([]);
   const [connections, setConnections] = useState([]);
   const [activeConnection, setActiveConnection] = useState(null);
+  const [viewMode, setViewMode] = useState('3d');
   const controlsRef = useRef();
+
+  useEffect(() => {
+    if (controlsRef.current) {
+      if (viewMode === '2d') {
+        // Lock to top-down view
+        controlsRef.current.setAzimuthalAngle(0);
+        controlsRef.current.setPolarAngle(0);
+        controlsRef.current.enableRotate = false;
+      } else {
+        // Set to isometric view
+        controlsRef.current.setAzimuthalAngle(Math.PI / 4);
+        controlsRef.current.setPolarAngle(Math.PI / 4);
+        controlsRef.current.enableRotate = true;
+      }
+    }
+  }, [viewMode]);
 
   const handleZoom = (delta) => {
     setZoom(prev => Math.max(0.1, Math.min(2, prev + delta)));
@@ -76,11 +93,13 @@ const ThreeDCanvas = () => {
           zoom={zoom}
           nodes={nodes}
           onAddNode={handleAddNode}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
         />
       </div>
       <Canvas
         camera={{ 
-          position: [0, 100, 0],
+          position: viewMode === '2d' ? [0, 100, 0] : [50, 50, 50],
           fov: 45,
           near: 0.1,
           far: 1000
@@ -134,7 +153,7 @@ const ThreeDCanvas = () => {
           ref={controlsRef}
           enableZoom={true}
           enablePan={activeTool === 'pan'}
-          enableRotate={activeTool === 'pan'}
+          enableRotate={viewMode === '3d' && activeTool === 'pan'}
           maxDistance={200}
           minDistance={10}
         />

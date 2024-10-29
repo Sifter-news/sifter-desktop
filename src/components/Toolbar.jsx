@@ -1,12 +1,21 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, Hand, MousePointer, CirclePlus, Download, Circle, Square, StickyNote } from 'lucide-react';
+import { Minus, Plus, Hand, MousePointer, CirclePlus, Download, Circle, Square, StickyNote, View } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import ToolbarButton from './ToolbarButton';
 import ExportDialog from './ExportDialog';
 
-const Toolbar = ({ activeTool, setActiveTool, handleZoom, zoom, nodes, onAddNode }) => {
+const Toolbar = ({ 
+  activeTool, 
+  setActiveTool, 
+  handleZoom, 
+  zoom, 
+  nodes, 
+  onAddNode,
+  viewMode = '3d',
+  onViewModeChange 
+}) => {
   const [isExportDialogOpen, setIsExportDialogOpen] = React.useState(false);
 
   const handleAddNodeWithStyle = (visualStyle) => {
@@ -39,6 +48,14 @@ const Toolbar = ({ activeTool, setActiveTool, handleZoom, zoom, nodes, onAddNode
             onClick={() => setActiveTool('pan')}
             isActive={activeTool === 'pan'}
             activeClassName="bg-blue-500 text-white"
+          />
+          <ToolbarButton 
+            icon={<View className="h-4 w-4" />} 
+            label="Toggle 2D/3D View"
+            shortcut="Tab"
+            onClick={() => onViewModeChange(viewMode === '2d' ? '3d' : '2d')}
+            isActive={viewMode === '2d'}
+            activeClassName="bg-purple-500 text-white"
           />
         </div>
 
