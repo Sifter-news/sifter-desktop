@@ -1,5 +1,6 @@
+```jsx
 import React, { useState } from 'react';
-import { Square, ChevronDown, Star } from 'lucide-react';
+import { Square, ChevronDown, MessageCircle } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import {
@@ -56,9 +57,7 @@ const Toolbar = ({
           className="h-8 px-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-0.5"
           onClick={() => setIsAIPanelOpen(true)}
         >
-          <Star className="h-4 w-4 fill-white" />
-          <Star className="h-3.5 w-3.5 fill-white opacity-75" />
-          <Star className="h-3 w-3 fill-white opacity-50" />
+          <MessageCircle className="h-4 w-4" />
         </Button>
 
         <Separator orientation="vertical" className="h-6 bg-white/20" />
@@ -109,3 +108,4 @@ const Toolbar = ({
 };
 
 export default Toolbar;
+```
