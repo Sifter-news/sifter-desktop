@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Minus, Plus, Hand, MousePointer, CirclePlus, Download, Circle, Square, StickyNote } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
-import ToolButton from './ToolbarButton';
+import ToolbarButton from './ToolbarButton';
 import ExportDialog from './ExportDialog';
 
 const Toolbar = ({ activeTool, setActiveTool, handleZoom, zoom, nodes, onAddNode }) => {
@@ -24,16 +24,18 @@ const Toolbar = ({ activeTool, setActiveTool, handleZoom, zoom, nodes, onAddNode
       <div className="bg-white rounded-full p-2 flex items-center space-x-2">
         {/* Navigation Tools Group */}
         <div className="flex items-center space-x-1 px-2 py-1 bg-gray-100 rounded-full">
-          <ToolButton 
+          <ToolbarButton 
             icon={<MousePointer className="h-4 w-4" />} 
             label="Select & Move Nodes"
+            shortcut="V"
             onClick={() => setActiveTool('select')}
             isActive={activeTool === 'select'}
             activeClassName="bg-black text-white"
           />
-          <ToolButton 
+          <ToolbarButton 
             icon={<Hand className="h-4 w-4" />} 
             label="Pan & Orbit"
+            shortcut="Space"
             onClick={() => setActiveTool('pan')}
             isActive={activeTool === 'pan'}
             activeClassName="bg-blue-500 text-white"
@@ -44,19 +46,22 @@ const Toolbar = ({ activeTool, setActiveTool, handleZoom, zoom, nodes, onAddNode
 
         {/* Node Creation Tools */}
         <div className="flex items-center space-x-1 px-2 py-1 bg-gray-100 rounded-full">
-          <ToolButton 
+          <ToolbarButton 
             icon={<Circle className="h-4 w-4" />}
             label="Add Compact Node"
+            shortcut="1"
             onClick={() => handleAddNodeWithStyle('compact')}
           />
-          <ToolButton 
+          <ToolbarButton 
             icon={<Square className="h-4 w-4" />}
             label="Add Default Node"
+            shortcut="2"
             onClick={() => handleAddNodeWithStyle('default')}
           />
-          <ToolButton 
+          <ToolbarButton 
             icon={<StickyNote className="h-4 w-4" />}
             label="Add Post-it Node"
+            shortcut="3"
             onClick={() => handleAddNodeWithStyle('postit')}
           />
         </div>
@@ -69,7 +74,7 @@ const Toolbar = ({ activeTool, setActiveTool, handleZoom, zoom, nodes, onAddNode
             <Button 
               size="icon" 
               variant="ghost" 
-              className="rounded-full h-3 w-3 bg-black bg-opacity-5" 
+              className="rounded-full h-3 w-3 bg-black bg-opacity-5 hover:bg-gray-200" 
               onClick={() => handleZoom(0.1)}
             >
               <Plus className="h-2 w-2" />
@@ -77,7 +82,7 @@ const Toolbar = ({ activeTool, setActiveTool, handleZoom, zoom, nodes, onAddNode
             <Button 
               size="icon" 
               variant="ghost" 
-              className="rounded-full h-3 w-3 bg-black bg-opacity-5" 
+              className="rounded-full h-3 w-3 bg-black bg-opacity-5 hover:bg-gray-200" 
               onClick={() => handleZoom(-0.1)}
             >
               <Minus className="h-2 w-2" />
@@ -97,14 +102,14 @@ const Toolbar = ({ activeTool, setActiveTool, handleZoom, zoom, nodes, onAddNode
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="rounded-full bg-white bg-opacity-20"
+                className="rounded-full bg-white hover:bg-gray-100 active:scale-95 transition-all duration-200"
                 onClick={() => setIsExportDialogOpen(true)}
               >
                 <Download className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>
-              <p>Export Mind Map</p>
+            <TooltipContent side="bottom" className="bg-gray-900 text-white px-3 py-1.5 rounded-md text-sm">
+              <p>Export Mind Map (⌘E)</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
