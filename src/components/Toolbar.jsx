@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, Orbit, MousePointer, CirclePlus, Download, Circle, Square, StickyNote } from 'lucide-react';
+import { Minus, Plus, Hand, Orbit, MousePointer, CirclePlus, Download, Circle, Square, StickyNote } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import ToolbarButton from './ToolbarButton';
@@ -14,12 +14,10 @@ const Toolbar = ({
   zoom, 
   nodes, 
   viewMode = '3d',
-  onViewModeChange 
+  onViewModeChange,
+  onAddNode 
 }) => {
   const [isExportDialogOpen, setIsExportDialogOpen] = React.useState(false);
-
-  // Calculate zoom percentage based on Z position (0-200 range)
-  // When z=200, zoom=0%, when z=0, zoom=100%
   const zoomPercentage = Math.round(100 - (zoom / 2));
 
   const handleAddNodeWithStyle = (visualStyle) => {
@@ -33,7 +31,6 @@ const Toolbar = ({
       height: visualStyle === 'postit' ? 256 : visualStyle === 'compact' ? 40 : 128
     };
 
-    // Find a non-colliding position for the new node
     const position = findNonCollidingPosition(newNode, nodes);
     onAddNode({ 
       ...newNode,
@@ -70,8 +67,8 @@ const Toolbar = ({
             activeClassName="bg-black text-white"
           />
           <ToolbarButton 
-            icon={<Orbit className="h-3 w-3" />} 
-            label="Pan & Orbit"
+            icon={viewMode === '3d' ? <Orbit className="h-3 w-3" /> : <Hand className="h-3 w-3" />}
+            label={viewMode === '3d' ? "Pan & Orbit" : "Pan"}
             shortcut="Space"
             onClick={() => setActiveTool('pan')}
             isActive={activeTool === 'pan'}
