@@ -4,6 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Paperclip } from 'lucide-react';
 
 const ChatInput = ({ input, setInput, handleSubmit, handleFileSelect, fileInputRef, selectedFile }) => {
+  const handleKeyDown = (e) => {
+    // Only prevent default for Enter key
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="p-4 border-t">
       <div className="flex gap-2">
@@ -25,6 +33,7 @@ const ChatInput = ({ input, setInput, handleSubmit, handleFileSelect, fileInputR
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Type your message..."
           className="flex-1"
         />
