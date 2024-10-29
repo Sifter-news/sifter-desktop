@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Plus, Filter, FolderPlus } from 'lucide-react';
+import { Plus, Filter, FolderPlus, FolderOpen, File } from 'lucide-react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import SearchInput from './SearchInput';
 import NodeListItem from './NodeListItem';
-import NodeTypeSelector from './NodeTypeSelector';
 import NodeEditDialog from '../node/NodeEditDialog';
 import CreateFolderDialog from './CreateFolderDialog';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
 import { useFolderManagement } from './hooks/useFolderManagement';
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Tabs,
   TabsContent,
@@ -36,8 +36,8 @@ const NodeNavigator = ({
   const [folders, setFolders] = useState([]);
   const [showCreateFolder, setShowCreateFolder] = useState(false);
   const [activeView, setActiveView] = useState('nodes');
-  const nodeRefs = useRef({});
-
+  const [selectedFiles, setSelectedFiles] = useState(null);
+  const fileInputRef = useRef(null);
   const { handleDragEnd } = useDragAndDrop(navigatorNodes, setNavigatorNodes);
   const {
     openFolders,
@@ -60,6 +60,44 @@ const NodeNavigator = ({
     const newFolder = handleCreateFolder(folderName);
     setFolders([...folders, newFolder]);
     setShowCreateFolder(false);
+  };
+
+  const handleFolderSelect = async (event) => {
+    const directory = event.target.files;
+    if (directory) {
+      const fileStructure = Array.from(directory).map(file => ({
+        name: file.name,
+        type: file.type || 'folder',
+        path: file.webkitRelativePath || file.name,
+        size: file.size,
+        lastModified: new Date(file.lastModified).toLocaleDateString()
+      }));
+      setSelectedFiles(fileStructure);
+    }
+  };
+
+  const renderFileTree = (files) => {
+    if (!files) return null;
+
+    return (
+      <ScrollArea className="h-[calc(100vh-250px)]">
+        <div className="space-y-2 p-2">
+          {files.map((file, index) => (
+            <div 
+              key={file.path} 
+              className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md transition-colors"
+            >
+              {file.type === 'folder' ? (
+                <FolderOpen className="h-4 w-4 text-blue-500" />
+              ) : (
+                <File className="h-4 w-4 text-gray-500" />
+              )}
+              <span className="text-sm truncate">{file.name}</span>
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+    );
   };
 
   const filteredNodes = navigatorNodes.filter(node => {
@@ -142,9 +180,28 @@ const NodeNavigator = ({
             </div>
           </DragDropContext>
         </TabsContent>
-        <TabsContent value="files">
-          <div className="p-4 text-center text-gray-500">
-            Files view coming soon
+        <TabsContent value="files" className="h-full">
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-center">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFolderSelect}
+                className="hidden"
+                webkitdirectory=""
+                directory=""
+                multiple
+              />
+              <Button 
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full max-w-xs"
+              >
+                <FolderOpen className="h-4 w-4 mr-2" />
+                Select Folder
+              </Button>
+            </div>
+            {renderFileTree(selectedFiles)}
           </div>
         </TabsContent>
       </Tabs>
