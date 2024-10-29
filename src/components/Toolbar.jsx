@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Square, ChevronDown, MessageCircle } from 'lucide-react';
+import { Plus, ChevronDown, MessageCircle, File, Folder } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { findNonCollidingPosition } from '@/utils/collisionUtils';
 import ToolSelectMenu from './toolbar/ToolSelectMenu';
-import AddNodeButton from './toolbar/AddNodeButton';
 import AISidePanel from './AISidePanel';
 
 const Toolbar = ({ 
@@ -91,7 +90,31 @@ const Toolbar = ({
 
         <Separator orientation="vertical" className="h-6 bg-white/20" />
 
-        <AddNodeButton handleAddNodeWithStyle={handleAddNodeWithStyle} />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="h-8 w-8 rounded-lg text-white hover:bg-white/10 bg-white/[0.0625]"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-black text-white" align="top">
+            <DropdownMenuItem onClick={() => handleAddNodeWithStyle('postit')}>
+              <File className="h-4 w-4 mr-2" />
+              Post-it Note
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleAddNodeWithStyle('default')}>
+              <File className="h-4 w-4 mr-2" />
+              Default Note
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleAddNodeWithStyle('compact')}>
+              <Folder className="h-4 w-4 mr-2" />
+              Compact Note
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="fixed top-16 right-4 z-[9999]">
