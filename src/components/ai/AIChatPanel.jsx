@@ -102,8 +102,8 @@ const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-[72px] right-[8px] bottom-[8px] w-[360px] bg-background/30 backdrop-blur-md rounded-lg shadow-xl border border-gray-200 flex flex-col">
-      <div className="flex items-center justify-between p-4 border-b bg-white/50">
+    <div className="fixed top-[72px] right-[8px] bottom-[8px] w-[360px] bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col">
+      <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-2">
           <MessageCircle className="h-5 w-5 text-purple-500" />
           <h2 className="font-semibold">Sift Assist</h2>
