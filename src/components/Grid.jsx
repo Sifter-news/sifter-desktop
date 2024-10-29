@@ -1,7 +1,7 @@
 import React from 'react';
 import * as THREE from 'three';
 
-const GridLayer = ({ z = 0, opacity = 0.3, size = 200, divisions = 24 }) => {
+const GridLayer = ({ z = 0, opacity = 0.3, size = 200, divisions = 250 }) => {
   const gridHelper = new THREE.GridHelper(size, divisions, 0xffffff, 0x333333);
   gridHelper.position.z = z;
   gridHelper.rotation.x = Math.PI / 2; // Rotate to make it vertical on Z axis
@@ -17,7 +17,7 @@ const GridLayer = ({ z = 0, opacity = 0.3, size = 200, divisions = 24 }) => {
   const dotGeometry = new THREE.BufferGeometry();
   const positions = [];
   const halfSize = size / 2;
-  const spacing = size / divisions;
+  const spacing = 8; // Set fixed spacing to 8 units
 
   for (let i = -halfSize; i <= halfSize; i += spacing) {
     for (let j = -halfSize; j <= halfSize; j += spacing) {
@@ -48,7 +48,7 @@ const GridLayer = ({ z = 0, opacity = 0.3, size = 200, divisions = 24 }) => {
   );
 };
 
-const Grid = ({ size = 200, divisions = 24 }) => {
+const Grid = ({ size = 200, divisions = 250 }) => {
   return (
     <group>
       {/* Single grid at z=0 with 0.3 opacity */}
