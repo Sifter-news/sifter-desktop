@@ -1,13 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
-import { FolderPlus, FolderOpen } from 'lucide-react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import SearchInput from './SearchInput';
 import NodeEditDialog from '../node/NodeEditDialog';
-import CreateFolderDialog from './CreateFolderDialog';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
-import { useFolderManagement } from './hooks/useFolderManagement';
-import FileTreeView from './FileTreeView';
 import NodeList from './NodeList';
 import { useDebug } from '@/contexts/DebugContext';
 import {
@@ -29,22 +24,9 @@ const NodeNavigator = ({
   const [selectedNodes, setSelectedNodes] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [editingNode, setEditingNode] = useState(null);
-  const [folders, setFolders] = useState([]);
-  const [showCreateFolder, setShowCreateFolder] = useState(false);
-  const [activeView, setActiveView] = useState('nodes');
-  const [selectedFiles, setSelectedFiles] = useState(null);
   const fileInputRef = useRef(null);
 
   const { handleDragEnd } = useDragAndDrop(nodes, onUpdateNode);
-  const {
-    openFolders,
-    draggedOverFolderId,
-    handleToggleFolder,
-    handleCreateFolder,
-    handleDragUpdate,
-    setDraggedOverFolderId
-  } = useFolderManagement();
-
   const { setDebugData } = useDebug();
 
   useEffect(() => {
@@ -54,26 +36,6 @@ const NodeNavigator = ({
     }));
     console.log('Navigator nodes updated:', nodes);
   }, [nodes, setDebugData]);
-
-  const handleCreateNewFolder = (folderName) => {
-    const newFolder = handleCreateFolder(folderName);
-    setFolders([...folders, newFolder]);
-    setShowCreateFolder(false);
-  };
-
-  const handleFolderSelect = async (event) => {
-    const directory = event.target.files;
-    if (directory) {
-      const fileStructure = Array.from(directory).map(file => ({
-        name: file.name,
-        type: file.type || 'folder',
-        path: file.webkitRelativePath || file.name,
-        size: file.size,
-        lastModified: new Date(file.lastModified).toLocaleDateString()
-      }));
-      setSelectedFiles(fileStructure);
-    }
-  };
 
   const filteredNodes = nodes.filter(node => {
     if (!node) return false;
@@ -90,27 +52,16 @@ const NodeNavigator = ({
 
   return (
     <div className="w-full h-full flex flex-col p-4 rounded-2xl">
-      <div className="flex items-center gap-2 mb-4">
-        <div className="flex-1">
-          <SearchInput value={searchQuery} onChange={setSearchQuery} />
-        </div>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setShowCreateFolder(true)}
-        >
-          <FolderPlus className="h-4 w-4" />
-        </Button>
+      <div className="flex-1">
+        <SearchInput value={searchQuery} onChange={setSearchQuery} />
       </div>
       
       <DragDropContext 
         onDragEnd={(result) => {
-          setDraggedOverFolderId(null);
           handleDragEnd(result);
         }}
-        onDragUpdate={handleDragUpdate}
       >
-        <div className="flex-grow overflow-y-auto">
+        <div className="flex-grow overflow-y-auto mt-4">
           <NodeList
             nodes={filteredNodes}
             onNodeFocus={onNodeFocus}
@@ -136,12 +87,6 @@ const NodeNavigator = ({
           onDelete={onDeleteNode}
         />
       )}
-
-      <CreateFolderDialog
-        isOpen={showCreateFolder}
-        onClose={() => setShowCreateFolder(false)}
-        onCreateFolder={handleCreateNewFolder}
-      />
     </div>
   );
 };
