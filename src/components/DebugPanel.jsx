@@ -1,12 +1,18 @@
 import React from 'react';
 import { useDebug } from '@/contexts/DebugContext';
-import { X, Eye, EyeOff } from 'lucide-react';
+import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
+import { useAuth } from '@/components/AuthProvider';
+import { useInvestigations } from '@/integrations/supabase/hooks/useInvestigations';
 
 const DebugPanel = () => {
   const { isDebugOpen, setIsDebugOpen, debugData, showNodeDebug, setShowNodeDebug } = useDebug();
+  const { user } = useAuth();
+  const { data: investigations } = useInvestigations({ 
+    filter: user ? `owner_id.eq.${user?.id}` : undefined 
+  });
 
   if (!isDebugOpen) return null;
 
@@ -36,6 +42,41 @@ const DebugPanel = () => {
       
       <ScrollArea className="h-[500px] p-4">
         <div className="space-y-4">
+          {/* Authentication Section */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-white/80">Authentication</h3>
+            <div className="bg-black/50 p-2 rounded">
+              <p className="text-xs">Logged in: {user ? 'Yes' : 'No'}</p>
+              {user && (
+                <>
+                  <p className="text-xs">User ID: {user.id}</p>
+                  <p className="text-xs">Email: {user.email}</p>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Projects Section */}
+          {user && (
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-white/80">Projects</h3>
+              <div className="bg-black/50 p-2 rounded">
+                {investigations?.length > 0 ? (
+                  <ul className="space-y-1">
+                    {investigations.map((investigation) => (
+                      <li key={investigation.id} className="text-xs">
+                        {investigation.title} (ID: {investigation.id})
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-xs">No projects found</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Debug Data Section */}
           {Object.entries(debugData).map(([key, value]) => (
             <div key={key} className="space-y-2">
               <h3 className="text-sm font-medium text-white/80">{key}</h3>
