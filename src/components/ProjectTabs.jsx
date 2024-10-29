@@ -5,6 +5,7 @@ import MindMapView from './MindMapView';
 import TimeView from './TimeView';
 import MapView from './MapView';
 import SidePanel from './SidePanel';
+import { useDebug } from '@/contexts/DebugContext';
 
 const ProjectTabs = ({ 
   project, 
@@ -19,6 +20,14 @@ const ProjectTabs = ({
   onNodeFocus 
 }) => {
   const selectedNode = nodes.find(node => node.id === focusedNodeId);
+  const { setDebugData } = useDebug();
+
+  const handleViewChange = (view) => {
+    setDebugData(prev => ({
+      ...prev,
+      currentView: view
+    }));
+  };
 
   return (
     <div className="relative flex-grow">
@@ -30,7 +39,7 @@ const ProjectTabs = ({
         onAddNode={onAddNode}
       />
       
-      <Tabs defaultValue="mindmap" className="w-full h-full">
+      <Tabs defaultValue="mindmap" className="w-full h-full" onValueChange={handleViewChange}>
         <div className="flex justify-center">
           <TabsList className="mx-auto bg-white bg-opacity-80 backdrop-blur-md z-10 fixed top-16">
             <TabsTrigger value="mindmap" className="flex items-center">
