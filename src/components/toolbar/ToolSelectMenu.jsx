@@ -8,7 +8,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode }) => {
+const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode, isSpacePressed }) => {
+  const displayTool = isSpacePressed ? 'pan' : activeTool;
+  
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -17,8 +19,13 @@ const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode }) => {
           size="sm"
           className="h-8 rounded-lg text-white hover:bg-white/10 bg-white/[0.0625] flex items-center gap-1"
         >
-          {activeTool === 'select' ? <MousePointer2 className="h-4 w-4" /> : (viewMode === '3d' ? <Orbit className="h-4 w-4" /> : <Move3d className="h-4 w-4" />)}
-          <span>{activeTool === 'select' ? 'Select' : 'Pan'}</span>
+          {displayTool === 'select' ? (
+            <MousePointer2 className="h-4 w-4" />
+          ) : (
+            viewMode === '3d' ? <Orbit className="h-4 w-4" /> : <Move3d className="h-4 w-4" />
+          )}
+          <span>{displayTool === 'select' ? 'Select' : 'Pan'}</span>
+          {isSpacePressed && <span className="text-xs ml-1 opacity-50">(Space)</span>}
           <ChevronDown className="h-3 w-3" />
         </Button>
       </DropdownMenuTrigger>

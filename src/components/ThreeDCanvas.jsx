@@ -1,7 +1,6 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { toast } from 'sonner';
-import { Button } from "@/components/ui/button";
 import { Bug } from "lucide-react";
 import Toolbar from './Toolbar';
 import ThreeScene from './three/ThreeScene';
@@ -48,6 +47,7 @@ const ThreeDCanvas = ({ nodes = [], onAddNode, onNodeUpdate }) => {
   const [activeTool, setActiveTool] = React.useState('pan');
   const [viewMode, setViewMode] = React.useState('2d');
   const [showDebug, setShowDebug] = React.useState(false);
+  const [isSpacePressed, setIsSpacePressed] = useState(false);
   const controlsRef = useRef();
   const { setDebugData } = useDebug();
 
@@ -55,6 +55,30 @@ const ThreeDCanvas = ({ nodes = [], onAddNode, onNodeUpdate }) => {
     zoom,
     handleZoom
   } = useZoomPan(1);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.code === 'Space' && !e.repeat) {
+        e.preventDefault();
+        setIsSpacePressed(true);
+      }
+    };
+
+    const handleKeyUp = (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        setIsSpacePressed(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
   useEffect(() => {
     setDebugData(prev => ({
@@ -107,6 +131,7 @@ const ThreeDCanvas = ({ nodes = [], onAddNode, onNodeUpdate }) => {
           viewMode={viewMode}
           onViewModeChange={setViewMode}
           onAddNode={onAddNode}
+          isSpacePressed={isSpacePressed}
         />
       </div>
 
@@ -123,7 +148,7 @@ const ThreeDCanvas = ({ nodes = [], onAddNode, onNodeUpdate }) => {
         <ThreeScene 
           nodes={nodes}
           viewMode={viewMode}
-          activeTool={activeTool}
+          activeTool={isSpacePressed ? 'pan' : activeTool}
           controlsRef={controlsRef}
           handleNodeUpdate={handleNodeUpdate}
         />

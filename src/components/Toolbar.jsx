@@ -20,7 +20,8 @@ const Toolbar = ({
   nodes, 
   viewMode = '3d',
   onViewModeChange,
-  onAddNode 
+  onAddNode,
+  isSpacePressed 
 }) => {
   const zoomPercentage = Math.round(100 - (zoom / 2));
 
@@ -51,11 +52,11 @@ const Toolbar = ({
           activeTool={activeTool}
           setActiveTool={setActiveTool}
           viewMode={viewMode}
+          isSpacePressed={isSpacePressed}
         />
 
         <Separator orientation="vertical" className="h-6 bg-white/20" />
-
-        {/* Node Type Selector */}
+        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
@@ -101,7 +102,6 @@ const Toolbar = ({
 
         <Separator orientation="vertical" className="h-6 bg-white/20" />
 
-        {/* Zoom Level */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
@@ -123,7 +123,6 @@ const Toolbar = ({
 
         <Separator orientation="vertical" className="h-6 bg-white/20" />
 
-        {/* View Mode */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
