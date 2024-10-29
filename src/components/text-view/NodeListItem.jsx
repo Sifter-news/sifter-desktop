@@ -72,7 +72,7 @@ const NodeListItem = ({
           {...provided.draggableProps}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          className={`group flex items-center justify-between p-2 hover:bg-gray-100 rounded-lg mb-2 transition-all duration-200 ${
+          className={`group flex items-center justify-between py-1 px-2 hover:bg-gray-100 rounded-lg mb-1 transition-all duration-200 ${
             isSelected ? 'bg-blue-50 ring-2 ring-blue-500' : ''
           } ${isFocused ? 'ring-2 ring-blue-600' : ''}`}
           onClick={() => onSelect(node.id)}
@@ -92,18 +92,13 @@ const NodeListItem = ({
                 onFocus(node.id);
               }}
             >
-              <Avatar className="h-6 w-6">
+              <Avatar className="h-5 w-5">
                 <AvatarImage src="/default-image.png" alt={node.title} />
                 <AvatarFallback>{getNodeTypeIcon(node.nodeType)}</AvatarFallback>
               </Avatar>
               <div>
                 <div className="font-medium text-sm">{node.title}</div>
                 <div className="text-xs text-gray-500">{node.nodeType || 'Generic Note'}</div>
-                {node.description && (
-                  <div className="text-sm text-gray-500 h-0 group-hover:h-auto opacity-0 group-hover:opacity-100 overflow-hidden transition-all duration-200">
-                    {node.description}
-                  </div>
-                )}
               </div>
             </div>
           </div>
@@ -111,8 +106,8 @@ const NodeListItem = ({
           <div className="opacity-0 group-hover:opacity-100 transition-opacity">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-                  <MoreVertical className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-6 w-6 p-0">
+                  <MoreVertical className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
