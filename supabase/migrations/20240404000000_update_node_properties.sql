@@ -1,8 +1,0 @@
--- Add any missing columns to the node table
-ALTER TABLE public.node
-ADD COLUMN IF NOT EXISTS parent_id UUID REFERENCES public.node(id),
-ADD COLUMN IF NOT EXISTS position_z DECIMAL(10,2) DEFAULT 0,
-ADD COLUMN IF NOT EXISTS text_size VARCHAR(20) DEFAULT 'medium',
-ADD COLUMN IF NOT EXISTS text_align VARCHAR(20) DEFAULT 'left',
-ADD COLUMN IF NOT EXISTS color VARCHAR(20) DEFAULT 'white',
-ADD COLUMN IF NOT EXISTS order_index INTEGER DEFAULT 0;
