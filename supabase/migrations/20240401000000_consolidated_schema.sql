@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS public.node (
     parent_id UUID REFERENCES public.node(id) ON DELETE SET NULL,
     position_x DECIMAL(10,2) DEFAULT 0,
     position_y DECIMAL(10,2) DEFAULT 0,
-    position_z DECIMAL(10,2) DEFAULT 0,
+    position_z DECIMAL(10,2) DEFAULT 0,  -- Ensure position_z is created
     width DECIMAL(10,2) DEFAULT 200,
     height DECIMAL(10,2) DEFAULT 100,
     visual_style VARCHAR(50) DEFAULT 'default',
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS public.connections (
     target_point TEXT
 );
 
--- Create indexes
+-- Create indexes (after all tables and columns are created)
 CREATE INDEX IF NOT EXISTS idx_reports_investigation_id ON public.reports(investigation_id);
 CREATE INDEX IF NOT EXISTS idx_investigations_owner_id ON public.investigations(owner_id);
 CREATE INDEX IF NOT EXISTS idx_node_investigation_id ON public.node(investigation_id);
