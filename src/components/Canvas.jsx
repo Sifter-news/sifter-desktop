@@ -8,8 +8,7 @@ const Canvas = forwardRef(({
   nodes, 
   setNodes, 
   zoom, 
-  position,
-  setPosition, // Make sure this prop is passed from parent
+  position, 
   activeTool,
   setActiveTool,
   handlePanStart, 
@@ -83,31 +82,26 @@ const Canvas = forwardRef(({
     if (isSpacePressed || activeTool === 'pan') {
       setIsPanning(true);
       setStartPanPosition({ x: e.clientX, y: e.clientY });
-      document.body.style.cursor = 'grabbing';
+      handlePanStart();
       e.preventDefault();
     }
-  }, [isSpacePressed, activeTool]);
+  }, [isSpacePressed, activeTool, handlePanStart]);
 
   const handleMouseMove = useCallback((e) => {
     if (isPanning) {
       const deltaX = e.clientX - startPanPosition.x;
       const deltaY = e.clientY - startPanPosition.y;
-      
-      setPosition(prev => ({
-        x: prev.x + deltaX / zoom,
-        y: prev.y + deltaY / zoom
-      }));
-      
+      handlePanMove({ movementX: deltaX, movementY: deltaY });
       setStartPanPosition({ x: e.clientX, y: e.clientY });
     }
-  }, [isPanning, setPosition, startPanPosition, zoom]);
+  }, [isPanning, handlePanMove, startPanPosition]);
 
   const handleMouseUp = useCallback(() => {
     if (isPanning) {
       setIsPanning(false);
-      document.body.style.cursor = 'default';
+      handlePanEnd();
     }
-  }, [isPanning]);
+  }, [isPanning, handlePanEnd]);
 
   return (
     <>
@@ -120,7 +114,6 @@ const Canvas = forwardRef(({
         onWheel={handleWheel}
         ref={ref}
         tabIndex={0}
-        style={{ cursor: isPanning ? 'grabbing' : (isSpacePressed || activeTool === 'pan' ? 'grab' : 'default') }}
       >
         <div 
           className="absolute inset-0" 
