@@ -1,6 +1,19 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { MousePointer2, Hand, Orbit, CirclePlus, Square, ChevronDown } from 'lucide-react';
+import { 
+  MousePointer2, 
+  Hand, 
+  Orbit, 
+  Square, 
+  ChevronDown,
+  FileText,
+  User,
+  Building2,
+  Package,
+  Brain,
+  MapPin,
+  Calendar
+} from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import {
   DropdownMenu,
@@ -23,9 +36,10 @@ const Toolbar = ({
 }) => {
   const zoomPercentage = Math.round(100 - (zoom / 2));
 
-  const handleAddNodeWithStyle = (visualStyle) => {
+  const handleAddNodeWithStyle = (visualStyle, nodeType = 'generic') => {
     const newNode = { 
       visualStyle,
+      nodeType,
       x: window.innerWidth / 2,
       y: window.innerHeight / 2,
       title: 'New Node',
@@ -45,7 +59,7 @@ const Toolbar = ({
   return (
     <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-sm rounded-xl shadow-lg p-3 border border-white/20">
       <div className="bg-black/90 rounded-xl p-1 flex items-center space-x-1 h-10">
-        {/* Navigation Tools Dropdown - Moved to first position */}
+        {/* Navigation Tools Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
@@ -89,17 +103,33 @@ const Toolbar = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-black text-white" align="top">
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('compact')}>
-                <Square className="h-4 w-4 mr-2" />
-                Compact Node
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'generic')}>
+                <FileText className="h-4 w-4 mr-2" />
+                Generic Note
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('default')}>
-                <Square className="h-4 w-4 mr-2" />
-                Default Node
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_person')}>
+                <User className="h-4 w-4 mr-2" />
+                Person
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('postit')}>
-                <Square className="h-4 w-4 mr-2" />
-                Post-it Node
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_organization')}>
+                <Building2 className="h-4 w-4 mr-2" />
+                Organization
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_object')}>
+                <Package className="h-4 w-4 mr-2" />
+                Object
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_concept')}>
+                <Brain className="h-4 w-4 mr-2" />
+                Concept
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_location')}>
+                <MapPin className="h-4 w-4 mr-2" />
+                Location
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_event')}>
+                <Calendar className="h-4 w-4 mr-2" />
+                Event
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
@@ -129,7 +159,7 @@ const Toolbar = ({
 
         <Separator orientation="vertical" className="h-6 bg-white/20" />
 
-        {/* Perspective Toggle Dropdown - Moved to last position */}
+        {/* Perspective Toggle Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
