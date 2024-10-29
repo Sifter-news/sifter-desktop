@@ -120,8 +120,8 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
   };
 
   return (
-    <div className="relative w-full h-screen bg-black">
-      <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-start p-4">
+    <div className="fixed inset-0 bg-black">
+      <nav className="fixed top-0 left-0 right-0 z-10">
         <Toolbar 
           activeTool={activeTool}
           setActiveTool={setActiveTool}
@@ -131,7 +131,7 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
           onViewModeChange={setViewMode}
           onAddNode={onAddNode}
         />
-      </div>
+      </nav>
 
       <Canvas
         camera={{ 
