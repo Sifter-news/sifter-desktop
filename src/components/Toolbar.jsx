@@ -19,7 +19,7 @@ const Toolbar = ({
   zoom, 
   nodes = [], 
   viewMode = '3d',
-  onViewModeChange,
+  setViewMode,
   onAddNode,
   isSpacePressed 
 }) => {
@@ -66,6 +66,7 @@ const Toolbar = ({
             activeTool={activeTool}
             setActiveTool={setActiveTool}
             viewMode={viewMode}
+            onViewModeChange={setViewMode}
             isSpacePressed={isSpacePressed}
           />
 
