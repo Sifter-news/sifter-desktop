@@ -125,9 +125,28 @@ export const findAvailablePosition = (nodes) => {
   }
 };
 
-export const snapToGrid = (x, y, gridSize = 40) => {
+export const snapToGrid = (x, y, gridSize = 8) => {
   return {
     x: Math.round(x / gridSize) * gridSize,
     y: Math.round(y / gridSize) * gridSize
+  };
+};
+
+export const snapToSingleAxis = (startPos, currentPos) => {
+  // Calculate deltas
+  const deltaX = Math.abs(currentPos.x - startPos.x);
+  const deltaY = Math.abs(currentPos.y - startPos.y);
+  
+  // If moving more horizontally than vertically, lock to X axis
+  if (deltaX > deltaY) {
+    return {
+      x: snapToGrid(currentPos.x, currentPos.y).x,
+      y: startPos.y
+    };
+  }
+  // Otherwise lock to Y axis
+  return {
+    x: startPos.x,
+    y: snapToGrid(currentPos.x, currentPos.y).y
   };
 };
