@@ -1,17 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDebug } from '@/contexts/DebugContext';
-import { X } from 'lucide-react';
+import { X, Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/components/AuthProvider';
 import { useInvestigations } from '@/integrations/supabase/hooks/useInvestigations';
 import { useLocation } from 'react-router-dom';
+import { Rnd } from 'react-rnd';
 
 const DebugPanel = () => {
   const { isDebugOpen, setIsDebugOpen, debugData, showNodeDebug, setShowNodeDebug } = useDebug();
   const { user } = useAuth();
   const location = useLocation();
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { data: investigations } = useInvestigations({ 
     filter: user ? `owner_id.eq.${user?.id}` : undefined 
   });
@@ -29,8 +31,17 @@ const DebugPanel = () => {
   const currentProjectId = location.pathname.split('/project/')[1];
   const currentProject = investigations?.find(inv => inv.id === currentProjectId);
 
-  return (
-    <div className="fixed top-4 right-4 w-96 bg-black/90 text-white rounded-lg shadow-xl z-[9999] backdrop-blur-sm">
+  const panelContent = isCollapsed ? (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => setIsCollapsed(false)}
+      className="text-white hover:text-white/80 p-2"
+    >
+      <Maximize2 className="h-4 w-4" />
+    </Button>
+  ) : (
+    <>
       <div className="flex items-center justify-between p-4 border-b border-white/10">
         <h2 className="text-lg font-semibold">Debug Panel</h2>
         <div className="flex items-center gap-2">
@@ -42,6 +53,14 @@ const DebugPanel = () => {
             />
             <span className="text-sm">Show Node Debug</span>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsCollapsed(true)}
+            className="text-white hover:text-white/80"
+          >
+            <Minimize2 className="h-4 w-4" />
+          </Button>
           <Button
             variant="ghost"
             size="icon"
@@ -137,7 +156,28 @@ const DebugPanel = () => {
           )}
         </div>
       </ScrollArea>
-    </div>
+    </>
+  );
+
+  return (
+    <Rnd
+      default={{
+        x: window.innerWidth - 400,
+        y: 16,
+        width: isCollapsed ? 40 : 384,
+        height: isCollapsed ? 40 : 'auto',
+      }}
+      minWidth={isCollapsed ? 40 : 384}
+      minHeight={isCollapsed ? 40 : 200}
+      bounds="window"
+      enableResizing={!isCollapsed}
+    >
+      <div className={`bg-black/90 text-white rounded-lg shadow-xl z-[9999] backdrop-blur-sm ${
+        isCollapsed ? 'w-10 h-10' : 'w-full h-full'
+      }`}>
+        {panelContent}
+      </div>
+    </Rnd>
   );
 };
 
