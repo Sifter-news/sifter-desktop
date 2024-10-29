@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { MousePointer2, Move3d, Orbit, View, Axis3D } from 'lucide-react';
+import { MousePointer2, Move3d, Orbit, LayoutGrid, Axis3D } from 'lucide-react';
 
 const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode, onViewModeChange }) => {
   const handleToolToggle = () => {
@@ -45,8 +45,8 @@ const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode, onViewModeChange 
           </>
         ) : (
           <>
-            <View className="h-4 w-4" />
-            <span className="bg-white/10 px-2 py-0.5 rounded text-sm">2D</span>
+            <LayoutGrid className="h-4 w-4" />
+            <span className="text-sm">2D</span>
           </>
         )}
       </Button>
