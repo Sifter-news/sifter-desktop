@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Plus, ChevronDown, MessageCircle, File, Folder } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { findNonCollidingPosition } from '@/utils/collisionUtils';
 import ToolSelectMenu from './toolbar/ToolSelectMenu';
 import AIChatPanel from './ai/AIChatPanel';
 
@@ -17,35 +16,12 @@ const Toolbar = ({
   setActiveTool, 
   handleZoom, 
   zoom, 
-  nodes = [], 
-  viewMode = '3d',
+  viewMode,
   setViewMode,
-  onAddNode,
-  isSpacePressed 
+  onAddNode 
 }) => {
-  const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
+  const [isAIPanelOpen, setIsAIPanelOpen] = React.useState(false);
   const zoomPercentage = Math.round(100 - (zoom / 2));
-
-  const handleAddNodeWithStyle = (visualStyle, nodeType = 'generic') => {
-    const newNode = { 
-      visualStyle,
-      nodeType,
-      x: window.innerWidth / 2,
-      y: window.innerHeight / 2,
-      title: 'New Node',
-      description: 'Description',
-      width: visualStyle === 'postit' ? 256 : 40,
-      height: visualStyle === 'postit' ? 256 : visualStyle === 'compact' ? 40 : 128
-    };
-
-    const position = nodes ? findNonCollidingPosition(newNode, nodes) : { x: newNode.x, y: newNode.y };
-    
-    onAddNode?.({ 
-      ...newNode,
-      x: position.x,
-      y: position.y
-    });
-  };
 
   return (
     <>
@@ -67,7 +43,6 @@ const Toolbar = ({
             setActiveTool={setActiveTool}
             viewMode={viewMode}
             onViewModeChange={setViewMode}
-            isSpacePressed={isSpacePressed}
           />
 
           <Separator orientation="vertical" className="h-6 bg-white/20" />
@@ -104,15 +79,15 @@ const Toolbar = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-black text-white" align="top">
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('postit')}>
+              <DropdownMenuItem onClick={() => onAddNode('postit')}>
                 <File className="h-4 w-4 mr-2" />
                 Post-it Note
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('default')}>
+              <DropdownMenuItem onClick={() => onAddNode('default')}>
                 <File className="h-4 w-4 mr-2" />
                 Default Note
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAddNodeWithStyle('compact')}>
+              <DropdownMenuItem onClick={() => onAddNode('compact')}>
                 <Folder className="h-4 w-4 mr-2" />
                 Compact Note
               </DropdownMenuItem>
