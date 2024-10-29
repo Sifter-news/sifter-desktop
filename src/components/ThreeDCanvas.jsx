@@ -44,18 +44,12 @@ const CameraDebug = () => {
   return null;
 };
 
-const ThreeDCanvas = ({ onAddNode }) => {
+const ThreeDCanvas = ({ nodes = [], onAddNode, onNodeUpdate }) => {
   const [activeTool, setActiveTool] = React.useState('pan');
   const [viewMode, setViewMode] = React.useState('2d');
   const [showDebug, setShowDebug] = React.useState(false);
   const controlsRef = useRef();
   const { setDebugData } = useDebug();
-  
-  const {
-    nodes,
-    setNodes,
-    updateNodePosition
-  } = useNodes([]);
 
   const {
     zoom,
@@ -88,11 +82,13 @@ const ThreeDCanvas = ({ onAddNode }) => {
 
   const handleNodeUpdate = async (nodeId, newPosition) => {
     try {
-      await updateNodePosition(nodeId, {
-        position_x: newPosition[0],
-        position_y: newPosition[1],
-        position_z: 0
-      });
+      if (onNodeUpdate) {
+        await onNodeUpdate(nodeId, {
+          position_x: newPosition[0],
+          position_y: newPosition[1],
+          position_z: 0
+        });
+      }
     } catch (error) {
       console.error('Error updating node position:', error);
       toast.error('Failed to update node position');
