@@ -65,7 +65,7 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
   };
 
   return (
-    <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
+    <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-[9999]">
       <div className="mx-auto px-12 py-2 flex items-center">
         {/* Left section with fixed width */}
         <div className="w-[200px] flex items-center space-x-4">
