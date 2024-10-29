@@ -39,6 +39,19 @@ const DebugStateSection = ({ debugData }) => {
     return 'None';
   };
 
+  const getNodeDataType = (nodeType) => {
+    const dataTypes = {
+      'generic': 'generic',
+      'node_person': 'person',
+      'node_organization': 'organization',
+      'node_object': 'object',
+      'node_concept': 'concept',
+      'node_location': 'location',
+      'node_event': 'event'
+    };
+    return dataTypes[nodeType] || 'generic';
+  };
+
   return (
     <div className="space-y-2">
       <h3 className="text-sm font-medium text-white/80">Current State</h3>
@@ -75,12 +88,11 @@ const DebugStateSection = ({ debugData }) => {
             <div className="pl-2 space-y-2">
               {debugData.nodes.list.map((node, index) => (
                 <div key={node.id} className="text-xs space-y-1 border-l border-white/10 pl-2">
-                  <p className="font-medium">Node {index + 1}: {node.type}</p>
+                  <p className="font-medium">Node {index + 1}: {node.title || 'Untitled'}</p>
                   <div className="pl-2 space-y-0.5">
                     <p className="font-mono">ID: {node.id}</p>
-                    <p>Title: {node.title || 'Untitled'}</p>
                     <p>Description: {node.description || 'No description'}</p>
-                    <p>Type: {node.nodeType || node.type || 'generic'}</p>
+                    <p>Data Type: {getNodeDataType(node.nodeType || node.type)}</p>
                     <p>Style: {node.visualStyle || 'default'}</p>
                     <div className="font-mono">
                       Position: (
