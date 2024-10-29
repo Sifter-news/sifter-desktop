@@ -16,12 +16,12 @@ const ToolbarButton = ({
   isActive, 
   onDragStart, 
   draggable,
-  activeClassName = 'bg-blue-600 text-white',
+  activeClassName = 'bg-black/10 text-black',
   text
 }) => {
   // Clone the icon and modify its color when active
   const iconElement = React.cloneElement(icon, {
-    className: `h-4 w-4 ${isActive ? 'text-white' : ''}`
+    className: `h-4 w-4 ${isActive ? 'text-black' : 'text-gray-600'}`
   });
 
   return (
@@ -46,7 +46,7 @@ const ToolbarButton = ({
               className="flex items-center gap-2"
               initial={false}
               animate={{
-                color: isActive ? 'white' : 'black',
+                scale: isActive ? 0.95 : 1,
               }}
               transition={{ duration: 0.2 }}
             >
