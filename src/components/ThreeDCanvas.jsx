@@ -9,13 +9,26 @@ import ThreeDNode from './ThreeDNode';
 import ConnectionLine from './ConnectionLine';
 
 const ThreeDCanvas = () => {
-  const [activeTool, setActiveTool] = useState('select');
+  // Changed default tool to 'pan' instead of 'select'
+  const [activeTool, setActiveTool] = useState('pan');
   const [zoom, setZoom] = useState(1);
   const [nodes, setNodes] = useState([]);
   const [connections, setConnections] = useState([]);
   const [activeConnection, setActiveConnection] = useState(null);
-  const [viewMode, setViewMode] = useState('2d'); // Start in 2D mode
+  const [viewMode, setViewMode] = useState('2d');
   const controlsRef = useRef();
+
+  // Add keyboard event handler
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.key.toLowerCase() === 'v') {
+        setActiveTool('select');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
 
   useEffect(() => {
     const fetchNodes = async () => {
