@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
+import { supabase } from '@/integrations/supabase/supabase';
+import { toast } from 'sonner';
 import Grid from './Grid';
 import Toolbar from './Toolbar';
 import ThreeDNode from './ThreeDNode';
@@ -16,14 +18,45 @@ const ThreeDCanvas = () => {
   const controlsRef = useRef();
 
   useEffect(() => {
+    const fetchNodes = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('node')
+          .select('*');
+          
+        if (error) throw error;
+        
+        if (data) {
+          const mappedNodes = data.map(node => ({
+            id: node.id,
+            title: node.title || '',
+            description: node.description || '',
+            position: [
+              node.position_x || 0,
+              0, // Y position is locked to 0 in 2D mode
+              node.position_y || 0 // Using position_y as Z coordinate
+            ],
+            type: node.type || 'generic',
+            visualStyle: node.visual_style || 'default'
+          }));
+          setNodes(mappedNodes);
+        }
+      } catch (error) {
+        console.error('Error loading nodes:', error);
+        toast.error('Failed to load nodes');
+      }
+    };
+
+    fetchNodes();
+  }, []);
+
+  useEffect(() => {
     if (controlsRef.current) {
       if (viewMode === '2d') {
-        // Lock to top-down view
         controlsRef.current.setAzimuthalAngle(0);
         controlsRef.current.setPolarAngle(0);
         controlsRef.current.enableRotate = false;
       } else {
-        // Set to isometric view
         controlsRef.current.setAzimuthalAngle(Math.PI / 4);
         controlsRef.current.setPolarAngle(Math.PI / 4);
         controlsRef.current.enableRotate = true;
@@ -35,13 +68,25 @@ const ThreeDCanvas = () => {
     setZoom(prev => Math.max(0.1, Math.min(2, prev + delta)));
   };
 
-  const handleAddNode = () => {
-    const newNode = {
-      id: Date.now(),
-      position: [0, 10, 0],
-      title: 'New Node'
-    };
-    setNodes(prev => [...prev, newNode]);
+  const handleNodeUpdate = async (nodeId, newPosition) => {
+    try {
+      const { error } = await supabase
+        .from('node')
+        .update({
+          position_x: newPosition[0],
+          position_y: newPosition[2] // Z coordinate maps to Y in database
+        })
+        .eq('id', nodeId);
+
+      if (error) throw error;
+
+      setNodes(prev => prev.map(node =>
+        node.id === nodeId ? { ...node, position: newPosition } : node
+      ));
+    } catch (error) {
+      console.error('Error updating node position:', error);
+      toast.error('Failed to update node position');
+    }
   };
 
   const handleStartConnection = (sourceId, sourcePosition) => {
@@ -92,14 +137,13 @@ const ThreeDCanvas = () => {
           handleZoom={handleZoom}
           zoom={zoom}
           nodes={nodes}
-          onAddNode={handleAddNode}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
         />
       </div>
       <Canvas
         camera={{ 
-          position: [0, 100, 0], // Start with top-down view
+          position: [0, 100, 0],
           fov: 45,
           near: 0.1,
           far: 1000
@@ -116,23 +160,11 @@ const ThreeDCanvas = () => {
             node={node}
             activeTool={activeTool}
             onUpdate={(newPosition) => {
-              // Lock Y position to 0 in 2D mode
               const lockedPosition = viewMode === '2d' 
                 ? [newPosition[0], 0, newPosition[2]]
                 : newPosition;
               
-              setNodes(prev => prev.map(n => 
-                n.id === node.id ? { ...n, position: lockedPosition } : n
-              ));
-              setConnections(prev => prev.map(conn => {
-                if (conn.sourceId === node.id) {
-                  return { ...conn, sourcePosition: lockedPosition };
-                }
-                if (conn.targetId === node.id) {
-                  return { ...conn, targetPosition: lockedPosition };
-                }
-                return conn;
-              }));
+              handleNodeUpdate(node.id, lockedPosition);
             }}
             onStartConnection={handleStartConnection}
             onEndConnection={handleEndConnection}
