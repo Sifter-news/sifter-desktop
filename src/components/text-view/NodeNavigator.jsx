@@ -68,6 +68,12 @@ const NodeNavigator = ({
     return matchesType && matchesSearch;
   });
 
+  const handleNodeClick = (nodeId) => {
+    setCurrentIndex(nodes.findIndex(n => n.id === nodeId));
+    setSelectedNodes([nodeId]);
+    onNodeFocus(nodeId);
+  };
+
   return (
     <div className="w-full h-full flex flex-col p-4">
       <div className="flex items-center gap-2 mb-4">
@@ -113,16 +119,15 @@ const NodeNavigator = ({
                     ref={el => nodeRefs.current[node.id] = el}
                     onMouseEnter={() => handleNodeHover(node.id)}
                     onMouseLeave={() => handleNodeHover(null)}
+                    className={`transition-all duration-200 ${
+                      focusedNodeId === node.id ? 'ring-2 ring-blue-500 rounded-lg' : ''
+                    }`}
                   >
                     <NodeListItem
                       node={node}
                       index={index}
                       isSelected={selectedNodes.includes(node.id)}
-                      onSelect={(nodeId) => {
-                        setCurrentIndex(index);
-                        setSelectedNodes([nodeId]);
-                        onNodeFocus(nodeId);
-                      }}
+                      onSelect={handleNodeClick}
                       onFocus={onNodeFocus}
                       onUpdateNode={onUpdateNode}
                       onAIConversation={onAIConversation}

@@ -140,6 +140,7 @@ const Canvas = forwardRef(({
               onNodePositionUpdate={onNodePositionUpdate}
               isDraggable={activeTool !== 'pan'}
               allNodes={nodes}
+              className={focusedNodeId === node.id ? 'ring-2 ring-blue-500 ring-offset-2 transition-all duration-200' : ''}
             />
           ))}
         </div>
