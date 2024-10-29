@@ -25,7 +25,6 @@ const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode, isSpacePressed })
             viewMode === '3d' ? <Orbit className="h-4 w-4" /> : <Move3d className="h-4 w-4" />
           )}
           <span>{displayTool === 'select' ? 'Select' : 'Pan'}</span>
-          {isSpacePressed && <span className="text-xs ml-1 opacity-50">(Space)</span>}
           <ChevronDown className="h-3 w-3" />
         </Button>
       </DropdownMenuTrigger>

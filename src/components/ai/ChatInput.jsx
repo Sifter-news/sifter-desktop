@@ -5,7 +5,6 @@ import { Paperclip } from 'lucide-react';
 
 const ChatInput = ({ input, setInput, handleSubmit, handleFileSelect, fileInputRef, selectedFile }) => {
   const handleKeyDown = (e) => {
-    // Only prevent default for Enter key
     if (e.key === 'Enter') {
       e.preventDefault();
       handleSubmit(e);
