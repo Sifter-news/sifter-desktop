@@ -53,9 +53,11 @@ const Toolbar = ({
         <Button 
           variant="ghost" 
           size="icon"
-          className="h-8 w-8 rounded-lg bg-purple-600 hover:bg-purple-700 text-white"
+          className="h-8 px-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-0.5"
           onClick={() => setIsAIPanelOpen(true)}
         >
+          <Star className="h-4 w-4" />
+          <Star className="h-4 w-4" />
           <Star className="h-4 w-4" />
         </Button>
 
@@ -94,12 +96,14 @@ const Toolbar = ({
         <AddNodeButton handleAddNodeWithStyle={handleAddNodeWithStyle} />
       </div>
 
-      <AISidePanel 
-        isOpen={isAIPanelOpen}
-        onClose={() => setIsAIPanelOpen(false)}
-        title="AI Assistant"
-        placeholder="Ask me anything about your investigation..."
-      />
+      <div className="fixed top-16 right-4 z-[9999]">
+        <AISidePanel 
+          isOpen={isAIPanelOpen}
+          onClose={() => setIsAIPanelOpen(false)}
+          title="AI Assistant"
+          placeholder="Ask me anything about your investigation..."
+        />
+      </div>
     </div>
   );
 };
