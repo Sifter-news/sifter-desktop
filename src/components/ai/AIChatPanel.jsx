@@ -73,7 +73,7 @@ const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed right-4 bottom-4 w-1/3 h-2/3 bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col">
+    <div className="fixed inset-8 right-8 bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col">
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-2">
           <Bot className="h-5 w-5 text-blue-500" />
