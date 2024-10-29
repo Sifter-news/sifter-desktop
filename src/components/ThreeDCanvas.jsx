@@ -9,7 +9,7 @@ const ThreeDCanvas = () => {
     <div className="w-full h-[calc(100vh-64px)] bg-black">
       <Canvas
         camera={{ 
-          position: [0, 100, 0], // Position camera directly above
+          position: [0, 100, 0],
           fov: 45,
           near: 0.1,
           far: 1000
@@ -21,8 +21,6 @@ const ThreeDCanvas = () => {
         <Grid size={100} divisions={24} />
         <TestNodes />
         <OrbitControls 
-          maxPolarAngle={Math.PI / 2 - Math.PI / 12} // Limit downward rotation to 75 degrees
-          minPolarAngle={Math.PI / 2 - Math.PI / 12} // Limit upward rotation to 75 degrees
           enableZoom={true}
           enablePan={true}
           maxDistance={200}
