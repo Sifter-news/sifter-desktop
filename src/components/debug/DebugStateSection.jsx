@@ -30,7 +30,8 @@ const DebugStateSection = ({ debugData }) => {
     <div className="space-y-2">
       <h3 className="text-sm font-medium text-white/80">Current State</h3>
       <div className="bg-black/50 p-2 rounded space-y-2">
-        <p className="text-xs">Project View: {getCurrentView()}</p>
+        <p className="text-xs">Page: Project View</p>
+        <p className="text-xs">Canvas: {getCurrentView()}</p>
         <p className="text-xs">Active Tool: {debugData?.activeTool || 'select'}</p>
         <p className="text-xs text-gray-400">{getToolDescription(debugData?.activeTool)}</p>
       </div>
