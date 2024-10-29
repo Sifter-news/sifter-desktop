@@ -1,5 +1,5 @@
 import React from 'react';
-import { Square, ChevronDown } from 'lucide-react';
+import { Square, ChevronDown, FileText, User, Building2, Package, Brain, MapPin, Calendar } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import {
