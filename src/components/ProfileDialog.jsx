@@ -18,10 +18,10 @@ const ProfileDialog = ({ user }) => {
 
   useEffect(() => {
     if (profile) {
-      setUsername(profile.username || '');
+      setUsername(profile.username || user?.email?.split('@')[0] || '');
       setName(profile.full_name || '');
     }
-  }, [profile]);
+  }, [profile, user]);
 
   const handleSignOut = async () => {
     try {
