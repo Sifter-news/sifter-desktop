@@ -21,6 +21,16 @@ const DebugPanel = () => {
     filter: user ? `owner_id.eq.${user?.id}` : undefined 
   });
 
+  const getCurrentView = () => {
+    const pathname = location.pathname;
+    if (pathname === '/') return 'Home';
+    if (pathname.startsWith('/project/')) return 'Project View';
+    if (pathname === '/login') return 'Login';
+    if (pathname === '/new-project') return 'New Project';
+    if (pathname === '/subscription-plans') return 'Subscription Plans';
+    return pathname.split('/').pop() || 'Unknown';
+  };
+
   if (!isDebugOpen) return null;
 
   const panelContent = isCollapsed ? (
@@ -77,52 +87,12 @@ const DebugPanel = () => {
             <h3 className="text-sm font-medium text-white/80">Current View</h3>
             <div className="bg-black/50 p-2 rounded">
               <p className="text-xs">Page: {getCurrentView()}</p>
-              {currentProject && (
-                <div className="mt-2 space-y-1 border-l-2 border-white/10 pl-2">
-                  <p className="text-xs font-medium">Project Details:</p>
-                  <p className="text-xs">Title: {currentProject.title}</p>
-                  <p className="text-xs">ID: {currentProject.id}</p>
-                  <p className="text-xs">Description: {currentProject.description}</p>
-                  <p className="text-xs">Investigation Type: {currentProject.investigation_type}</p>
-                  <p className="text-xs">Investigation Focus: {currentProject.investigation_focus}</p>
-                  <p className="text-xs">Created: {new Date(currentProject.created_at).toLocaleString()}</p>
-                  <p className="text-xs">Updated: {new Date(currentProject.updated_at).toLocaleString()}</p>
-                  <p className="text-xs">Owner ID: {currentProject.owner_id}</p>
-                  <p className="text-xs">Visibility: {currentProject.visibility}</p>
-                  <p className="text-xs">View Type: {currentProject.view_type}</p>
-                </div>
-              )}
             </div>
           </div>
 
           <DebugStateSection debugData={debugData} />
           <DebugPositionSection debugData={debugData} />
           <DebugViewOptions showGuides={showGuides} setShowGuides={setShowGuides} />
-
-          {currentProject && (
-            <>
-              <div className="mt-2">
-                <p className="text-xs font-medium">Reports ({currentProject.reports?.length || 0}):</p>
-                <ul className="pl-2">
-                  {currentProject.reports?.map(report => (
-                    <li key={report.id} className="text-xs text-gray-400">
-                      • {report.title}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="mt-2">
-                <p className="text-xs font-medium">Nodes ({debugData.nodes?.count || 0}):</p>
-                <ul className="pl-2">
-                  {debugData.nodes?.list?.map(node => (
-                    <li key={node.id} className="text-xs text-gray-400">
-                      • {node.type}: {node.id}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </>
-          )}
 
           {user && (
             <div className="space-y-2">
