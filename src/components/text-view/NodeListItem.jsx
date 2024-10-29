@@ -72,7 +72,7 @@ const NodeListItem = ({
           {...provided.draggableProps}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          className={`group flex items-center justify-between p-1 hover:bg-gray-100 rounded-lg mb-0.5 transition-all duration-200 ${
+          className={`group flex items-center justify-between p-2 hover:bg-gray-100 rounded-lg mb-2 transition-all duration-200 ${
             isSelected ? 'bg-blue-50 ring-2 ring-blue-500' : ''
           } ${isFocused ? 'ring-2 ring-blue-600' : ''}`}
           onClick={() => onSelect(node.id)}
