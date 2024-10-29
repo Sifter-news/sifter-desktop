@@ -4,17 +4,26 @@ import { supabase } from '../supabase';
 export const useInvestigation = (id) => useQuery({
   queryKey: ['investigations', id],
   queryFn: async () => {
-    const { data, error } = await supabase
+    const { data: investigation, error: investigationError } = await supabase
       .from('investigations')
-      .select(`
-        *,
-        reports (*)
-      `)
+      .select('*')
       .eq('id', id)
       .single();
       
-    if (error) throw error;
-    return data;
+    if (investigationError) throw investigationError;
+
+    // Fetch reports separately
+    const { data: reports, error: reportsError } = await supabase
+      .from('reports')
+      .select('*')
+      .eq('investigation_id', id);
+      
+    if (reportsError) throw reportsError;
+
+    return {
+      ...investigation,
+      reports: reports || []
+    };
   },
   enabled: !!id,
 });
