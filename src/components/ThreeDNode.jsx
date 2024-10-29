@@ -9,39 +9,28 @@ const ThreeDNode = ({
   node, 
   activeTool, 
   onUpdate, 
-  onStartConnection,
+  onStartConnection, 
   onEndConnection,
   isHighlighted 
 }) => {
   const meshRef = useRef();
   const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [hoveredConnectionPoint, setHoveredConnectionPoint] = useState(null);
-  const [showTooltip, setShowTooltip] = useState(false);
   const { camera, gl } = useThree();
-
-  const nodePosition = [
-    node?.position?.[0] || 0,
-    node?.position?.[1] || 0,
-    node?.position?.[2] || 0
-  ];
-
-  const handleConnectionStart = (point) => {
-    const connectionPosition = [...nodePosition];
-    if (point === 'top') {
-      connectionPosition[1] += 2.5;
-    } else if (point === 'bottom') {
-      connectionPosition[1] -= 2.5;
-    }
-    onStartConnection?.(node.id, connectionPosition, point);
-  };
-
-  const handleConnectionEnd = () => {
-    onEndConnection?.(node.id, hoveredConnectionPoint);
-  };
 
   const handlePointerDown = (e) => {
     if (activeTool !== 'select') return;
+
+    if (e.button === 2) {
+      e.stopPropagation();
+      setIsConnecting(true);
+      const connectionPoint = hoveredConnectionPoint || 'top';
+      onStartConnection(node.id, node.position, connectionPoint);
+      return;
+    }
+
     e.stopPropagation();
     setIsDragging(true);
     gl.domElement.style.cursor = 'grabbing';
@@ -49,22 +38,27 @@ const ThreeDNode = ({
 
   const handlePointerUp = (e) => {
     if (activeTool !== 'select') return;
+
+    if (isConnecting) {
+      setIsConnecting(false);
+      onEndConnection(node.id, hoveredConnectionPoint || 'bottom');
+      return;
+    }
     setIsDragging(false);
-    gl.domElement.style.cursor = 'grab';
-    handleConnectionEnd();
+    gl.domElement.style.cursor = activeTool === 'select' ? 'default' : 'grab';
   };
 
-  const handlePointerEnter = () => {
-    setIsHovered(true);
-    gl.domElement.style.cursor = activeTool === 'select' ? 'pointer' : 'default';
+  const handleConnectionPointHover = (point) => {
+    setHoveredConnectionPoint(point);
+    gl.domElement.style.cursor = 'crosshair';
   };
 
-  const handlePointerLeave = () => {
-    setIsHovered(false);
+  const handleConnectionPointLeave = () => {
     setHoveredConnectionPoint(null);
     gl.domElement.style.cursor = 'default';
   };
 
+  // Keep node facing camera
   React.useEffect(() => {
     if (meshRef.current) {
       meshRef.current.quaternion.copy(camera.quaternion);
@@ -72,63 +66,59 @@ const ThreeDNode = ({
   });
 
   return (
-    <group position={nodePosition}>
-      <mesh
-        ref={meshRef}
-        onPointerDown={handlePointerDown}
-        onPointerUp={handlePointerUp}
-        onPointerEnter={handlePointerEnter}
-        onPointerLeave={handlePointerLeave}
-      >
-        <boxGeometry args={[5, 5, 0.2]} />
-        <meshStandardMaterial 
-          color="#4A90E2"
-          transparent
-          opacity={isHovered ? 0.8 : 1}
-          wireframe={isHovered && !isDragging}
-          emissive={isHighlighted ? "#ffffff" : "#000000"}
-          emissiveIntensity={isHighlighted ? 0.5 : 0}
+    <mesh
+      ref={meshRef}
+      position={node.position}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerEnter={() => setIsHovered(true)}
+      onPointerLeave={() => setIsHovered(false)}
+    >
+      <boxGeometry args={[5, 5, 0.2]} />
+      <meshStandardMaterial 
+        color="#4A90E2"
+        transparent
+        opacity={isHovered ? 0.8 : 1}
+        wireframe={isHovered && !isDragging}
+        emissive={isHighlighted ? "#ffffff" : "#000000"}
+        emissiveIntensity={isHighlighted ? 0.5 : 0}
+      />
+      
+      <Html position={[0, 2.5, 0.1]}>
+        <ConnectionDot 
+          position="top"
+          isHovered={hoveredConnectionPoint === 'top'}
+          onHover={() => handleConnectionPointHover('top')}
+          onLeaveHover={handleConnectionPointLeave}
+          onStartConnection={(point) => onStartConnection(node.id, node.position, point)}
         />
-        
-        {/* Connection Points */}
-        <group position={[0, 2.5, 0.1]}>
-          <mesh
-            onPointerEnter={() => setHoveredConnectionPoint('top')}
-            onPointerLeave={() => setHoveredConnectionPoint(null)}
-            onPointerDown={() => handleConnectionStart('top')}
-          >
-            <sphereGeometry args={[0.2, 16, 16]} />
-            <meshBasicMaterial color={hoveredConnectionPoint === 'top' ? '#00ff00' : '#ffffff'} />
-          </mesh>
-        </group>
-        
-        <group position={[0, -2.5, 0.1]}>
-          <mesh
-            onPointerEnter={() => setHoveredConnectionPoint('bottom')}
-            onPointerLeave={() => setHoveredConnectionPoint(null)}
-            onPointerDown={() => handleConnectionStart('bottom')}
-          >
-            <sphereGeometry args={[0.2, 16, 16]} />
-            <meshBasicMaterial color={hoveredConnectionPoint === 'bottom' ? '#00ff00' : '#ffffff'} />
-          </mesh>
-        </group>
+      </Html>
 
-        <Html
-          position={[0, 0, 0.1]}
-          center
-          style={{
-            backgroundColor: 'white',
-            padding: '8px',
-            borderRadius: '4px',
-            whiteSpace: 'nowrap',
-            pointerEvents: 'none',
-            userSelect: 'none'
-          }}
-        >
-          {node?.title || 'Untitled Node'}
-        </Html>
-      </mesh>
-    </group>
+      <Html position={[0, -2.5, 0.1]}>
+        <ConnectionDot 
+          position="bottom"
+          isHovered={hoveredConnectionPoint === 'bottom'}
+          onHover={() => handleConnectionPointHover('bottom')}
+          onLeaveHover={handleConnectionPointLeave}
+          onStartConnection={(point) => onStartConnection(node.id, node.position, point)}
+        />
+      </Html>
+      
+      <Html
+        position={[0, 0, 0.1]}
+        center
+        style={{
+          backgroundColor: 'white',
+          padding: '8px',
+          borderRadius: '4px',
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none',
+          userSelect: 'none'
+        }}
+      >
+        {node?.title || 'Untitled Node'}
+      </Html>
+    </mesh>
   );
 };
 

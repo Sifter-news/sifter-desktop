@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
-import { Button } from "@/components/ui/button";
-import { Bug } from "lucide-react";
 import Toolbar from './Toolbar';
 import ThreeScene from './three/ThreeScene';
 
@@ -14,53 +12,14 @@ const ThreeDCanvas = () => {
   const [connections, setConnections] = useState([]);
   const [activeConnection, setActiveConnection] = useState(null);
   const [viewMode, setViewMode] = useState('2d');
-  const [showDebug, setShowDebug] = useState(false);
   const controlsRef = useRef();
 
-  useEffect(() => {
-    const fetchNodes = async () => {
-      try {
-        const { data: nodesData, error: nodesError } = await supabase
-          .from('node')
-          .select('*');
-          
-        if (nodesError) throw nodesError;
-        
-        const { data: connectionsData, error: connectionsError } = await supabase
-          .from('connections')
-          .select('*');
-
-        if (connectionsError) throw connectionsError;
-        
-        setNodes(nodesData.map(node => ({
-          id: node.id,
-          title: node.title || '',
-          description: node.description || '',
-          position: [
-            node.position_x || 0,
-            node.position_y || 0,
-            0
-          ],
-          type: node.type || 'generic',
-          visualStyle: node.visual_style || 'default'
-        })));
-
-        setConnections(connectionsData || []);
-      } catch (error) {
-        console.error('Error loading data:', error);
-        toast.error('Failed to load data');
-      }
-    };
-
-    fetchNodes();
-  }, []);
-
-  const handleStartConnection = (sourceId, position, connectionPoint) => {
+  const handleStartConnection = (sourceId, sourcePosition, connectionPoint) => {
     setActiveConnection({
       sourceId,
-      sourcePosition: position,
+      sourcePosition,
       sourcePoint: connectionPoint,
-      targetPosition: position
+      targetPosition: sourcePosition // Initially same as source
     });
   };
 
@@ -71,22 +30,27 @@ const ThreeDCanvas = () => {
     }
 
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('connections')
-        .insert({
+        .insert([{
           source_id: activeConnection.sourceId,
           target_id: targetId,
           source_point: activeConnection.sourcePoint,
           target_point: targetPoint
-        });
+        }])
+        .select()
+        .single();
 
       if (error) throw error;
 
       setConnections(prev => [...prev, {
-        source_id: activeConnection.sourceId,
-        target_id: targetId,
-        source_point: activeConnection.sourcePoint,
-        target_point: targetPoint
+        id: data.id,
+        sourceId: activeConnection.sourceId,
+        targetId: targetId,
+        sourcePosition: activeConnection.sourcePosition,
+        targetPosition: nodes.find(n => n.id === targetId)?.position || [0, 0, 0],
+        sourcePoint: activeConnection.sourcePoint,
+        targetPoint: targetPoint
       }]);
 
       toast.success('Connection created');
@@ -98,21 +62,53 @@ const ThreeDCanvas = () => {
     setActiveConnection(null);
   };
 
+  useEffect(() => {
+    const fetchNodes = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('node')
+          .select('*');
+          
+        if (error) throw error;
+        
+        if (data) {
+          const mappedNodes = data.map(node => ({
+            id: node.id,
+            title: node.title || '',
+            description: node.description || '',
+            position: [
+              node.position_x || 0,
+              0,  // Always set y to 0
+              0   // Always set z to 0 for 2D view
+            ],
+            type: node.type || 'generic',
+            visualStyle: node.visual_style || 'default'
+          }));
+          setNodes(mappedNodes);
+        }
+      } catch (error) {
+        console.error('Error loading nodes:', error);
+        toast.error('Failed to load nodes');
+      }
+    };
+
+    fetchNodes();
+  }, []);
+
   const handleNodeUpdate = async (nodeId, newPosition) => {
     try {
       const { error } = await supabase
         .from('node')
         .update({
           position_x: newPosition[0],
-          position_y: newPosition[1],
-          position_z: 0
+          position_y: 0  // Always set y to 0
         })
         .eq('id', nodeId);
 
       if (error) throw error;
 
       setNodes(prev => prev.map(node =>
-        node.id === nodeId ? { ...node, position: [newPosition[0], newPosition[1], 0] } : node
+        node.id === nodeId ? { ...node, position: [newPosition[0], 0, 0] } : node
       ));
     } catch (error) {
       console.error('Error updating node position:', error);
@@ -122,21 +118,18 @@ const ThreeDCanvas = () => {
 
   return (
     <div className="relative w-full h-[calc(100vh-64px)] bg-black">
-      <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-start p-4">
-        <Toolbar 
-          activeTool={activeTool}
-          setActiveTool={setActiveTool}
-          handleZoom={setZoom}
-          zoom={zoom}
-          nodes={nodes}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-        />
-      </div>
-
+      <Toolbar 
+        activeTool={activeTool}
+        setActiveTool={setActiveTool}
+        handleZoom={setZoom}
+        zoom={zoom}
+        nodes={nodes}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+      />
       <Canvas
         camera={{ 
-          position: [0, 0, 200],
+          position: viewMode === '3d' ? [70.71, 70.71, 70.71] : [0, 0, 200],
           fov: 45,
           near: 0.1,
           far: 2000
@@ -153,7 +146,6 @@ const ThreeDCanvas = () => {
           handleNodeUpdate={handleNodeUpdate}
           onStartConnection={handleStartConnection}
           onEndConnection={handleEndConnection}
-          setActiveConnection={setActiveConnection}
         />
       </Canvas>
     </div>
