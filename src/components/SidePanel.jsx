@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import NodeNavigator from './text-view/NodeNavigator';
+import FileTreeView from './text-view/FileTreeView';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDebug } from '@/contexts/DebugContext';
@@ -44,7 +45,7 @@ const SidePanel = ({
             <Tabs defaultValue="nodes" className="w-full">
               <TabsList className="w-full">
                 <TabsTrigger value="nodes" className="flex-1">Nodes</TabsTrigger>
-                <TabsTrigger value="suggested" className="flex-1">Add</TabsTrigger>
+                <TabsTrigger value="files" className="flex-1">Files</TabsTrigger>
               </TabsList>
               <TabsContent 
                 value="nodes"
@@ -61,45 +62,17 @@ const SidePanel = ({
                 />
               </TabsContent>
               <TabsContent 
-                value="suggested" 
+                value="files" 
                 className="p-4"
-                onMouseEnter={() => handleTabMouseEnter('Add')}
+                onMouseEnter={() => handleTabMouseEnter('Files')}
                 onMouseLeave={handleTabMouseLeave}
-                data-component="SidePanel:AddTab"
+                data-component="SidePanel:FilesTab"
               >
-                <div className="space-y-4">
-                  <input
-                    type="search"
-                    placeholder="Search nodes..."
-                    className="w-full px-3 py-2 border rounded-md"
-                  />
-                  <div className="space-y-2">
-                    <h3 className="font-medium">Suggested Nodes</h3>
-                    <div className="space-y-2">
-                      <Button 
-                        variant="outline" 
-                        className="w-full justify-start" 
-                        onClick={() => onAddNode({ type: 'person' })}
-                      >
-                        Add Person
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        className="w-full justify-start" 
-                        onClick={() => onAddNode({ type: 'organization' })}
-                      >
-                        Add Organization
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        className="w-full justify-start" 
-                        onClick={() => onAddNode({ type: 'event' })}
-                      >
-                        Add Event
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+                <FileTreeView
+                  nodes={nodes}
+                  onNodeSelect={onNodeFocus}
+                  selectedNodeId={selectedNode?.id}
+                />
               </TabsContent>
             </Tabs>
           </motion.div>
