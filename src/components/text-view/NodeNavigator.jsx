@@ -33,7 +33,7 @@ const NodeNavigator = ({
         setSelectedNodes([firstNode.id]);
       }
     }
-  }, [nodes, onNodeFocus]);
+  }, [nodes, onNodeFocus, focusedNodeId]);
 
   // Handle keyboard navigation
   useEffect(() => {
@@ -47,24 +47,28 @@ const NodeNavigator = ({
         case 'ArrowDown':
           e.preventDefault();
           nextIndex = currentIndex < nodes.length - 1 ? currentIndex + 1 : currentIndex;
+          const nextNode = nodes[nextIndex];
+          if (nextNode) {
+            onNodeFocus(nextNode.id);
+            setSelectedNodes([nextNode.id]);
+          }
           break;
         case 'ArrowUp':
           e.preventDefault();
           nextIndex = currentIndex > 0 ? currentIndex - 1 : currentIndex;
+          const prevNode = nodes[nextIndex];
+          if (prevNode) {
+            onNodeFocus(prevNode.id);
+            setSelectedNodes([prevNode.id]);
+          }
           break;
         default:
           return;
       }
-
-      const nextNode = nodes[nextIndex];
-      if (nextNode) {
-        onNodeFocus(nextNode.id);
-        setSelectedNodes([nextNode.id]);
-      }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, [nodes, focusedNodeId, onNodeFocus]);
 
   const handleNodeDelete = async (nodeId) => {
@@ -103,7 +107,10 @@ const NodeNavigator = ({
   });
 
   return (
-    <div className="w-full h-full flex flex-col p-4 rounded-2xl">
+    <div 
+      className="w-full h-full flex flex-col p-4 rounded-2xl"
+      tabIndex={0} // Make the container focusable
+    >
       <SearchInput value={searchQuery} onChange={setSearchQuery} />
       
       <DragDropContext onDragEnd={() => {}}>
