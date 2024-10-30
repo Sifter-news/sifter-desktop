@@ -1,5 +1,5 @@
 import React from 'react';
-import { NODE_STYLES } from '@/utils/nodeStyles';
+import { NODE_STYLES } from '@/utils/nodeUtils';
 
 const DebugStateSection = ({ debugData }) => {
   const getToolDescription = (tool) => {
@@ -76,7 +76,7 @@ const DebugStateSection = ({ debugData }) => {
           <div className="space-y-1">
             <p className="font-medium">Selected Color:</p>
             <div className="pl-2">
-              <span className={`px-2 py-0.5 rounded ${style.colors[node.color]}`}>
+              <span className={`px-2 py-0.5 rounded ${style.colors?.[node.color]}`}>
                 {node.color}
               </span>
             </div>
@@ -87,7 +87,7 @@ const DebugStateSection = ({ debugData }) => {
             <p className="font-medium">Text Size:</p>
             <div className="pl-2">
               <p>Current: {node.textSize}</p>
-              <p className={style.textSizes[node.textSize]}>Sample Text</p>
+              <p className={style.textSizes?.[node.textSize]}>Sample Text</p>
             </div>
           </div>
         )}
