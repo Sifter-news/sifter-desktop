@@ -1,5 +1,6 @@
 import React from 'react';
 import * as THREE from 'three';
+import { Text } from '@react-three/drei';
 
 const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250, spacing = 16 }) => {
   const size = spacing * divisions; // Total size will be 4000 units (16 * 250)
@@ -86,28 +87,26 @@ const CubeOutline = () => {
         </mesh>
 
         {/* Title text */}
-        <mesh position={[0, size/4, 0.01]}>
-          <textGeometry 
-            args={["Title", { 
-              font: new THREE.Font(), 
-              size: size/8,
-              height: 0 
-            }]} 
-          />
-          <meshBasicMaterial color="black" />
-        </mesh>
+        <Text
+          position={[0, size/4, 0.01]}
+          fontSize={size/8}
+          color="black"
+          anchorX="center"
+          anchorY="middle"
+        >
+          Title
+        </Text>
 
         {/* Subline text */}
-        <mesh position={[0, 0, 0.01]}>
-          <textGeometry 
-            args={["Subline text here", { 
-              font: new THREE.Font(), 
-              size: size/12,
-              height: 0 
-            }]} 
-          />
-          <meshBasicMaterial color="gray" />
-        </mesh>
+        <Text
+          position={[0, 0, 0.01]}
+          fontSize={size/12}
+          color="gray"
+          anchorX="center"
+          anchorY="middle"
+        >
+          Subline text here
+        </Text>
       </group>
     </group>
   );
