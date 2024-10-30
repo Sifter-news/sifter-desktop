@@ -5,7 +5,6 @@ import TwoDNode from './node/TwoDNode';
 import CanvasBackground from './canvas/CanvasBackground';
 import CanvasControls from './canvas/CanvasControls';
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
-import Toolbar from './Toolbar';
 
 const Canvas = forwardRef(({ 
   nodes, 
@@ -25,9 +24,7 @@ const Canvas = forwardRef(({
   onDragOver,
   onDrop,
   onAIConversation,
-  onNodePositionUpdate,
-  viewMode,
-  setViewMode
+  onNodePositionUpdate
 }, ref) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [nodeToDelete, setNodeToDelete] = useState(null);
@@ -117,21 +114,10 @@ const Canvas = forwardRef(({
               onDelete={onNodeDelete}
               isDraggable={activeTool !== 'pan'}
               position={{ x: node.x, y: node.y }}
-              viewMode={viewMode}
             />
           ))}
         </div>
       </div>
-
-      <Toolbar
-        activeTool={activeTool}
-        setActiveTool={setActiveTool}
-        zoom={zoom}
-        nodes={nodes}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-        onAddNode={onAddNode}
-      />
 
       <CanvasControls 
         showDeleteConfirmation={showDeleteConfirmation}

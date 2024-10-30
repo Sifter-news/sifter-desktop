@@ -1,56 +1,42 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { MousePointer2, Move3d, Orbit, LayoutGrid, Axis3D, ChevronDown } from 'lucide-react';
+import { MousePointer2, Move3d, Orbit, ChevronDown } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode, setViewMode }) => {
-  const handleToolToggle = () => {
-    setActiveTool(activeTool === 'select' ? 'pan' : 'select');
-  };
-
-  const handleViewToggle = () => {
-    setViewMode(viewMode === '2d' ? '3d' : '2d');
-  };
-
+const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode }) => {
   return (
-    <div className="flex gap-2">
-      <Button 
-        variant="ghost" 
-        size="sm"
-        onClick={handleToolToggle}
-        className="h-8 w-8 rounded-lg text-white hover:bg-white/10 bg-white/[0.0625] flex items-center justify-center"
-      >
-        {activeTool === 'select' ? (
-          <div className="flex items-center">
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button 
+          variant="ghost" 
+          size="sm"
+          className="h-8 rounded-lg text-white hover:bg-white/10 bg-white/[0.0625] flex items-center gap-1 [&>svg]:text-white hover:[&>svg]:text-white"
+        >
+          {activeTool === 'select' ? (
             <MousePointer2 className="h-4 w-4" />
-            <ChevronDown className="h-3 w-3 ml-0.5" />
-          </div>
-        ) : (
-          <div className="flex items-center">
-            {viewMode === '3d' ? <Orbit className="h-4 w-4" /> : <Move3d className="h-4 w-4" />}
-            <ChevronDown className="h-3 w-3 ml-0.5" />
-          </div>
-        )}
-      </Button>
-
-      <Button 
-        variant="ghost" 
-        size="sm"
-        onClick={handleViewToggle}
-        className="h-8 w-8 rounded-lg text-white hover:bg-white/10 bg-white/[0.0625] flex items-center justify-center"
-      >
-        {viewMode === '3d' ? (
-          <div className="flex items-center">
-            <Axis3D className="h-4 w-4" />
-            <ChevronDown className="h-3 w-3 ml-0.5" />
-          </div>
-        ) : (
-          <div className="flex items-center">
-            <LayoutGrid className="h-4 w-4" />
-            <ChevronDown className="h-3 w-3 ml-0.5" />
-          </div>
-        )}
-      </Button>
-    </div>
+          ) : (
+            viewMode === '3d' ? <Orbit className="h-4 w-4" /> : <Move3d className="h-4 w-4" />
+          )}
+          <span>{activeTool === 'select' ? 'Select' : 'Pan'}</span>
+          <ChevronDown className="h-3 w-3" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="bg-black text-white" align="top">
+        <DropdownMenuItem onClick={() => setActiveTool('select')}>
+          <MousePointer2 className="h-4 w-4 mr-2" />
+          Select & Move
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setActiveTool('pan')}>
+          {viewMode === '3d' ? <Orbit className="h-4 w-4 mr-2" /> : <Move3d className="h-4 w-4 mr-2" />}
+          {viewMode === '3d' ? "Pan & Orbit" : "Pan"}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
