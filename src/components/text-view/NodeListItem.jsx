@@ -65,9 +65,9 @@ const NodeListItem = ({
           {...provided.dragHandleProps}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          className={`group flex items-center justify-between py-1 px-2 hover:bg-gray-100 rounded-lg mb-1 transition-all duration-200 ${
-            isSelected ? 'bg-blue-50 ring-2 ring-blue-500' : ''
-          } ${isFocused ? 'ring-2 ring-blue-600' : ''}`}
+          className={`group flex items-center justify-between py-1 px-2 rounded-lg mb-1 transition-all duration-200 cursor-pointer
+            ${isSelected ? 'bg-blue-100 ring-2 ring-blue-500 shadow-sm' : 'hover:bg-gray-100'}
+            ${isFocused ? 'ring-2 ring-blue-600' : ''}`}
           onClick={() => onSelect(node.id)}
         >
           <div className="flex items-center gap-2 flex-grow transition-all">
@@ -76,7 +76,7 @@ const NodeListItem = ({
             </div>
             
             <div 
-              className="flex items-center flex-grow cursor-pointer gap-3"
+              className="flex items-center flex-grow gap-3"
               onClick={(e) => {
                 e.stopPropagation();
                 onFocus(node.id);
@@ -87,7 +87,7 @@ const NodeListItem = ({
                 <AvatarFallback>{getNodeTypeIcon(node.nodeType)}</AvatarFallback>
               </Avatar>
               <div>
-                <div className="font-medium text-sm">{node.title}</div>
+                <div className={`font-medium text-sm ${isSelected ? 'text-blue-700' : ''}`}>{node.title}</div>
                 <div className="text-xs text-gray-500">{node.nodeType || 'Generic Note'}</div>
               </div>
             </div>
