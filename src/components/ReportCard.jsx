@@ -13,7 +13,7 @@ const ReportCard = ({ report, onUpdate }) => {
       className="w-full h-full bg-white hover:bg-gray-50 transition-colors cursor-pointer rounded-[16px] flex flex-col"
       onClick={handleCardClick}
     >
-      <div className="w-full h-[100px] bg-gray-200 relative overflow-hidden rounded-t-[16px]">
+      <div className="w-full h-[180px] bg-gray-200 relative overflow-hidden rounded-t-[16px]">
         <img 
           src="/placeholder.svg"
           alt="Report Banner"
