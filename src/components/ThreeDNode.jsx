@@ -21,36 +21,15 @@ const ThreeDNode = ({
   const { gl } = useThree();
   const { showNodeDebug } = useDebug();
 
-  const [position, setPosition] = useState([
-    node?.position?.[0] || 0,
-    node?.position?.[1] || 0,
-    node?.position?.[2] || 0
-  ]);
-
-  useEffect(() => {
-    if (node && allNodes.length > 0) {
-      const otherNodes = allNodes.filter(n => n.id !== node.id);
-      const newPosition = findNonCollidingPosition3D(
-        { ...node, position },
-        otherNodes
-      );
-      setPosition(newPosition);
-      onUpdate?.(node.id, { position: newPosition });
-    }
-  }, [node?.id, allNodes]);
-
-  // Get style with fallback to default
   const style = NODE_STYLES[node?.visualStyle || 'default'] || NODE_STYLES.default;
-  
-  // Calculate dimensions with safe defaults
   const boxWidth = (style?.width || 200) / 20;
   const boxHeight = (style?.height || 100) / 20;
   const boxDepth = style?.visualStyle === 'postit' ? 0.5 : 0.2;
 
   const getNodeColor = () => {
-    if (!node?.visualStyle) return '#FFFFFF';
+    if (node?.color) return node.color;
     
-    switch (node.visualStyle) {
+    switch (node?.visualStyle) {
       case 'compact':
         return '#4A90E2';
       case 'postit':
@@ -90,7 +69,7 @@ const ThreeDNode = ({
   };
 
   return (
-    <group position={position}>
+    <group position={node.position}>
       <mesh
         ref={meshRef}
         onPointerDown={handlePointerDown}
@@ -110,11 +89,12 @@ const ThreeDNode = ({
           metalness={0.1}
         />
         
+        {/* Connection points */}
         <group position={[0, boxHeight/2, boxDepth/2]}>
           <mesh
             onPointerEnter={() => setHoveredConnectionPoint('top')}
             onPointerLeave={() => setHoveredConnectionPoint(null)}
-            onPointerDown={() => onStartConnection?.(node.id, position, 'top')}
+            onPointerDown={() => onStartConnection?.(node.id, node.position, 'top')}
           >
             <sphereGeometry args={[0.2, 16, 16]} />
             <meshBasicMaterial color={hoveredConnectionPoint === 'top' ? '#00ff00' : '#ffffff'} />
@@ -125,7 +105,7 @@ const ThreeDNode = ({
           <mesh
             onPointerEnter={() => setHoveredConnectionPoint('bottom')}
             onPointerLeave={() => setHoveredConnectionPoint(null)}
-            onPointerDown={() => onStartConnection?.(node.id, position, 'bottom')}
+            onPointerDown={() => onStartConnection?.(node.id, node.position, 'bottom')}
           >
             <sphereGeometry args={[0.2, 16, 16]} />
             <meshBasicMaterial color={hoveredConnectionPoint === 'bottom' ? '#00ff00' : '#ffffff'} />

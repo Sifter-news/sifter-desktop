@@ -21,37 +21,21 @@ const ThreeScene = ({
   zoom = 1
 }) => {
   const { camera } = useThree();
+  const { showGuides } = useDebug();
 
   // Set isometric view when viewMode is '3d'
   React.useEffect(() => {
     if (camera && viewMode === '3d') {
-      // Set camera position for isometric view
       const distance = 200 / zoom;
       camera.position.set(distance, distance, distance);
       camera.lookAt(0, 0, 0);
       camera.updateProjectionMatrix();
     } else if (camera) {
-      // Reset to default top-down view for 2D
       camera.position.set(0, 0, 200 / zoom);
       camera.lookAt(0, 0, 0);
       camera.updateProjectionMatrix();
     }
   }, [viewMode, zoom, camera]);
-
-  // Update camera position when zoom changes
-  React.useEffect(() => {
-    if (camera) {
-      if (viewMode === '3d') {
-        const distance = 200 / zoom;
-        camera.position.set(distance, distance, distance);
-      } else {
-        camera.position.z = 200 / zoom;
-      }
-      camera.updateProjectionMatrix();
-    }
-  }, [zoom, camera, viewMode]);
-
-  const { showGuides } = useDebug();
 
   const handlePointerMove = (event) => {
     if (activeConnection) {
@@ -71,14 +55,23 @@ const ThreeScene = ({
       <Grid size={100} divisions={24} />
       {showGuides && <DebugAxes />}
       
+      {/* Render 3D nodes */}
       {nodes?.map(node => (
         <ThreeDNode 
           key={node.id}
-          node={node}
+          node={{
+            ...node,
+            position: [
+              node.position_x || node.x || 0,
+              node.position_y || node.y || 0,
+              node.position_z || node.z || 0
+            ]
+          }}
           activeTool={activeTool}
           onUpdate={handleNodeUpdate}
           onStartConnection={onStartConnection}
           onEndConnection={onEndConnection}
+          allNodes={nodes}
         />
       ))}
 
@@ -94,8 +87,8 @@ const ThreeScene = ({
         return (
           <ConnectionLine
             key={index}
-            start={[sourceNode.position[0], sourceNode.position[1] + sourceY, 0]}
-            end={[targetNode.position[0], targetNode.position[1] + targetY, 0]}
+            start={[sourceNode.position_x || 0, sourceNode.position_y + sourceY || 0, 0]}
+            end={[targetNode.position_x || 0, targetNode.position_y + targetY || 0, 0]}
           />
         );
       })}
@@ -107,17 +100,15 @@ const ThreeScene = ({
         />
       )}
 
-      {camera && (
-        <OrbitControls 
-          ref={controlsRef}
-          enableZoom={true}
-          enablePan={activeTool === 'pan'}
-          enableRotate={activeTool === 'pan'}
-          maxDistance={200 / zoom}
-          minDistance={10}
-          camera={camera}
-        />
-      )}
+      <OrbitControls 
+        ref={controlsRef}
+        enableZoom={true}
+        enablePan={activeTool === 'pan'}
+        enableRotate={activeTool === 'pan'}
+        maxDistance={200 / zoom}
+        minDistance={10}
+        camera={camera}
+      />
     </group>
   );
 };
