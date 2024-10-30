@@ -3,6 +3,7 @@ import { OrbitControls } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 import Grid from '../Grid';
 import ThreeDNode from '../ThreeDNode';
+import ThreeDFlatNode from './ThreeDFlatNode';
 import ConnectionLine from '../ConnectionLine';
 import DebugAxes from './DebugAxes';
 import { useDebug } from '@/contexts/DebugContext';
@@ -80,6 +81,14 @@ const ThreeScene = ({
       <pointLight position={[10, 10, 10]} intensity={1.5} />
       <Grid size={100} divisions={24} />
       {showGuides && <DebugAxes />}
+      
+      {/* Add the new ThreeDFlatNode */}
+      <ThreeDFlatNode 
+        position={[0, 3, 0]}
+        title="Example Node"
+        subline="This is a flat node that always faces the camera"
+        avatarUrl="/default-image.png"
+      />
       
       {nodes?.map(node => (
         <ThreeDNode 
