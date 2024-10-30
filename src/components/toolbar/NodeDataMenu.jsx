@@ -24,7 +24,7 @@ const NodeDataMenu = ({ onAddNode, selectedStyle }) => {
         <Button 
           variant="ghost" 
           size="sm"
-          className="h-8 rounded-lg text-white hover:bg-white/10 bg-white/[0.0625] opacity-50 flex items-center gap-1.5"
+          className="h-8 rounded-lg text-white hover:text-white hover:bg-white/10 bg-white/[0.0625] opacity-50 flex items-center gap-1.5"
         >
           <Plus className="h-4 w-4" />
           <span>Add Node</span>
@@ -36,7 +36,7 @@ const NodeDataMenu = ({ onAddNode, selectedStyle }) => {
           <DropdownMenuItem 
             key={type.id}
             onClick={() => onAddNode(type.id)}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 hover:text-white"
           >
             <type.icon className="h-4 w-4" />
             <span>{type.label}</span>

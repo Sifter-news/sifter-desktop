@@ -24,7 +24,7 @@ const NodeStyleMenu = ({ selectedStyle, onStyleChange }) => {
         <Button 
           variant="ghost" 
           size="sm"
-          className="h-8 rounded-lg text-white hover:bg-white/10 bg-white/[0.0625] flex items-center gap-1.5"
+          className="h-8 rounded-lg text-white hover:text-white hover:bg-white/10 bg-white/[0.0625] flex items-center gap-1.5"
         >
           <Icon className="h-4 w-4" />
           <span>{currentStyle.label}</span>
@@ -36,7 +36,7 @@ const NodeStyleMenu = ({ selectedStyle, onStyleChange }) => {
           <DropdownMenuItem 
             key={style.id}
             onClick={() => onStyleChange(style.id)}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 hover:text-white"
           >
             <style.icon className="h-4 w-4" />
             <span>{style.label}</span>
