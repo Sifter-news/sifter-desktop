@@ -29,7 +29,7 @@ const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
 
   return (
     <Link to={`/project/${investigation.id}`} className="block w-full h-[430px]">
-      <Card className="w-full h-full p-4 bg-[#594BFF] shadow-lg relative overflow-hidden rounded-l-[52px] rounded-r-none lg:rounded-r-none">
+      <Card className="w-full h-full p-4 bg-[#594BFF] shadow-lg relative overflow-hidden rounded-l-[40px] rounded-r-none lg:rounded-r-none">
         <div 
           className="absolute inset-0" 
           style={{
