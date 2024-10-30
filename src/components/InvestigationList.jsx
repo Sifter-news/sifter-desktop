@@ -20,7 +20,6 @@ const InvestigationList = ({
 }) => {
   const [editingReport, setEditingReport] = useState(null);
 
-  // Sort investigations by updated_at in descending order (most recent first)
   const sortedInvestigations = [...(investigations || [])].sort((a, b) => {
     const dateA = new Date(a.updated_at || a.created_at);
     const dateB = new Date(b.updated_at || b.created_at);
@@ -83,9 +82,9 @@ const InvestigationList = ({
               </div>
             </div>
             <div className="w-full lg:w-1/2 flex-shrink-0">
-              <div className="bg-white bg-opacity-30 rounded-r-lg p-4 h-full relative overflow-hidden">
-                <div className="overflow-x-auto h-full scrollbar-hide">
-                  <div className="flex space-x-4 h-full pb-4">
+              <div className="bg-white bg-opacity-30 rounded-r-lg h-full relative overflow-hidden">
+                <div className="overflow-x-auto h-full scrollbar-hide p-4">
+                  <div className="flex space-x-4 h-full">
                     {investigation.reports?.map(report => (
                       <div key={report.id} className="w-64 flex-shrink-0">
                         <ReportCard 
