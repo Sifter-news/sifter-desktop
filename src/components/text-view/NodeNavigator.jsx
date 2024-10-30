@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import SearchInput from './SearchInput';
 import NodeList from './NodeList';
@@ -23,6 +23,17 @@ const NodeNavigator = ({
   const [editingNode, setEditingNode] = useState(null);
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const { setDebugData } = useDebug();
+
+  // Auto-focus first item when nodes change or component mounts
+  useEffect(() => {
+    if (nodes.length > 0 && !focusedNodeId) {
+      const firstNode = nodes[0];
+      if (firstNode) {
+        onNodeFocus(firstNode.id);
+        setSelectedNodes([firstNode.id]);
+      }
+    }
+  }, [nodes, onNodeFocus]);
 
   const handleNodeDelete = async (nodeId) => {
     try {
