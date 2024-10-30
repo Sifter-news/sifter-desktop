@@ -1,18 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 import NodeContent from './NodeContent';
+import NodeTooltip from './NodeTooltip';
 import { getNodeDimensions } from '@/utils/nodeStyles';
 
 const TwoDNode = ({ 
   node, 
-  zoom,
+  zoom = 1,
   onNodeUpdate,
   onFocus,
   isFocused,
   onDelete,
+  onAIConversation,
   isDraggable = true,
   position = { x: 0, y: 0 }
 }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
   const dimensions = getNodeDimensions(node.visualStyle || 'default');
 
   const handleDragStop = (e, d) => {
@@ -22,6 +25,12 @@ const TwoDNode = ({
         y: d.y
       });
     }
+  };
+
+  const handleClick = (e) => {
+    e.stopPropagation();
+    setShowTooltip(true);
+    onFocus?.(node.id);
   };
 
   return (
@@ -36,12 +45,21 @@ const TwoDNode = ({
       }`}
       bounds="parent"
     >
-      <div onClick={() => onFocus?.(node.id)}>
+      <div onClick={handleClick}>
         <NodeContent
           style={node.visualStyle}
           node={node}
           isFocused={isFocused}
         />
+        {showTooltip && (
+          <NodeTooltip
+            node={node}
+            showTooltip={showTooltip}
+            onAIConversation={onAIConversation}
+            onDelete={onDelete}
+            onUpdateNode={onNodeUpdate}
+          />
+        )}
       </div>
     </Rnd>
   );
