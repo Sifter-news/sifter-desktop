@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import SearchInput from './SearchInput';
 import NodeList from './NodeList';
@@ -16,8 +16,7 @@ const NodeNavigator = ({
   onAddNode,
   onAIConversation,
   focusedNodeId,
-  onDeleteNode,
-  onNodeHover
+  onDeleteNode 
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedNodes, setSelectedNodes] = useState([]);

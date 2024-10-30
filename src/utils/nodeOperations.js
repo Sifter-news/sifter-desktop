@@ -31,7 +31,8 @@ export const updateNode = async (nodeId, updates) => {
         position_x: updates.x,
         position_y: updates.y,
         position_z: updates.z,
-        metadata: updates.metadata
+        metadata: updates.metadata,
+        node_type: updates.nodeType
       })
       .eq('id', nodeId);
 

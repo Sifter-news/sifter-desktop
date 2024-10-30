@@ -46,30 +46,23 @@ const NodeListItem = ({
     setHoveredElement(null);
   };
 
-  const handleAIConversation = (e) => {
+  const handleDelete = async (e) => {
     e.stopPropagation();
-    if (typeof onAIConversation === 'function') {
-      onAIConversation(node);
-    } else {
-      toast.error("AI Conversation functionality is not available");
-    }
-  };
-
-  const handleEdit = (e) => {
-    e.stopPropagation();
-    if (typeof onEdit === 'function') {
-      onEdit(node);
-    } else {
-      toast.error("Edit functionality is not available");
+    try {
+      await onDelete(node.id);
+    } catch (error) {
+      console.error('Error deleting node:', error);
+      toast.error('Failed to delete node');
     }
   };
 
   return (
     <Draggable draggableId={node.id} index={index}>
-      {(provided, snapshot) => (
+      {(provided) => (
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
+          {...provided.dragHandleProps}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           className={`group flex items-center justify-between py-1 px-2 hover:bg-gray-100 rounded-lg mb-1 transition-all duration-200 ${
@@ -78,10 +71,7 @@ const NodeListItem = ({
           onClick={() => onSelect(node.id)}
         >
           <div className="flex items-center gap-2 flex-grow transition-all">
-            <div
-              {...provided.dragHandleProps}
-              className="w-0 group-hover:w-4 opacity-0 group-hover:opacity-100 transition-all duration-200 overflow-hidden cursor-grab active:cursor-grabbing"
-            >
+            <div className="w-0 group-hover:w-4 opacity-0 group-hover:opacity-100 transition-all duration-200 overflow-hidden cursor-grab active:cursor-grabbing">
               <GripVertical className="h-4 w-4 text-gray-400" />
             </div>
             
@@ -111,12 +101,18 @@ const NodeListItem = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={handleEdit}>
+                <DropdownMenuItem onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(node);
+                }}>
                   <Pencil className="h-4 w-4 mr-2" />
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem 
-                  onClick={handleAIConversation}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAIConversation(node);
+                  }}
                   className="bg-purple-600 hover:bg-purple-700 text-white focus:bg-purple-700 focus:text-white"
                 >
                   <MessageCircle className="h-4 w-4 mr-2" />
@@ -124,14 +120,7 @@ const NodeListItem = ({
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-red-600"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (typeof onDelete === 'function') {
-                      onDelete(node.id);
-                    } else {
-                      toast.error("Delete functionality is not available");
-                    }
-                  }}
+                  onClick={handleDelete}
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete
