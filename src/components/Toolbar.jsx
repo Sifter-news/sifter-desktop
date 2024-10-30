@@ -38,15 +38,15 @@ const Toolbar = ({
     <>
       <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-sm rounded-xl shadow-lg p-0.75 border border-white/20">
         <div className="bg-black/90 rounded-xl px-1.5 py-0.5 flex items-center space-x-1 h-10">
+          <ViewPerspectiveMenu 
+            viewMode={viewMode}
+            onViewModeChange={onViewModeChange}
+          />
+          
           <ToolSelectMenu 
             activeTool={activeTool}
             setActiveTool={setActiveTool}
             viewMode={viewMode}
-          />
-          
-          <ViewPerspectiveMenu 
-            viewMode={viewMode}
-            onViewModeChange={onViewModeChange}
           />
           
           <Separator orientation="vertical" className="h-6 bg-white/20" />
