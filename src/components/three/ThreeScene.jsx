@@ -105,7 +105,7 @@ const ThreeScene = ({
         enableZoom={true}
         enablePan={activeTool === 'pan'}
         enableRotate={activeTool === 'pan'}
-        maxDistance={400 / zoom} // Doubled from 200 to 400
+        maxDistance={20000 / zoom} // Doubled from 200 to 400
         minDistance={10}
         camera={camera}
       />
