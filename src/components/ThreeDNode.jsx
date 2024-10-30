@@ -1,21 +1,62 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
-import { Text, Plane } from '@react-three/drei';
 import * as THREE from 'three';
 import { useDebug } from '@/contexts/DebugContext';
+import { NODE_STYLES } from '@/utils/nodeStyles';
+import { findNonCollidingPosition3D } from '@/utils/collision3DUtils';
 
 const ThreeDNode = ({ 
   node, 
   activeTool, 
   onUpdate, 
+  onStartConnection,
+  onEndConnection,
   isHighlighted,
-  onFocus
+  allNodes = []
 }) => {
   const meshRef = useRef();
   const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [hoveredConnectionPoint, setHoveredConnectionPoint] = useState(null);
   const { gl } = useThree();
   const { showNodeDebug } = useDebug();
+
+  const [position, setPosition] = useState([
+    node?.position?.[0] || 0,
+    node?.position?.[1] || 0,
+    node?.position?.[2] || 0
+  ]);
+
+  useEffect(() => {
+    if (node && allNodes.length > 0) {
+      const otherNodes = allNodes.filter(n => n.id !== node.id);
+      const newPosition = findNonCollidingPosition3D(
+        { ...node, position },
+        otherNodes
+      );
+      setPosition(newPosition);
+      onUpdate?.(node.id, { position: newPosition });
+    }
+  }, [node?.id, allNodes]);
+
+  const dimensions = node?.dimensions || {
+    width: 6,
+    height: 3,
+    depth: 0.1
+  };
+
+  const getNodeColor = () => {
+    if (!node?.visualStyle) return '#FFFFFF';
+    
+    switch (node.visualStyle) {
+      case 'compact':
+        return '#4A90E2';
+      case 'postit':
+        return '#FFE082';
+      default:
+        return '#FFFFFF';
+    }
+  };
 
   const handlePointerDown = (e) => {
     if (activeTool !== 'select') return;
@@ -24,10 +65,11 @@ const ThreeDNode = ({
     gl.domElement.style.cursor = 'grabbing';
   };
 
-  const handlePointerUp = () => {
+  const handlePointerUp = (e) => {
     if (activeTool !== 'select') return;
     setIsDragging(false);
     gl.domElement.style.cursor = 'grab';
+    handleConnectionEnd();
   };
 
   const handlePointerEnter = () => {
@@ -37,55 +79,58 @@ const ThreeDNode = ({
 
   const handlePointerLeave = () => {
     setIsHovered(false);
+    setHoveredConnectionPoint(null);
     gl.domElement.style.cursor = 'default';
   };
 
-  const textureLoader = new THREE.TextureLoader();
-  const avatarTexture = textureLoader.load(node.avatar || '/default-image.png');
+  const handleConnectionEnd = () => {
+    onEndConnection?.(node.id, hoveredConnectionPoint);
+  };
 
   return (
-    <group position={node.position}>
-      {/* Background plane */}
-      <Plane
+    <group position={position}>
+      <mesh
         ref={meshRef}
-        args={[node.dimensions.width, node.dimensions.height]}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerEnter={handlePointerEnter}
         onPointerLeave={handlePointerLeave}
-        onClick={() => onFocus?.(node.id)}
       >
+        <planeGeometry args={[dimensions.width, dimensions.height]} />
         <meshStandardMaterial 
-          color={isHighlighted ? "#4a9eff" : "#ffffff"}
+          color={getNodeColor()}
           transparent
-          opacity={0.9}
+          opacity={isHovered ? 0.8 : 1}
           side={THREE.DoubleSide}
+          emissive={isHighlighted ? "#ffffff" : "#000000"}
+          emissiveIntensity={isHighlighted ? 0.5 : 0}
+          roughness={0.3}
+          metalness={0.1}
         />
-      </Plane>
-
-      {/* Avatar */}
-      <Plane
-        position={[-node.dimensions.width/2 + 0.5, node.dimensions.height/2 - 0.5, 0.01]}
-        args={[1, 1]}
-      >
-        <meshBasicMaterial 
-          map={avatarTexture}
-          transparent
-          side={THREE.DoubleSide}
-        />
-      </Plane>
-
-      {/* Title text */}
-      <Text
-        position={[0, node.dimensions.height/2 - 0.3, 0.01]}
-        fontSize={0.3}
-        color="#000000"
-        anchorX="center"
-        anchorY="top"
-        maxWidth={node.dimensions.width - 0.4}
-      >
-        {node.title}
-      </Text>
+      </mesh>
+      
+      {/* Connection points */}
+      <group position={[0, dimensions.height/2, 0]}>
+        <mesh
+          onPointerEnter={() => setHoveredConnectionPoint('top')}
+          onPointerLeave={() => setHoveredConnectionPoint(null)}
+          onPointerDown={() => onStartConnection?.(node.id, position, 'top')}
+        >
+          <sphereGeometry args={[0.2, 16, 16]} />
+          <meshBasicMaterial color={hoveredConnectionPoint === 'top' ? '#00ff00' : '#ffffff'} />
+        </mesh>
+      </group>
+      
+      <group position={[0, -dimensions.height/2, 0]}>
+        <mesh
+          onPointerEnter={() => setHoveredConnectionPoint('bottom')}
+          onPointerLeave={() => setHoveredConnectionPoint(null)}
+          onPointerDown={() => onStartConnection?.(node.id, position, 'bottom')}
+        >
+          <sphereGeometry args={[0.2, 16, 16]} />
+          <meshBasicMaterial color={hoveredConnectionPoint === 'bottom' ? '#00ff00' : '#ffffff'} />
+        </mesh>
+      </group>
     </group>
   );
 };

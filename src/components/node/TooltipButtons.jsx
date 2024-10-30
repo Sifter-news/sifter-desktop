@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Layout, Type, Pencil, FileText, User, Building2, Package, Brain, MapPin, Calendar, ChevronDown } from "lucide-react";
+import { MessageCircle, Layout, Type, Pencil, FileText, User, Building2, Package, Brain, MapPin, Calendar, ChevronDown } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import {
   Popover,
@@ -8,7 +8,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import NodeEditDialog from './NodeEditDialog';
-import { getNodeDimensions, handleNodeDelete } from '@/utils/nodeUtils';
+import { getNodeDimensions } from '@/utils/nodeDimensions';
+import { handleNodeDelete } from '@/utils/nodeDeleteUtils';
 
 const defaultStyles = {
   default: "Default",
@@ -39,6 +40,7 @@ const TooltipButtons = ({
   const [showEditDialog, setShowEditDialog] = React.useState(false);
   const currentStyle = node?.visualStyle || 'default';
   const currentType = node?.nodeType || 'generic';
+
   const CurrentTypeIcon = defaultNodeTypes[currentType]?.icon || FileText;
 
   const handleVisualStyleChange = (newStyle) => {
@@ -103,7 +105,7 @@ const TooltipButtons = ({
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
               <CurrentTypeIcon className="h-4 w-4 mr-2" />
-              {defaultNodeTypes[currentType]?.label || 'Generic Note'}
+              {defaultNodeTypes[currentType]?.label || "Generic Note"}
               <ChevronDown className="h-4 w-4 ml-1" />
             </Button>
           </PopoverTrigger>

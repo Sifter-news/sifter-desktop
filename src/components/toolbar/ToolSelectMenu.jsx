@@ -2,20 +2,13 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { MousePointer2, Move3d, Orbit, Grid2x2, Axis3D } from 'lucide-react';
 
-const ToolSelectMenu = ({ 
-  activeTool = 'select', 
-  setActiveTool = () => {}, 
-  viewMode = '2d', 
-  setViewMode = () => {} 
-}) => {
+const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode, setViewMode }) => {
   const handleToolToggle = () => {
     setActiveTool(activeTool === 'select' ? 'pan' : 'select');
   };
 
   const handleViewToggle = () => {
-    if (typeof setViewMode === 'function') {
-      setViewMode(viewMode === '2d' ? '3d' : '2d');
-    }
+    setViewMode(viewMode === '2d' ? '3d' : '2d');
   };
 
   return (
