@@ -1,9 +1,10 @@
 import React from 'react';
 import * as THREE from 'three';
 import { Text } from '@react-three/drei';
+import DefaultNode3D from './three/nodes/DefaultNode3D';
 
 const GridLayer = ({ z = 0, opacity = 0.3, divisions = 500, spacing = 16 }) => {
-  const size = spacing * divisions;
+  const size = spacing * divisions; // Total size will be 8000 units (16 * 500) - doubled from previous 4000
   
   const gridHelper = new THREE.GridHelper(size, divisions, 0xffffff, 0x333333);
   gridHelper.position.z = z;
@@ -21,6 +22,8 @@ const GridLayer = ({ z = 0, opacity = 0.3, divisions = 500, spacing = 16 }) => {
   const dotGeometry = new THREE.BufferGeometry();
   const positions = [];
   const halfSize = size / 2;
+
+  // Keep dot spacing at 32 units
   const dotSpacing = 32;
 
   for (let i = -halfSize; i <= halfSize; i += dotSpacing) {
@@ -55,9 +58,9 @@ const GridLayer = ({ z = 0, opacity = 0.3, divisions = 500, spacing = 16 }) => {
 
 const Grid = ({ divisions = 500 }) => {  
   const gridPositions = [
-    96, 48,
-    0,
-    -48, -96
+    96, 48,  // Doubled positive z layers
+    0,       // Base layer
+    -48, -96 // Doubled negative z layers
   ];
   const baseOpacity = 0.45;
   
@@ -71,6 +74,7 @@ const Grid = ({ divisions = 500 }) => {
           divisions={divisions} 
         />
       ))}
+      <DefaultNode3D />
     </group>
   );
 };
