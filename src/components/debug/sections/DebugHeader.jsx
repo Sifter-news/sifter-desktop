@@ -9,7 +9,7 @@ const DebugHeader = ({ showGuides, setShowGuides, onCollapse, onClose }) => {
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
           <Bug className="h-5 w-5 text-purple-400" />
-          <h2 className="text-lg font-semibold">Debug Panel 🛠️</h2>
+          <h2 className="text-lg font-semibold">Debug Panel</h2>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-white/60">Guidelines</span>

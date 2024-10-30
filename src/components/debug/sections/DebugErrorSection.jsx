@@ -31,48 +31,9 @@ const DebugErrorSection = ({ errors = [] }) => {
     <div className="space-y-2">
       <div className="flex items-center gap-2">
         <AlertCircle className="h-4 w-4 text-red-400" />
-        <h3 className="text-sm font-medium text-white">Error Log 🐛</h3>
+        <h3 className="text-sm font-medium text-white">Error Log</h3>
       </div>
       
-      <div className="flex gap-2 mb-2">
-        <Input
-          value={newQuery}
-          onChange={(e) => setNewQuery(e.target.value)}
-          placeholder="Add error filter..."
-          className="h-8 text-xs"
-          onKeyDown={(e) => e.key === 'Enter' && addQuery()}
-        />
-        <Button 
-          variant="ghost" 
-          size="icon"
-          className="h-8 w-8"
-          onClick={addQuery}
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {queries.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-2">
-          {queries.map((query, index) => (
-            <div 
-              key={index}
-              className="bg-red-500/20 text-red-400 px-2 py-1 rounded-full text-xs flex items-center gap-1"
-            >
-              {query}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-4 w-4 hover:bg-red-500/20"
-                onClick={() => removeQuery(index)}
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </div>
-          ))}
-        </div>
-      )}
-
       <ScrollArea className="h-[200px]">
         <div className="space-y-2">
           {errors.filter(filterErrors).map((error, index) => (
