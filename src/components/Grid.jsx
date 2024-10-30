@@ -1,7 +1,6 @@
 import React from 'react';
 import * as THREE from 'three';
 import { Text } from '@react-three/drei';
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const GridLayer = ({ z = 0, opacity = 0.3, divisions = 500, spacing = 16 }) => {
   const size = spacing * divisions; // Total size will be 8000 units (16 * 500) - doubled from previous 4000
@@ -56,58 +55,76 @@ const GridLayer = ({ z = 0, opacity = 0.3, divisions = 500, spacing = 16 }) => {
   );
 };
 
-const FlatNode = () => {
-  const width = 32 * 3; // 96 units wide
-  const height = 32; // 32 units tall
+const DefaultNode3D = () => {
+  const size = 32; // 256px / 8 (our new scale factor)
+  const width = size * 3; // Tripled width
+  const height = size;
+  const depth = size;
+  
+  const geometry = new THREE.BoxGeometry(width, height, depth);
+  const edges = new THREE.EdgesGeometry(geometry);
   
   return (
-    <group position={[0, 96, 0]}>
-      {/* Background plane */}
+    <group>
+      {/* 3D wireframe outline */}
+      <lineSegments>
+        <primitive object={edges} />
+        <lineBasicMaterial color="white" opacity={0.5} transparent />
+      </lineSegments>
+      
+      {/* Background white plane */}
       <mesh>
         <planeGeometry args={[width, height]} />
         <meshBasicMaterial color="white" opacity={0.9} transparent />
       </mesh>
 
-      {/* Avatar circle */}
-      <mesh position={[-width/2 + height/2, 0, 0.1]}>
-        <circleGeometry args={[height/2, 32]} />
-        <meshBasicMaterial color="#f3f4f6" />
-        <lineSegments>
-          <edgesGeometry args={[new THREE.CircleGeometry(height/2, 32)]} />
-          <lineBasicMaterial color="#e5e7eb" />
-        </lineSegments>
-      </mesh>
+      {/* Foreground content - moved forward by 6px (0.75 in our new scale) */}
+      <group position={[0, 0, 0.75]}>
+        {/* Avatar with circular mask and outline */}
+        <mesh position={[-width/2 + size/4, 0, 0]}>
+          <circleGeometry args={[size/4, 32]} />
+          <meshBasicMaterial 
+            transparent
+            opacity={0}
+            side={THREE.DoubleSide}
+          />
+          <lineSegments>
+            <edgesGeometry args={[new THREE.CircleGeometry(size/4, 32)]} />
+            <lineBasicMaterial color="white" />
+          </lineSegments>
+        </mesh>
 
-      {/* Title text */}
-      <Text
-        position={[-width/2 + height + 4, height/4, 0.1]}
-        fontSize={height/3}
-        color="black"
-        anchorX="left"
-        anchorY="middle"
-      >
-        Flat Node Title
-      </Text>
+        {/* Title text - increased size */}
+        <Text
+          position={[-width/2 + size/2 + size/4, size/6, 0]}
+          fontSize={size/6}
+          color="black"
+          anchorX="left"
+          anchorY="middle"
+        >
+          Title
+        </Text>
 
-      {/* Subtitle text */}
-      <Text
-        position={[-width/2 + height + 4, -height/4, 0.1]}
-        fontSize={height/4}
-        color="gray"
-        anchorX="left"
-        anchorY="middle"
-      >
-        Subtitle here
-      </Text>
+        {/* Subline text - increased size */}
+        <Text
+          position={[-width/2 + size/2 + size/4, -size/6, 0]}
+          fontSize={size/8}
+          color="gray"
+          anchorX="left"
+          anchorY="middle"
+        >
+          Subline text here
+        </Text>
+      </group>
     </group>
   );
 };
 
-const Grid = ({ divisions = 500 }) => {
+const Grid = ({ divisions = 500 }) => {  // Doubled divisions from 250 to 500
   const gridPositions = [
-    96, 48,
-    0,
-    -48, -96
+    96, 48,  // Doubled positive z layers
+    0,       // Base layer
+    -48, -96 // Doubled negative z layers
   ];
   const baseOpacity = 0.45;
   
@@ -121,7 +138,7 @@ const Grid = ({ divisions = 500 }) => {
           divisions={divisions} 
         />
       ))}
-      <FlatNode />
+      <DefaultNode3D />
     </group>
   );
 };
