@@ -9,7 +9,7 @@ import NodeMetadataFields from './NodeMetadataFields';
 import NodeTypeSelect from './NodeTypeSelect';
 import NodeStyleSelect from './NodeStyleSelect';
 import NodeAvatar from './NodeAvatar';
-import { handleNodeDelete } from '@/utils/nodeDeleteUtils';
+import { handleNodeDelete } from '@/utils/nodeUtils';
 
 const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
   const [formData, setFormData] = useState({
@@ -127,7 +127,11 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => handleNodeDelete(node.id, onDelete, onClose, setShowDeleteDialog)}>
+            <AlertDialogAction onClick={() => {
+              handleNodeDelete(node.id, onDelete);
+              onClose();
+              setShowDeleteDialog(false);
+            }}>
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
