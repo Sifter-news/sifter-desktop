@@ -5,11 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import NodeMetadataFields from './NodeMetadataFields';
 import NodeTypeSelect from './NodeTypeSelect';
 import NodeStyleSelect from './NodeStyleSelect';
 import NodeAvatar from './NodeAvatar';
-import { handleNodeDelete } from '@/utils/nodeDeleteUtils';
 
 const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
   const [formData, setFormData] = useState({
@@ -34,16 +32,6 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
       });
     }
   }, [node]);
-
-  const handleSubmit = async () => {
-    try {
-      await onUpdate(node.id, formData);
-      toast.success("Node updated successfully");
-      onClose();
-    } catch (error) {
-      toast.error("Failed to update node");
-    }
-  };
 
   if (!node) return null;
 
@@ -88,17 +76,6 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
               value={formData.visualStyle}
               onChange={(visualStyle) => setFormData(prev => ({ ...prev, visualStyle }))}
             />
-
-            <NodeMetadataFields
-              nodeType={formData.nodeType}
-              metadata={formData.metadata}
-              onMetadataChange={(field, value) => 
-                setFormData(prev => ({
-                  ...prev,
-                  metadata: { ...prev.metadata, [field]: value }
-                }))
-              }
-            />
           </div>
 
           <DialogFooter className="flex justify-between">
@@ -110,7 +87,7 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
             </Button>
             <div className="space-x-2">
               <Button variant="outline" onClick={onClose}>Cancel</Button>
-              <Button onClick={handleSubmit}>Save changes</Button>
+              <Button onClick={() => onUpdate(node.id, formData)}>Save changes</Button>
             </div>
           </DialogFooter>
         </DialogContent>
@@ -127,7 +104,11 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => handleNodeDelete(node.id, onDelete, onClose, setShowDeleteDialog)}>
+            <AlertDialogAction onClick={() => {
+              onDelete(node.id);
+              setShowDeleteDialog(false);
+              onClose();
+            }}>
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
