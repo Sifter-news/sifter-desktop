@@ -30,21 +30,28 @@ const ReportEditModal = ({ isOpen, onClose, report, onUpdate, onDelete }) => {
 
     setIsSaving(true);
     try {
+      const updates = {
+        title: formData.title.trim(),
+        content: formData.content.trim(),
+        updated_at: new Date().toISOString()
+      };
+
       const { data, error } = await supabase
         .from('reports')
-        .update({
-          title: formData.title.trim(),
-          content: formData.content.trim(),
-          updated_at: new Date().toISOString()
-        })
+        .update(updates)
         .eq('id', report.id)
         .select()
         .single();
 
       if (error) throw error;
 
+      // Call onUpdate with the updated data first
+      await onUpdate({
+        ...report,
+        ...data
+      });
+
       toast.success("Report updated successfully");
-      onUpdate(data);
       onClose();
     } catch (error) {
       console.error('Error updating report:', error);
@@ -69,8 +76,10 @@ const ReportEditModal = ({ isOpen, onClose, report, onUpdate, onDelete }) => {
 
       if (error) throw error;
 
+      // Call onDelete before showing success message
+      await onDelete(report.id);
+      
       toast.success("Report deleted successfully");
-      onDelete(report.id);
       onClose();
     } catch (error) {
       console.error('Error deleting report:', error);
