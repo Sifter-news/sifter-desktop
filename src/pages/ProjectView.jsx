@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import ProjectTabs from '../components/ProjectTabs';
@@ -6,15 +6,25 @@ import ProjectModals from '../components/ProjectModals';
 import ContentModal from '../components/ContentModal';
 import { useProjectData } from '../hooks/useProjectData';
 import { useNodeOperations } from '../components/NodeOperations';
+import { useDebug } from '@/contexts/DebugContext';
 
 const ProjectView = () => {
   const { id } = useParams();
   const [selectedContent, setSelectedContent] = useState(null);
   const [isContentModalOpen, setIsContentModalOpen] = useState(false);
   const [focusedNodeId, setFocusedNodeId] = useState(null);
+  const { setDebugData } = useDebug();
   
   const { project, setProject, nodes, setNodes, loading } = useProjectData(id);
   const { handleAddNode, handleUpdateNode, handleDeleteNode } = useNodeOperations(setNodes);
+
+  // Set initial view to mindmap and update debug data
+  useEffect(() => {
+    setDebugData(prev => ({
+      ...prev,
+      currentView: 'mindmap'
+    }));
+  }, [setDebugData]);
 
   const user = {
     name: 'User-Name',
@@ -50,6 +60,7 @@ const ProjectView = () => {
         onDeleteNode={handleDeleteNode}
         focusedNodeId={focusedNodeId}
         onNodeFocus={setFocusedNodeId}
+        defaultView="mindmap"
       />
       <ProjectModals
         project={project}

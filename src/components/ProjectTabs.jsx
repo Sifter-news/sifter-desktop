@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Brain, Clock, Map } from 'lucide-react';
 import MindMapView from './MindMapView';
@@ -17,10 +17,18 @@ const ProjectTabs = ({
   onAddReport, 
   onUpdateReport, 
   focusedNodeId,
-  onNodeFocus 
+  onNodeFocus,
+  defaultView = 'mindmap'
 }) => {
   const selectedNode = nodes.find(node => node.id === focusedNodeId);
   const { setDebugData } = useDebug();
+
+  useEffect(() => {
+    setDebugData(prev => ({
+      ...prev,
+      currentView: defaultView
+    }));
+  }, [defaultView, setDebugData]);
 
   const handleViewChange = (view) => {
     setDebugData(prev => ({
@@ -39,7 +47,7 @@ const ProjectTabs = ({
         onAddNode={onAddNode}
       />
       
-      <Tabs defaultValue="mindmap" className="w-full h-full" onValueChange={handleViewChange}>
+      <Tabs defaultValue={defaultView} className="w-full h-full" onValueChange={handleViewChange}>
         <div className="flex justify-center">
           <TabsList className="mx-auto bg-white bg-opacity-80 backdrop-blur-md z-10 fixed top-16">
             <TabsTrigger value="mindmap" className="flex items-center">
