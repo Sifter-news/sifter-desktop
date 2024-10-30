@@ -107,7 +107,7 @@ const NodeNavigator = ({
       <SearchInput value={searchQuery} onChange={setSearchQuery} />
       
       <DragDropContext onDragEnd={() => {}}>
-        <div className="flex-grow overflow-y-auto mt-4">
+        <div className="flex-grow mt-4">
           <NodeList
             nodes={filteredNodes}
             onNodeFocus={onNodeFocus}
