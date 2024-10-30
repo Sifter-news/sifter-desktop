@@ -8,7 +8,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import NodeEditDialog from './NodeEditDialog';
-import { getNodeDimensions } from '@/utils/nodeDimensions';
+import { getNodeDimensions } from '@/utils/nodeUtils';
 import { handleNodeDelete } from '@/utils/nodeDeleteUtils';
 
 const defaultStyles = {
@@ -40,7 +40,6 @@ const TooltipButtons = ({
   const [showEditDialog, setShowEditDialog] = React.useState(false);
   const currentStyle = node?.visualStyle || 'default';
   const currentType = node?.nodeType || 'generic';
-
   const CurrentTypeIcon = defaultNodeTypes[currentType]?.icon || FileText;
 
   const handleVisualStyleChange = (newStyle) => {
