@@ -30,7 +30,7 @@ const ThreeScene = ({
       camera.lookAt(0, 0, 0);
       camera.updateProjectionMatrix();
     } else if (camera) {
-      camera.position.set(0, 0, 20000 / zoom);
+      camera.position.set(0, 0, 2000 / zoom);
       camera.lookAt(0, 0, 0);
       camera.updateProjectionMatrix();
     }
@@ -132,7 +132,7 @@ const ThreeScene = ({
         enableZoom={true}
         enablePan={activeTool === 'pan'}
         enableRotate={activeTool === 'pan'}
-        maxDistance={20000 / zoom}
+        maxDistance={2000 / zoom}
         minDistance={10}
         camera={camera}
       />
