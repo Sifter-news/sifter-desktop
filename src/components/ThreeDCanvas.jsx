@@ -6,7 +6,7 @@ import ThreeScene from './three/ThreeScene';
 import Toolbar from './Toolbar';
 import { useDebug } from '@/contexts/DebugContext';
 import { supabase } from '@/integrations/supabase/supabase';
-import { getNodeDimensions } from '@/utils/nodeStyles';
+import { getNodeDimensions } from '@/utils/nodeUtils';
 
 const EXAMPLE_NODES = [
   {
