@@ -9,22 +9,6 @@ export const NODE_STYLES = {
       avatar: true,
       title: false,
       description: false
-    },
-    colors: {
-      yellow: "bg-yellow-100",
-      blue: "bg-blue-100",
-      green: "bg-green-100",
-      pink: "bg-pink-100",
-      white: "bg-white"
-    },
-    textSizes: {
-      small: "text-xs",
-      medium: "text-sm",
-      large: "text-base"
-    },
-    textAlignments: {
-      left: "text-left",
-      center: "text-center"
     }
   },
   default: {
@@ -37,23 +21,6 @@ export const NODE_STYLES = {
       avatar: true,
       title: true,
       description: false
-    },
-    colors: {
-      yellow: "bg-yellow-100",
-      blue: "bg-blue-100",
-      green: "bg-green-100",
-      pink: "bg-pink-100",
-      white: "bg-white"
-    },
-    textSizes: {
-      small: "text-sm",
-      medium: "text-base",
-      large: "text-lg",
-      huge: "text-xl"
-    },
-    textAlignments: {
-      left: "text-left",
-      center: "text-center"
     }
   },
   postit: {
@@ -66,40 +33,18 @@ export const NODE_STYLES = {
       avatar: true,
       title: true,
       description: true
-    },
-    colors: {
-      yellow: "bg-yellow-100",
-      blue: "bg-blue-100",
-      green: "bg-green-100",
-      pink: "bg-pink-100",
-      orange: "bg-orange-100",
-      purple: "bg-purple-100",
-      white: "bg-white"
-    },
-    textSizes: {
-      small: "text-base",
-      medium: "text-lg",
-      large: "text-xl",
-      huge: "text-2xl",
-      massive: "text-3xl"
-    },
-    textAlignments: {
-      left: "text-left",
-      center: "text-center"
     }
   }
 };
 
 export const getNodeDimensions = (visualStyle) => {
-  return NODE_STYLES[visualStyle] || NODE_STYLES.default;
-};
-
-export const getNodeStyle = (visualStyle, color, textSize, textAlign) => {
   const style = NODE_STYLES[visualStyle] || NODE_STYLES.default;
   return {
-    ...style,
-    colorClass: style.colors[color] || style.colors.white,
-    textSizeClass: style.textSizes[textSize] || style.textSizes.medium,
-    textAlignClass: style.textAlignments[textAlign] || style.textAlignments.left
+    width: style.width,
+    height: style.height
   };
+};
+
+export const getNodeStyle = (visualStyle) => {
+  return NODE_STYLES[visualStyle] || NODE_STYLES.default;
 };

@@ -8,89 +8,6 @@ import { useDebug } from '@/contexts/DebugContext';
 import { supabase } from '@/integrations/supabase/supabase';
 import { getNodeDimensions } from '@/utils/nodeStyles';
 
-const SAMPLE_NODES = [
-  {
-    id: 'sample-1',
-    title: 'Person Node',
-    description: 'A sample person node',
-    visual_style: 'default',
-    node_type: 'node_person',
-    avatar: '/default-image.png'
-  },
-  {
-    id: 'sample-2',
-    title: 'Compact Organization',
-    description: 'A compact organization node',
-    visual_style: 'compact',
-    node_type: 'node_organization',
-    avatar: '/default-image.png'
-  },
-  {
-    id: 'sample-3',
-    title: 'Post-it Concept',
-    description: 'A post-it style concept node',
-    visual_style: 'postit',
-    node_type: 'node_concept',
-    avatar: '/default-image.png'
-  },
-  {
-    id: 'sample-4',
-    title: 'Default Object',
-    description: 'A default style object node',
-    visual_style: 'default',
-    node_type: 'node_object',
-    avatar: '/default-image.png'
-  },
-  {
-    id: 'sample-5',
-    title: 'Compact Location',
-    description: 'A compact location node',
-    visual_style: 'compact',
-    node_type: 'node_location',
-    avatar: '/default-image.png'
-  },
-  {
-    id: 'sample-6',
-    title: 'Post-it Event',
-    description: 'A post-it style event node',
-    visual_style: 'postit',
-    node_type: 'node_event',
-    avatar: '/default-image.png'
-  },
-  {
-    id: 'sample-7',
-    title: 'Default Person',
-    description: 'Another person node',
-    visual_style: 'default',
-    node_type: 'node_person',
-    avatar: '/default-image.png'
-  },
-  {
-    id: 'sample-8',
-    title: 'Compact Concept',
-    description: 'A compact concept node',
-    visual_style: 'compact',
-    node_type: 'node_concept',
-    avatar: '/default-image.png'
-  },
-  {
-    id: 'sample-9',
-    title: 'Post-it Organization',
-    description: 'A post-it style organization',
-    visual_style: 'postit',
-    node_type: 'node_organization',
-    avatar: '/default-image.png'
-  },
-  {
-    id: 'sample-10',
-    title: 'Default Event',
-    description: 'A default style event node',
-    visual_style: 'default',
-    node_type: 'node_event',
-    avatar: '/default-image.png'
-  }
-];
-
 const ThreeDCanvas = ({ 
   projectId, 
   onAddNode, 
@@ -114,11 +31,8 @@ const ThreeDCanvas = ({
 
         if (error) throw error;
 
-        // If no nodes found, use sample nodes
-        const sourceNodes = data.length > 0 ? data : SAMPLE_NODES;
-
         // Transform nodes and position them sequentially on X axis
-        const nodesWithPositions = sourceNodes.map((node, index) => {
+        const nodesWithPositions = data.map((node, index) => {
           const dimensions = getNodeDimensions(node.visual_style || 'default');
           const spacing = Math.max(dimensions.width, 8); // Minimum spacing of 8 units
           
@@ -162,7 +76,7 @@ const ThreeDCanvas = ({
           activeTool={activeTool}
           setActiveTool={setActiveTool}
           viewMode={viewMode}
-          onViewModeChange={setViewMode}
+          setViewMode={setViewMode}
           onAddNode={onAddNode}
         />
       </nav>
