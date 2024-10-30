@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDebug } from '@/contexts/DebugContext';
-import { X, Maximize2, Minimize2, Eye, EyeOff, Smartphone, Tablet, Monitor, Display } from 'lucide-react';
+import { X, Maximize2, Minimize2, Smartphone, Tablet, Monitor, Display, Bug } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -11,6 +11,8 @@ import { useLocation } from 'react-router-dom';
 import DebugStateSection from './DebugStateSection';
 import DebugPositionSection from './DebugPositionSection';
 import DebugHoverSection from './DebugHoverSection';
+import DebugToolSection from './sections/DebugToolSection';
+import DebugViewSection from './sections/DebugViewSection';
 import { Rnd } from 'react-rnd';
 
 const DebugPanel = () => {
@@ -55,7 +57,10 @@ const DebugPanel = () => {
     <>
       <div className="flex items-center justify-between p-4 border-b border-white/10">
         <div className="flex items-center gap-4">
-          <h2 className="text-lg font-semibold">Debug Panel 🛠️</h2>
+          <div className="flex items-center gap-2">
+            <Bug className="h-5 w-5 text-purple-400" />
+            <h2 className="text-lg font-semibold">Debug Panel 🛠️</h2>
+          </div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-white/60">Guidelines</span>
             <Switch
@@ -105,6 +110,15 @@ const DebugPanel = () => {
 
           <Separator className="bg-white/10" />
           
+          <DebugToolSection activeTool={debugData?.activeTool} />
+          
+          <Separator className="bg-white/10" />
+          
+          <DebugViewSection 
+            currentView={debugData?.currentView}
+            viewMode={debugData?.viewMode}
+          />
+
           {hoveredElement && (
             <>
               <DebugHoverSection hoveredElement={hoveredElement} />
