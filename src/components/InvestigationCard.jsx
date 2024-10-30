@@ -66,7 +66,7 @@ const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
             <p className="text-sm text-gray-600 flex-grow overflow-hidden line-clamp-3">
               {investigation.description || 'No description available'}
             </p>
-            <div className="mt-4 text-xs text-gray-400">
+            <div className="mt-4 text-xs text-gray-400 pt-2 border-t border-gray-100">
               {investigation.created_at ? format(new Date(investigation.created_at), 'MMMM dd, yyyy') : 'Date not available'}
             </div>
           </CardContent>
