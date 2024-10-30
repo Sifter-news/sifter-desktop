@@ -23,7 +23,6 @@ const ThreeScene = ({
   const { camera } = useThree();
   const { showGuides } = useDebug();
 
-  // Set isometric view when viewMode is '3d'
   React.useEffect(() => {
     if (camera && viewMode === '3d') {
       const distance = 200 / zoom;
@@ -50,12 +49,11 @@ const ThreeScene = ({
 
   return (
     <group onPointerMove={handlePointerMove}>
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} />
+      <ambientLight intensity={0.8} /> {/* Increased light intensity */}
+      <pointLight position={[10, 10, 10]} intensity={1.5} /> {/* Added stronger point light */}
       <Grid size={100} divisions={24} />
       {showGuides && <DebugAxes />}
       
-      {/* Render 3D nodes */}
       {nodes?.map(node => (
         <ThreeDNode 
           key={node.id}
@@ -65,7 +63,9 @@ const ThreeScene = ({
               node.position_x || node.x || 0,
               node.position_y || node.y || 0,
               node.position_z || node.z || 0
-            ]
+            ],
+            width: node.width || 256,
+            height: node.height || 256
           }}
           activeTool={activeTool}
           onUpdate={handleNodeUpdate}
