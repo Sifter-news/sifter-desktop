@@ -18,17 +18,38 @@ const ThreeScene = ({
   onStartConnection = () => {},
   onEndConnection = () => {},
   setActiveConnection = () => {},
-  zoom = 1 // Add zoom prop with default value
+  zoom = 1
 }) => {
   const { camera } = useThree();
+
+  // Set isometric view when viewMode is '3d'
+  React.useEffect(() => {
+    if (camera && viewMode === '3d') {
+      // Set camera position for isometric view
+      const distance = 200 / zoom;
+      camera.position.set(distance, distance, distance);
+      camera.lookAt(0, 0, 0);
+      camera.updateProjectionMatrix();
+    } else if (camera) {
+      // Reset to default top-down view for 2D
+      camera.position.set(0, 0, 200 / zoom);
+      camera.lookAt(0, 0, 0);
+      camera.updateProjectionMatrix();
+    }
+  }, [viewMode, zoom, camera]);
 
   // Update camera position when zoom changes
   React.useEffect(() => {
     if (camera) {
-      camera.position.z = 200 / zoom;
+      if (viewMode === '3d') {
+        const distance = 200 / zoom;
+        camera.position.set(distance, distance, distance);
+      } else {
+        camera.position.z = 200 / zoom;
+      }
       camera.updateProjectionMatrix();
     }
-  }, [zoom, camera]);
+  }, [zoom, camera, viewMode]);
 
   const { showGuides } = useDebug();
 
@@ -92,7 +113,7 @@ const ThreeScene = ({
           enableZoom={true}
           enablePan={activeTool === 'pan'}
           enableRotate={activeTool === 'pan'}
-          maxDistance={200 / zoom} // Adjust max distance based on zoom
+          maxDistance={200 / zoom}
           minDistance={10}
           camera={camera}
         />
