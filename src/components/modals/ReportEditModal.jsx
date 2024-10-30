@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from "sonner";
+import { supabase } from '@/integrations/supabase/supabase';
 import BaseModal from './BaseModal';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,6 +11,7 @@ const ReportEditModal = ({ isOpen, onClose, report, onUpdate, onDelete }) => {
     title: '',
     content: ''
   });
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (report) {
@@ -21,26 +23,60 @@ const ReportEditModal = ({ isOpen, onClose, report, onUpdate, onDelete }) => {
   }, [report]);
 
   const handleSave = async () => {
+    if (!report?.id) {
+      toast.error("Invalid report ID");
+      return;
+    }
+
+    setIsSaving(true);
     try {
-      const updatedReport = {
-        ...report,
-        ...formData
-      };
-      await onUpdate(updatedReport);
+      const { data, error } = await supabase
+        .from('reports')
+        .update({
+          title: formData.title.trim(),
+          content: formData.content.trim(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', report.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
       toast.success("Report updated successfully");
+      onUpdate(data);
       onClose();
     } catch (error) {
+      console.error('Error updating report:', error);
       toast.error("Failed to update report");
+    } finally {
+      setIsSaving(false);
     }
   };
 
   const handleDelete = async () => {
+    if (!report?.id) {
+      toast.error("Invalid report ID");
+      return;
+    }
+
+    setIsSaving(true);
     try {
-      await onDelete(report.id);
+      const { error } = await supabase
+        .from('reports')
+        .delete()
+        .eq('id', report.id);
+
+      if (error) throw error;
+
       toast.success("Report deleted successfully");
+      onDelete(report.id);
       onClose();
     } catch (error) {
+      console.error('Error deleting report:', error);
       toast.error("Failed to delete report");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -52,6 +88,7 @@ const ReportEditModal = ({ isOpen, onClose, report, onUpdate, onDelete }) => {
       onSave={handleSave}
       onDelete={handleDelete}
       showDelete={true}
+      isLoading={isSaving}
     >
       <div className="grid gap-4 py-4">
         <div className="grid w-full items-center gap-1.5">
@@ -60,6 +97,7 @@ const ReportEditModal = ({ isOpen, onClose, report, onUpdate, onDelete }) => {
             id="title"
             value={formData.title}
             onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+            disabled={isSaving}
           />
         </div>
         <div className="grid w-full items-center gap-1.5">
@@ -69,6 +107,7 @@ const ReportEditModal = ({ isOpen, onClose, report, onUpdate, onDelete }) => {
             value={formData.content}
             onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
             rows={5}
+            disabled={isSaving}
           />
         </div>
       </div>
