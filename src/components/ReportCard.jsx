@@ -15,11 +15,11 @@ const ReportCard = ({ report, onUpdate }) => {
     >
       <div className="w-full h-[100px] bg-gray-200 relative overflow-hidden rounded-t-[16px]">
         <img 
-          src="/default-image.png"
+          src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7"
           alt="Report Banner"
           className="w-full h-full object-cover"
           onError={(e) => {
-            e.target.src = '/default-image.png';
+            e.target.src = 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7';
           }}
         />
       </div>
