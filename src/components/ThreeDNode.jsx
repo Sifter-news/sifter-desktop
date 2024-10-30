@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useThree } from '@react-three/fiber';
+import { useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useDebug } from '@/contexts/DebugContext';
 import { NODE_STYLES } from '@/utils/nodeStyles';
@@ -17,13 +17,20 @@ const ThreeDNode = ({
   const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredConnectionPoint, setHoveredConnectionPoint] = useState(null);
-  const { gl } = useThree();
+  const { camera, gl } = useThree();
   const { showNodeDebug } = useDebug();
 
   // Convert database dimensions (pixels) to Three.js units (1 unit = ~20px)
   const width = (node.width || 256) / 20;
   const height = (node.height || 256) / 20;
-  const depth = 0.5; // Keep depth constant for better visibility
+  const depth = 0.5;
+
+  // Make node face camera
+  useFrame(() => {
+    if (meshRef.current) {
+      meshRef.current.quaternion.copy(camera.quaternion);
+    }
+  });
 
   const handlePointerDown = (e) => {
     if (activeTool !== 'select') return;
@@ -63,41 +70,39 @@ const ThreeDNode = ({
         onPointerEnter={handlePointerEnter}
         onPointerLeave={handlePointerLeave}
       >
-        <boxGeometry args={[width, height, depth]} />
+        <planeGeometry args={[width, height]} />
         <meshStandardMaterial 
           color="white"
           transparent
           opacity={isHovered ? 0.8 : 1}
-          wireframe={isHovered && !isDragging}
+          side={THREE.DoubleSide}
           emissive={isHighlighted ? "#ffffff" : "#000000"}
           emissiveIntensity={isHighlighted ? 0.5 : 0}
-          roughness={0.3}
-          metalness={0.1}
         />
-        
-        {/* Connection points */}
-        <group position={[0, height/2, depth/2]}>
-          <mesh
-            onPointerEnter={() => setHoveredConnectionPoint('top')}
-            onPointerLeave={() => setHoveredConnectionPoint(null)}
-            onPointerDown={() => onStartConnection?.(node.id, node.position, 'top')}
-          >
-            <sphereGeometry args={[0.2, 16, 16]} />
-            <meshBasicMaterial color={hoveredConnectionPoint === 'top' ? '#00ff00' : '#ffffff'} />
-          </mesh>
-        </group>
-        
-        <group position={[0, -height/2, depth/2]}>
-          <mesh
-            onPointerEnter={() => setHoveredConnectionPoint('bottom')}
-            onPointerLeave={() => setHoveredConnectionPoint(null)}
-            onPointerDown={() => onStartConnection?.(node.id, node.position, 'bottom')}
-          >
-            <sphereGeometry args={[0.2, 16, 16]} />
-            <meshBasicMaterial color={hoveredConnectionPoint === 'bottom' ? '#00ff00' : '#ffffff'} />
-          </mesh>
-        </group>
       </mesh>
+      
+      {/* Connection points */}
+      <group position={[0, height/2, 0.1]}>
+        <mesh
+          onPointerEnter={() => setHoveredConnectionPoint('top')}
+          onPointerLeave={() => setHoveredConnectionPoint(null)}
+          onPointerDown={() => onStartConnection?.(node.id, node.position, 'top')}
+        >
+          <sphereGeometry args={[0.2, 16, 16]} />
+          <meshBasicMaterial color={hoveredConnectionPoint === 'top' ? '#00ff00' : '#ffffff'} />
+        </mesh>
+      </group>
+      
+      <group position={[0, -height/2, 0.1]}>
+        <mesh
+          onPointerEnter={() => setHoveredConnectionPoint('bottom')}
+          onPointerLeave={() => setHoveredConnectionPoint(null)}
+          onPointerDown={() => onStartConnection?.(node.id, node.position, 'bottom')}
+        >
+          <sphereGeometry args={[0.2, 16, 16]} />
+          <meshBasicMaterial color={hoveredConnectionPoint === 'bottom' ? '#00ff00' : '#ffffff'} />
+        </mesh>
+      </group>
     </group>
   );
 };

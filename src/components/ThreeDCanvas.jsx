@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import React, { useRef, useState, useEffect } from 'react';
+import { Canvas } from '@react-three/fiber';
 import { toast } from 'sonner';
 import { Bug } from "lucide-react";
 import Toolbar from './Toolbar';
@@ -8,50 +8,14 @@ import { useNodes } from '@/hooks/useNodes';
 import { useZoomPan } from '@/hooks/useZoomPan';
 import { useDebug } from '@/contexts/DebugContext';
 import { supabase } from '@/integrations/supabase/supabase';
-
-const CameraDebug = () => {
-  const { camera, mouse } = useThree();
-  const { setDebugData } = useDebug();
-
-  useEffect(() => {
-    const updateDebug = () => {
-      setDebugData(prev => ({
-        ...prev,
-        camera: {
-          position: {
-            x: camera.position.x.toFixed(2),
-            y: camera.position.y.toFixed(2),
-            z: camera.position.z.toFixed(2)
-          },
-          rotation: {
-            x: camera.rotation.x.toFixed(2),
-            y: camera.rotation.y.toFixed(2),
-            z: camera.rotation.z.toFixed(2)
-          }
-        },
-        mouse: {
-          x: mouse.x.toFixed(2),
-          y: mouse.y.toFixed(2),
-          z: camera.position.z.toFixed(2)
-        }
-      }));
-    };
-
-    const interval = setInterval(updateDebug, 100);
-    return () => clearInterval(interval);
-  }, [camera, mouse, setDebugData]);
-
-  return null;
-};
+import { createDebugNodes } from './three/DebugNodes';
 
 const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
   const [nodes, setNodes] = useState([]);
   const [activeTool, setActiveTool] = React.useState('pan');
   const [viewMode, setViewMode] = React.useState('2d');
-  const [showDebug, setShowDebug] = React.useState(false);
   const controlsRef = useRef();
   const { setDebugData } = useDebug();
-
   const { zoom, handleZoom } = useZoomPan(1);
 
   useEffect(() => {
@@ -61,63 +25,10 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
           .from('node')
           .select('*')
           .eq('investigation_id', projectId);
-
+          
         if (error) throw error;
-
-        // Create debug nodes
-        const debugNodes = [
-          {
-            id: 'debug-1',
-            title: 'Debug Node 1',
-            description: 'First debug node',
-            avatar: '/default-image.png',
-            position: [Math.random() * 100 - 50, Math.random() * 100 - 50, 0],
-            width: 256,
-            height: 256,
-            visualStyle: 'default'
-          },
-          {
-            id: 'debug-2',
-            title: 'Debug Node 2',
-            description: 'Second debug node',
-            avatar: '/default-image.png',
-            position: [Math.random() * 100 - 50, Math.random() * 100 - 50, 0],
-            width: 256,
-            height: 256,
-            visualStyle: 'postit'
-          },
-          {
-            id: 'debug-3',
-            title: 'Debug Node 3',
-            description: 'Third debug node',
-            avatar: '/default-image.png',
-            position: [Math.random() * 100 - 50, Math.random() * 100 - 50, 0],
-            width: 256,
-            height: 256,
-            visualStyle: 'default'
-          },
-          {
-            id: 'debug-4',
-            title: 'Debug Node 4',
-            description: 'Fourth debug node',
-            avatar: '/default-image.png',
-            position: [Math.random() * 100 - 50, Math.random() * 100 - 50, 0],
-            width: 256,
-            height: 256,
-            visualStyle: 'postit'
-          },
-          {
-            id: 'debug-5',
-            title: 'Debug Node 5',
-            description: 'Fifth debug node',
-            avatar: '/default-image.png',
-            position: [Math.random() * 100 - 50, Math.random() * 100 - 50, 0],
-            width: 256,
-            height: 256,
-            visualStyle: 'default'
-          }
-        ];
-
+        
+        const debugNodes = createDebugNodes();
         const nodesWithDebug = [...(data || []), ...debugNodes].map(node => ({
           ...node,
           position: node.position || [
@@ -206,7 +117,7 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
           zoom={zoom}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
-          onAddNode={handleAddNode}
+          onAddNode={onAddNode}
         />
       </nav>
 
@@ -219,7 +130,6 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
         }}
         style={{ background: 'black' }}
       >
-        <CameraDebug />
         <ThreeScene 
           nodes={nodes}
           viewMode={viewMode}
