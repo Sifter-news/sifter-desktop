@@ -22,8 +22,8 @@ const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250, spacing = 16 }) => {
   const positions = [];
   const halfSize = size / 2;
 
-  // Changed dot spacing to 256 for all layers
-  const dotSpacing = 256;
+  // Changed dot spacing to 64 for all layers
+  const dotSpacing = 64;
 
   for (let i = -halfSize; i <= halfSize; i += dotSpacing) {
     for (let j = -halfSize; j <= halfSize; j += dotSpacing) {
