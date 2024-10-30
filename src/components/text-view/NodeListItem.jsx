@@ -92,38 +92,38 @@ const NodeListItem = ({
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="h-6 w-6 p-0">
               <MoreVertical className="h-3 w-3" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={(e) => {
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={(e) => {
+              e.stopPropagation();
+              if (onEdit) {
+                onEdit(node);
+              } else {
+                toast.error("Edit functionality is not available");
+              }
+            }}>
+              <Pencil className="h-4 w-4 mr-2" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={(e) => {
                 e.stopPropagation();
-                if (onEdit) {
-                  onEdit(node);
-                } else {
-                  toast.error("Edit functionality is not available");
-                }
-              }}>
-                <Pencil className="h-4 w-4 mr-2" />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onAIConversation(node);
-                }}
-                className="bg-purple-600 hover:bg-purple-700 text-white focus:bg-purple-700 focus:text-white"
-              >
-                <MessageCircle className="h-4 w-4 mr-2" />
-                AI Conversation
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="text-red-600"
-                onClick={handleDelete}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                onAIConversation(node);
+              }}
+              className="bg-purple-600 hover:bg-purple-700 text-white focus:bg-purple-700 focus:text-white"
+            >
+              <MessageCircle className="h-4 w-4 mr-2" />
+              AI Conversation
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-red-600"
+              onClick={handleDelete}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
         </DropdownMenu>
       </div>
     </div>
