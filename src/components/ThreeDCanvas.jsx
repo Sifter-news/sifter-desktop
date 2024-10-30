@@ -8,6 +8,36 @@ import { useDebug } from '@/contexts/DebugContext';
 import { supabase } from '@/integrations/supabase/supabase';
 import { getNodeDimensions } from '@/utils/nodeStyles';
 
+const EXAMPLE_NODES = [
+  {
+    id: 'example-1',
+    title: 'Center Node',
+    description: 'Located at (0,0,0)',
+    visual_style: 'default',
+    node_type: 'node_person',
+    avatar: '/default-image.png',
+    position: [0, 0, 0]
+  },
+  {
+    id: 'example-2',
+    title: 'Compact Node',
+    description: 'Located at (0,0,0)',
+    visual_style: 'compact',
+    node_type: 'node_organization',
+    avatar: '/default-image.png',
+    position: [0, 0, 0]
+  },
+  {
+    id: 'example-3',
+    title: 'Post-it Node',
+    description: 'Located at (0,0,0)',
+    visual_style: 'postit',
+    node_type: 'node_concept',
+    avatar: '/default-image.png',
+    position: [0, 0, 0]
+  }
+];
+
 const ThreeDCanvas = ({ 
   projectId, 
   onAddNode, 
@@ -31,16 +61,18 @@ const ThreeDCanvas = ({
 
         if (error) throw error;
 
-        // Transform nodes and position them sequentially on X axis
-        const nodesWithPositions = data.map((node, index) => {
+        // If no nodes found, use example nodes
+        const sourceNodes = data.length > 0 ? data : EXAMPLE_NODES;
+
+        // Transform nodes and position them
+        const nodesWithPositions = sourceNodes.map((node) => {
           const dimensions = getNodeDimensions(node.visual_style || 'default');
-          const spacing = Math.max(dimensions.width, 8); // Minimum spacing of 8 units
           
           return {
             ...node,
-            position: [index * spacing, 0, 0], // Sequential X positioning
+            position: node.position || [0, 0, 0],
             dimensions: {
-              width: dimensions.width / 20, // Scale down for 3D space
+              width: dimensions.width / 20,
               height: dimensions.height / 20,
               depth: 0.1
             },
