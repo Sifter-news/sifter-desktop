@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useDebug } from '@/contexts/DebugContext';
-import { NODE_STYLES } from '@/utils/nodeStyles';
 
 const ThreeDNode = ({ 
   node, 
@@ -20,23 +19,8 @@ const ThreeDNode = ({
   const { gl } = useThree();
   const { showNodeDebug } = useDebug();
 
-  // Convert database dimensions (pixels) to Three.js units (1 unit = ~20px)
-  const width = (node.width || 256) / 20;
-  const height = (node.height || 256) / 20;
-  const depth = 0.5; // Keep depth constant for better visibility
-
-  const getNodeColor = () => {
-    if (node?.color) return node.color;
-    
-    switch (node?.visualStyle) {
-      case 'compact':
-        return '#4A90E2';
-      case 'postit':
-        return '#FFE082';
-      default:
-        return '#FFFFFF';
-    }
-  };
+  // Use consistent cube dimensions
+  const size = 5; // 100px in Three.js units (1 unit = 20px)
 
   const handlePointerDown = (e) => {
     if (activeTool !== 'select') return;
@@ -76,9 +60,9 @@ const ThreeDNode = ({
         onPointerEnter={handlePointerEnter}
         onPointerLeave={handlePointerLeave}
       >
-        <boxGeometry args={[width, height, depth]} />
+        <boxGeometry args={[size, size, size]} />
         <meshStandardMaterial 
-          color={getNodeColor()}
+          color="white"
           transparent
           opacity={isHovered ? 0.8 : 1}
           wireframe={isHovered && !isDragging}
@@ -89,7 +73,7 @@ const ThreeDNode = ({
         />
         
         {/* Connection points */}
-        <group position={[0, height/2, depth/2]}>
+        <group position={[0, size/2, size/2]}>
           <mesh
             onPointerEnter={() => setHoveredConnectionPoint('top')}
             onPointerLeave={() => setHoveredConnectionPoint(null)}
@@ -100,7 +84,7 @@ const ThreeDNode = ({
           </mesh>
         </group>
         
-        <group position={[0, -height/2, depth/2]}>
+        <group position={[0, -size/2, size/2]}>
           <mesh
             onPointerEnter={() => setHoveredConnectionPoint('bottom')}
             onPointerLeave={() => setHoveredConnectionPoint(null)}
