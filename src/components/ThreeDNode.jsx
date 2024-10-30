@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useDebug } from '@/contexts/DebugContext';
+import { NODE_STYLES } from '@/utils/nodeStyles';
 
 const ThreeDNode = ({ 
   node, 
@@ -19,8 +20,10 @@ const ThreeDNode = ({
   const { gl } = useThree();
   const { showNodeDebug } = useDebug();
 
-  // Use consistent cube dimensions
-  const size = 5; // 100px in Three.js units (1 unit = 20px)
+  // Convert database dimensions (pixels) to Three.js units (1 unit = ~20px)
+  const width = (node.width || 256) / 20;
+  const height = (node.height || 256) / 20;
+  const depth = 0.5; // Keep depth constant for better visibility
 
   const handlePointerDown = (e) => {
     if (activeTool !== 'select') return;
@@ -60,7 +63,7 @@ const ThreeDNode = ({
         onPointerEnter={handlePointerEnter}
         onPointerLeave={handlePointerLeave}
       >
-        <boxGeometry args={[size, size, size]} />
+        <boxGeometry args={[width, height, depth]} />
         <meshStandardMaterial 
           color="white"
           transparent
@@ -73,7 +76,7 @@ const ThreeDNode = ({
         />
         
         {/* Connection points */}
-        <group position={[0, size/2, size/2]}>
+        <group position={[0, height/2, depth/2]}>
           <mesh
             onPointerEnter={() => setHoveredConnectionPoint('top')}
             onPointerLeave={() => setHoveredConnectionPoint(null)}
@@ -84,7 +87,7 @@ const ThreeDNode = ({
           </mesh>
         </group>
         
-        <group position={[0, -size/2, size/2]}>
+        <group position={[0, -height/2, depth/2]}>
           <mesh
             onPointerEnter={() => setHoveredConnectionPoint('bottom')}
             onPointerLeave={() => setHoveredConnectionPoint(null)}
