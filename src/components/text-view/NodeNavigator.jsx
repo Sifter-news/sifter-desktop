@@ -99,6 +99,11 @@ const NodeNavigator = ({
     setEditingNode(node);
   };
 
+  const handleNodeClick = (nodeId) => {
+    setSelectedNodes([nodeId]);
+    onNodeFocus(nodeId);
+  };
+
   const filteredNodes = nodes.filter(node => {
     if (!node) return false;
     const matchesSearch = (node.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -109,7 +114,7 @@ const NodeNavigator = ({
   return (
     <div 
       className="w-full h-full flex flex-col p-4 rounded-2xl"
-      tabIndex={0} // Make the container focusable
+      tabIndex={0}
     >
       <SearchInput value={searchQuery} onChange={setSearchQuery} />
       
@@ -119,10 +124,7 @@ const NodeNavigator = ({
             nodes={filteredNodes}
             onNodeFocus={onNodeFocus}
             selectedNodes={selectedNodes}
-            handleNodeClick={(nodeId) => {
-              setSelectedNodes([nodeId]);
-              onNodeFocus(nodeId);
-            }}
+            handleNodeClick={handleNodeClick}
             onUpdateNode={handleNodeUpdate}
             onAIConversation={() => setIsAIChatOpen(true)}
             focusedNodeId={focusedNodeId}
