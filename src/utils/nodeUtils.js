@@ -1,54 +1,23 @@
-import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/supabase';
+import { toast } from 'sonner';
+import { NODE_STYLES } from './nodeStyles';
 
-// Dimension utilities
+// Node dimensions
 export const getNodeDimensions = (visualStyle) => {
-  switch (visualStyle) {
-    case 'compact':
-      return { width: 40, height: 40 };
-    case 'postit':
-      return { width: 256, height: 256 };
-    case 'default':
-    default:
-      return { width: 40, height: 128 };
-  }
+  const style = NODE_STYLES[visualStyle || 'default'];
+  return {
+    width: style.width || 256,
+    height: style.height || 256,
+    depth: visualStyle === 'cube' ? (style.width || 256) / 20 : 0.5
+  };
 };
 
 // Position utilities
-export const findAvailablePosition = (nodes, newNode) => {
-  const { width: nodeWidth, height: nodeHeight } = getNodeDimensions(newNode?.visualStyle);
-  const padding = 20;
-  let x = 0;
-  let y = 0;
-  let maxY = 0;
-
-  nodes.forEach(node => {
-    if (node.y + nodeHeight > maxY) {
-      maxY = node.y + nodeHeight;
-    }
-  });
-
-  while (true) {
-    const overlapping = nodes.some(node => 
-      x < node.x + nodeWidth + padding &&
-      x + nodeWidth + padding > node.x &&
-      y < node.y + nodeHeight + padding &&
-      y + nodeHeight + padding > node.y
-    );
-
-    if (!overlapping) {
-      return { x, y };
-    }
-
-    x += nodeWidth + padding;
-
-    if (x > window.innerWidth - nodeWidth) {
-      x = 0;
-      y = maxY + padding;
-      maxY = y + nodeHeight;
-    }
-  }
-};
+export const generateRandomPosition = () => ({
+  x: (Math.random() * 100) - 50,
+  y: (Math.random() * 100) - 50,
+  z: 0
+});
 
 // Node operations
 export const createNode = async (nodeData, projectId) => {
@@ -75,7 +44,17 @@ export const updateNode = async (nodeId, updates) => {
   try {
     const { error } = await supabase
       .from('node')
-      .update(updates)
+      .update({
+        title: updates.title,
+        description: updates.description,
+        type: updates.type,
+        visual_style: updates.visualStyle,
+        position_x: updates.x,
+        position_y: updates.y,
+        position_z: updates.z,
+        metadata: updates.metadata,
+        node_type: updates.nodeType
+      })
       .eq('id', nodeId);
 
     if (error) throw error;
