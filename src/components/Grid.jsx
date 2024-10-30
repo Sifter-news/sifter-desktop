@@ -52,6 +52,27 @@ const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250, spacing = 16 }) => {
   );
 };
 
+const CubeOutline = () => {
+  const size = 12.8; // 256px / 20 (our standard scale factor)
+  const edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(size, size, size));
+  
+  return (
+    <group position={[0, 0, size/2]}>
+      {/* Wireframe outline */}
+      <lineSegments>
+        <primitive object={edges} />
+        <lineBasicMaterial color="white" opacity={0.5} transparent />
+      </lineSegments>
+      
+      {/* Solid front face */}
+      <mesh position={[0, 0, size/2]}>
+        <planeGeometry args={[size, size]} />
+        <meshBasicMaterial color="white" opacity={0.9} transparent />
+      </mesh>
+    </group>
+  );
+};
+
 const Grid = ({ divisions = 250 }) => {
   // Create grid layers with 24px increments, including positive z
   const gridPositions = [
@@ -71,6 +92,7 @@ const Grid = ({ divisions = 250 }) => {
           divisions={divisions} 
         />
       ))}
+      <CubeOutline />
     </group>
   );
 };
