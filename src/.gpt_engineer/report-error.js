@@ -7,8 +7,7 @@ const getCircularReplacer = () => {
         type: 'Request',
         url: value.url,
         method: value.method,
-        headers: Object.fromEntries(value.headers.entries()),
-        // Don't include body as it's not clonable
+        headers: Array.from(value.headers.entries()),
         cache: value.cache,
         mode: value.mode,
         credentials: value.credentials,
@@ -43,9 +42,12 @@ const postMessage = (message) => {
       ...(message.stack && typeof message.stack === 'string' && { stack: message.stack })
     };
 
-    window.parent.postMessage(JSON.parse(JSON.stringify(serializableMessage, getCircularReplacer())), '*');
+    // Use structured clone algorithm with custom replacer
+    const cloneableMessage = JSON.parse(JSON.stringify(serializableMessage, getCircularReplacer()));
+    window.parent.postMessage(cloneableMessage, '*');
   } catch (e) {
     console.warn('Failed to post error message:', e);
+    // Fallback message that's guaranteed to be cloneable
     window.parent.postMessage({
       type: 'error',
       message: 'Error occurred (details not serializable)',
@@ -56,7 +58,6 @@ const postMessage = (message) => {
 };
 
 const reportHTTPError = (error, requestInfo) => {
-  // Create a safe serializable version of the request info
   let safeRequestInfo;
   
   try {
@@ -65,7 +66,7 @@ const reportHTTPError = (error, requestInfo) => {
         type: 'Request',
         url: requestInfo.url,
         method: requestInfo.method,
-        headers: Object.fromEntries(requestInfo.headers.entries()),
+        headers: Array.from(requestInfo.headers.entries()),
         cache: requestInfo.cache,
         mode: requestInfo.mode,
         credentials: requestInfo.credentials,
@@ -76,7 +77,7 @@ const reportHTTPError = (error, requestInfo) => {
     } else {
       safeRequestInfo = {
         url: typeof requestInfo === 'string' ? requestInfo : requestInfo?.url || 'unknown',
-        method: typeof requestInfo === 'object' ? requestInfo?.method || 'GET' : 'GET',
+        method: requestInfo?.method || 'GET',
         timestamp: new Date().toISOString()
       };
     }
