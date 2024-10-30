@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box3 } from 'lucide-react';
+import { Box } from 'lucide-react';
 
 const Debug3DSection = ({ camera, rotation }) => {
   if (!camera) return null;
@@ -7,7 +7,7 @@ const Debug3DSection = ({ camera, rotation }) => {
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <Box3 className="h-4 w-4 text-blue-400" />
+        <Box className="h-4 w-4 text-blue-400" />
         <h3 className="text-sm font-medium text-white/80">3D Information 🎲</h3>
       </div>
       <div className="bg-black/50 p-2 rounded text-xs space-y-1">
