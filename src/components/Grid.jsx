@@ -1,8 +1,7 @@
 import React from 'react';
 import * as THREE from 'three';
 
-const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250 }) => {
-  const spacing = 16; // Doubled from 8 to 16 units
+const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250, spacing = 16 }) => {
   const size = spacing * divisions; // Total size will be 4000 units (16 * 250)
   
   const gridHelper = new THREE.GridHelper(size, divisions, 0xffffff, 0x333333);
@@ -21,8 +20,11 @@ const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250 }) => {
   const positions = [];
   const halfSize = size / 2;
 
-  for (let i = -halfSize; i <= halfSize; i += spacing) {
-    for (let j = -halfSize; j <= halfSize; j += spacing) {
+  // Use 8px spacing for z=0, 16px for other layers
+  const dotSpacing = z === 0 ? 8 : 16;
+
+  for (let i = -halfSize; i <= halfSize; i += dotSpacing) {
+    for (let j = -halfSize; j <= halfSize; j += dotSpacing) {
       positions.push(i, j, z);
     }
   }
@@ -57,7 +59,7 @@ const Grid = ({ divisions = 250 }) => {
     0,      // Base layer
     -24, -48 // Negative z layers
   ];
-  const baseOpacity = 0.3;
+  const baseOpacity = 0.45; // Increased from 0.3 to 0.45
   
   return (
     <group>
@@ -65,7 +67,7 @@ const Grid = ({ divisions = 250 }) => {
         <GridLayer 
           key={`grid-${index}`}
           z={zPos} 
-          opacity={zPos === 0 ? baseOpacity : 0.1} // Base layer at 30% opacity, rest at 10%
+          opacity={zPos === 0 ? baseOpacity : 0.1} // Base layer at 45% opacity, rest at 10%
           divisions={divisions} 
         />
       ))}
