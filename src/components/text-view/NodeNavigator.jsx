@@ -35,6 +35,38 @@ const NodeNavigator = ({
     }
   }, [nodes, onNodeFocus]);
 
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!nodes.length) return;
+
+      const currentIndex = nodes.findIndex(node => node.id === focusedNodeId);
+      let nextIndex;
+
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          nextIndex = currentIndex < nodes.length - 1 ? currentIndex + 1 : currentIndex;
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          nextIndex = currentIndex > 0 ? currentIndex - 1 : currentIndex;
+          break;
+        default:
+          return;
+      }
+
+      const nextNode = nodes[nextIndex];
+      if (nextNode) {
+        onNodeFocus(nextNode.id);
+        setSelectedNodes([nextNode.id]);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [nodes, focusedNodeId, onNodeFocus]);
+
   const handleNodeDelete = async (nodeId) => {
     try {
       await deleteNode(nodeId, () => {
