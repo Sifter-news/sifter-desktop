@@ -2,8 +2,8 @@ import React from 'react';
 import * as THREE from 'three';
 
 const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250 }) => {
-  const spacing = 8; // Fixed spacing of 8 units
-  const size = spacing * divisions; // Total size will be 2000 units (8 * 250)
+  const spacing = 16; // Doubled from 8 to 16 units
+  const size = spacing * divisions; // Total size will be 4000 units (16 * 250)
   
   const gridHelper = new THREE.GridHelper(size, divisions, 0xffffff, 0x333333);
   gridHelper.position.z = z;
@@ -51,8 +51,8 @@ const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250 }) => {
 };
 
 const Grid = ({ divisions = 250 }) => {
-  // Create an array of z-positions for the grids
-  const gridPositions = [0, -48, -96, -144];
+  // Create 3 grid layers with 24px increments
+  const gridPositions = [0, -24, -48];
   const baseOpacity = 0.3;
   
   return (
@@ -61,7 +61,7 @@ const Grid = ({ divisions = 250 }) => {
         <GridLayer 
           key={`grid-${index}`}
           z={zPos} 
-          opacity={index === 0 ? baseOpacity : 0.05} // First grid at 30% opacity, rest at 5%
+          opacity={index === 0 ? baseOpacity : 0.1} // First grid at 30% opacity, rest at 10%
           divisions={divisions} 
         />
       ))}
