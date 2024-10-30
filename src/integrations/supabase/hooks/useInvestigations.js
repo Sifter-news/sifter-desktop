@@ -37,10 +37,7 @@ export const useInvestigations = ({ select, filter } = {}) => {
     queryFn: async () => {
       let query = supabase
         .from('investigations')
-        .select(`
-          *,
-          reports:reports(*)
-        `);
+        .select('*');
       
       if (filter?.startsWith('owner_id.eq.')) {
         const userId = filter.replace('owner_id.eq.', '');
@@ -68,22 +65,14 @@ export const useAddInvestigation = () => {
   
   return useMutation({
     mutationFn: async (newInvestigation) => {
-      try {
-        const { data, error } = await supabase
-          .from('investigations')
-          .insert([newInvestigation])
-          .select(`
-            *,
-            reports (*)
-          `)
-          .single();
+      const { data, error } = await supabase
+        .from('investigations')
+        .insert([newInvestigation])
+        .select()
+        .single();
           
-        if (error) throw error;
-        return data;
-      } catch (error) {
-        console.error('Add investigation error:', error);
-        throw error;
-      }
+      if (error) throw error;
+      return data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['investigations'] });
@@ -97,23 +86,15 @@ export const useUpdateInvestigation = () => {
   
   return useMutation({
     mutationFn: async ({ id, ...updates }) => {
-      try {
-        const { data, error } = await supabase
-          .from('investigations')
-          .update(updates)
-          .eq('id', id)
-          .select(`
-            *,
-            reports (*)
-          `)
-          .single();
+      const { data, error } = await supabase
+        .from('investigations')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
           
-        if (error) throw error;
-        return data;
-      } catch (error) {
-        console.error('Update investigation error:', error);
-        throw error;
-      }
+      if (error) throw error;
+      return data;
     },
     onSuccess: (updatedInvestigation) => {
       queryClient.invalidateQueries({ queryKey: ['investigations'] });
@@ -130,18 +111,13 @@ export const useDeleteInvestigation = () => {
   
   return useMutation({
     mutationFn: async (id) => {
-      try {
-        const { error } = await supabase
-          .from('investigations')
-          .delete()
-          .eq('id', id);
+      const { error } = await supabase
+        .from('investigations')
+        .delete()
+        .eq('id', id);
           
-        if (error) throw error;
-        return id;
-      } catch (error) {
-        console.error('Delete investigation error:', error);
-        throw error;
-      }
+      if (error) throw error;
+      return id;
     },
     onSuccess: (deletedId) => {
       queryClient.invalidateQueries({ queryKey: ['investigations'] });
