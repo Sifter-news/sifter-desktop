@@ -135,7 +135,7 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
 
       <Canvas
         camera={{ 
-          position: [0, 0, 200],
+          position: [0, 0, 200 / zoom], // Adjust camera position based on zoom
           fov: 45,
           near: 0.1,
           far: 2000
@@ -149,6 +149,7 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
           activeTool={activeTool}
           controlsRef={controlsRef}
           handleNodeUpdate={handleNodeUpdate}
+          zoom={zoom} // Pass zoom to ThreeScene
         />
       </Canvas>
     </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Plus, FileText, User, Building2, Package, MapPin, Brain, ChevronDown } from 'lucide-react';
+import { Plus, FileText, User, Building2, Package, Brain, MapPin, Calendar, ChevronDown } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,23 +8,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const NodeDataMenu = ({ onAddNode, selectedStyle }) => {
-  const nodeTypes = [
-    { id: 'generic', icon: FileText, label: 'Note' },
-    { id: 'node_person', icon: User, label: 'Person' },
-    { id: 'node_organization', icon: Building2, label: 'Organisation' },
-    { id: 'node_object', icon: Package, label: 'Object' },
-    { id: 'node_location', icon: MapPin, label: 'Location' },
-    { id: 'node_concept', icon: Brain, label: 'Concept' }
-  ];
+const nodeTypes = {
+  generic: { label: "Generic Note", icon: FileText },
+  node_person: { label: "Person", icon: User },
+  node_organization: { label: "Organization", icon: Building2 },
+  node_object: { label: "Object", icon: Package },
+  node_concept: { label: "Concept", icon: Brain },
+  node_location: { label: "Location", icon: MapPin },
+  node_event: { label: "Event", icon: Calendar }
+};
 
+const NodeDataMenu = ({ onAddNode, selectedStyle }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button 
           variant="ghost" 
           size="sm"
-          className="h-8 rounded-lg text-white hover:text-white hover:bg-white/10 bg-white/[0.0625] opacity-50 flex items-center gap-1.5"
+          className="h-8 rounded-lg text-white hover:text-white hover:bg-white/10 bg-white/[0.0625] flex items-center gap-1.5"
         >
           <Plus className="h-4 w-4" />
           <span>Add Node</span>
@@ -32,14 +33,14 @@ const NodeDataMenu = ({ onAddNode, selectedStyle }) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-black text-white" align="top">
-        {nodeTypes.map(type => (
+        {Object.entries(nodeTypes).map(([value, { label, icon: Icon }]) => (
           <DropdownMenuItem 
-            key={type.id}
-            onClick={() => onAddNode(type.id)}
+            key={value}
+            onClick={() => onAddNode(value)}
             className="flex items-center gap-2 hover:text-white"
           >
-            <type.icon className="h-4 w-4" />
-            <span>{type.label}</span>
+            <Icon className="h-4 w-4" />
+            <span>{label}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
