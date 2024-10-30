@@ -95,7 +95,7 @@ export const DebugProvider = ({ children }) => {
       setShowInspector
     }}>
       {children}
-      {showInspector && hoveredElement && (
+      {showInspector && hoveredElement && hoveredElement.metadata?.rect && (
         <div 
           className="fixed bg-black/90 text-white px-3 py-2 rounded-lg shadow-lg z-[99999] text-sm"
           style={{
