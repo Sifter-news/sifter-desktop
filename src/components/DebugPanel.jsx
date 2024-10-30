@@ -1,37 +1,47 @@
 import React, { useState } from 'react';
 import { useDebug } from '@/contexts/DebugContext';
-import { X, Maximize2, Minimize2 } from 'lucide-react';
+import { X, Maximize2, Minimize2, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAuth } from '@/components/AuthProvider';
-import { useInvestigations } from '@/integrations/supabase/hooks/useInvestigations';
 import { useLocation } from 'react-router-dom';
-import DebugStateSection from './debug/DebugStateSection';
-import DebugPositionSection from './debug/DebugPositionSection';
-import DebugHoverSection from './debug/DebugHoverSection';
 import { Rnd } from 'react-rnd';
+import DebugStateSection from './debug/sections/DebugStateSection';
+import DebugPositionSection from './debug/sections/DebugPositionSection';
+import DebugFocusSection from './debug/sections/DebugFocusSection';
+import DebugErrorSection from './debug/sections/DebugErrorSection';
+import DebugHeader from './debug/sections/DebugHeader';
+import { cn } from '@/lib/utils';
 
 const DebugPanel = () => {
   const { isDebugOpen, setIsDebugOpen, debugData, showGuides, setShowGuides, hoveredElement } = useDebug();
-  const { user } = useAuth();
-  const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { data: investigations } = useInvestigations({ 
-    filter: user ? `owner_id.eq.${user?.id}` : undefined 
+  const [expandedSections, setExpandedSections] = useState({
+    focus: true,
+    state: true,
+    position: true,
+    errors: true
   });
 
-  const getCurrentView = () => {
-    const pathname = location.pathname;
-    if (pathname === '/') return 'Home';
-    if (pathname.startsWith('/project/')) return 'Project View';
-    if (pathname === '/login') return 'Login';
-    if (pathname === '/new-project') return 'New Project';
-    if (pathname === '/subscription-plans') return 'Subscription Plans';
-    return pathname.split('/').pop() || 'Unknown';
+  const toggleSection = (section) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
   };
 
   if (!isDebugOpen) return null;
+
+  const SectionHeader = ({ title, section, icon: Icon }) => (
+    <button
+      onClick={() => toggleSection(section)}
+      className="flex items-center gap-2 w-full p-2 hover:bg-white/5 rounded transition-colors"
+    >
+      {expandedSections[section] ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+      {Icon && <Icon className="h-4 w-4 text-purple-400" />}
+      <span className="text-sm font-medium">{title}</span>
+    </button>
+  );
 
   const panelContent = isCollapsed ? (
     <Button
@@ -43,99 +53,38 @@ const DebugPanel = () => {
       <Maximize2 className="h-4 w-4" />
     </Button>
   ) : (
-    <>
-      <div className="flex items-center justify-between p-4 border-b border-white/10">
-        <div className="flex items-center gap-4">
-          <h2 className="text-lg font-semibold">Debug Panel</h2>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-white/60">Guidelines</span>
-            <Switch
-              checked={showGuides}
-              onCheckedChange={setShowGuides}
-              className="data-[state=checked]:bg-green-500"
-            />
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsCollapsed(true)}
-            className="text-white hover:text-white/80"
-          >
-            <Minimize2 className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsDebugOpen(false)}
-            className="text-white hover:text-white/80"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+    <div className="flex flex-col h-full">
+      <DebugHeader 
+        showGuides={showGuides}
+        setShowGuides={setShowGuides}
+        onCollapse={() => setIsCollapsed(true)}
+        onClose={() => setIsDebugOpen(false)}
+      />
       
-      <ScrollArea className="h-[500px] p-4">
+      <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
-          <DebugHoverSection hoveredElement={hoveredElement} />
-          
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-white/80">Authentication</h3>
-            <div className="bg-black/50 p-2 rounded">
-              <p className="text-xs">Logged in: {user ? 'Yes' : 'No'}</p>
-              {user && (
-                <>
-                  <p className="text-xs">User ID: {user.id}</p>
-                  <p className="text-xs">Email: {user.email}</p>
-                </>
-              )}
-            </div>
+          <div className={cn("transition-all", expandedSections.focus ? "mb-4" : "mb-0")}>
+            <SectionHeader title="Focus Tracking" section="focus" icon={ChevronRight} />
+            {expandedSections.focus && <DebugFocusSection hoveredElement={hoveredElement} />}
           </div>
 
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-white/80">Current View</h3>
-            <div className="bg-black/50 p-2 rounded">
-              <p className="text-xs">Page: {getCurrentView()}</p>
-            </div>
+          <div className={cn("transition-all", expandedSections.state ? "mb-4" : "mb-0")}>
+            <SectionHeader title="State Monitor" section="state" icon={ChevronRight} />
+            {expandedSections.state && <DebugStateSection debugData={debugData} />}
           </div>
 
-          <DebugStateSection debugData={debugData} />
-          <DebugPositionSection debugData={debugData} />
+          <div className={cn("transition-all", expandedSections.position ? "mb-4" : "mb-0")}>
+            <SectionHeader title="Position & Camera" section="position" icon={ChevronRight} />
+            {expandedSections.position && <DebugPositionSection debugData={debugData} />}
+          </div>
 
-          {user && (
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium text-white/80">Projects</h3>
-              <div className="bg-black/50 p-2 rounded">
-                {investigations?.length > 0 ? (
-                  <ul className="space-y-1">
-                    {investigations.map((investigation) => (
-                      <li key={investigation.id} className="text-xs">
-                        {investigation.title} (ID: {investigation.id})
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-xs">No projects found</p>
-                )}
-              </div>
-            </div>
-          )}
-
-          {Object.entries(debugData).map(([key, value]) => (
-            <div key={key} className="space-y-2">
-              <h3 className="text-sm font-medium text-white/80">{key}</h3>
-              <pre className="bg-black/50 p-2 rounded text-xs overflow-auto">
-                {JSON.stringify(value, null, 2)}
-              </pre>
-            </div>
-          ))}
-          {Object.keys(debugData).length === 0 && (
-            <p className="text-white/60 text-sm">No debug data available</p>
-          )}
+          <div className={cn("transition-all", expandedSections.errors ? "mb-4" : "mb-0")}>
+            <SectionHeader title="Error Log" section="errors" icon={ChevronRight} />
+            {expandedSections.errors && <DebugErrorSection errors={debugData?.errors || []} />}
+          </div>
         </div>
       </ScrollArea>
-    </>
+    </div>
   );
 
   return (

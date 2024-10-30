@@ -32,9 +32,54 @@ export const DebugProvider = ({ children }) => {
       }
     };
 
+    const handleMouseOver = (e) => {
+      if (!showInspector) return;
+      
+      const element = e.target;
+      const componentName = element.getAttribute('data-component-name');
+      if (componentName) {
+        const rect = element.getBoundingClientRect();
+        setHoveredElement({
+          component: componentName,
+          metadata: {
+            id: element.id,
+            className: element.className,
+            rect: {
+              top: rect.top,
+              left: rect.left,
+              width: rect.width,
+              height: rect.height,
+            }
+          }
+        });
+
+        // Add outline to hovered element
+        element.style.outline = '2px solid rgba(99, 102, 241, 0.5)';
+        element.style.outlineOffset = '2px';
+      }
+    };
+
+    const handleMouseOut = (e) => {
+      if (!showInspector) return;
+      
+      const element = e.target;
+      if (element.getAttribute('data-component-name')) {
+        setHoveredElement(null);
+        element.style.outline = '';
+        element.style.outlineOffset = '';
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+    document.addEventListener('mouseover', handleMouseOver);
+    document.addEventListener('mouseout', handleMouseOut);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mouseover', handleMouseOver);
+      document.removeEventListener('mouseout', handleMouseOut);
+    };
+  }, [showInspector]);
 
   return (
     <DebugContext.Provider value={{ 
@@ -50,37 +95,28 @@ export const DebugProvider = ({ children }) => {
       setShowInspector
     }}>
       {children}
-      {showInspector && hoveredElement && <ElementInspector />}
-    </DebugContext.Provider>
-  );
-};
-
-const ElementInspector = () => {
-  const { hoveredElement } = useDebug();
-  
-  if (!hoveredElement) return null;
-
-  return (
-    <div 
-      className="fixed bottom-4 right-4 bg-black/90 text-white p-4 rounded-lg shadow-lg z-[99999] backdrop-blur-sm border border-white/20"
-      style={{ maxWidth: '400px' }}
-    >
-      <div className="text-sm font-mono">
-        <div className="text-blue-400 font-bold mb-2">{hoveredElement.component}</div>
-        {hoveredElement.metadata && (
-          <div className="space-y-1">
-            {Object.entries(hoveredElement.metadata).map(([key, value]) => (
-              <div key={key} className="grid grid-cols-[100px,1fr] gap-2">
-                <span className="text-gray-400">{key}:</span>
-                <span className="text-white break-all">
+      {showInspector && hoveredElement && (
+        <div 
+          className="fixed bg-black/90 text-white px-3 py-2 rounded-lg shadow-lg z-[99999] text-sm"
+          style={{
+            top: hoveredElement.metadata.rect.top + hoveredElement.metadata.rect.height + 8,
+            left: hoveredElement.metadata.rect.left,
+          }}
+        >
+          <p className="font-medium text-blue-400">{hoveredElement.component}</p>
+          {hoveredElement.metadata && Object.entries(hoveredElement.metadata).map(([key, value]) => (
+            key !== 'rect' && (
+              <p key={key} className="text-xs mt-1">
+                <span className="text-gray-400">{key}:</span>{' '}
+                <span className={`${value ? 'text-green-400' : 'text-orange-400'}`}>
                   {typeof value === 'object' ? JSON.stringify(value) : String(value)}
                 </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+              </p>
+            )
+          ))}
+        </div>
+      )}
+    </DebugContext.Provider>
   );
 };
 
