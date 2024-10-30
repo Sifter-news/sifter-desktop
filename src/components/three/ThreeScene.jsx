@@ -3,7 +3,6 @@ import { OrbitControls } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 import Grid from '../Grid';
 import ThreeDNode from './nodes/ThreeDNode';
-import ThreeDFlatNode from './nodes/ThreeDFlatNode';
 import ConnectionLine from '../ConnectionLine';
 import DebugAxes from './DebugAxes';
 import { useDebug } from '@/contexts/DebugContext';
@@ -37,7 +36,6 @@ const ThreeScene = ({
     }
   }, [viewMode, zoom, camera]);
 
-  // Update debug data with camera information
   useEffect(() => {
     if (camera && controlsRef.current) {
       const updateDebugData = () => {
@@ -53,10 +51,7 @@ const ThreeScene = ({
         }));
       };
 
-      // Update initially
       updateDebugData();
-
-      // Update on camera changes
       controlsRef.current.addEventListener('change', updateDebugData);
       return () => {
         controlsRef.current?.removeEventListener('change', updateDebugData);
@@ -82,14 +77,6 @@ const ThreeScene = ({
       <Grid size={100} divisions={24} />
       {showGuides && <DebugAxes />}
       
-      {/* Add the new ThreeDFlatNode */}
-      <ThreeDFlatNode 
-        position={[0, 3, 0]}
-        title="Example Node"
-        subline="This is a flat node that always faces the camera"
-        avatarUrl="/default-image.png"
-      />
-      
       {nodes?.map(node => (
         <ThreeDNode 
           key={node.id}
@@ -99,15 +86,12 @@ const ThreeScene = ({
               node.position_x || node.x || 0,
               node.position_y || node.y || 0,
               node.position_z || node.z || 0
-            ],
-            width: node.width || 256,
-            height: node.height || 256
+            ]
           }}
           activeTool={activeTool}
           onUpdate={handleNodeUpdate}
           onStartConnection={onStartConnection}
           onEndConnection={onEndConnection}
-          allNodes={nodes}
         />
       ))}
 
