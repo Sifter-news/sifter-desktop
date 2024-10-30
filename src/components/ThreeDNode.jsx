@@ -18,6 +18,13 @@ const ThreeDNode = ({
   const { camera, gl } = useThree();
 
   const dimensions = getNodeDimensions3D(node.visualStyle);
+  
+  // Double the z position
+  const position = [
+    node.position[0],
+    node.position[1],
+    node.position[2] * 2 || 0
+  ];
 
   useFrame(() => {
     if (meshRef.current && node.visualStyle !== 'cube') {
@@ -54,7 +61,7 @@ const ThreeDNode = ({
   );
 
   return (
-    <group position={node.position}>
+    <group position={position}>
       <mesh
         ref={meshRef}
         onPointerDown={handleInteractionStart}
