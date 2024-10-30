@@ -54,7 +54,12 @@ const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250, spacing = 16 }) => {
 
 const CubeOutline = () => {
   const size = 12.8; // 256px / 20 (our standard scale factor)
-  const edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(size, size, size));
+  const width = size * 3; // Tripled width
+  const height = size;
+  const depth = size;
+  
+  const geometry = new THREE.BoxGeometry(width, height, depth);
+  const edges = new THREE.EdgesGeometry(geometry);
   
   return (
     <group position={[0, 0, size/2]}>
@@ -64,11 +69,46 @@ const CubeOutline = () => {
         <lineBasicMaterial color="white" opacity={0.5} transparent />
       </lineSegments>
       
-      {/* Solid front face */}
-      <mesh position={[0, 0, size/2]}>
-        <planeGeometry args={[size, size]} />
-        <meshBasicMaterial color="white" opacity={0.9} transparent />
-      </mesh>
+      {/* Solid front face with content */}
+      <group position={[0, 0, size/2]}>
+        {/* Main white background */}
+        <mesh>
+          <planeGeometry args={[width, height]} />
+          <meshBasicMaterial color="white" opacity={0.9} transparent />
+        </mesh>
+
+        {/* Avatar */}
+        <mesh position={[-width/2 + size/4, 0, 0.01]}>
+          <planeGeometry args={[size/2, size/2]} />
+          <meshBasicMaterial>
+            <texture attach="map" url="/default-image.png" />
+          </meshBasicMaterial>
+        </mesh>
+
+        {/* Title text */}
+        <mesh position={[0, size/4, 0.01]}>
+          <textGeometry 
+            args={["Title", { 
+              font: new THREE.Font(), 
+              size: size/8,
+              height: 0 
+            }]} 
+          />
+          <meshBasicMaterial color="black" />
+        </mesh>
+
+        {/* Subline text */}
+        <mesh position={[0, 0, 0.01]}>
+          <textGeometry 
+            args={["Subline text here", { 
+              font: new THREE.Font(), 
+              size: size/12,
+              height: 0 
+            }]} 
+          />
+          <meshBasicMaterial color="gray" />
+        </mesh>
+      </group>
     </group>
   );
 };
