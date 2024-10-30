@@ -77,7 +77,7 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
           position: cameraPosition,
           fov: 45,
           near: 0.1,
-          far: 2000
+          far: 20000
         }}
         style={{ background: 'black' }}
       >
@@ -98,7 +98,7 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
           enableZoom={true}
           enablePan={activeTool === 'pan'}
           enableRotate={activeTool === 'pan'}
-          maxDistance={200}
+          maxDistance={2000}
           minDistance={10}
         />
       </Canvas>
