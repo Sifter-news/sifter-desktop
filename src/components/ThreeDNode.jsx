@@ -23,11 +23,11 @@ const ThreeDNode = ({
   // Convert database dimensions (pixels) to Three.js units (1 unit = ~20px)
   const width = (node.width || 256) / 20;
   const height = (node.height || 256) / 20;
-  const depth = 0.5;
+  const depth = node.visualStyle === 'cube' ? width : 0.5;
 
-  // Make node face camera
+  // Make node face camera (only for non-cube nodes)
   useFrame(() => {
-    if (meshRef.current) {
+    if (meshRef.current && node.visualStyle !== 'cube') {
       meshRef.current.quaternion.copy(camera.quaternion);
     }
   });
@@ -70,39 +70,47 @@ const ThreeDNode = ({
         onPointerEnter={handlePointerEnter}
         onPointerLeave={handlePointerLeave}
       >
-        <planeGeometry args={[width, height]} />
+        {node.visualStyle === 'cube' ? (
+          <boxGeometry args={[width, height, depth]} />
+        ) : (
+          <planeGeometry args={[width, height]} />
+        )}
         <meshStandardMaterial 
           color="white"
           transparent
           opacity={isHovered ? 0.8 : 1}
-          side={THREE.DoubleSide}
+          side={node.visualStyle === 'cube' ? THREE.FrontSide : THREE.DoubleSide}
           emissive={isHighlighted ? "#ffffff" : "#000000"}
           emissiveIntensity={isHighlighted ? 0.5 : 0}
         />
       </mesh>
       
-      {/* Connection points */}
-      <group position={[0, height/2, 0.1]}>
-        <mesh
-          onPointerEnter={() => setHoveredConnectionPoint('top')}
-          onPointerLeave={() => setHoveredConnectionPoint(null)}
-          onPointerDown={() => onStartConnection?.(node.id, node.position, 'top')}
-        >
-          <sphereGeometry args={[0.2, 16, 16]} />
-          <meshBasicMaterial color={hoveredConnectionPoint === 'top' ? '#00ff00' : '#ffffff'} />
-        </mesh>
-      </group>
-      
-      <group position={[0, -height/2, 0.1]}>
-        <mesh
-          onPointerEnter={() => setHoveredConnectionPoint('bottom')}
-          onPointerLeave={() => setHoveredConnectionPoint(null)}
-          onPointerDown={() => onStartConnection?.(node.id, node.position, 'bottom')}
-        >
-          <sphereGeometry args={[0.2, 16, 16]} />
-          <meshBasicMaterial color={hoveredConnectionPoint === 'bottom' ? '#00ff00' : '#ffffff'} />
-        </mesh>
-      </group>
+      {/* Connection points (only for non-cube nodes) */}
+      {node.visualStyle !== 'cube' && (
+        <>
+          <group position={[0, height/2, 0.1]}>
+            <mesh
+              onPointerEnter={() => setHoveredConnectionPoint('top')}
+              onPointerLeave={() => setHoveredConnectionPoint(null)}
+              onPointerDown={() => onStartConnection?.(node.id, node.position, 'top')}
+            >
+              <sphereGeometry args={[0.2, 16, 16]} />
+              <meshBasicMaterial color={hoveredConnectionPoint === 'top' ? '#00ff00' : '#ffffff'} />
+            </mesh>
+          </group>
+          
+          <group position={[0, -height/2, 0.1]}>
+            <mesh
+              onPointerEnter={() => setHoveredConnectionPoint('bottom')}
+              onPointerLeave={() => setHoveredConnectionPoint(null)}
+              onPointerDown={() => onStartConnection?.(node.id, node.position, 'bottom')}
+            >
+              <sphereGeometry args={[0.2, 16, 16]} />
+              <meshBasicMaterial color={hoveredConnectionPoint === 'bottom' ? '#00ff00' : '#ffffff'} />
+            </mesh>
+          </group>
+        </>
+      )}
     </group>
   );
 };

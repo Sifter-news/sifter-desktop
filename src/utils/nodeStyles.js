@@ -87,6 +87,34 @@ export const NODE_STYLES = {
       left: "text-left",
       center: "text-center"
     }
+  },
+  cube: {
+    width: 256,
+    height: 256,
+    resizable: false,
+    title: "3D Cube",
+    description: "A 3D cube node for spatial layouts",
+    display: {
+      avatar: true,
+      title: true,
+      description: true
+    },
+    colors: {
+      white: "bg-white",
+      yellow: "bg-yellow-100",
+      blue: "bg-blue-100",
+      green: "bg-green-100",
+      pink: "bg-pink-100"
+    },
+    textSizes: {
+      small: "text-sm",
+      medium: "text-base",
+      large: "text-lg"
+    },
+    textAlignments: {
+      left: "text-left",
+      center: "text-center"
+    }
   }
 };
 
