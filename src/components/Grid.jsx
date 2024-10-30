@@ -51,14 +51,19 @@ const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250 }) => {
 };
 
 const Grid = ({ divisions = 250 }) => {
+  // Create an array of z-positions for the grids
+  const gridPositions = [0, -48, -96, -144];
+  
   return (
     <group>
-      {/* Single grid at z=0 with 0.3 opacity */}
-      <GridLayer 
-        z={0} 
-        opacity={0.3}
-        divisions={divisions} 
-      />
+      {gridPositions.map((zPos, index) => (
+        <GridLayer 
+          key={`grid-${index}`}
+          z={zPos} 
+          opacity={0.3 - (index * 0.05)} // Gradually decrease opacity for deeper grids
+          divisions={divisions} 
+        />
+      ))}
     </group>
   );
 };
