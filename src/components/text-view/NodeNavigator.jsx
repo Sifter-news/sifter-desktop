@@ -7,6 +7,7 @@ import NodeList from './NodeList';
 import { useDebug } from '@/contexts/DebugContext';
 import { toast } from 'sonner';
 import AIChatPanel from '../ai/AIChatPanel';
+import { handleNodeDelete } from '@/utils/nodeOperations';
 
 const NodeNavigator = ({ 
   nodes = [], 
@@ -16,7 +17,7 @@ const NodeNavigator = ({
   onAddNode,
   onAIConversation,
   focusedNodeId,
-  onDeleteNode,
+  setNodes,
   onNodeHover
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -49,18 +50,8 @@ const NodeNavigator = ({
     onNodeFocus(nodeId);
   };
 
-  const handleNodeDelete = async (nodeId) => {
-    try {
-      await onDeleteNode(nodeId);
-      setSelectedNodes(prev => prev.filter(id => id !== nodeId));
-      if (focusedNodeId === nodeId) {
-        onNodeFocus(null);
-      }
-      toast.success('Node deleted successfully');
-    } catch (error) {
-      console.error('Error deleting node:', error);
-      toast.error('Failed to delete node');
-    }
+  const handleNodeDeleteClick = async (nodeId) => {
+    await handleNodeDelete(nodeId, setNodes, onNodeFocus);
   };
 
   const handleAIChat = () => {
@@ -88,7 +79,7 @@ const NodeNavigator = ({
             onUpdateNode={onUpdateNode}
             onAIConversation={handleAIChat}
             focusedNodeId={focusedNodeId}
-            onDeleteNode={handleNodeDelete}
+            onDeleteNode={handleNodeDeleteClick}
           />
         </div>
       </DragDropContext>
@@ -102,7 +93,7 @@ const NodeNavigator = ({
             onUpdateNode(id, updates);
             setEditingNode(null);
           }}
-          onDelete={handleNodeDelete}
+          onDelete={handleNodeDeleteClick}
         />
       )}
 

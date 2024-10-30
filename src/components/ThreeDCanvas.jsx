@@ -5,18 +5,18 @@ import { toast } from 'sonner';
 import { Bug } from "lucide-react";
 import Toolbar from './Toolbar';
 import ThreeScene from './three/ThreeScene';
-import { useNodes } from '@/hooks/useNodes';
 import { useZoomPan } from '@/hooks/useZoomPan';
 import { useDebug } from '@/contexts/DebugContext';
 import { supabase } from '@/integrations/supabase/supabase';
+import { handleNodeDelete } from '@/utils/nodeOperations';
 
-const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
+const ThreeDCanvas = ({ projectId, onAddNode }) => {
   const [nodes, setNodes] = useState([]);
-  const [activeTool, setActiveTool] = React.useState('pan');
-  const [viewMode, setViewMode] = React.useState('2d');
+  const [activeTool, setActiveTool] = useState('select');
+  const [viewMode, setViewMode] = useState('2d');
+  const { zoom, handleZoom } = useZoomPan();
   const controlsRef = useRef();
   const { setDebugData } = useDebug();
-  const { zoom, handleZoom } = useZoomPan(1);
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -25,7 +25,7 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
           .from('node')
           .select('*')
           .eq('investigation_id', projectId);
-          
+        
         if (error) throw error;
         
         const nodesWithPositions = (data || []).map(node => ({
@@ -47,23 +47,34 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
         }));
       } catch (error) {
         console.error('Error fetching nodes:', error);
-        toast.error('Failed to load nodes');
+        toast.error('Failed to fetch nodes');
       }
     };
 
     if (projectId) {
       fetchNodes();
     }
-  }, [projectId, setDebugData]);
+  }, [projectId]);
 
-  useEffect(() => {
-    setDebugData(prev => ({
-      ...prev,
-      activeTool,
-      currentView: 'mindmap',
-      viewMode: viewMode
-    }));
-  }, [activeTool, viewMode, setDebugData]);
+  const handleNodeUpdate = async (nodeId, updates) => {
+    try {
+      const { error } = await supabase
+        .from('node')
+        .update(updates)
+        .eq('id', nodeId);
+
+      if (error) throw error;
+
+      setNodes(prev => prev.map(node => 
+        node.id === nodeId ? { ...node, ...updates } : node
+      ));
+
+      toast.success('Node updated successfully');
+    } catch (error) {
+      console.error('Error updating node:', error);
+      toast.error('Failed to update node');
+    }
+  };
 
   const handleAddNode = async (nodeData) => {
     try {
@@ -71,10 +82,7 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
         .from('node')
         .insert([{
           ...nodeData,
-          investigation_id: projectId,
-          position_x: nodeData.position_x,
-          position_y: nodeData.position_y,
-          position_z: nodeData.position_z || 0
+          investigation_id: projectId
         }])
         .select()
         .single();
@@ -83,11 +91,7 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
 
       const newNode = {
         ...data,
-        position: [
-          data.position_x,
-          data.position_y,
-          data.position_z || 0
-        ]
+        position: [data.position_x || 0, data.position_y || 0, data.position_z || 0]
       };
 
       setNodes(prev => [...prev, newNode]);
@@ -98,19 +102,21 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
     }
   };
 
+  const handleDeleteNode = async (nodeId) => {
+    await handleNodeDelete(nodeId, setNodes);
+  };
+
   return (
-    <div className="fixed inset-0 bg-black">
-      <nav className="fixed top-0 left-0 right-0 z-10">
-        <Toolbar 
-          activeTool={activeTool}
-          setActiveTool={setActiveTool}
-          handleZoom={handleZoom}
-          zoom={zoom}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          onAddNode={onAddNode}
-        />
-      </nav>
+    <div className="w-full h-full relative">
+      <Toolbar
+        activeTool={activeTool}
+        setActiveTool={setActiveTool}
+        handleZoom={handleZoom}
+        zoom={zoom}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        onAddNode={handleAddNode}
+      />
 
       <Canvas
         camera={{ 
@@ -128,8 +134,8 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
           nodes={nodes}
           viewMode={viewMode}
           activeTool={activeTool}
-          controlsRef={controlsRef}
-          handleNodeUpdate={onNodeUpdate}
+          onNodeDelete={handleDeleteNode}
+          handleNodeUpdate={handleNodeUpdate}
           zoom={zoom}
         />
         
