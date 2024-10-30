@@ -53,6 +53,7 @@ const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250 }) => {
 const Grid = ({ divisions = 250 }) => {
   // Create an array of z-positions for the grids
   const gridPositions = [0, -48, -96, -144];
+  const baseOpacity = 0.3;
   
   return (
     <group>
@@ -60,7 +61,7 @@ const Grid = ({ divisions = 250 }) => {
         <GridLayer 
           key={`grid-${index}`}
           z={zPos} 
-          opacity={0.3 - (index * 0.05)} // Gradually decrease opacity for deeper grids
+          opacity={baseOpacity * Math.pow(0.75, index)} // Fade by 25% (multiply by 0.75) for each level
           divisions={divisions} 
         />
       ))}
