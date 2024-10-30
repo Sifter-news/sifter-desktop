@@ -48,6 +48,10 @@ const NodeNavigator = ({
     }
   };
 
+  const handleEditNode = (node) => {
+    setEditingNode(node);
+  };
+
   const filteredNodes = nodes.filter(node => {
     if (!node) return false;
     const matchesSearch = (node.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -73,7 +77,7 @@ const NodeNavigator = ({
             onAIConversation={() => setIsAIChatOpen(true)}
             focusedNodeId={focusedNodeId}
             onDeleteNode={handleNodeDelete}
-            onEdit={setEditingNode}
+            onEdit={handleEditNode}
           />
         </div>
       </DragDropContext>

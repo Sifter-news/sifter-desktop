@@ -103,7 +103,11 @@ const NodeListItem = ({
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={(e) => {
                   e.stopPropagation();
-                  onEdit(node);
+                  if (onEdit) {
+                    onEdit(node);
+                  } else {
+                    toast.error("Edit functionality is not available");
+                  }
                 }}>
                   <Pencil className="h-4 w-4 mr-2" />
                   Edit
