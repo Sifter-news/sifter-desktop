@@ -50,10 +50,6 @@ const NodeNavigator = ({
 
   const handleNodeDelete = async (nodeId) => {
     try {
-      if (typeof onDeleteNode !== 'function') {
-        throw new Error('Delete handler not provided');
-      }
-      
       await onDeleteNode(nodeId);
       setSelectedNodes(prev => prev.filter(id => id !== nodeId));
       if (focusedNodeId === nodeId) {

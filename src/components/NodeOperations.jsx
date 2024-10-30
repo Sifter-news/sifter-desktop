@@ -4,11 +4,6 @@ import { toast } from 'sonner';
 export const useNodeOperations = (setNodes) => {
   const handleAddNode = async (newNode, projectId) => {
     try {
-      if (!newNode.title?.trim()) {
-        toast.error('Node title is required');
-        return;
-      }
-
       const nodeData = {
         title: newNode.title,
         description: newNode.description,
@@ -17,7 +12,6 @@ export const useNodeOperations = (setNodes) => {
         visual_style: newNode.visualStyle || 'default',
         position_x: newNode.x || 0,
         position_y: newNode.y || 0,
-        position_z: newNode.z || 0,
         width: newNode.width || 200,
         height: newNode.height || 100,
         node_type: newNode.nodeType || 'generic'
@@ -35,12 +29,10 @@ export const useNodeOperations = (setNodes) => {
         ...data,
         x: data.position_x,
         y: data.position_y,
-        z: data.position_z,
         width: data.width,
         height: data.height,
         visualStyle: data.visual_style,
-        nodeType: data.node_type,
-        position: [data.position_x, data.position_y, data.position_z]
+        nodeType: data.node_type
       };
 
       setNodes(prevNodes => [...prevNodes, nodeWithUI]);
@@ -60,7 +52,6 @@ export const useNodeOperations = (setNodes) => {
         visual_style: updates.visualStyle,
         position_x: updates.x,
         position_y: updates.y,
-        position_z: updates.z,
         width: updates.width,
         height: updates.height,
         node_type: updates.nodeType
@@ -79,15 +70,7 @@ export const useNodeOperations = (setNodes) => {
       if (error) throw error;
 
       setNodes(prevNodes => prevNodes.map(node => 
-        node.id === nodeId ? { 
-          ...node, 
-          ...updates,
-          position: [
-            updates.x !== undefined ? updates.x : node.position[0],
-            updates.y !== undefined ? updates.y : node.position[1],
-            updates.z !== undefined ? updates.z : node.position[2]
-          ]
-        } : node
+        node.id === nodeId ? { ...node, ...updates } : node
       ));
       
       toast.success('Node updated successfully');

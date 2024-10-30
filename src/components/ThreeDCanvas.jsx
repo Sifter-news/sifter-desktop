@@ -1,18 +1,61 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { Canvas, useThree } from '@react-three/fiber';
 import { toast } from 'sonner';
-import ThreeScene from './three/ThreeScene';
+import { Bug } from "lucide-react";
 import Toolbar from './Toolbar';
+import ThreeScene from './three/ThreeScene';
+import { useNodes } from '@/hooks/useNodes';
+import { useZoomPan } from '@/hooks/useZoomPan';
 import { useDebug } from '@/contexts/DebugContext';
 import { supabase } from '@/integrations/supabase/supabase';
 
+const CameraDebug = () => {
+  const { camera, mouse } = useThree();
+  const { setDebugData } = useDebug();
+
+  useEffect(() => {
+    const updateDebug = () => {
+      setDebugData(prev => ({
+        ...prev,
+        camera: {
+          position: {
+            x: camera.position.x.toFixed(2),
+            y: camera.position.y.toFixed(2),
+            z: camera.position.z.toFixed(2)
+          },
+          rotation: {
+            x: camera.rotation.x.toFixed(2),
+            y: camera.rotation.y.toFixed(2),
+            z: camera.rotation.z.toFixed(2)
+          }
+        },
+        mouse: {
+          x: mouse.x.toFixed(2),
+          y: mouse.y.toFixed(2),
+          z: camera.position.z.toFixed(2)
+        }
+      }));
+    };
+
+    const interval = setInterval(updateDebug, 100);
+    return () => clearInterval(interval);
+  }, [camera, mouse, setDebugData]);
+
+  return null;
+};
+
 const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
   const [nodes, setNodes] = useState([]);
-  const [activeTool, setActiveTool] = useState('pan');
-  const [viewMode, setViewMode] = useState('2d');
+  const [activeTool, setActiveTool] = React.useState('pan');
+  const [viewMode, setViewMode] = React.useState('2d');
+  const [showDebug, setShowDebug] = React.useState(false);
   const controlsRef = useRef();
   const { setDebugData } = useDebug();
+
+  const {
+    zoom,
+    handleZoom
+  } = useZoomPan(1);
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -24,16 +67,23 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
 
         if (error) throw error;
 
-        const nodesWithPositions = data.map(node => ({
+        const nodesWithRandomPositions = data.map(node => ({
           ...node,
           position: [
-            node.position_x || 0,
-            node.position_y || 0,
-            node.position_z || 0
+            Math.random() * 100 - 50,
+            Math.random() * 100 - 50,
+            0
           ]
         }));
 
-        setNodes(nodesWithPositions);
+        setNodes(nodesWithRandomPositions);
+        setDebugData(prev => ({
+          ...prev,
+          nodes: {
+            count: nodesWithRandomPositions.length,
+            list: nodesWithRandomPositions
+          }
+        }));
       } catch (error) {
         console.error('Error fetching nodes:', error);
         toast.error('Failed to load nodes');
@@ -43,32 +93,31 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
     if (projectId) {
       fetchNodes();
     }
-  }, [projectId]);
+  }, [projectId, setDebugData]);
 
-  const handleViewModeChange = (mode) => {
-    setViewMode(mode);
+  useEffect(() => {
     setDebugData(prev => ({
       ...prev,
-      viewMode: mode
+      activeTool,
+      currentView: 'mindmap',
+      viewMode: viewMode
     }));
-  };
+  }, [activeTool, viewMode, setDebugData]);
 
-  // Camera settings for different view modes
-  const cameraSettings = viewMode === '3d' 
-    ? {
-        position: [100, 100, 100], // Isometric position
-        rotation: [-Math.PI / 6, Math.PI / 4, 0], // Isometric rotation
-        fov: 50,
-        near: 0.1,
-        far: 5000
+  const handleNodeUpdate = async (nodeId, newPosition) => {
+    try {
+      if (onNodeUpdate) {
+        await onNodeUpdate(nodeId, {
+          position_x: newPosition[0],
+          position_y: newPosition[1],
+          position_z: 0
+        });
       }
-    : {
-        position: [0, 0, 200],
-        rotation: [0, 0, 0],
-        fov: 50,
-        near: 0.1,
-        far: 5000
-      };
+    } catch (error) {
+      console.error('Error updating node position:', error);
+      toast.error('Failed to update node position');
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black">
@@ -76,27 +125,30 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
         <Toolbar 
           activeTool={activeTool}
           setActiveTool={setActiveTool}
+          handleZoom={handleZoom}
+          zoom={zoom}
           viewMode={viewMode}
-          onViewModeChange={handleViewModeChange}
+          onViewModeChange={setViewMode}
           onAddNode={onAddNode}
         />
       </nav>
 
-      <Canvas camera={cameraSettings}>
+      <Canvas
+        camera={{ 
+          position: viewMode === '3d' ? [100, 100, 100] : [0, 0, 200],
+          fov: 45,
+          near: 0.1,
+          far: 2000
+        }}
+        style={{ background: 'black' }}
+      >
+        <CameraDebug />
         <ThreeScene 
           nodes={nodes}
           viewMode={viewMode}
           activeTool={activeTool}
           controlsRef={controlsRef}
-          handleNodeUpdate={onNodeUpdate}
-        />
-        <OrbitControls 
-          ref={controlsRef}
-          enableZoom={true}
-          enablePan={true}
-          enableRotate={viewMode === '3d'}
-          maxDistance={5000}
-          minDistance={1}
+          handleNodeUpdate={handleNodeUpdate}
         />
       </Canvas>
     </div>
