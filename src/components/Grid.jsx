@@ -61,7 +61,7 @@ const Grid = ({ divisions = 250 }) => {
         <GridLayer 
           key={`grid-${index}`}
           z={zPos} 
-          opacity={index === 0 ? baseOpacity : 0.15} // First grid at 30% opacity, rest at 15%
+          opacity={index === 0 ? baseOpacity : 0.05} // First grid at 30% opacity, rest at 5%
           divisions={divisions} 
         />
       ))}
