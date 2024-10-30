@@ -1,6 +1,7 @@
 import React from 'react';
 import DebugIDSection from './sections/DebugIDSection';
 import Debug3DSection from './sections/Debug3DSection';
+import { Eye } from 'lucide-react';
 
 const DebugStateSection = ({ debugData }) => {
   return (
@@ -24,19 +25,20 @@ const DebugStateSection = ({ debugData }) => {
         </div>
 
         <div className="space-y-1">
-          <p className="text-xs font-medium text-white/80">Project View</p>
+          <div className="flex items-center gap-2">
+            <Eye className="h-4 w-4 text-blue-400" />
+            <p className="text-xs font-medium text-white/80">View Status</p>
+          </div>
           <div className="pl-2">
             <p className="text-xs">Canvas: {debugData?.currentView || 'Unknown'}</p>
             {debugData?.currentView === 'mindmap' && (
-              <>
-                <p className="text-xs pl-2">Perspective: {debugData?.viewMode || '2D'}</p>
-              </>
+              <p className="text-xs pl-2">Perspective: {debugData?.viewMode || '2D'}</p>
             )}
           </div>
         </div>
 
         <div className="space-y-1">
-          <p className="text-xs font-medium text-white/80">Canvas Nodes ({debugData.nodes?.list.length})</p>
+          <p className="text-xs font-medium text-white/80">Canvas Nodes ({debugData.nodes?.list.length || 0})</p>
           <div className="pl-2 space-y-2">
             {debugData.nodes?.list.map((node, index) => (
               <div key={node.id} className="text-xs space-y-1 border-l border-white/10 pl-2">
