@@ -6,7 +6,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/components/AuthProvider';
 import { useInvestigations } from '@/integrations/supabase/hooks/useInvestigations';
-import { useLocation } from 'react-router-dom';
 import DebugStateSection from './DebugStateSection';
 import DebugPositionSection from './DebugPositionSection';
 import DebugToolSection from './sections/DebugToolSection';
@@ -20,16 +19,10 @@ const DebugPanel = () => {
   const { isDebugOpen, setIsDebugOpen, debugData, showGuides, setShowGuides, hoveredElement } = useDebug();
   const { user } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [dimensions, setDimensions] = useState({ width: 384, height: 500 });
   const { data: investigations } = useInvestigations({ 
     filter: user ? `owner_id.eq.${user?.id}` : undefined 
   });
-
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   if (!isDebugOpen) return null;
 
@@ -43,7 +36,7 @@ const DebugPanel = () => {
       <Maximize2 className="h-4 w-4" />
     </Button>
   ) : (
-    <>
+    <div className="flex flex-col h-full">
       <DebugHeader 
         showGuides={showGuides}
         setShowGuides={setShowGuides}
@@ -53,7 +46,7 @@ const DebugPanel = () => {
       
       <DebugFocusSection hoveredElement={hoveredElement} />
       
-      <ScrollArea className="h-[calc(100vh-200px)]">
+      <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
           <DebugToolSection activeTool={debugData?.activeTool} />
           <Separator className="bg-white/10" />
@@ -84,7 +77,7 @@ const DebugPanel = () => {
           )}
         </div>
       </ScrollArea>
-    </>
+    </div>
   );
 
   return (
@@ -92,14 +85,20 @@ const DebugPanel = () => {
       default={{
         x: window.innerWidth - 400,
         y: 16,
-        width: isCollapsed ? 40 : 384,
-        height: isCollapsed ? 40 : 'auto',
+        width: isCollapsed ? 40 : dimensions.width,
+        height: isCollapsed ? 40 : dimensions.height,
       }}
-      minWidth={isCollapsed ? 40 : 384}
+      minWidth={isCollapsed ? 40 : 300}
       minHeight={isCollapsed ? 40 : 200}
       bounds="window"
       enableResizing={!isCollapsed}
       style={{ zIndex: 99999 }}
+      onResize={(e, direction, ref) => {
+        setDimensions({
+          width: ref.offsetWidth,
+          height: ref.offsetHeight
+        });
+      }}
     >
       <div className={`bg-black/90 text-white rounded-lg shadow-xl backdrop-blur-sm border border-white/20 ${
         isCollapsed ? 'w-10 h-10' : 'w-full h-full'
