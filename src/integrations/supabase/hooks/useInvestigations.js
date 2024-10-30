@@ -6,18 +6,19 @@ export const useInvestigation = (id) => useQuery({
   queryFn: async () => {
     if (!id) return null;
     
-    const { data, error } = await supabase
+    // First get the investigation
+    const { data: investigation, error: investigationError } = await supabase
       .from('investigations')
       .select('*')
       .eq('id', id)
       .single();
       
-    if (error) {
-      console.error('Investigation query error:', error);
-      throw error;
+    if (investigationError) {
+      console.error('Investigation query error:', investigationError);
+      throw investigationError;
     }
 
-    // Get reports in a separate query
+    // Then get the reports in a separate query
     const { data: reports, error: reportsError } = await supabase
       .from('reports')
       .select('*')
@@ -29,7 +30,7 @@ export const useInvestigation = (id) => useQuery({
     }
     
     return {
-      ...data,
+      ...investigation,
       reports: reports || []
     };
   },
@@ -40,6 +41,7 @@ export const useInvestigations = ({ select, filter } = {}) => {
   return useQuery({
     queryKey: ['investigations', { select, filter }],
     queryFn: async () => {
+      // First get investigations
       let query = supabase
         .from('investigations')
         .select('*');
@@ -58,7 +60,7 @@ export const useInvestigations = ({ select, filter } = {}) => {
         throw error;
       }
 
-      // Get all reports in a single query
+      // Then get all reports in a separate query
       const { data: reports, error: reportsError } = await supabase
         .from('reports')
         .select('*')
