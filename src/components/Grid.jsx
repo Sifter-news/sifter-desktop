@@ -61,7 +61,7 @@ const Grid = ({ divisions = 250 }) => {
         <GridLayer 
           key={`grid-${index}`}
           z={zPos} 
-          opacity={baseOpacity * Math.pow(0.75, index)} // Fade by 25% (multiply by 0.75) for each level
+          opacity={index === 0 ? baseOpacity : 0.15} // First grid at 30% opacity, rest at 15%
           divisions={divisions} 
         />
       ))}
