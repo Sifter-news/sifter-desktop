@@ -25,12 +25,12 @@ const ThreeScene = ({
 
   React.useEffect(() => {
     if (camera && viewMode === '3d') {
-      const distance = 200 / zoom;
+      const distance = 400 / zoom; // Doubled from 200 to 400
       camera.position.set(distance, distance, distance);
       camera.lookAt(0, 0, 0);
       camera.updateProjectionMatrix();
     } else if (camera) {
-      camera.position.set(0, 0, 200 / zoom);
+      camera.position.set(0, 0, 400 / zoom); // Doubled from 200 to 400
       camera.lookAt(0, 0, 0);
       camera.updateProjectionMatrix();
     }
@@ -49,8 +49,8 @@ const ThreeScene = ({
 
   return (
     <group onPointerMove={handlePointerMove}>
-      <ambientLight intensity={0.8} /> {/* Increased light intensity */}
-      <pointLight position={[10, 10, 10]} intensity={1.5} /> {/* Added stronger point light */}
+      <ambientLight intensity={0.8} />
+      <pointLight position={[10, 10, 10]} intensity={1.5} />
       <Grid size={100} divisions={24} />
       {showGuides && <DebugAxes />}
       
@@ -105,7 +105,7 @@ const ThreeScene = ({
         enableZoom={true}
         enablePan={activeTool === 'pan'}
         enableRotate={activeTool === 'pan'}
-        maxDistance={200 / zoom}
+        maxDistance={400 / zoom} // Doubled from 200 to 400
         minDistance={10}
         camera={camera}
       />
