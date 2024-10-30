@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { OrbitControls } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 import Grid from '../Grid';
@@ -21,20 +21,47 @@ const ThreeScene = ({
   zoom = 1
 }) => {
   const { camera } = useThree();
-  const { showGuides } = useDebug();
+  const { showGuides, setDebugData } = useDebug();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (camera && viewMode === '3d') {
-      const distance = 400 / zoom; // Doubled from 200 to 400
+      const distance = 20000 / zoom;
       camera.position.set(distance, distance, distance);
       camera.lookAt(0, 0, 0);
       camera.updateProjectionMatrix();
     } else if (camera) {
-      camera.position.set(0, 0, 400 / zoom); // Doubled from 200 to 400
+      camera.position.set(0, 0, 20000 / zoom);
       camera.lookAt(0, 0, 0);
       camera.updateProjectionMatrix();
     }
   }, [viewMode, zoom, camera]);
+
+  // Update debug data with camera information
+  useEffect(() => {
+    if (camera && controlsRef.current) {
+      const updateDebugData = () => {
+        setDebugData(prev => ({
+          ...prev,
+          camera: {
+            position: { ...camera.position },
+            rotation: { ...camera.rotation },
+            fov: camera.fov,
+            zoom: camera.zoom,
+            distance: controlsRef.current.getDistance()
+          }
+        }));
+      };
+
+      // Update initially
+      updateDebugData();
+
+      // Update on camera changes
+      controlsRef.current.addEventListener('change', updateDebugData);
+      return () => {
+        controlsRef.current?.removeEventListener('change', updateDebugData);
+      };
+    }
+  }, [camera, controlsRef, setDebugData]);
 
   const handlePointerMove = (event) => {
     if (activeConnection) {
@@ -105,7 +132,7 @@ const ThreeScene = ({
         enableZoom={true}
         enablePan={activeTool === 'pan'}
         enableRotate={activeTool === 'pan'}
-        maxDistance={20000 / zoom} // Doubled from 200 to 400
+        maxDistance={20000 / zoom}
         minDistance={10}
         camera={camera}
       />
