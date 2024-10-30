@@ -8,7 +8,6 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import NodeTypeSelect from './NodeTypeSelect';
 import NodeStyleSelect from './NodeStyleSelect';
 import NodeAvatar from './NodeAvatar';
-import { toast } from 'sonner';
 
 const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
   const [formData, setFormData] = useState({
@@ -33,16 +32,6 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
       });
     }
   }, [node]);
-
-  const handleSave = async () => {
-    try {
-      await onUpdate(node.id, formData);
-      toast.success("Node updated successfully");
-      onClose();
-    } catch (error) {
-      toast.error("Failed to update node");
-    }
-  };
 
   if (!node) return null;
 
@@ -98,7 +87,7 @@ const NodeEditDialog = ({ isOpen, onClose, node, onUpdate, onDelete }) => {
             </Button>
             <div className="space-x-2">
               <Button variant="outline" onClick={onClose}>Cancel</Button>
-              <Button onClick={handleSave}>Save changes</Button>
+              <Button onClick={() => onUpdate(node.id, formData)}>Save changes</Button>
             </div>
           </DialogFooter>
         </DialogContent>

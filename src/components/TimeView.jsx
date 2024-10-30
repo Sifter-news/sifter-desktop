@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { Plus, Calendar } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import NodeTooltip from './node/NodeTooltip';
-import NodeEditDialog from './node/NodeEditDialog';
+import NodeEditorModal from './node/NodeEditorModal';
 import {
   Tooltip,
   TooltipContent,
@@ -108,12 +108,11 @@ const TimeView = ({ nodes, onUpdateNode, focusedNodeId, onNodeFocus, onAddNode }
           </Button>
         </div>
       </div>
-      <NodeEditDialog 
+      <NodeEditorModal 
         isOpen={!!selectedNode}
         onClose={() => setSelectedNode(null)}
         node={selectedNode}
         onUpdate={onUpdateNode}
-        onDelete={() => {}} // Add proper delete handler if needed
       />
     </div>
   );

@@ -10,10 +10,8 @@ export const deleteNode = async (nodeId, onSuccess) => {
 
     if (error) throw error;
     
-    if (onSuccess) {
-      onSuccess();
-    }
     toast.success('Node deleted successfully');
+    if (onSuccess) onSuccess(nodeId);
   } catch (error) {
     console.error('Error deleting node:', error);
     toast.error('Failed to delete node');
@@ -25,7 +23,17 @@ export const updateNode = async (nodeId, updates) => {
   try {
     const { error } = await supabase
       .from('node')
-      .update(updates)
+      .update({
+        title: updates.title,
+        description: updates.description,
+        type: updates.type,
+        visual_style: updates.visualStyle,
+        position_x: updates.x,
+        position_y: updates.y,
+        position_z: updates.z,
+        metadata: updates.metadata,
+        node_type: updates.nodeType
+      })
       .eq('id', nodeId);
 
     if (error) throw error;

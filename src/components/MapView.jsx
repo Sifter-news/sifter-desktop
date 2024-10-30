@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Map as MapGL } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import NodeTooltip from './node/NodeTooltip';
-import NodeEditDialog from './node/NodeEditDialog';
+import NodeEditorModal from './node/NodeEditorModal';
 
 const MapView = ({ nodes, onUpdateNode, focusedNodeId, onNodeFocus }) => {
   const [selectedNode, setSelectedNode] = useState(null);
@@ -45,12 +45,11 @@ const MapView = ({ nodes, onUpdateNode, focusedNodeId, onNodeFocus }) => {
           </NodeTooltip>
         ))}
       </MapGL>
-      <NodeEditDialog
+      <NodeEditorModal
         isOpen={!!selectedNode}
         onClose={() => setSelectedNode(null)}
         node={selectedNode}
         onUpdate={onUpdateNode}
-        onDelete={() => {}} // Add proper delete handler if needed
       />
     </div>
   );
