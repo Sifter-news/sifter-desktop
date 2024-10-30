@@ -23,7 +23,7 @@ const ViewPerspectiveMenu = ({ viewMode, onViewModeChange }) => {
         <Button 
           variant="ghost" 
           size="sm"
-          className="h-8 rounded-lg bg-gray-700 hover:bg-gray-600 text-white flex items-center gap-1.5"
+          className="h-8 rounded-lg bg-gray-700 hover:bg-gray-600 text-white hover:text-white flex items-center gap-1.5"
         >
           <Icon className="h-4 w-4" />
           <ChevronDown className="h-3 w-3" />
@@ -34,7 +34,7 @@ const ViewPerspectiveMenu = ({ viewMode, onViewModeChange }) => {
           <DropdownMenuItem 
             key={view.id}
             onClick={() => onViewModeChange(view.id)}
-            className="flex items-center justify-between"
+            className="flex items-center justify-between hover:text-white"
           >
             <div className="flex items-center gap-2">
               <view.icon className="h-4 w-4" />

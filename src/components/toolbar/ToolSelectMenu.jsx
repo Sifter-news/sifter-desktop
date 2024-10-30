@@ -24,7 +24,7 @@ const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode }) => {
         <Button 
           variant="ghost" 
           size="sm"
-          className="h-8 rounded-lg bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-1.5"
+          className="h-8 rounded-lg bg-blue-600 hover:bg-blue-700 text-white hover:text-white flex items-center gap-1.5"
         >
           <Icon className="h-4 w-4" />
           <ChevronDown className="h-3 w-3" />
@@ -35,7 +35,7 @@ const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode }) => {
           <DropdownMenuItem 
             key={tool.id}
             onClick={() => setActiveTool(tool.id)}
-            className="flex items-center justify-between"
+            className="flex items-center justify-between hover:text-white"
           >
             <div className="flex items-center gap-2">
               <tool.icon className="h-4 w-4" />
