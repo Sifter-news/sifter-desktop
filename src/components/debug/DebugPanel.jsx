@@ -32,7 +32,7 @@ const DebugPanel = () => {
   const getBreakpointInfo = () => {
     if (windowWidth < 640) return { icon: Smartphone, label: 'Mobile 📱', color: 'text-red-400' };
     if (windowWidth < 768) return { icon: Smartphone, label: 'Mobile (lg) 📱', color: 'text-orange-400' };
-    if (windowWidth < 1024) return { icon: Tablet, label: 'Tablet 📱', color: 'text-yellow-400' };
+    if (windowWidth < 1024) return { icon: Tablet, label: 'Tablet 💻', color: 'text-yellow-400' };
     if (windowWidth < 1280) return { icon: Monitor, label: 'Desktop 🖥️', color: 'text-green-400' };
     return { icon: Display, label: 'Large Desktop 🖥️', color: 'text-blue-400' };
   };
@@ -56,15 +56,13 @@ const DebugPanel = () => {
       <div className="flex items-center justify-between p-4 border-b border-white/10">
         <div className="flex items-center gap-4">
           <h2 className="text-lg font-semibold">Debug Panel 🛠️</h2>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-white/60">Guidelines</span>
-              <Switch
-                checked={showGuides}
-                onCheckedChange={setShowGuides}
-                className="data-[state=checked]:bg-green-500"
-              />
-            </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-white/60">Guidelines</span>
+            <Switch
+              checked={showGuides}
+              onCheckedChange={setShowGuides}
+              className="data-[state=checked]:bg-green-500"
+            />
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -87,7 +85,7 @@ const DebugPanel = () => {
         </div>
       </div>
       
-      <ScrollArea className="h-[500px]">
+      <ScrollArea className="h-[calc(100vh-64px)]">
         <div className="p-4 space-y-4">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
