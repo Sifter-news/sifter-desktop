@@ -51,8 +51,12 @@ const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250 }) => {
 };
 
 const Grid = ({ divisions = 250 }) => {
-  // Create 3 grid layers with 24px increments
-  const gridPositions = [0, -24, -48];
+  // Create grid layers with 24px increments, including positive z
+  const gridPositions = [
+    48, 24, // Positive z layers
+    0,      // Base layer
+    -24, -48 // Negative z layers
+  ];
   const baseOpacity = 0.3;
   
   return (
@@ -61,7 +65,7 @@ const Grid = ({ divisions = 250 }) => {
         <GridLayer 
           key={`grid-${index}`}
           z={zPos} 
-          opacity={index === 0 ? baseOpacity : 0.1} // First grid at 30% opacity, rest at 10%
+          opacity={zPos === 0 ? baseOpacity : 0.1} // Base layer at 30% opacity, rest at 10%
           divisions={divisions} 
         />
       ))}
