@@ -8,10 +8,7 @@ export const useInvestigation = (id) => useQuery({
     
     const { data, error } = await supabase
       .from('investigations')
-      .select(`
-        *,
-        reports:reports(*)
-      `)
+      .select('*')
       .eq('id', id)
       .single();
       
@@ -19,8 +16,22 @@ export const useInvestigation = (id) => useQuery({
       console.error('Investigation query error:', error);
       throw error;
     }
+
+    // Get reports in a separate query
+    const { data: reports, error: reportsError } = await supabase
+      .from('reports')
+      .select('*')
+      .eq('investigation_id', id);
+
+    if (reportsError) {
+      console.error('Reports query error:', reportsError);
+      throw reportsError;
+    }
     
-    return data;
+    return {
+      ...data,
+      reports: reports || []
+    };
   },
   enabled: !!id,
 });
@@ -31,10 +42,7 @@ export const useInvestigations = ({ select, filter } = {}) => {
     queryFn: async () => {
       let query = supabase
         .from('investigations')
-        .select(`
-          *,
-          reports:reports(*)
-        `);
+        .select('*');
       
       if (filter?.startsWith('owner_id.eq.')) {
         const userId = filter.replace('owner_id.eq.', '');
@@ -43,14 +51,31 @@ export const useInvestigations = ({ select, filter } = {}) => {
         }
       }
       
-      const { data, error } = await query;
+      const { data: investigations, error } = await query;
       
       if (error) {
         console.error('Investigations query error:', error);
         throw error;
       }
+
+      // Get all reports in a single query
+      const { data: reports, error: reportsError } = await supabase
+        .from('reports')
+        .select('*')
+        .in('investigation_id', investigations.map(inv => inv.id));
+
+      if (reportsError) {
+        console.error('Reports query error:', reportsError);
+        throw reportsError;
+      }
+
+      // Attach reports to their respective investigations
+      const investigationsWithReports = investigations.map(investigation => ({
+        ...investigation,
+        reports: reports?.filter(report => report.investigation_id === investigation.id) || []
+      }));
       
-      return data || [];
+      return investigationsWithReports || [];
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: 3,
