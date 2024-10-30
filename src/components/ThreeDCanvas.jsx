@@ -100,6 +100,8 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
           enableRotate={activeTool === 'pan'}
           maxDistance={2000}
           minDistance={10}
+          zoomSpeed={0.5}
+          screenSpacePanning={true}
         />
       </Canvas>
     </div>
