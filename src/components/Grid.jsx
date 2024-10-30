@@ -71,38 +71,38 @@ const CubeOutline = () => {
       </lineSegments>
       
       {/* Solid front face with content */}
-      <group position={[0, 0, size/2 + 24]}>  {/* Moved forward by 24px */}
+      <group position={[0, 0, size/2]}>
         {/* Main white background */}
         <mesh>
           <planeGeometry args={[width, height]} />
           <meshBasicMaterial color="white" opacity={0.9} transparent />
         </mesh>
 
-        {/* Avatar - moved to left side */}
-        <mesh position={[-width/2 + size/3, 0, 0.01]}>
+        {/* Avatar */}
+        <mesh position={[-width/2 + size/4, 0, 0.01]}>
           <planeGeometry args={[size/2, size/2]} />
           <meshBasicMaterial>
             <texture attach="map" url="/default-image.png" />
           </meshBasicMaterial>
         </mesh>
 
-        {/* Title text - aligned left and increased size */}
+        {/* Title text */}
         <Text
-          position={[-width/4, size/4, 0.01]}
-          fontSize={size/6}  // Increased from size/8
+          position={[0, size/4, 0.01]}
+          fontSize={size/8}
           color="black"
-          anchorX="left"
+          anchorX="center"
           anchorY="middle"
         >
           Title
         </Text>
 
-        {/* Subline text - aligned left and increased size */}
+        {/* Subline text */}
         <Text
-          position={[-width/4, 0, 0.01]}
-          fontSize={size/8}  // Increased from size/12
+          position={[0, 0, 0.01]}
+          fontSize={size/12}
           color="gray"
-          anchorX="left"
+          anchorX="center"
           anchorY="middle"
         >
           Subline text here
