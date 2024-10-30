@@ -54,7 +54,7 @@ const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250, spacing = 16 }) => {
 };
 
 const DefaultNode3D = () => {
-  const size = 12.8; // 256px / 20 (our standard scale factor)
+  const size = 32; // 256px / 8 (our new scale factor)
   const width = size * 3; // Tripled width
   const height = size;
   const depth = size;
@@ -76,8 +76,8 @@ const DefaultNode3D = () => {
         <meshBasicMaterial color="white" opacity={0.9} transparent />
       </mesh>
 
-      {/* Foreground content - moved forward by 48px (2.4 in our scale) */}
-      <group position={[0, 0, 2.4]}>
+      {/* Foreground content - moved forward by 6px (0.75 in our new scale) */}
+      <group position={[0, 0, 0.75]}>
         {/* Avatar with circular mask and outline */}
         <mesh position={[-width/2 + size/4, 0, 0]}>
           <circleGeometry args={[size/4, 32]} />
