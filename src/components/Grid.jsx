@@ -10,7 +10,6 @@ const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250, spacing = 16 }) => {
   gridHelper.rotation.x = Math.PI / 2; // Rotate to make it vertical on Z axis
   gridHelper.material.transparent = true;
   gridHelper.material.opacity = opacity;
-  gridHelper.material.depthWrite = false; // Prevent z-fighting
   
   if (gridHelper.material instanceof THREE.LineBasicMaterial) {
     const centerLineMaterial = gridHelper.material.clone();
@@ -48,7 +47,6 @@ const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250, spacing = 16 }) => {
           color={0xffffff}
           transparent
           opacity={opacity}
-          depthWrite={false}
         />
       </points>
     </group>
@@ -126,7 +124,7 @@ const Grid = ({ divisions = 250 }) => {
     0,      // Base layer
     -24, -48 // Negative z layers
   ];
-  const baseOpacity = 0.45;
+  const baseOpacity = 0.45; // Increased from 0.3 to 0.45
   
   return (
     <group>
