@@ -54,8 +54,8 @@ const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250, spacing = 16 }) => {
 };
 
 const DefaultNode3D = () => {
-  const size = 0.8; // 16px / 20 (our standard scale factor)
-  const width = 2.4; // 48px / 20
+  const size = 12.8; // 256px / 20 (our standard scale factor)
+  const width = size * 3; // Tripled width
   const height = size;
   const depth = size;
   
@@ -94,8 +94,8 @@ const DefaultNode3D = () => {
 
         {/* Title text - increased size */}
         <Text
-          position={[-width/2 + size/2 + size/4, 0, 0]}
-          fontSize={size/3}
+          position={[-width/2 + size/2 + size/4, size/6, 0]}
+          fontSize={size/6}
           color="black"
           anchorX="left"
           anchorY="middle"
@@ -105,8 +105,8 @@ const DefaultNode3D = () => {
 
         {/* Subline text - increased size */}
         <Text
-          position={[-width/2 + size/2 + size/4, -size/3, 0]}
-          fontSize={size/4}
+          position={[-width/2 + size/2 + size/4, -size/6, 0]}
+          fontSize={size/8}
           color="gray"
           anchorX="left"
           anchorY="middle"
