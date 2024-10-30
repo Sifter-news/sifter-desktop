@@ -14,11 +14,14 @@ export const AuthProvider = ({ children }) => {
   const location = useLocation();
 
   const handleAuthError = async () => {
-    // Clear any existing session data
+    // Clear all auth data
     await supabase.auth.signOut();
     setUser(null);
-    localStorage.removeItem('sb-dzzkeiacwaddihxavrhy-auth-token');
     
+    // Clear local storage
+    localStorage.clear();
+    
+    // Only redirect to login if not already there
     if (location.pathname !== '/login') {
       navigate('/login');
       toast.error('Session expired. Please sign in again.');
@@ -30,19 +33,33 @@ export const AuthProvider = ({ children }) => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         
-        if (error || !session) {
+        if (error) {
+          console.error('Session error:', error);
+          await handleAuthError();
+          return;
+        }
+
+        if (!session) {
+          // No active session
           await handleAuthError();
           return;
         }
 
         // Verify the session is still valid
-        const { data: userData, error: userError } = await supabase.auth.getUser();
-        if (userError || !userData.user) {
+        const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError) {
+          console.error('User verification error:', userError);
           await handleAuthError();
           return;
         }
 
-        setUser(userData.user);
+        if (!currentUser) {
+          await handleAuthError();
+          return;
+        }
+
+        setUser(currentUser);
       } catch (error) {
         console.error('Auth error:', error);
         await handleAuthError();
@@ -54,18 +71,41 @@ export const AuthProvider = ({ children }) => {
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN') {
-        setUser(session?.user ?? null);
-        toast.success('Successfully signed in!');
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        navigate('/login');
-        toast.success('Signed out successfully');
-      } else if (event === 'TOKEN_REFRESHED') {
-        setUser(session?.user ?? null);
-      } else if (event === 'USER_UPDATED') {
-        setUser(session?.user ?? null);
+      console.log('Auth event:', event);
+      
+      switch (event) {
+        case 'SIGNED_IN':
+          setUser(session?.user ?? null);
+          toast.success('Successfully signed in!');
+          break;
+          
+        case 'SIGNED_OUT':
+          setUser(null);
+          navigate('/login');
+          toast.success('Signed out successfully');
+          break;
+          
+        case 'TOKEN_REFRESHED':
+          setUser(session?.user ?? null);
+          break;
+          
+        case 'USER_UPDATED':
+          setUser(session?.user ?? null);
+          break;
+          
+        case 'USER_DELETED':
+          await handleAuthError();
+          break;
+          
+        case 'INITIAL_SESSION':
+          setUser(session?.user ?? null);
+          break;
+          
+        default:
+          // Handle unknown events
+          console.log('Unhandled auth event:', event);
       }
+      
       setLoading(false);
     });
 
@@ -85,19 +125,27 @@ export const AuthProvider = ({ children }) => {
         throw error;
       }
     },
+    
     signIn: async (data) => {
       try {
-        const { error } = await supabase.auth.signInWithPassword(data);
+        const { error } = await supabase.auth.signInWithPassword({
+          ...data,
+          options: {
+            refreshToken: true,
+          }
+        });
         if (error) throw error;
       } catch (error) {
         toast.error(error.message);
         throw error;
       }
     },
+    
     signOut: async () => {
       try {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
+        localStorage.clear();
         navigate('/login');
       } catch (error) {
         toast.error(error.message);
