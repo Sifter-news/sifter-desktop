@@ -2,15 +2,15 @@ import React from 'react';
 import * as THREE from 'three';
 import { Text } from '@react-three/drei';
 
-const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250, spacing = 16 }) => {
-  const size = spacing * divisions; // Total size will be 4000 units (16 * 250)
+const GridLayer = ({ z = 0, opacity = 0.3, divisions = 500, spacing = 16 }) => {
+  const size = spacing * divisions; // Total size will be 8000 units (16 * 500) - doubled from previous 4000
   
   const gridHelper = new THREE.GridHelper(size, divisions, 0xffffff, 0x333333);
   gridHelper.position.z = z;
-  gridHelper.rotation.x = Math.PI / 2; // Rotate to make it vertical on Z axis
+  gridHelper.rotation.x = Math.PI / 2;
   gridHelper.material.transparent = true;
   gridHelper.material.opacity = opacity;
-  gridHelper.material.depthWrite = false; // Prevent z-fighting
+  gridHelper.material.depthWrite = false;
   
   if (gridHelper.material instanceof THREE.LineBasicMaterial) {
     const centerLineMaterial = gridHelper.material.clone();
@@ -22,7 +22,7 @@ const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250, spacing = 16 }) => {
   const positions = [];
   const halfSize = size / 2;
 
-  // Changed dot spacing to 32 for all layers
+  // Keep dot spacing at 32 units
   const dotSpacing = 32;
 
   for (let i = -halfSize; i <= halfSize; i += dotSpacing) {
@@ -120,11 +120,11 @@ const DefaultNode3D = () => {
   );
 };
 
-const Grid = ({ divisions = 250 }) => {
+const Grid = ({ divisions = 500 }) => {  // Doubled divisions from 250 to 500
   const gridPositions = [
-    48, 24, // Positive z layers
-    0,      // Base layer
-    -24, -48 // Negative z layers
+    96, 48,  // Doubled positive z layers
+    0,       // Base layer
+    -48, -96 // Doubled negative z layers
   ];
   const baseOpacity = 0.45;
   
