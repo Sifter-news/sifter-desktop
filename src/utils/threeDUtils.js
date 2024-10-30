@@ -5,9 +5,9 @@ import { NODE_STYLES } from './nodeStyles';
 export const getNodeDimensions3D = (visualStyle) => {
   const style = NODE_STYLES[visualStyle || 'default'];
   return {
-    width: (style.width || 256) / 20,
-    height: (style.height || 256) / 20,
-    depth: visualStyle === 'cube' ? (style.width || 256) / 20 : 0.5
+    width: (style.width || 256) / 16, // Doubled the divisor from 8 to 16
+    height: (style.height || 256) / 16,
+    depth: visualStyle === 'cube' ? (style.width || 256) / 16 : 0.25 // Halved the depth from 0.5
   };
 };
 
