@@ -6,21 +6,27 @@ export const useInvestigation = (id) => useQuery({
   queryFn: async () => {
     if (!id) return null;
     
-    const { data, error } = await supabase
+    // First fetch the investigation
+    const { data: investigation, error: investigationError } = await supabase
       .from('investigations')
-      .select(`
-        *,
-        reports:reports(*)
-      `)
+      .select('*')
       .eq('id', id)
       .single();
       
-    if (error) {
-      console.error('Investigation query error:', error);
-      throw error;
-    }
+    if (investigationError) throw investigationError;
+
+    // Then fetch associated reports
+    const { data: reports, error: reportsError } = await supabase
+      .from('reports')
+      .select('*')
+      .eq('investigation_id', id);
+
+    if (reportsError) throw reportsError;
     
-    return data;
+    return {
+      ...investigation,
+      reports: reports || []
+    };
   },
   enabled: !!id,
 });
