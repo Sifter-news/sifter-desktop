@@ -13,12 +13,12 @@ import DebugToolSection from './sections/DebugToolSection';
 import DebugViewSection from './sections/DebugViewSection';
 import DebugHeader from './sections/DebugHeader';
 import DebugFocusSection from './sections/DebugFocusSection';
+import DebugErrorSection from './sections/DebugErrorSection';
 import { Rnd } from 'react-rnd';
 
 const DebugPanel = () => {
   const { isDebugOpen, setIsDebugOpen, debugData, showGuides, setShowGuides, hoveredElement } = useDebug();
   const { user } = useAuth();
-  const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const { data: investigations } = useInvestigations({ 
@@ -62,6 +62,8 @@ const DebugPanel = () => {
           <DebugStateSection debugData={debugData} />
           <Separator className="bg-white/10" />
           <DebugPositionSection debugData={debugData} />
+          <Separator className="bg-white/10" />
+          <DebugErrorSection errors={debugData?.errors || []} />
 
           {user && investigations?.length > 0 && (
             <>
