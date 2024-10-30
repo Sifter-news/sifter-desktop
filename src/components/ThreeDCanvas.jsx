@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
 import { toast } from 'sonner';
 import { Bug } from "lucide-react";
 import Toolbar from './Toolbar';
@@ -8,7 +9,6 @@ import { useNodes } from '@/hooks/useNodes';
 import { useZoomPan } from '@/hooks/useZoomPan';
 import { useDebug } from '@/contexts/DebugContext';
 import { supabase } from '@/integrations/supabase/supabase';
-import { createDebugNodes } from './three/DebugNodes';
 
 const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
   const [nodes, setNodes] = useState([]);
@@ -28,22 +28,21 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
           
         if (error) throw error;
         
-        const debugNodes = createDebugNodes();
-        const nodesWithDebug = [...(data || []), ...debugNodes].map(node => ({
+        const nodesWithPositions = (data || []).map(node => ({
           ...node,
-          position: node.position || [
+          position: [
             node.position_x || Math.random() * 100 - 50,
             node.position_y || Math.random() * 100 - 50,
             node.position_z || 0
           ]
         }));
 
-        setNodes(nodesWithDebug);
+        setNodes(nodesWithPositions);
         setDebugData(prev => ({
           ...prev,
           nodes: {
-            count: nodesWithDebug.length,
-            list: nodesWithDebug
+            count: nodesWithPositions.length,
+            list: nodesWithPositions
           }
         }));
       } catch (error) {
@@ -92,14 +91,6 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
       };
 
       setNodes(prev => [...prev, newNode]);
-      setDebugData(prev => ({
-        ...prev,
-        nodes: {
-          count: nodes.length + 1,
-          list: [...nodes, newNode]
-        }
-      }));
-
       toast.success('Node added successfully');
     } catch (error) {
       console.error('Error adding node:', error);
@@ -123,13 +114,16 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
 
       <Canvas
         camera={{ 
-          position: [0, 0, 200 / zoom],
+          position: viewMode === '3d' ? [100, 100, 100] : [0, 0, 200],
           fov: 45,
           near: 0.1,
           far: 2000
         }}
         style={{ background: 'black' }}
       >
+        <ambientLight intensity={0.8} />
+        <pointLight position={[10, 10, 10]} intensity={1.5} />
+        
         <ThreeScene 
           nodes={nodes}
           viewMode={viewMode}
@@ -137,6 +131,15 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
           controlsRef={controlsRef}
           handleNodeUpdate={onNodeUpdate}
           zoom={zoom}
+        />
+        
+        <OrbitControls
+          ref={controlsRef}
+          enableZoom={true}
+          enablePan={activeTool === 'pan'}
+          enableRotate={activeTool === 'pan'}
+          maxDistance={200}
+          minDistance={10}
         />
       </Canvas>
     </div>
