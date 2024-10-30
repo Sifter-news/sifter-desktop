@@ -9,14 +9,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const ZOOM_LEVELS = [
-  { value: 0.1, label: '10%' },   // 4000 units away
-  { value: 0.25, label: '25%' },  // 1600 units away
-  { value: 0.5, label: '50%' },   // 800 units away
-  { value: 0.75, label: '75%' },  // ~533 units away
-  { value: 1, label: '100%' },    // 400 units away (default)
-  { value: 1.25, label: '125%' }, // 320 units away
-  { value: 1.5, label: '150%' },  // ~267 units away
-  { value: 2, label: '200%' },    // 200 units away
+  { value: 0.125, label: '12.5%' },  // 256 units (8 grid cells)
+  { value: 0.25, label: '25%' },     // 128 units (4 grid cells)
+  { value: 0.5, label: '50%' },      // 64 units (2 grid cells)
+  { value: 1, label: '100%' },       // 32 units (1 grid cell)
+  { value: 2, label: '200%' },       // 16 units (1/2 grid cell)
+  { value: 4, label: '400%' },       // 8 units (1/4 grid cell)
 ];
 
 const ZoomLevelMenu = ({ zoom, handleZoom }) => {
