@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from 'react-router-dom';
 import { Input } from "@/components/ui/input";
+import { format } from 'date-fns';
 
 const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
   const [image, setImage] = useState(investigation.image || '/placeholder.svg');
@@ -66,7 +67,7 @@ const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
               {investigation.description || 'No description available'}
             </p>
             <div className="mt-4 text-xs text-gray-400">
-              {new Date(investigation.created_at).toLocaleDateString()}
+              {investigation.created_at ? format(new Date(investigation.created_at), 'MMMM dd, yyyy') : 'Date not available'}
             </div>
           </CardContent>
         </div>
