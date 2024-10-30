@@ -17,9 +17,19 @@ const ThreeScene = ({
   handleNodeUpdate,
   onStartConnection = () => {},
   onEndConnection = () => {},
-  setActiveConnection = () => {}
+  setActiveConnection = () => {},
+  zoom = 1 // Add zoom prop with default value
 }) => {
   const { camera } = useThree();
+
+  // Update camera position when zoom changes
+  React.useEffect(() => {
+    if (camera) {
+      camera.position.z = 200 / zoom;
+      camera.updateProjectionMatrix();
+    }
+  }, [zoom, camera]);
+
   const { showGuides } = useDebug();
 
   const handlePointerMove = (event) => {
@@ -82,7 +92,7 @@ const ThreeScene = ({
           enableZoom={true}
           enablePan={activeTool === 'pan'}
           enableRotate={activeTool === 'pan'}
-          maxDistance={200}
+          maxDistance={200 / zoom} // Adjust max distance based on zoom
           minDistance={10}
           camera={camera}
         />
