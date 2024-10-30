@@ -100,7 +100,7 @@ const HomePage = () => {
               <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
                 <FileSearchIcon className="h-4 w-4 text-gray-600" />
               </div>
-              <h2 className="text-2xl font-bold">My Investigations</h2>
+              <h2 className="text-lg font-medium">Investigations</h2>
             </div>
             <Button 
               className="rounded-full w-14 h-14 p-0 flex items-center justify-center"
