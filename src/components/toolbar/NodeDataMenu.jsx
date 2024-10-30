@@ -6,45 +6,79 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuShortcut,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const nodeTypes = {
-  generic: { label: "Generic Note", icon: FileText },
-  node_person: { label: "Person", icon: User },
-  node_organization: { label: "Organization", icon: Building2 },
-  node_object: { label: "Object", icon: Package },
-  node_concept: { label: "Concept", icon: Brain },
-  node_location: { label: "Location", icon: MapPin },
-  node_event: { label: "Event", icon: Calendar }
+  generic: { label: "Generic Note", icon: FileText, shortcut: "N" },
+  node_person: { label: "Person", icon: User, shortcut: "P" },
+  node_organization: { label: "Organization", icon: Building2, shortcut: "O" },
+  node_object: { label: "Object", icon: Package, shortcut: "B" },
+  node_concept: { label: "Concept", icon: Brain, shortcut: "C" },
+  node_location: { label: "Location", icon: MapPin, shortcut: "L" },
+  node_event: { label: "Event", icon: Calendar, shortcut: "E" }
 };
 
 const NodeDataMenu = ({ onAddNode, selectedStyle }) => {
+  const generateRandomPosition = () => ({
+    x: (Math.random() * 100) - 50, // Random value between -50 and 50
+    y: (Math.random() * 100) - 50,
+    z: 0 // Always start at z=0
+  });
+
+  const handleAddNode = (nodeType) => {
+    const position = generateRandomPosition();
+    onAddNode({
+      nodeType,
+      visualStyle: selectedStyle,
+      position_x: position.x,
+      position_y: position.y,
+      position_z: position.z,
+      title: 'New Node',
+      description: ''
+    });
+  };
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="sm"
-          className="h-8 rounded-lg text-white hover:text-white hover:bg-white/10 bg-white/[0.0625] flex items-center gap-1.5"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Add Node</span>
-          <ChevronDown className="h-3 w-3" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="bg-black text-white" align="top">
-        {Object.entries(nodeTypes).map(([value, { label, icon: Icon }]) => (
-          <DropdownMenuItem 
-            key={value}
-            onClick={() => onAddNode(value)}
-            className="flex items-center gap-2 hover:text-white"
-          >
-            <Icon className="h-4 w-4" />
-            <span>{label}</span>
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <TooltipProvider>
+      <Tooltip>
+        <DropdownMenu>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="h-8 w-8 rounded-lg text-white hover:text-white hover:bg-white/10 bg-white/[0.0625]"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <DropdownMenuContent className="bg-black text-white" align="top">
+            {Object.entries(nodeTypes).map(([value, { label, icon: Icon, shortcut }]) => (
+              <DropdownMenuItem 
+                key={value}
+                onClick={() => handleAddNode(value)}
+                className="flex items-center gap-2 hover:text-white"
+              >
+                <Icon className="h-4 w-4" />
+                <span>{label}</span>
+                <DropdownMenuShortcut>{shortcut}</DropdownMenuShortcut>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <TooltipContent side="bottom">
+          <p>Add new node (N)</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 

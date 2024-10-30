@@ -104,18 +104,44 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
     }));
   }, [activeTool, viewMode, setDebugData]);
 
-  const handleNodeUpdate = async (nodeId, newPosition) => {
+  const handleAddNode = async (nodeData) => {
     try {
-      if (onNodeUpdate) {
-        await onNodeUpdate(nodeId, {
-          position_x: newPosition[0],
-          position_y: newPosition[1],
-          position_z: 0
-        });
-      }
+      const { data, error } = await supabase
+        .from('node')
+        .insert([{
+          ...nodeData,
+          investigation_id: projectId,
+          position_x: nodeData.position_x,
+          position_y: nodeData.position_y,
+          position_z: nodeData.position_z || 0
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const newNode = {
+        ...data,
+        position: [
+          data.position_x,
+          data.position_y,
+          data.position_z || 0
+        ]
+      };
+
+      setNodes(prev => [...prev, newNode]);
+      setDebugData(prev => ({
+        ...prev,
+        nodes: {
+          count: nodes.length + 1,
+          list: [...nodes, newNode]
+        }
+      }));
+
+      toast.success('Node added successfully');
     } catch (error) {
-      console.error('Error updating node position:', error);
-      toast.error('Failed to update node position');
+      console.error('Error adding node:', error);
+      toast.error('Failed to add node');
     }
   };
 
@@ -129,13 +155,13 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
           zoom={zoom}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
-          onAddNode={onAddNode}
+          onAddNode={handleAddNode}
         />
       </nav>
 
       <Canvas
         camera={{ 
-          position: [0, 0, 200 / zoom], // Adjust camera position based on zoom
+          position: [0, 0, 200 / zoom],
           fov: 45,
           near: 0.1,
           far: 2000
@@ -148,8 +174,8 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
           viewMode={viewMode}
           activeTool={activeTool}
           controlsRef={controlsRef}
-          handleNodeUpdate={handleNodeUpdate}
-          zoom={zoom} // Pass zoom to ThreeScene
+          handleNodeUpdate={onNodeUpdate}
+          zoom={zoom}
         />
       </Canvas>
     </div>
