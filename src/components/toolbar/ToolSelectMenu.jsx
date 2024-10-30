@@ -2,13 +2,13 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { MousePointer2, Move3d, Orbit, Grid2x2, Axis3D } from 'lucide-react';
 
-const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode, setViewMode }) => {
+const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode, onViewModeChange }) => {
   const handleToolToggle = () => {
     setActiveTool(activeTool === 'select' ? 'pan' : 'select');
   };
 
   const handleViewToggle = () => {
-    setViewMode(viewMode === '2d' ? '3d' : '2d');
+    onViewModeChange(viewMode === '2d' ? '3d' : '2d');
   };
 
   return (
@@ -18,7 +18,7 @@ const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode, setViewMode }) =>
         size="sm"
         onClick={handleToolToggle}
         className={`h-8 px-2 rounded-lg text-white hover:bg-white/10 ${
-          activeTool === 'select' ? 'bg-blue-600' : 'bg-blue-600'
+          activeTool === 'select' ? 'bg-blue-600' : 'bg-white/[0.0625]'
         }`}
       >
         {activeTool === 'select' ? (
@@ -33,7 +33,7 @@ const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode, setViewMode }) =>
         size="sm"
         onClick={handleViewToggle}
         className={`h-8 px-2 rounded-lg text-white hover:bg-white/10 ${
-          viewMode === '3d' ? 'bg-blue-600' : 'bg-blue-600'
+          viewMode === '3d' ? 'bg-blue-600' : 'bg-white/[0.0625]'
         }`}
       >
         {viewMode === '3d' ? (
