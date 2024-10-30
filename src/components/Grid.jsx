@@ -1,16 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { Text } from '@react-three/drei';
+import { useThree } from '@react-three/fiber';
 
-const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250, spacing = 16 }) => {
-  const size = spacing * divisions; // Total size will be 4000 units (16 * 250)
+const getGridSpacing = (distance) => {
+  if (distance <= 200) return { spacing: 8, divisions: 1000 };
+  if (distance <= 400) return { spacing: 24, divisions: 1000 };
+  if (distance <= 1000) return { spacing: 80, divisions: 1000 };
+  return { spacing: 256, divisions: 1000 };
+};
+
+const GridLayer = ({ z = 0, opacity = 0.3, cameraDistance }) => {
+  const { spacing, divisions } = getGridSpacing(cameraDistance);
+  const size = spacing * divisions;
   
   const gridHelper = new THREE.GridHelper(size, divisions, 0xffffff, 0x333333);
   gridHelper.position.z = z;
-  gridHelper.rotation.x = Math.PI / 2; // Rotate to make it vertical on Z axis
+  gridHelper.rotation.x = Math.PI / 2;
   gridHelper.material.transparent = true;
   gridHelper.material.opacity = opacity;
-  gridHelper.material.depthWrite = false; // Prevent z-fighting
+  gridHelper.material.depthWrite = false;
   
   if (gridHelper.material instanceof THREE.LineBasicMaterial) {
     const centerLineMaterial = gridHelper.material.clone();
@@ -21,9 +30,7 @@ const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250, spacing = 16 }) => {
   const dotGeometry = new THREE.BufferGeometry();
   const positions = [];
   const halfSize = size / 2;
-
-  // Use 8px spacing for z=0, 16px for other layers
-  const dotSpacing = z === 0 ? 8 : 16;
+  const dotSpacing = spacing;
 
   for (let i = -halfSize; i <= halfSize; i += dotSpacing) {
     for (let j = -halfSize; j <= halfSize; j += dotSpacing) {
@@ -120,10 +127,27 @@ const DefaultNode3D = () => {
   );
 };
 
-const Grid = ({ divisions = 250 }) => {
+const Grid = ({ divisions = 1000 }) => {
+  const { camera } = useThree();
+  const [cameraDistance, setCameraDistance] = useState(0);
+
+  useEffect(() => {
+    const updateDistance = () => {
+      const distance = camera.position.distanceTo(new THREE.Vector3(0, 0, 0));
+      setCameraDistance(distance);
+    };
+
+    camera.addEventListener('change', updateDistance);
+    updateDistance();
+
+    return () => {
+      camera.removeEventListener('change', updateDistance);
+    };
+  }, [camera]);
+
   const gridPositions = [
-    48, 24, // Positive z layers
-    0,      // Base layer
+    48, 24,  // Positive z layers
+    0,       // Base layer
     -24, -48 // Negative z layers
   ];
   const baseOpacity = 0.45;
@@ -135,7 +159,8 @@ const Grid = ({ divisions = 250 }) => {
           key={`grid-${index}`}
           z={zPos} 
           opacity={zPos === 0 ? baseOpacity : 0.1}
-          divisions={divisions} 
+          divisions={divisions}
+          cameraDistance={cameraDistance}
         />
       ))}
       <DefaultNode3D />
