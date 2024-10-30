@@ -53,7 +53,7 @@ const GridLayer = ({ z = 0, opacity = 0.3, divisions = 250, spacing = 16 }) => {
   );
 };
 
-const CubeOutline = () => {
+const DefaultNode3D = () => {
   const size = 12.8; // 256px / 20 (our standard scale factor)
   const width = size * 3; // Tripled width
   const height = size;
@@ -63,33 +63,39 @@ const CubeOutline = () => {
   const edges = new THREE.EdgesGeometry(geometry);
   
   return (
-    <group position={[0, 0, size/2]}>
-      {/* Wireframe outline */}
+    <group>
+      {/* 3D wireframe outline */}
       <lineSegments>
         <primitive object={edges} />
         <lineBasicMaterial color="white" opacity={0.5} transparent />
       </lineSegments>
       
-      {/* Solid front face with content */}
+      {/* Background white plane */}
       <mesh>
         <planeGeometry args={[width, height]} />
         <meshBasicMaterial color="white" opacity={0.9} transparent />
       </mesh>
 
-      {/* Content plane - moved forward by 24px (1.2 in our scale) */}
-      <group position={[0, 0, 1.2]}>
-        {/* Avatar */}
+      {/* Foreground content - moved forward by 48px (2.4 in our scale) */}
+      <group position={[0, 0, 2.4]}>
+        {/* Avatar with circular mask and outline */}
         <mesh position={[-width/2 + size/4, 0, 0]}>
-          <planeGeometry args={[size/2, size/2]} />
-          <meshBasicMaterial>
-            <texture attach="map" url="/default-image.png" />
-          </meshBasicMaterial>
+          <circleGeometry args={[size/4, 32]} />
+          <meshBasicMaterial 
+            transparent
+            opacity={0}
+            side={THREE.DoubleSide}
+          />
+          <lineSegments>
+            <edgesGeometry args={[new THREE.CircleGeometry(size/4, 32)]} />
+            <lineBasicMaterial color="white" />
+          </lineSegments>
         </mesh>
 
-        {/* Title text */}
+        {/* Title text - increased size */}
         <Text
-          position={[-width/2 + size/2 + size/4, size/4, 0]}
-          fontSize={size/8}
+          position={[-width/2 + size/2 + size/4, size/6, 0]}
+          fontSize={size/6}
           color="black"
           anchorX="left"
           anchorY="middle"
@@ -97,10 +103,10 @@ const CubeOutline = () => {
           Title
         </Text>
 
-        {/* Subline text */}
+        {/* Subline text - increased size */}
         <Text
-          position={[-width/2 + size/2 + size/4, 0, 0]}
-          fontSize={size/12}
+          position={[-width/2 + size/2 + size/4, -size/6, 0]}
+          fontSize={size/8}
           color="gray"
           anchorX="left"
           anchorY="middle"
@@ -113,7 +119,6 @@ const CubeOutline = () => {
 };
 
 const Grid = ({ divisions = 250 }) => {
-  // Create grid layers with 24px increments, including positive z
   const gridPositions = [
     48, 24, // Positive z layers
     0,      // Base layer
@@ -127,11 +132,11 @@ const Grid = ({ divisions = 250 }) => {
         <GridLayer 
           key={`grid-${index}`}
           z={zPos} 
-          opacity={zPos === 0 ? baseOpacity : 0.1} // Base layer at 45% opacity, rest at 10%
+          opacity={zPos === 0 ? baseOpacity : 0.1}
           divisions={divisions} 
         />
       ))}
-      <CubeOutline />
+      <DefaultNode3D />
     </group>
   );
 };
