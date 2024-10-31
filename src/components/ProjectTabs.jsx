@@ -52,11 +52,11 @@ const ProjectTabs = ({
           <TabsList className="mx-auto bg-white bg-opacity-80 backdrop-blur-md z-10 fixed top-16">
             <TabsTrigger value="mindmap" className="flex items-center">
               <Brain className="w-4 h-4 mr-2" />
-              Mind Map
+              Mind
             </TabsTrigger>
             <TabsTrigger value="timeline" className="flex items-center">
               <Clock className="w-4 h-4 mr-2" />
-              Timeline
+              Time
             </TabsTrigger>
             <TabsTrigger value="map" className="flex items-center">
               <Map className="w-4 h-4 mr-2" />
