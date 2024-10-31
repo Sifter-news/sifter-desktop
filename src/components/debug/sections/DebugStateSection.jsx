@@ -1,6 +1,6 @@
 import React from 'react';
-import DebugIDSection from '../DebugIDSection';
-import Debug3DSection from '../Debug3DSection';
+import DebugIDSection from './DebugIDSection';
+import Debug3DSection from './Debug3DSection';
 import { Eye, Target, CheckSquare } from 'lucide-react';
 
 const DebugStateSection = ({ debugData }) => {
