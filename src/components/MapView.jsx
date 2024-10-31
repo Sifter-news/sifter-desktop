@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Map as MapGL } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import NodeTooltip from './node/NodeTooltip';
-import NodeEditorModal from './node/NodeEditorModal';
+import UnifiedNodeEditModal from './node/UnifiedNodeEditModal';
 
-const MapView = ({ nodes, onUpdateNode, focusedNodeId, onNodeFocus }) => {
+const MapView = ({ nodes, onUpdateNode, focusedNodeId, onNodeFocus, onDelete }) => {
   const [selectedNode, setSelectedNode] = useState(null);
   const token = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -45,11 +45,15 @@ const MapView = ({ nodes, onUpdateNode, focusedNodeId, onNodeFocus }) => {
           </NodeTooltip>
         ))}
       </MapGL>
-      <NodeEditorModal
+      <UnifiedNodeEditModal
         isOpen={!!selectedNode}
         onClose={() => setSelectedNode(null)}
         node={selectedNode}
         onUpdate={onUpdateNode}
+        onDelete={() => {
+          onDelete(selectedNode.id);
+          setSelectedNode(null);
+        }}
       />
     </div>
   );
