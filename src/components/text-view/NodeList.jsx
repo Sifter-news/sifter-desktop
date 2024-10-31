@@ -12,6 +12,13 @@ const NodeList = ({
   focusedNodeId, 
   onDeleteNode 
 }) => {
+  const handleKeyDown = (e, node) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleNodeClick(node.id);
+    }
+  };
+
   return (
     <Droppable droppableId="root" type="node">
       {(provided) => (
@@ -27,7 +34,8 @@ const NodeList = ({
               key={node.id}
               role="option"
               aria-selected={selectedNodes.includes(node.id)}
-              tabIndex={focusedNodeId === node.id ? 0 : -1}
+              tabIndex={0}
+              onKeyDown={(e) => handleKeyDown(e, node)}
             >
               <NodeListItem
                 node={node}
