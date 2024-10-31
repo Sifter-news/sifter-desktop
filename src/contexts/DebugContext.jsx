@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const DebugContext = createContext({
-  isDebugOpen: true,
+  isDebugOpen: false,
   setIsDebugOpen: () => {},
   debugData: {},
   setDebugData: () => {},
@@ -14,7 +14,7 @@ const DebugContext = createContext({
 });
 
 export const DebugProvider = ({ children }) => {
-  const [isDebugOpen, setIsDebugOpen] = useState(true);
+  const [isDebugOpen, setIsDebugOpen] = useState(false);
   const [debugData, setDebugData] = useState({});
   const [showGuides, setShowGuides] = useState(false);
   const [hoveredElement, setHoveredElement] = useState(null);
