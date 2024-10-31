@@ -4,7 +4,7 @@ import NodeList from './NodeList';
 import { useNodeKeyboardNavigation } from './hooks/useNodeKeyboardNavigation';
 import { useNodeSelection } from './hooks/useNodeSelection';
 import AIChatPanel from '../ai/AIChatPanel';
-import NodeEditDialog from '../node/NodeEditDialog';
+import UnifiedNodeEditModal from '../node/UnifiedNodeEditModal';
 import { toast } from 'sonner';
 
 const NodeNavigator = ({ 
@@ -71,7 +71,7 @@ const NodeNavigator = ({
       </div>
 
       {editingNode && (
-        <NodeEditDialog
+        <UnifiedNodeEditModal
           isOpen={!!editingNode}
           onClose={() => setEditingNode(null)}
           node={editingNode}
