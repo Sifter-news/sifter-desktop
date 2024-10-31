@@ -101,6 +101,17 @@ const ThreeScene = ({
         onDelete={() => handleNodeUpdate({ id: 'node5', action: 'delete' })}
         onStyleChange={(style) => handleNodeUpdate({ id: 'node5', action: 'updateStyle', style })}
       />
+
+      <OrbitControls
+        ref={controlsRef}
+        enableZoom={true}
+        enablePan={activeTool === 'pan'}
+        enableRotate={activeTool === 'pan'}
+        maxDistance={2000}
+        minDistance={10}
+        zoomSpeed={0.5}
+        screenSpacePanning={true}
+      />
     </group>
   );
 };
