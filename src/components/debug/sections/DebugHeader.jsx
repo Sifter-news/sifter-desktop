@@ -17,7 +17,6 @@ const DebugHeader = ({ showGuides, setShowGuides, onCollapse, onClose }) => {
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="flex items-center gap-2">
-                <Bug className="h-5 w-5 text-purple-400" />
                 <h2 className="text-lg font-semibold">Debug Panel</h2>
               </div>
             </TooltipTrigger>
