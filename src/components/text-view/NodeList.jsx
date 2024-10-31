@@ -12,10 +12,27 @@ const NodeList = ({
   focusedNodeId, 
   onDeleteNode 
 }) => {
-  const handleKeyDown = (e, node) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleNodeClick(node.id);
+  const handleKeyDown = (e, node, index) => {
+    switch (e.key) {
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        handleNodeClick(node.id);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        if (index > 0) {
+          onNodeFocus(nodes[index - 1].id);
+        }
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        if (index < nodes.length - 1) {
+          onNodeFocus(nodes[index + 1].id);
+        }
+        break;
+      default:
+        break;
     }
   };
 
@@ -35,7 +52,7 @@ const NodeList = ({
               role="option"
               aria-selected={selectedNodes.includes(node.id)}
               tabIndex={0}
-              onKeyDown={(e) => handleKeyDown(e, node)}
+              onKeyDown={(e) => handleKeyDown(e, node, index)}
             >
               <NodeListItem
                 node={node}
