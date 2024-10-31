@@ -1,14 +1,29 @@
 import React from 'react';
 import { Target } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const DebugFocusSection = ({ hoveredElement }) => {
   if (!hoveredElement) {
     return (
       <div className="p-4 border-b border-white/10">
-        <div className="flex items-center gap-2 text-white/60">
-          <Target className="h-4 w-4" />
-          <p className="text-sm">No element focused</p>
-        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-2 text-white/60">
+                <Target className="h-4 w-4" />
+                <p className="text-sm">No element focused</p>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="bg-black/90 text-white">
+              <p>Shows information about the currently focused UI element</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     );
   }
@@ -16,10 +31,19 @@ const DebugFocusSection = ({ hoveredElement }) => {
   return (
     <div className="p-4 border-b border-white/10">
       <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <Target className="h-4 w-4 text-purple-400" />
-          <h3 className="text-sm font-medium text-white">Focused Element</h3>
-        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-2">
+                <Target className="h-4 w-4 text-purple-400" />
+                <h3 className="text-sm font-medium text-white">Focused Element</h3>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="bg-black/90 text-white">
+              <p>Details about the currently focused component or element</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <div className="bg-black/50 p-2 rounded">
           <p className="text-xs font-medium text-blue-400">{hoveredElement.component}</p>
           {hoveredElement.metadata && (

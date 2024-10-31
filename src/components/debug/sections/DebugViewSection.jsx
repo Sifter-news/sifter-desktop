@@ -1,5 +1,11 @@
 import React from 'react';
 import { Map, Timeline, Network, Eye } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const DebugViewSection = ({ currentView, viewMode }) => {
   const getViewIcon = (view) => {
@@ -16,18 +22,27 @@ const DebugViewSection = ({ currentView, viewMode }) => {
   };
 
   return (
-    <div className="space-y-1">
-      <p className="text-xs font-medium text-white/80">Project View 👁️</p>
-      <div className="pl-2 space-y-2">
-        <div className="flex items-center gap-2">
-          {getViewIcon(currentView)}
-          <p className="text-xs">Canvas: {currentView || 'Unknown'}</p>
-        </div>
-        {currentView === 'mindmap' && (
-          <p className="text-xs pl-6">Perspective: {viewMode || '2D'} 🎥</p>
-        )}
-      </div>
-    </div>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="space-y-1">
+            <p className="text-xs font-medium text-white/80">Project View 👁️</p>
+            <div className="pl-2 space-y-2">
+              <div className="flex items-center gap-2">
+                {getViewIcon(currentView)}
+                <p className="text-xs">Canvas: {currentView || 'Unknown'}</p>
+              </div>
+              {currentView === 'mindmap' && (
+                <p className="text-xs pl-6">Perspective: {viewMode || '2D'} 🎥</p>
+              )}
+            </div>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" className="bg-black/90 text-white">
+          <p>Current view mode and perspective settings</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
