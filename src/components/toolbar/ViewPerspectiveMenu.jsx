@@ -32,9 +32,10 @@ const ViewPerspectiveMenu = ({ viewMode, onViewModeChange }) => {
               <Button 
                 variant="ghost" 
                 size="sm"
-                className="h-8 rounded-lg bg-gray-700 hover:bg-gray-600 text-white hover:text-white flex items-center gap-1.5"
+                className="h-8 rounded-lg bg-gray-700 hover:bg-gray-600 text-white hover:text-white flex items-center gap-1.5 px-3"
               >
                 <Icon className="h-4 w-4" />
+                <span className="ml-1">{currentView.label}</span>
                 <ChevronDown className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
