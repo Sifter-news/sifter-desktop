@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { toast } from "sonner";
-import { supabase } from '@/integrations/supabase/supabase';
+import { toast } from 'sonner';
+import { supabase } from '@/config/supabase';
 import BaseModal from './BaseModal';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

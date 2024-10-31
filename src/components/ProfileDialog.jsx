@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input"; 
 import { UserIcon, LogOutIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/supabase';
+import { supabase } from '@/config/supabase';
 import { toast } from 'sonner';
 import { useProfile, useUpdateProfile } from '@/integrations/supabase/index';
 
