@@ -58,6 +58,19 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
 
   const cameraPosition = calculateCameraPosition(viewMode, zoom);
 
+  const handleNodePositionUpdate = async (nodeId, position) => {
+    try {
+      await onNodeUpdate(nodeId, {
+        position_x: position[0],
+        position_y: position[1],
+        position_z: position[2]
+      });
+    } catch (error) {
+      console.error('Error updating node position:', error);
+      toast.error('Failed to update node position');
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black">
       <nav className="fixed top-0 left-0 right-0 z-10">
@@ -89,7 +102,7 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
           viewMode={viewMode}
           activeTool={activeTool}
           controlsRef={controlsRef}
-          handleNodeUpdate={onNodeUpdate}
+          handleNodeUpdate={handleNodePositionUpdate}
           zoom={zoom}
         />
         
