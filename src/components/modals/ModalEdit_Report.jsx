@@ -28,6 +28,11 @@ const ReportEditModal = ({ isOpen, onClose, report, onUpdate, onDelete }) => {
       return;
     }
 
+    if (!formData.title.trim()) {
+      toast.error("Title is required");
+      return;
+    }
+
     setIsSaving(true);
     try {
       const updates = {
@@ -45,7 +50,6 @@ const ReportEditModal = ({ isOpen, onClose, report, onUpdate, onDelete }) => {
 
       if (error) throw error;
 
-      // Call onUpdate with the updated data first
       await onUpdate({
         ...report,
         ...data
@@ -76,7 +80,6 @@ const ReportEditModal = ({ isOpen, onClose, report, onUpdate, onDelete }) => {
 
       if (error) throw error;
 
-      // Call onDelete before showing success message
       await onDelete(report.id);
       
       toast.success("Report deleted successfully");

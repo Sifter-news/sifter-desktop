@@ -21,7 +21,7 @@ const InvestigationModal = ({ isOpen, onClose, investigation, onUpdate }) => {
         title: investigation.title || '',
         description: investigation.description || '',
         type: investigation.investigation_type || 'generic',
-        focus: 'node_person'
+        focus: investigation.investigation_focus || 'node_person'
       });
     }
   }, [investigation, isOpen]);
@@ -44,10 +44,12 @@ const InvestigationModal = ({ isOpen, onClose, investigation, onUpdate }) => {
         .update({
           title: formData.title.trim(),
           description: formData.description.trim(),
-          investigation_type: formData.type
+          investigation_type: formData.type,
+          investigation_focus: formData.focus,
+          updated_at: new Date().toISOString()
         })
         .eq('id', investigation.id)
-        .select()
+        .select('*, reports(*)')
         .single();
 
       if (error) throw error;

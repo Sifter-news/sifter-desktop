@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from 'sonner';
+import { supabase } from '@/config/supabase';
 import NodeTypeSelect from './NodeTypeSelect';
 import NodeStyleSelect from './NodeStyleSelect';
 import NodeMetadataFields from './NodeMetadataFields';
@@ -41,21 +42,12 @@ const ModalEdit_Node = ({
     }
   }, [node]);
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFormData(prev => ({
-        ...prev,
-        avatar: URL.createObjectURL(file)
-      }));
-    }
-  };
-
-  const handleFieldChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
   const handleSubmit = async () => {
+    if (!node?.id) {
+      toast.error("Invalid node ID");
+      return;
+    }
+
     if (!formData.title.trim()) {
       toast.error("Title is required");
       return;
@@ -63,7 +55,32 @@ const ModalEdit_Node = ({
 
     setIsLoading(true);
     try {
-      await onUpdate(node.id, formData);
+      const updates = {
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        node_type: formData.nodeType,
+        visual_style: formData.visualStyle,
+        metadata: formData.metadata,
+        avatar: formData.avatar,
+        updated_at: new Date().toISOString()
+      };
+
+      const { data, error } = await supabase
+        .from('node')
+        .update(updates)
+        .eq('id', node.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      await onUpdate(node.id, {
+        ...node,
+        ...data,
+        nodeType: data.node_type,
+        visualStyle: data.visual_style
+      });
+
       toast.success("Node updated successfully");
       onClose();
     } catch (error) {
@@ -77,6 +94,13 @@ const ModalEdit_Node = ({
   const handleDelete = async () => {
     setIsLoading(true);
     try {
+      const { error } = await supabase
+        .from('node')
+        .delete()
+        .eq('id', node.id);
+
+      if (error) throw error;
+
       await onDelete(node.id);
       toast.success("Node deleted successfully");
       onClose();
@@ -101,31 +125,47 @@ const ModalEdit_Node = ({
           
           <NodeAvatarSection 
             avatar={formData.avatar} 
-            onImageUpload={handleImageUpload} 
+            onImageUpload={(file) => {
+              if (file) {
+                setFormData(prev => ({
+                  ...prev,
+                  avatar: URL.createObjectURL(file)
+                }));
+              }
+            }} 
           />
 
           <div className="grid gap-4 py-4">
             <NodeBasicFields
               title={formData.title}
               description={formData.description}
-              onFieldChange={handleFieldChange}
+              onFieldChange={(field, value) => 
+                setFormData(prev => ({ ...prev, [field]: value }))
+              }
             />
 
             <NodeTypeSelect
               value={formData.nodeType}
-              onChange={(nodeType) => handleFieldChange('nodeType', nodeType)}
+              onChange={(nodeType) => 
+                setFormData(prev => ({ ...prev, nodeType }))
+              }
             />
 
             <NodeStyleSelect
               value={formData.visualStyle}
-              onChange={(visualStyle) => handleFieldChange('visualStyle', visualStyle)}
+              onChange={(visualStyle) => 
+                setFormData(prev => ({ ...prev, visualStyle }))
+              }
             />
 
             <NodeMetadataFields
               nodeType={formData.nodeType}
               metadata={formData.metadata}
               onMetadataChange={(field, value) => 
-                handleFieldChange('metadata', { ...formData.metadata, [field]: value })
+                setFormData(prev => ({
+                  ...prev,
+                  metadata: { ...prev.metadata, [field]: value }
+                }))
               }
             />
           </div>
