@@ -24,46 +24,34 @@ const NodeNavigator = ({
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const { setDebugData } = useDebug();
 
-  // Auto-focus first item when nodes change or component mounts
-  useEffect(() => {
-    if (nodes.length > 0 && !focusedNodeId) {
-      const firstNode = nodes[0];
-      if (firstNode) {
-        onNodeFocus(firstNode.id);
-        setSelectedNodes([firstNode.id]);
-      }
-    }
-  }, [nodes, onNodeFocus, focusedNodeId]);
-
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!nodes.length) return;
+
+      // Only handle up and down arrow keys
+      if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+
+      e.preventDefault(); // Prevent default scroll behavior
 
       const currentIndex = nodes.findIndex(node => node.id === focusedNodeId);
       let nextIndex;
 
       switch (e.key) {
         case 'ArrowDown':
-          e.preventDefault();
           nextIndex = currentIndex < nodes.length - 1 ? currentIndex + 1 : currentIndex;
-          const nextNode = nodes[nextIndex];
-          if (nextNode) {
-            onNodeFocus(nextNode.id);
-            setSelectedNodes([nextNode.id]);
-          }
           break;
         case 'ArrowUp':
-          e.preventDefault();
-          nextIndex = currentIndex > 0 ? currentIndex - 1 : currentIndex;
-          const prevNode = nodes[nextIndex];
-          if (prevNode) {
-            onNodeFocus(prevNode.id);
-            setSelectedNodes([prevNode.id]);
-          }
+          nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
           break;
         default:
           return;
+      }
+
+      const nextNode = nodes[nextIndex];
+      if (nextNode) {
+        onNodeFocus(nextNode.id);
+        setSelectedNodes([nextNode.id]);
       }
     };
 
