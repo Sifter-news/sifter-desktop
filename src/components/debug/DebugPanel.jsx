@@ -14,6 +14,7 @@ import DebugHeader from './sections/DebugHeader';
 import DebugFocusSection from './sections/DebugFocusSection';
 import DebugErrorSection from './sections/DebugErrorSection';
 import DebugVariableSection from './sections/DebugVariableSection';
+import DebugNodeSection from './sections/DebugNodeSection';
 import { Rnd } from 'react-rnd';
 
 const DebugPanel = () => {
@@ -48,6 +49,8 @@ const DebugPanel = () => {
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
           <DebugVariableSection debugData={debugData} />
+          <Separator className="bg-white/10" />
+          <DebugNodeSection nodes={debugData?.nodes} />
           <Separator className="bg-white/10" />
           <DebugToolSection activeTool={debugData?.activeTool} />
           <Separator className="bg-white/10" />
