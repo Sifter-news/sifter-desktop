@@ -27,16 +27,34 @@ const fromSupabase = async (query) => {
 
 export const useInvestigation = (id) => useQuery({
   queryKey: ['investigations', id],
-  queryFn: () => fromSupabase(
-    supabase.from('investigations').select('*').eq('id', id).single()
-  ),
+  queryFn: async () => {
+    if (!id) return null;
+    
+    // Get investigation with reports
+    const { data, error } = await supabase
+      .from('investigations')
+      .select(`
+        *,
+        reports (*)
+      `)
+      .eq('id', id)
+      .single();
+      
+    if (error) throw error;
+    return data;
+  },
   enabled: !!id
 });
 
 export const useInvestigations = ({ select, filter } = {}) => useQuery({
   queryKey: ['investigations', { select, filter }],
-  queryFn: () => {
-    let query = supabase.from('investigations').select('*');
+  queryFn: async () => {
+    let query = supabase
+      .from('investigations')
+      .select(`
+        *,
+        reports (*)
+      `);
     
     if (filter?.startsWith('owner_id.eq.')) {
       const userId = filter.replace('owner_id.eq.', '');
@@ -45,7 +63,9 @@ export const useInvestigations = ({ select, filter } = {}) => useQuery({
       }
     }
     
-    return fromSupabase(query);
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
   }
 });
 
@@ -57,7 +77,10 @@ export const useAddInvestigation = () => {
       const { data, error } = await supabase
         .from('investigations')
         .insert([newInvestigation])
-        .select()
+        .select(`
+          *,
+          reports (*)
+        `)
         .single();
         
       if (error) throw error;
@@ -78,7 +101,10 @@ export const useUpdateInvestigation = () => {
         .from('investigations')
         .update(updates)
         .eq('id', id)
-        .select()
+        .select(`
+          *,
+          reports (*)
+        `)
         .single();
         
       if (error) throw error;
