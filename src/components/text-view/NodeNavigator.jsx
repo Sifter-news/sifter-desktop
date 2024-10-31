@@ -100,10 +100,7 @@ const NodeNavigator = ({
   });
 
   return (
-    <div 
-      className="w-full h-full flex flex-col p-4 rounded-2xl"
-      tabIndex={0}
-    >
+    <div className="w-full h-full flex flex-col p-4 rounded-2xl">
       <SearchInput value={searchQuery} onChange={setSearchQuery} />
       
       <DragDropContext onDragEnd={() => {}}>
