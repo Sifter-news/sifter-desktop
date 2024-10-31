@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Link } from 'react-router-dom';
 import { Input } from "@/components/ui/input";
 import { format } from 'date-fns';
+import { MoreVertical } from 'lucide-react';
 
 const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
   const [image, setImage] = useState(investigation.image || '/placeholder.svg');
@@ -29,7 +30,7 @@ const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
 
   return (
     <Link to={`/project/${investigation.id}`} className="block w-full h-[430px]">
-      <Card className="w-full h-full p-4 bg-[#594BFF] shadow-lg relative overflow-hidden rounded-l-[40px] rounded-r-none lg:rounded-r-none">
+      <Card className="w-full h-full p-6 bg-[#594BFF] shadow-lg relative overflow-hidden rounded-l-[40px] rounded-r-none lg:rounded-r-none">
         <div 
           className="absolute inset-0" 
           style={{
@@ -40,8 +41,10 @@ const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
             backgroundSize: '48px 48px',
           }}
         ></div>
-        <div className="absolute left-4 top-4 bottom-4 w-64 bg-white rounded-[24px] overflow-hidden">
-          <div className="absolute top-4 right-4 w-8 h-8 bg-white rounded-full shadow-md"></div>
+        <div className="absolute left-6 top-6 bottom-6 w-64 bg-white rounded-[24px] overflow-hidden">
+          <div className="absolute top-4 right-4 w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center cursor-pointer group">
+            <MoreVertical className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" />
+          </div>
           <div className="h-[180px] w-full overflow-hidden relative">
             <img 
               src={image}
