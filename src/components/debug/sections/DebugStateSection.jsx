@@ -17,9 +17,7 @@ const DebugStateSection = ({ debugData }) => {
           </div>
           <div className="pl-2 space-y-1">
             <p className="text-xs">Focused Node ID: <span className="text-blue-400">{debugData?.nodes?.focusedNodeId || 'None'}</span></p>
-            <p className="text-xs">Last Focus Time: <span className="text-blue-400">
-              {debugData?.nodes?.lastFocusTime ? new Date(debugData.nodes.lastFocusTime).toLocaleTimeString() : 'N/A'}
-            </span></p>
+            <p className="text-xs">Last Focus Time: <span className="text-blue-400">{debugData?.nodes?.lastFocusTime ? new Date(debugData.nodes.lastFocusTime).toLocaleTimeString() : 'N/A'}</span></p>
           </div>
         </div>
 
@@ -29,14 +27,10 @@ const DebugStateSection = ({ debugData }) => {
             <p className="text-xs font-medium text-white/80">Selection State</p>
           </div>
           <div className="pl-2 space-y-1">
-            <p className="text-xs">Selected Nodes: <span className="text-green-400">
-              {debugData?.nodes?.selectedNodes?.length || 0}
-            </span></p>
+            <p className="text-xs">Selected Nodes: <span className="text-green-400">{debugData?.nodes?.selectedNodes?.length || 0}</span></p>
             <div className="text-xs space-y-0.5">
               {debugData?.nodes?.selectedNodes?.map((nodeId, index) => (
-                <p key={nodeId}>
-                  {index + 1}. <span className="text-green-400">{nodeId}</span>
-                </p>
+                <p key={nodeId}>{index + 1}. <span className="text-green-400">{nodeId}</span></p>
               ))}
             </div>
           </div>
