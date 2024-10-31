@@ -14,7 +14,11 @@ export const AuthProvider = ({ children }) => {
   const location = useLocation();
 
   const handleAuthError = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
     setUser(null);
     localStorage.clear();
     
@@ -36,7 +40,10 @@ export const AuthProvider = ({ children }) => {
         }
 
         if (!session) {
-          await handleAuthError();
+          setLoading(false);
+          if (location.pathname !== '/login') {
+            navigate('/login');
+          }
           return;
         }
 
