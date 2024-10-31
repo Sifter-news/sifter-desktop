@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from "sonner";
-import { supabase } from '@/integrations/supabase/supabase';
+import { toast } from 'sonner';
+import { supabase } from '@/config/supabase';
 import InvestigationForm from './InvestigationForm';
 import BaseModal from './BaseModal';
 
