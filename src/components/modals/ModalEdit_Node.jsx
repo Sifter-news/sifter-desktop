@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Upload } from 'lucide-react';
-import { toast } from "sonner";
+import { toast } from 'sonner';
 import NodeTypeSelect from './NodeTypeSelect';
 import NodeStyleSelect from './NodeStyleSelect';
 import NodeMetadataFields from './NodeMetadataFields';
