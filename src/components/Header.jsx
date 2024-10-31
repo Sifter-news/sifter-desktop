@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import UserProfile from './UserProfile';
 import { Separator } from "@/components/ui/separator";
-import InvestigationModal from './modals/InvestigationModal';
+import ModalEdit_Investigation from './modals/ModalEdit_Investigation';
 import { supabase } from '@/integrations/supabase/supabase';
 import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -138,7 +138,7 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
         </div>
       </div>
 
-      <InvestigationModal 
+      <ModalEdit_Investigation 
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         investigation={projectName}
