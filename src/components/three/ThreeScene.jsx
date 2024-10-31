@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { OrbitControls } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 import Grid from '../Grid';
-import Node3DDefault from './nodes/node-3D_Default';
-import Node3DFlat from './nodes/node-3D_Flat';
+import Canvas3DCompactNode from '../nodes/CanvasNodes3D/Compact/Canvas3DCompactNode';
+import Canvas3DDefaultNode from '../nodes/CanvasNodes3D/Default/Canvas3DDefaultNode';
+import Canvas3DPostitNode from '../nodes/CanvasNodes3D/Postit/Canvas3DPostitNode';
 import ConnectionLine from '../ConnectionLine';
 import DebugAxes from './DebugAxes';
 import { useDebug } from '@/contexts/DebugContext';
@@ -38,13 +39,13 @@ const ThreeScene = ({
   }, [selectedNodeId, hoveredNodeId, setDebugData]);
 
   useEffect(() => {
-    if (camera && viewMode === '3d') {
-      const distance = 20000 / zoom;
-      camera.position.set(distance, distance, distance);
-      camera.lookAt(0, 0, 0);
-      camera.updateProjectionMatrix();
-    } else if (camera) {
-      camera.position.set(0, 0, 2000 / zoom);
+    if (camera) {
+      const distance = viewMode === '3d' ? 20000 / zoom : 2000 / zoom;
+      const position = viewMode === '3d' 
+        ? [distance, distance, distance] 
+        : [0, 0, distance];
+      
+      camera.position.set(...position);
       camera.lookAt(0, 0, 0);
       camera.updateProjectionMatrix();
     }
@@ -61,21 +62,24 @@ const ThreeScene = ({
     }
   };
 
-  // Clear selection when tool changes
-  useEffect(() => {
-    if (activeTool !== 'select') {
-      setSelectedNodeId(null);
-    }
-  }, [activeTool]);
+  const renderNode = (node) => {
+    const position = [node.position_x || 0, node.position_y || 0, node.position_z || 0];
+    const props = {
+      node,
+      activeTool,
+      onSelect: () => setSelectedNodeId(node.id),
+      isHighlighted: selectedNodeId === node.id || hoveredNodeId === node.id,
+      position
+    };
 
-  const handleNodeHover = (nodeId) => {
-    if (activeTool === 'select') {
-      setHoveredNodeId(nodeId);
+    switch (node.visualStyle) {
+      case 'compact':
+        return <Canvas3DCompactNode key={node.id} {...props} />;
+      case 'postit':
+        return <Canvas3DPostitNode key={node.id} {...props} />;
+      default:
+        return <Canvas3DDefaultNode key={node.id} {...props} />;
     }
-  };
-
-  const handleNodeHoverEnd = () => {
-    setHoveredNodeId(null);
   };
 
   return (
@@ -85,77 +89,25 @@ const ThreeScene = ({
       <Grid size={100} divisions={24} />
       {showGuides && <DebugAxes />}
       
-      {/* Original node at x=0 */}
-      <Node3DFlat 
-        position={[0, 3, 0]}
-        title="Node 1"
-        subline="This is node one"
-        avatarUrl="/default-image.png"
-        onDelete={() => handleNodeUpdate({ id: 'node1', action: 'delete' })}
-        onStyleChange={(style) => handleNodeUpdate({ id: 'node1', action: 'updateStyle', style })}
-        activeTool={activeTool}
-        isSelected={selectedNodeId === 'node1'}
-        onSelect={() => setSelectedNodeId('node1')}
-        onHover={() => handleNodeHover('node1')}
-        onHoverEnd={handleNodeHoverEnd}
-      />
-      
-      {/* Additional nodes spaced 8 units apart */}
-      <Node3DFlat 
-        position={[8, 3, 0]}
-        title="Node 2"
-        subline="This is node two"
-        avatarUrl="/default-image.png"
-        onDelete={() => handleNodeUpdate({ id: 'node2', action: 'delete' })}
-        onStyleChange={(style) => handleNodeUpdate({ id: 'node2', action: 'updateStyle', style })}
-        activeTool={activeTool}
-        isSelected={selectedNodeId === 'node2'}
-        onSelect={() => setSelectedNodeId('node2')}
-        onHover={() => handleNodeHover('node2')}
-        onHoverEnd={handleNodeHoverEnd}
-      />
-      
-      <Node3DFlat 
-        position={[16, 3, 0]}
-        title="Node 3"
-        subline="This is node three"
-        avatarUrl="/default-image.png"
-        onDelete={() => handleNodeUpdate({ id: 'node3', action: 'delete' })}
-        onStyleChange={(style) => handleNodeUpdate({ id: 'node3', action: 'updateStyle', style })}
-        activeTool={activeTool}
-        isSelected={selectedNodeId === 'node3'}
-        onSelect={() => setSelectedNodeId('node3')}
-        onHover={() => handleNodeHover('node3')}
-        onHoverEnd={handleNodeHoverEnd}
-      />
-      
-      <Node3DFlat 
-        position={[24, 3, 0]}
-        title="Node 4"
-        subline="This is node four"
-        avatarUrl="/default-image.png"
-        onDelete={() => handleNodeUpdate({ id: 'node4', action: 'delete' })}
-        onStyleChange={(style) => handleNodeUpdate({ id: 'node4', action: 'updateStyle', style })}
-        activeTool={activeTool}
-        isSelected={selectedNodeId === 'node4'}
-        onSelect={() => setSelectedNodeId('node4')}
-        onHover={() => handleNodeHover('node4')}
-        onHoverEnd={handleNodeHoverEnd}
-      />
-      
-      <Node3DFlat 
-        position={[32, 3, 0]}
-        title="Node 5"
-        subline="This is node five"
-        avatarUrl="/default-image.png"
-        onDelete={() => handleNodeUpdate({ id: 'node5', action: 'delete' })}
-        onStyleChange={(style) => handleNodeUpdate({ id: 'node5', action: 'updateStyle', style })}
-        activeTool={activeTool}
-        isSelected={selectedNodeId === 'node5'}
-        onSelect={() => setSelectedNodeId('node5')}
-        onHover={() => handleNodeHover('node5')}
-        onHoverEnd={handleNodeHoverEnd}
-      />
+      {nodes.map(renderNode)}
+
+      {connections.map((connection, index) => (
+        <ConnectionLine
+          key={`connection-${index}`}
+          start={connection.startPosition}
+          end={connection.endPosition}
+          color={connection.color || 'white'}
+        />
+      ))}
+
+      {activeConnection && (
+        <ConnectionLine
+          start={activeConnection.startPosition}
+          end={activeConnection.targetPosition}
+          color="blue"
+          isDashed
+        />
+      )}
 
       <OrbitControls
         ref={controlsRef}
