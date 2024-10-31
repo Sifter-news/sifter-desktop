@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase } from '@/config/supabase';
 import { SupabaseAuthProvider, useSupabaseAuth, SupabaseAuthUI } from './auth';
 
 // Import hooks

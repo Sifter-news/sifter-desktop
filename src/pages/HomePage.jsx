@@ -8,7 +8,7 @@ import { PlusIcon, FileSearchIcon } from 'lucide-react';
 import ContentModal from '../components/ContentModal';
 import ModalEdit_Investigation from '../components/modals/ModalEdit_Investigation';
 import { useInvestigations, useAddInvestigation, useUpdateInvestigation, useDeleteInvestigation } from '@/integrations/supabase/index';
-import { supabase } from '@/integrations/supabase/supabase';
+import { supabase } from '@/config/supabase';
 
 const HomePage = () => {
   const navigate = useNavigate();
