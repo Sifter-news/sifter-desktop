@@ -1,5 +1,5 @@
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/supabase';
+import { supabase } from '@/config/supabase';
 
 // Dimension utilities
 export const getNodeDimensions = (visualStyle) => {

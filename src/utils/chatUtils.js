@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/supabase';
+import { supabase } from '@/config/supabase';
 import { toast } from 'sonner';
 
 export const updateInvestigationSettings = async (investigationId, type, focus) => {
