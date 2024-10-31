@@ -1,6 +1,4 @@
 -- Reset tables
-TRUNCATE TABLE auth.users CASCADE;
-TRUNCATE TABLE public.profiles CASCADE;
 TRUNCATE TABLE public.investigations CASCADE;
 TRUNCATE TABLE public.reports CASCADE;
 TRUNCATE TABLE public.node CASCADE;
@@ -20,34 +18,34 @@ INSERT INTO auth.users (
     email,
     encrypted_password,
     email_confirmed_at,
+    recovery_sent_at,
     last_sign_in_at,
     raw_app_meta_data,
     raw_user_meta_data,
-    is_super_admin,
     created_at,
-    updated_at
+    updated_at,
+    confirmation_token,
+    email_change,
+    email_change_token_new,
+    recovery_token
 ) VALUES (
     '00000000-0000-0000-0000-000000000000',
     '02ecf5ce-3663-4897-9b9f-c084dac6b3da',
     'authenticated',
     'authenticated',
     'admin@sifter.news',
-    crypt('admin123', gen_salt('bf')),
+    '$2a$10$PxwO5Ls8TzxEGXZRWqS.8OqJp6VxQyK9mOIJJmh8YOqIW5/p8wVLe', -- password is 'password'
     NOW(),
     NOW(),
-    '{"provider": "email", "providers": ["email"]}'::jsonb,
-    '{"name": "Admin User"}'::jsonb,
-    true,
     NOW(),
-    NOW()
-);
-
--- Create corresponding profile
-INSERT INTO public.profiles (id, username, email)
-VALUES (
-    '02ecf5ce-3663-4897-9b9f-c084dac6b3da',
-    'admin',
-    'admin@sifter.news'
+    '{"provider": "email", "providers": ["email"]}',
+    '{}',
+    NOW(),
+    NOW(),
+    '',
+    '',
+    '',
+    ''
 );
 
 -- Create investigations with nodes and reports
