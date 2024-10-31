@@ -1,7 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-export const useNodeSelection = ({ nodes, onNodeFocus }) => {
+export const useNodeSelection = ({ nodes, onNodeFocus, focusedNodeId }) => {
   const [selectedNodes, setSelectedNodes] = useState([]);
+
+  // Sync selected nodes with focused node
+  useEffect(() => {
+    if (focusedNodeId && !selectedNodes.includes(focusedNodeId)) {
+      setSelectedNodes([focusedNodeId]);
+    }
+  }, [focusedNodeId]);
 
   const handleNodeSelect = (nodeId, event) => {
     let newSelection = [];

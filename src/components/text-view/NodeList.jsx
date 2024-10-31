@@ -10,14 +10,15 @@ const NodeList = ({
   onUpdateNode, 
   onAIConversation, 
   focusedNodeId, 
-  onDeleteNode 
+  onDeleteNode,
+  onEdit 
 }) => {
   const handleKeyDown = (e, node, index) => {
     switch (e.key) {
       case 'Enter':
       case ' ':
         e.preventDefault();
-        handleNodeClick(node.id);
+        handleNodeClick(node.id, e);
         break;
       case 'ArrowUp':
         e.preventDefault();
@@ -63,12 +64,13 @@ const NodeList = ({
                   node={node}
                   index={index}
                   isSelected={selectedNodes.includes(node.id)}
-                  onSelect={handleNodeClick}
+                  onSelect={(id) => handleNodeClick(id, window.event)}
                   onFocus={onNodeFocus}
                   onUpdateNode={onUpdateNode}
                   onAIConversation={onAIConversation}
                   isFocused={focusedNodeId === node.id}
                   onDelete={onDeleteNode}
+                  onEdit={onEdit}
                 />
               </div>
             ))}

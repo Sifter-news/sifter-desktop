@@ -23,7 +23,8 @@ const NodeNavigator = ({
 
   const { selectedNodes, handleNodeSelect } = useNodeSelection({
     nodes,
-    onNodeFocus
+    onNodeFocus,
+    focusedNodeId
   });
 
   useNodeKeyboardNavigation({
@@ -43,20 +44,11 @@ const NodeNavigator = ({
 
   const handleNodeUpdate = async (nodeId, updates) => {
     try {
-      onUpdateNode(nodeId, updates);
+      await onUpdateNode(nodeId, updates);
       setEditingNode(null);
       toast.success('Node updated successfully');
     } catch (error) {
       toast.error('Failed to update node');
-    }
-  };
-
-  const handleNodeDelete = async (nodeId) => {
-    try {
-      onDeleteNode(nodeId);
-      toast.success('Node deleted successfully');
-    } catch (error) {
-      toast.error('Failed to delete node');
     }
   };
 
@@ -73,7 +65,7 @@ const NodeNavigator = ({
           onUpdateNode={handleNodeUpdate}
           onAIConversation={() => setIsAIChatOpen(true)}
           focusedNodeId={focusedNodeId}
-          onDeleteNode={handleNodeDelete}
+          onDeleteNode={onDeleteNode}
           onEdit={setEditingNode}
         />
       </div>
@@ -84,7 +76,7 @@ const NodeNavigator = ({
           onClose={() => setEditingNode(null)}
           node={editingNode}
           onUpdate={handleNodeUpdate}
-          onDelete={handleNodeDelete}
+          onDelete={onDeleteNode}
         />
       )}
 
