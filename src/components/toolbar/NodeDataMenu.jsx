@@ -27,9 +27,9 @@ const nodeTypes = {
 
 const NodeDataMenu = ({ onAddNode, selectedStyle }) => {
   const generateRandomPosition = () => ({
-    x: (Math.random() * 100) - 50, // Random value between -50 and 50
+    x: (Math.random() * 100) - 50,
     y: (Math.random() * 100) - 50,
-    z: 0 // Always start at z=0
+    z: 0
   });
 
   const handleAddNode = (nodeType) => {
@@ -75,7 +75,7 @@ const NodeDataMenu = ({ onAddNode, selectedStyle }) => {
           </DropdownMenuContent>
         </DropdownMenu>
         <TooltipContent side="bottom">
-          <p>Add new node (N)</p>
+          <p>Add New Node (N)</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

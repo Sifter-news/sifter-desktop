@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
 import { Separator } from "@/components/ui/separator";
-import { ChevronDown, MessageCircle, Plus } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import ToolSelectMenu from './toolbar/ToolSelectMenu';
 import ViewPerspectiveMenu from './toolbar/ViewPerspectiveMenu';
 import ZoomLevelMenu from './toolbar/ZoomLevelMenu';
 import NodeStyleMenu from './toolbar/NodeStyleMenu';
 import NodeDataMenu from './toolbar/NodeDataMenu';
 import AIChatPanel from './ai/AIChatPanel';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const Toolbar = ({ 
   activeTool, 
@@ -68,12 +74,21 @@ const Toolbar = ({
             selectedStyle={selectedNodeStyle}
           />
           
-          <button 
-            className="h-8 px-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white hover:text-white flex items-center gap-1"
-            onClick={() => setIsAIPanelOpen(true)}
-          >
-            <MessageCircle className="h-4 w-4" />
-          </button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button 
+                  className="h-8 px-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white hover:text-white flex items-center gap-1"
+                  onClick={() => setIsAIPanelOpen(true)}
+                >
+                  <MessageCircle className="h-4 w-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>AI Assistant (⌘J)</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 

@@ -7,6 +7,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode }) => {
   const tools = [
@@ -19,33 +25,42 @@ const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode }) => {
   const Icon = currentTool.icon;
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="sm"
-          className="h-8 rounded-lg bg-blue-600 hover:bg-blue-700 text-white hover:text-white flex items-center gap-1.5"
-        >
-          <Icon className="h-4 w-4" />
-          <ChevronDown className="h-3 w-3" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="bg-black text-white" align="top">
-        {tools.map(tool => (
-          <DropdownMenuItem 
-            key={tool.id}
-            onClick={() => setActiveTool(tool.id)}
-            className="flex items-center justify-between hover:text-white"
-          >
-            <div className="flex items-center gap-2">
-              <tool.icon className="h-4 w-4" />
-              <span>{tool.label}</span>
-            </div>
-            <span className="text-xs text-gray-400">{tool.shortcut}</span>
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <TooltipProvider>
+      <Tooltip>
+        <DropdownMenu>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="h-8 rounded-lg bg-blue-600 hover:bg-blue-700 text-white hover:text-white flex items-center gap-1.5"
+              >
+                <Icon className="h-4 w-4" />
+                <ChevronDown className="h-3 w-3" />
+              </Button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <DropdownMenuContent className="bg-black text-white" align="top">
+            {tools.map(tool => (
+              <DropdownMenuItem 
+                key={tool.id}
+                onClick={() => setActiveTool(tool.id)}
+                className="flex items-center justify-between hover:text-white"
+              >
+                <div className="flex items-center gap-2">
+                  <tool.icon className="h-4 w-4" />
+                  <span>{tool.label}</span>
+                </div>
+                <span className="text-xs text-gray-400">{tool.shortcut}</span>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <TooltipContent side="bottom">
+          <p>Select Tool ({currentTool.shortcut})</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
