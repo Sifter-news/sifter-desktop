@@ -32,12 +32,10 @@ const NodeStyleMenu = ({ selectedStyle, onStyleChange }) => {
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="ghost" 
-                size="sm"
-                className="h-8 rounded-lg text-white hover:text-white hover:bg-white/10 bg-white/[0.0625] flex items-center gap-1.5"
+                size="icon"
+                className="h-8 w-8 rounded-lg text-white hover:text-white hover:bg-white/10 bg-white/[0.0625]"
               >
                 <Icon className="h-4 w-4" />
-                <span>{currentStyle.label}</span>
-                <ChevronDown className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
           </TooltipTrigger>
@@ -46,10 +44,9 @@ const NodeStyleMenu = ({ selectedStyle, onStyleChange }) => {
               <DropdownMenuItem 
                 key={style.id}
                 onClick={() => onStyleChange(style.id)}
-                className="flex items-center gap-2 hover:text-white"
+                className="flex items-center justify-center hover:text-white"
               >
                 <style.icon className="h-4 w-4" />
-                <span>{style.label}</span>
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
