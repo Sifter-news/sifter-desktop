@@ -1,7 +1,6 @@
 import React from 'react';
 import DebugIDSection from './DebugIDSection';
 import Debug3DSection from './Debug3DSection';
-import { Eye, Target, CheckSquare } from 'lucide-react';
 
 const DebugStateSection = ({ debugData }) => {
   return (
@@ -11,10 +10,7 @@ const DebugStateSection = ({ debugData }) => {
         <DebugIDSection id={debugData?.nodes?.focusedNodeId} />
         
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Target className="h-4 w-4 text-blue-400" />
-            <p className="text-xs font-medium text-white/80">Focus State</p>
-          </div>
+          <p className="text-xs font-medium text-white/80">Focus State</p>
           <div className="pl-2 space-y-1">
             <p className="text-xs">Focused Node ID: <span className="text-blue-400">{debugData?.nodes?.focusedNodeId || 'None'}</span></p>
             <p className="text-xs">Last Focus Time: <span className="text-blue-400">{debugData?.nodes?.lastFocusTime ? new Date(debugData.nodes.lastFocusTime).toLocaleTimeString() : 'N/A'}</span></p>
@@ -22,10 +18,7 @@ const DebugStateSection = ({ debugData }) => {
         </div>
 
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <CheckSquare className="h-4 w-4 text-green-400" />
-            <p className="text-xs font-medium text-white/80">Selection State</p>
-          </div>
+          <p className="text-xs font-medium text-white/80">Selection State</p>
           <div className="pl-2 space-y-1">
             <p className="text-xs">Selected Nodes: <span className="text-green-400">{debugData?.nodes?.selectedNodes?.length || 0}</span></p>
             <div className="text-xs space-y-0.5">
@@ -44,10 +37,7 @@ const DebugStateSection = ({ debugData }) => {
         )}
         
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <Eye className="h-4 w-4 text-blue-400" />
-            <p className="text-xs font-medium text-white/80">View Status</p>
-          </div>
+          <p className="text-xs font-medium text-white/80">View Status</p>
           <div className="pl-2">
             <p className="text-xs">Canvas: {debugData?.currentView || 'Unknown'}</p>
             {debugData?.currentView === 'mindmap' && (

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { AlertCircle, Plus, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -29,10 +28,7 @@ const DebugErrorSection = ({ errors = [] }) => {
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <AlertCircle className="h-4 w-4 text-red-400" />
-        <h3 className="text-sm font-medium text-white">Error Log</h3>
-      </div>
+      <h3 className="text-sm font-medium text-white">Error Log</h3>
       
       <ScrollArea className="h-[200px]">
         <div className="space-y-2">

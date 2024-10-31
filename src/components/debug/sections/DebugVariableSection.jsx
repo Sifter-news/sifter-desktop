@@ -1,5 +1,4 @@
 import React from 'react';
-import { Variable } from 'lucide-react';
 
 const DebugVariableSection = ({ debugData }) => {
   const formatValue = (value) => {
@@ -15,10 +14,7 @@ const DebugVariableSection = ({ debugData }) => {
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <Variable className="h-4 w-4 text-blue-400" />
-        <h3 className="text-sm font-medium text-white/80">Variables</h3>
-      </div>
+      <h3 className="text-sm font-medium text-white/80">Variables</h3>
       <div className="bg-black/50 p-2 rounded space-y-2">
         {Object.entries(debugData || {}).map(([key, value]) => (
           <div key={key} className="text-xs space-y-1">
