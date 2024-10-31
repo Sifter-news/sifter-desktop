@@ -4,6 +4,12 @@ TRUNCATE TABLE public.profiles CASCADE;
 TRUNCATE TABLE public.investigations CASCADE;
 TRUNCATE TABLE public.reports CASCADE;
 TRUNCATE TABLE public.node CASCADE;
+TRUNCATE TABLE public.node_person CASCADE;
+TRUNCATE TABLE public.node_organization CASCADE;
+TRUNCATE TABLE public.node_object CASCADE;
+TRUNCATE TABLE public.node_concept CASCADE;
+TRUNCATE TABLE public.node_location CASCADE;
+TRUNCATE TABLE public.node_event CASCADE;
 
 -- Create admin user
 INSERT INTO auth.users (
@@ -44,10 +50,11 @@ VALUES (
     'admin@sifter.news'
 );
 
--- Create realistic investigations with articles and nodes
+-- Create investigations with nodes and reports
 DO $$
 DECLARE
     new_investigation_id UUID;
+    new_node_id UUID;
     node_styles TEXT[] := ARRAY['default', 'compact', 'postit'];
     node_types TEXT[] := ARRAY['node_person', 'node_organization', 'node_object', 'node_concept', 'node_location', 'node_event'];
     investigation_case JSONB;
@@ -55,21 +62,8 @@ DECLARE
     i INT;
     j INT;
 BEGIN
-    FOR i IN 1..10 LOOP
-        CASE i
-            WHEN 1 THEN investigation_case := '{"type": "pre-deal", "title": "Tech Startup Acquisition Due Diligence", "description": "Comprehensive due diligence investigation for potential acquisition of AI startup TechVision Inc.", "reports": ["Initial Financial Assessment", "IP Portfolio Analysis", "Market Position Review", "Team Capability Assessment", "Technical Infrastructure Audit", "Compliance Status Report", "Customer Base Analysis", "Growth Trajectory Analysis", "Risk Assessment", "Final Recommendation"]}';
-            WHEN 2 THEN investigation_case := '{"type": "criminal", "title": "Corporate Fraud Investigation: BlueSkies Trading", "description": "Investigation into alleged financial fraud and market manipulation at BlueSkies Trading Corp.", "reports": ["Witness Interview Summaries", "Financial Transaction Analysis", "Document Trail Review", "Digital Evidence Report", "Pattern Analysis", "Timeline Construction", "Asset Tracking Report", "Suspect Profile Analysis", "Evidence Chain Documentation", "Investigation Summary"]}';
-            WHEN 3 THEN investigation_case := '{"type": "academic", "title": "Historical Document Authentication Study", "description": "Authentication investigation of recently discovered 16th century manuscripts", "reports": ["Material Analysis Results", "Handwriting Analysis", "Historical Context Review", "Comparative Analysis", "Expert Consultations", "Dating Test Results", "Provenance Research", "Conservation Assessment", "Authentication Findings", "Research Publication Draft"]}';
-            WHEN 4 THEN investigation_case := '{"type": "regulatory", "title": "Healthcare Compliance Investigation", "description": "Comprehensive review of Memorial Hospital compliance with updated healthcare regulations", "reports": ["Policy Review Summary", "Staff Interview Findings", "Documentation Audit", "Training Program Assessment", "Incident Report Analysis", "Compliance Gap Analysis", "Risk Management Review", "Implementation Plan", "Remediation Strategy", "Final Compliance Report"]}';
-            WHEN 5 THEN investigation_case := '{"type": "background", "title": "Executive Background Investigation", "description": "Comprehensive background check for incoming CEO position at Fortune 500 company", "reports": ["Education Verification", "Employment History", "Criminal Record Check", "Financial Background", "Media Coverage Analysis", "Reference Interviews", "Professional License Verification", "Social Media Analysis", "Conflict Check", "Final Background Report"]}';
-            WHEN 6 THEN investigation_case := '{"type": "environmental", "title": "Industrial Site Contamination Investigation", "description": "Environmental impact investigation of former chemical plant site", "reports": ["Soil Analysis Results", "Groundwater Testing", "Historical Land Use", "Chemical Composition Study", "Impact Assessment", "Health Risk Analysis", "Remediation Options", "Community Impact Study", "Regulatory Compliance", "Recommendations Report"]}';
-            WHEN 7 THEN investigation_case := '{"type": "financial", "title": "Investment Fund Forensic Audit", "description": "Forensic investigation into discrepancies in hedge fund returns reporting", "reports": ["Transaction Analysis", "Performance Calculation Review", "Investor Communication Audit", "Documentation Review", "Compliance Assessment", "Risk Exposure Analysis", "Pattern Recognition Study", "Regulatory Review", "Stakeholder Impact", "Investigation Findings"]}';
-            WHEN 8 THEN investigation_case := '{"type": "security", "title": "Data Breach Investigation", "description": "Investigation of major data breach at TechCorp Solutions", "reports": ["Initial Breach Assessment", "Attack Vector Analysis", "System Vulnerability Review", "Data Impact Analysis", "Timeline Construction", "Security Control Review", "Forensic Evidence Report", "Remediation Planning", "Incident Response Review", "Final Security Report"]}';
-            WHEN 9 THEN investigation_case := '{"type": "historical", "title": "Cold Case Re-Investigation", "description": "Re-examination of the 1985 ArtTech Gallery Heist", "reports": ["Evidence Re-Analysis", "Witness Re-Interviews", "New Lead Assessment", "Technology Application", "Pattern Analysis", "Timeline Reconstruction", "Suspect Profile Updates", "Modern Forensics Application", "New Evidence Summary", "Investigation Update"]}';
-            WHEN 10 THEN investigation_case := '{"type": "medical", "title": "Clinical Trial Protocol Investigation", "description": "Investigation into protocol adherence in Phase III drug trial", "reports": ["Protocol Compliance Review", "Data Collection Audit", "Patient Record Analysis", "Staff Interview Summary", "Documentation Review", "Statistical Analysis", "Adverse Event Review", "Quality Control Assessment", "Regulatory Compliance", "Investigation Findings"]}';
-        END CASE;
-
-        -- Insert investigation
+    FOR i IN 1..5 LOOP
+        -- Create investigation
         INSERT INTO public.investigations (
             id,
             title,
@@ -79,68 +73,74 @@ BEGIN
             investigation_type
         ) VALUES (
             uuid_generate_v4(),
-            investigation_case->>'title',
-            investigation_case->>'description',
+            'Investigation ' || i,
+            'Description for investigation ' || i,
             '02ecf5ce-3663-4897-9b9f-c084dac6b3da',
             'private',
-            investigation_case->>'type'
+            'generic'
         ) RETURNING id INTO new_investigation_id;
 
-        -- Create reports for each investigation
-        FOR j IN 0..9 LOOP
-            report_title := investigation_case->'reports'->j;
+        -- Create reports
+        FOR j IN 1..3 LOOP
             INSERT INTO public.reports (
                 investigation_id,
                 title,
                 content
             ) VALUES (
                 new_investigation_id,
-                report_title,
-                'Detailed content for ' || report_title || ' in the context of ' || (investigation_case->>'title')
+                'Report ' || j || ' for Investigation ' || i,
+                'Content for report ' || j || ' in investigation ' || i
             );
         END LOOP;
 
-        -- Create nodes with all combinations of styles and types
+        -- Create nodes with different styles and types
         FOR node_style IN SELECT unnest(node_styles)
         LOOP
             FOR node_type IN SELECT unnest(node_types)
             LOOP
+                -- Insert base node
                 INSERT INTO public.node (
+                    id,
                     title,
                     description,
-                    type,
                     investigation_id,
                     visual_style,
                     node_type,
                     position_x,
                     position_y,
-                    position_z,
-                    metadata
+                    position_z
                 ) VALUES (
-                    CASE node_type
-                        WHEN 'node_person' THEN 'Key Person: ' || (SELECT array_to_string(ARRAY(SELECT chr((65 + round(random() * 25))::integer) FROM generate_series(1,8)), ''))
-                        WHEN 'node_organization' THEN 'Organization: ' || (SELECT array_to_string(ARRAY(SELECT chr((65 + round(random() * 25))::integer) FROM generate_series(1,6)), '')) || ' Corp'
-                        WHEN 'node_object' THEN 'Evidence Item: ' || (SELECT array_to_string(ARRAY(SELECT chr((65 + round(random() * 25))::integer) FROM generate_series(1,5)), ''))
-                        WHEN 'node_concept' THEN 'Key Finding: ' || (SELECT array_to_string(ARRAY(SELECT chr((65 + round(random() * 25))::integer) FROM generate_series(1,7)), ''))
-                        WHEN 'node_location' THEN 'Location: ' || (SELECT array_to_string(ARRAY(SELECT chr((65 + round(random() * 25))::integer) FROM generate_series(1,6)), ''))
-                        ELSE 'Event: ' || (SELECT array_to_string(ARRAY(SELECT chr((65 + round(random() * 25))::integer) FROM generate_series(1,4)), ''))
-                    END,
-                    'Relevant ' || node_type || ' in the context of ' || (investigation_case->>'title'),
-                    node_type,
+                    uuid_generate_v4(),
+                    node_type || ' Node',
+                    'Description for ' || node_type,
                     new_investigation_id,
                     node_style,
                     node_type,
                     (random() * 1000)::numeric(10,2),
                     (random() * 1000)::numeric(10,2),
-                    0::numeric(10,2),
-                    jsonb_build_object(
-                        'created_date', NOW(),
-                        'last_modified', NOW(),
-                        'metadata_version', '1.0',
-                        'importance_level', (random() * 5 + 1)::int,
-                        'verification_status', CASE WHEN random() > 0.5 THEN 'verified' ELSE 'pending' END
-                    )
-                );
+                    0
+                ) RETURNING id INTO new_node_id;
+
+                -- Insert type-specific data
+                CASE node_type
+                    WHEN 'node_person' THEN
+                        INSERT INTO public.node_person (node_id, birth_date, aliases)
+                        VALUES (new_node_id, '1990-01-01', ARRAY['alias1', 'alias2']);
+                    
+                    WHEN 'node_organization' THEN
+                        INSERT INTO public.node_organization (node_id, legal_name)
+                        VALUES (new_node_id, 'Organization ' || i);
+                    
+                    WHEN 'node_object' THEN
+                        INSERT INTO public.node_object (node_id, object_type)
+                        VALUES (new_node_id, 'physical');
+                    
+                    WHEN 'node_concept' THEN
+                        INSERT INTO public.node_concept (node_id, definition)
+                        VALUES (new_node_id, 'Definition for concept ' || i);
+                    
+                    ELSE NULL;
+                END CASE;
             END LOOP;
         END LOOP;
     END LOOP;
