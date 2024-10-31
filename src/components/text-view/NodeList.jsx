@@ -26,8 +26,12 @@ const NodeList = ({
             <div 
               key={node.id}
               role="option"
+              data-node-id={node.id}
               aria-selected={selectedNodes.includes(node.id)}
               tabIndex={focusedNodeId === node.id ? 0 : -1}
+              className={`transition-all duration-200 ${
+                focusedNodeId === node.id ? 'ring-2 ring-blue-300' : ''
+              } ${selectedNodes.includes(node.id) ? 'ring-2 ring-blue-500' : ''}`}
             >
               <NodeListItem
                 node={node}
