@@ -14,14 +14,10 @@ export const AuthProvider = ({ children }) => {
   const location = useLocation();
 
   const handleAuthError = async () => {
-    // Clear all auth data
     await supabase.auth.signOut();
     setUser(null);
-    
-    // Clear local storage
     localStorage.clear();
     
-    // Only redirect to login if not already there
     if (location.pathname !== '/login') {
       navigate('/login');
       toast.error('Session expired. Please sign in again.');
@@ -29,50 +25,33 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const checkSession = async () => {
+    const initializeAuth = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (error) {
-          console.error('Session error:', error);
+        if (sessionError) {
+          console.error('Session error:', sessionError);
           await handleAuthError();
           return;
         }
 
         if (!session) {
-          // No active session
           await handleAuthError();
           return;
         }
 
-        // Verify the session is still valid
-        const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
-        
-        if (userError) {
-          console.error('User verification error:', userError);
-          await handleAuthError();
-          return;
-        }
-
-        if (!currentUser) {
-          await handleAuthError();
-          return;
-        }
-
-        setUser(currentUser);
+        setUser(session.user);
       } catch (error) {
-        console.error('Auth error:', error);
+        console.error('Auth initialization error:', error);
         await handleAuthError();
       } finally {
         setLoading(false);
       }
     };
 
-    checkSession();
+    initializeAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth event:', event);
-      
       switch (event) {
         case 'SIGNED_IN':
           setUser(session?.user ?? null);
@@ -96,28 +75,25 @@ export const AuthProvider = ({ children }) => {
         case 'USER_DELETED':
           await handleAuthError();
           break;
-          
-        case 'INITIAL_SESSION':
-          setUser(session?.user ?? null);
-          break;
-          
-        default:
-          // Handle unknown events
-          console.log('Unhandled auth event:', event);
       }
       
       setLoading(false);
     });
 
     return () => {
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
     };
   }, [navigate, location.pathname]);
 
   const value = {
     signUp: async (data) => {
       try {
-        const { error } = await supabase.auth.signUp(data);
+        const { error } = await supabase.auth.signUp({
+          ...data,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback`
+          }
+        });
         if (error) throw error;
         toast.success('Check your email to confirm your account');
       } catch (error) {
@@ -128,12 +104,7 @@ export const AuthProvider = ({ children }) => {
     
     signIn: async (data) => {
       try {
-        const { error } = await supabase.auth.signInWithPassword({
-          ...data,
-          options: {
-            refreshToken: true,
-          }
-        });
+        const { error } = await supabase.auth.signInWithPassword(data);
         if (error) throw error;
       } catch (error) {
         toast.error(error.message);
@@ -161,3 +132,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export default AuthProvider;
