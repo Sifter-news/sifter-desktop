@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { OrbitControls } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 import Grid from '../Grid';
@@ -22,7 +22,8 @@ const ThreeScene = ({
   zoom = 1
 }) => {
   const { camera } = useThree();
-  const { showGuides, setDebugData } = useDebug();
+  const { showGuides } = useDebug();
+  const [selectedNodeId, setSelectedNodeId] = useState(null);
 
   useEffect(() => {
     if (camera && viewMode === '3d') {
@@ -48,6 +49,13 @@ const ThreeScene = ({
     }
   };
 
+  // Clear selection when tool changes
+  useEffect(() => {
+    if (activeTool !== 'select') {
+      setSelectedNodeId(null);
+    }
+  }, [activeTool]);
+
   return (
     <group onPointerMove={handlePointerMove}>
       <ambientLight intensity={0.8} />
@@ -63,6 +71,9 @@ const ThreeScene = ({
         avatarUrl="/default-image.png"
         onDelete={() => handleNodeUpdate({ id: 'node1', action: 'delete' })}
         onStyleChange={(style) => handleNodeUpdate({ id: 'node1', action: 'updateStyle', style })}
+        activeTool={activeTool}
+        isSelected={selectedNodeId === 'node1'}
+        onSelect={() => setSelectedNodeId('node1')}
       />
       
       {/* Additional nodes spaced 8 units apart */}
@@ -73,6 +84,9 @@ const ThreeScene = ({
         avatarUrl="/default-image.png"
         onDelete={() => handleNodeUpdate({ id: 'node2', action: 'delete' })}
         onStyleChange={(style) => handleNodeUpdate({ id: 'node2', action: 'updateStyle', style })}
+        activeTool={activeTool}
+        isSelected={selectedNodeId === 'node2'}
+        onSelect={() => setSelectedNodeId('node2')}
       />
       
       <ThreeDFlatNode 
@@ -82,6 +96,9 @@ const ThreeScene = ({
         avatarUrl="/default-image.png"
         onDelete={() => handleNodeUpdate({ id: 'node3', action: 'delete' })}
         onStyleChange={(style) => handleNodeUpdate({ id: 'node3', action: 'updateStyle', style })}
+        activeTool={activeTool}
+        isSelected={selectedNodeId === 'node3'}
+        onSelect={() => setSelectedNodeId('node3')}
       />
       
       <ThreeDFlatNode 
@@ -91,6 +108,9 @@ const ThreeScene = ({
         avatarUrl="/default-image.png"
         onDelete={() => handleNodeUpdate({ id: 'node4', action: 'delete' })}
         onStyleChange={(style) => handleNodeUpdate({ id: 'node4', action: 'updateStyle', style })}
+        activeTool={activeTool}
+        isSelected={selectedNodeId === 'node4'}
+        onSelect={() => setSelectedNodeId('node4')}
       />
       
       <ThreeDFlatNode 
@@ -100,6 +120,9 @@ const ThreeScene = ({
         avatarUrl="/default-image.png"
         onDelete={() => handleNodeUpdate({ id: 'node5', action: 'delete' })}
         onStyleChange={(style) => handleNodeUpdate({ id: 'node5', action: 'updateStyle', style })}
+        activeTool={activeTool}
+        isSelected={selectedNodeId === 'node5'}
+        onSelect={() => setSelectedNodeId('node5')}
       />
 
       <OrbitControls

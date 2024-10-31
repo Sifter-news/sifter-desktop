@@ -18,14 +18,16 @@ const ThreeDFlatNode = ({
   subline = "Subline",
   avatarUrl = "/default-image.png",
   onDelete,
-  onStyleChange
+  onStyleChange,
+  activeTool,
+  isSelected,
+  onSelect
 }) => {
   const groupRef = useRef();
   const [isHovered, setIsHovered] = useState(false);
   const textureLoader = new THREE.TextureLoader();
   const avatarTexture = textureLoader.load(avatarUrl);
 
-  // Create circular shape for avatar
   const avatarGeometry = new THREE.CircleGeometry(0.5, 32);
   const avatarMaterial = new THREE.MeshBasicMaterial({
     map: avatarTexture,
@@ -33,8 +35,22 @@ const ThreeDFlatNode = ({
     side: THREE.DoubleSide
   });
 
-  const handlePointerOver = () => setIsHovered(true);
-  const handlePointerOut = () => setIsHovered(false);
+  const handlePointerOver = () => {
+    if (activeTool === 'select') {
+      setIsHovered(true);
+    }
+  };
+
+  const handlePointerOut = () => {
+    setIsHovered(false);
+  };
+
+  const handleClick = (e) => {
+    if (activeTool === 'select') {
+      e.stopPropagation();
+      onSelect?.();
+    }
+  };
 
   return (
     <Billboard
@@ -44,8 +60,21 @@ const ThreeDFlatNode = ({
       lockZ={false}
       onPointerOver={handlePointerOver}
       onPointerOut={handlePointerOut}
+      onClick={handleClick}
     >
       <group ref={groupRef} position={position}>
+        {/* Selection outline */}
+        {(isHovered || isSelected) && (
+          <mesh position={[0, 0, -0.02]}>
+            <planeGeometry args={[4.2, 2.2]} />
+            <meshBasicMaterial 
+              color={isSelected ? "#3b82f6" : "#60a5fa"} 
+              transparent 
+              opacity={0.3} 
+            />
+          </mesh>
+        )}
+
         {/* Background plane */}
         <mesh position={[0, 0, -0.01]}>
           <planeGeometry args={[4, 2]} />
