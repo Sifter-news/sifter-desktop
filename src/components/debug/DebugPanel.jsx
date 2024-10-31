@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDebug } from '@/contexts/DebugContext';
-import { Maximize2 } from 'lucide-react';
+import { Maximize2, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -16,17 +16,43 @@ import DebugErrorSection from './sections/DebugErrorSection';
 import DebugVariableSection from './sections/DebugVariableSection';
 import DebugNodeSection from './sections/DebugNodeSection';
 import { Rnd } from 'react-rnd';
+import { cn } from '@/lib/utils';
 
 const DebugPanel = () => {
   const { isDebugOpen, setIsDebugOpen, debugData, showGuides, setShowGuides, hoveredElement } = useDebug();
   const { user } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 384, height: 500 });
+  const [expandedSections, setExpandedSections] = useState({
+    focus: true,
+    nodes: true,
+    state: true,
+    position: true,
+    errors: true
+  });
+
   const { data: investigations } = useInvestigations({ 
     filter: user ? `owner_id.eq.${user?.id}` : undefined 
   });
 
+  const toggleSection = (section) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
   if (!isDebugOpen) return null;
+
+  const SectionHeader = ({ title, section }) => (
+    <button
+      onClick={() => toggleSection(section)}
+      className="flex items-center gap-2 w-full p-2 hover:bg-white/5 rounded transition-colors"
+    >
+      {expandedSections[section] ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+      <span className="text-sm font-medium">{title}</span>
+    </button>
+  );
 
   const panelContent = isCollapsed ? (
     <Button
@@ -48,19 +74,38 @@ const DebugPanel = () => {
       
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
-          <DebugVariableSection debugData={debugData} />
+          <div className={cn("transition-all", expandedSections.focus ? "mb-4" : "mb-0")}>
+            <SectionHeader title="Focus Tracking" section="focus" />
+            {expandedSections.focus && <DebugFocusSection hoveredElement={hoveredElement} />}
+          </div>
+
           <Separator className="bg-white/10" />
-          <DebugNodeSection nodes={debugData?.nodes} />
+
+          <div className={cn("transition-all", expandedSections.nodes ? "mb-4" : "mb-0")}>
+            <SectionHeader title="Node Information" section="nodes" />
+            {expandedSections.nodes && <DebugNodeSection nodes={debugData?.nodes} />}
+          </div>
+
           <Separator className="bg-white/10" />
-          <DebugToolSection activeTool={debugData?.activeTool} />
+
+          <div className={cn("transition-all", expandedSections.state ? "mb-4" : "mb-0")}>
+            <SectionHeader title="State Monitor" section="state" />
+            {expandedSections.state && <DebugStateSection debugData={debugData} />}
+          </div>
+
           <Separator className="bg-white/10" />
-          <DebugViewSection currentView={debugData?.currentView} viewMode={debugData?.viewMode} />
+
+          <div className={cn("transition-all", expandedSections.position ? "mb-4" : "mb-0")}>
+            <SectionHeader title="Position & Camera" section="position" />
+            {expandedSections.position && <DebugPositionSection debugData={debugData} />}
+          </div>
+
           <Separator className="bg-white/10" />
-          <DebugStateSection debugData={debugData} />
-          <Separator className="bg-white/10" />
-          <DebugPositionSection debugData={debugData} />
-          <Separator className="bg-white/10" />
-          <DebugErrorSection errors={debugData?.errors || []} />
+
+          <div className={cn("transition-all", expandedSections.errors ? "mb-4" : "mb-0")}>
+            <SectionHeader title="Error Log" section="errors" />
+            {expandedSections.errors && <DebugErrorSection errors={debugData?.errors || []} />}
+          </div>
 
           {user && investigations?.length > 0 && (
             <>
