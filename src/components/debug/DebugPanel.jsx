@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDebug } from '@/contexts/DebugContext';
 import { Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,13 +6,14 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/components/AuthProvider';
 import { useInvestigations } from '@/integrations/supabase/hooks/useInvestigations';
-import DebugStateSection from './DebugStateSection';
-import DebugPositionSection from './DebugPositionSection';
+import DebugStateSection from './sections/DebugStateSection';
+import DebugPositionSection from './sections/DebugPositionSection';
 import DebugToolSection from './sections/DebugToolSection';
 import DebugViewSection from './sections/DebugViewSection';
 import DebugHeader from './sections/DebugHeader';
 import DebugFocusSection from './sections/DebugFocusSection';
 import DebugErrorSection from './sections/DebugErrorSection';
+import DebugVariableSection from './sections/DebugVariableSection';
 import { Rnd } from 'react-rnd';
 
 const DebugPanel = () => {
@@ -44,10 +45,10 @@ const DebugPanel = () => {
         onClose={() => setIsDebugOpen(false)}
       />
       
-      <DebugFocusSection hoveredElement={hoveredElement} />
-      
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
+          <DebugVariableSection debugData={debugData} />
+          <Separator className="bg-white/10" />
           <DebugToolSection activeTool={debugData?.activeTool} />
           <Separator className="bg-white/10" />
           <DebugViewSection currentView={debugData?.currentView} viewMode={debugData?.viewMode} />
