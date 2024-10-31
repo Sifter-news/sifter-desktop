@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Upload } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from 'sonner';
 import NodeTypeSelect from './NodeTypeSelect';
 import NodeStyleSelect from './NodeStyleSelect';
 import NodeMetadataFields from './NodeMetadataFields';
 import DeleteConfirmationDialog from '../text-view/DeleteConfirmationDialog';
+import NodeAvatarSection from './node-edit/NodeAvatarSection';
+import NodeBasicFields from './node-edit/NodeBasicFields';
+import NodeFooterActions from './node-edit/NodeFooterActions';
 
-const UnifiedNodeEditModal = ({ 
+const ModalEdit_Node = ({ 
   isOpen, 
   onClose, 
   node, 
@@ -47,12 +44,15 @@ const UnifiedNodeEditModal = ({
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      // In a real app, you'd upload this to storage
       setFormData(prev => ({
         ...prev,
         avatar: URL.createObjectURL(file)
       }));
     }
+  };
+
+  const handleFieldChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async () => {
@@ -99,97 +99,45 @@ const UnifiedNodeEditModal = ({
             <DialogTitle>Edit Node</DialogTitle>
           </DialogHeader>
           
-          <div className="flex items-center justify-center mb-4">
-            <div className="relative">
-              <Avatar className="h-24 w-24">
-                <AvatarImage src={formData.avatar} alt="Avatar" />
-                <AvatarFallback>Avatar</AvatarFallback>
-              </Avatar>
-              <Label
-                htmlFor="avatar-upload"
-                className="absolute bottom-0 right-0 p-1 bg-primary text-primary-foreground rounded-full cursor-pointer hover:bg-primary/90"
-              >
-                <Upload className="h-4 w-4" />
-              </Label>
-              <Input
-                id="avatar-upload"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleImageUpload}
-              />
-            </div>
-          </div>
+          <NodeAvatarSection 
+            avatar={formData.avatar} 
+            onImageUpload={handleImageUpload} 
+          />
 
           <div className="grid gap-4 py-4">
-            <div className="grid w-full items-center gap-1.5">
-              <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              />
-            </div>
-            
-            <div className="grid w-full items-center gap-1.5">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              />
-            </div>
+            <NodeBasicFields
+              title={formData.title}
+              description={formData.description}
+              onFieldChange={handleFieldChange}
+            />
 
             <NodeTypeSelect
               value={formData.nodeType}
-              onChange={(nodeType) => setFormData(prev => ({ ...prev, nodeType }))}
+              onChange={(nodeType) => handleFieldChange('nodeType', nodeType)}
             />
 
             <NodeStyleSelect
               value={formData.visualStyle}
-              onChange={(visualStyle) => setFormData(prev => ({ ...prev, visualStyle }))}
+              onChange={(visualStyle) => handleFieldChange('visualStyle', visualStyle)}
             />
 
             <NodeMetadataFields
               nodeType={formData.nodeType}
               metadata={formData.metadata}
               onMetadataChange={(field, value) => 
-                setFormData(prev => ({
-                  ...prev,
-                  metadata: { ...prev.metadata, [field]: value }
-                }))
+                handleFieldChange('metadata', { ...formData.metadata, [field]: value })
               }
             />
           </div>
 
-          <DialogFooter className="flex justify-between">
-            <div className="flex gap-2">
-              <Button 
-                variant="destructive" 
-                onClick={() => setShowDeleteDialog(true)}
-                disabled={isLoading}
-              >
-                Delete Node
-              </Button>
-              {onAIConversation && (
-                <Button
-                  variant="secondary"
-                  onClick={() => onAIConversation(node)}
-                  disabled={isLoading}
-                >
-                  AI Conversation
-                </Button>
-              )}
-            </div>
-            <div className="space-x-2">
-              <Button variant="outline" onClick={onClose} disabled={isLoading}>
-                Cancel
-              </Button>
-              <Button onClick={handleSubmit} disabled={isLoading}>
-                {isLoading ? "Saving..." : "Save changes"}
-              </Button>
-            </div>
-          </DialogFooter>
+          <NodeFooterActions
+            onDelete={() => setShowDeleteDialog(true)}
+            onAIConversation={onAIConversation ? () => onAIConversation(node) : undefined}
+            onClose={onClose}
+            onSave={handleSubmit}
+            isLoading={isLoading}
+            showAIButton={!!onAIConversation}
+          />
         </DialogContent>
       </Dialog>
 
@@ -202,4 +150,4 @@ const UnifiedNodeEditModal = ({
   );
 };
 
-export default UnifiedNodeEditModal;
+export default ModalEdit_Node;
