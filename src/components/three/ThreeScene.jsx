@@ -22,8 +22,20 @@ const ThreeScene = ({
   zoom = 1
 }) => {
   const { camera } = useThree();
-  const { showGuides } = useDebug();
+  const { showGuides, setDebugData } = useDebug();
   const [selectedNodeId, setSelectedNodeId] = useState(null);
+  const [hoveredNodeId, setHoveredNodeId] = useState(null);
+
+  useEffect(() => {
+    setDebugData(prev => ({
+      ...prev,
+      canvas: {
+        ...prev?.canvas,
+        selectedNodeId,
+        hoveredNodeId
+      }
+    }));
+  }, [selectedNodeId, hoveredNodeId, setDebugData]);
 
   useEffect(() => {
     if (camera && viewMode === '3d') {
@@ -56,6 +68,16 @@ const ThreeScene = ({
     }
   }, [activeTool]);
 
+  const handleNodeHover = (nodeId) => {
+    if (activeTool === 'select') {
+      setHoveredNodeId(nodeId);
+    }
+  };
+
+  const handleNodeHoverEnd = () => {
+    setHoveredNodeId(null);
+  };
+
   return (
     <group onPointerMove={handlePointerMove}>
       <ambientLight intensity={0.8} />
@@ -74,6 +96,8 @@ const ThreeScene = ({
         activeTool={activeTool}
         isSelected={selectedNodeId === 'node1'}
         onSelect={() => setSelectedNodeId('node1')}
+        onHover={() => handleNodeHover('node1')}
+        onHoverEnd={handleNodeHoverEnd}
       />
       
       {/* Additional nodes spaced 8 units apart */}
@@ -87,6 +111,8 @@ const ThreeScene = ({
         activeTool={activeTool}
         isSelected={selectedNodeId === 'node2'}
         onSelect={() => setSelectedNodeId('node2')}
+        onHover={() => handleNodeHover('node2')}
+        onHoverEnd={handleNodeHoverEnd}
       />
       
       <ThreeDFlatNode 

@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
 import { Text, Billboard, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { Button } from "@/components/ui/button";
@@ -21,7 +20,9 @@ const ThreeDFlatNode = ({
   onStyleChange,
   activeTool,
   isSelected,
-  onSelect
+  onSelect,
+  onHover,
+  onHoverEnd
 }) => {
   const groupRef = useRef();
   const [isHovered, setIsHovered] = useState(false);
@@ -38,11 +39,13 @@ const ThreeDFlatNode = ({
   const handlePointerOver = () => {
     if (activeTool === 'select') {
       setIsHovered(true);
+      onHover?.();
     }
   };
 
   const handlePointerOut = () => {
     setIsHovered(false);
+    onHoverEnd?.();
   };
 
   const handleClick = (e) => {
