@@ -33,19 +33,17 @@ const NodeNavigator = ({
 
       switch (e.key) {
         case 'ArrowDown':
-          e.preventDefault();
-          nextIndex = currentIndex < nodes.length - 1 ? currentIndex + 1 : 0;
+        case 'Tab':
+          if (!e.shiftKey) {
+            e.preventDefault();
+            nextIndex = currentIndex < nodes.length - 1 ? currentIndex + 1 : 0;
+          }
           break;
         case 'ArrowUp':
-          e.preventDefault();
-          nextIndex = currentIndex > 0 ? currentIndex - 1 : nodes.length - 1;
-          break;
-        case 'Enter':
-        case ' ': // Space key
-          e.preventDefault();
-          if (focusedNodeId) {
-            setSelectedNodes([focusedNodeId]);
-            handleNodeClick(focusedNodeId);
+        case 'Tab':
+          if (e.shiftKey) {
+            e.preventDefault();
+            nextIndex = currentIndex > 0 ? currentIndex - 1 : nodes.length - 1;
           }
           break;
         default:
@@ -56,6 +54,7 @@ const NodeNavigator = ({
         const nextNode = nodes[nextIndex];
         if (nextNode) {
           onNodeFocus(nextNode.id);
+          setSelectedNodes([nextNode.id]);
           // Focus the element
           const element = document.querySelector(`[data-node-id="${nextNode.id}"]`);
           element?.focus();
