@@ -1,7 +1,6 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import NavigatorNodes from './NavigatorNodes';
-import NavigatorDocs from './NavigatorDocs';
+import NavigatorContent from './NavigatorContent';
 
 const Navigator = ({ nodes, onNodeSelect, selectedNodeId }) => {
   return (
@@ -11,14 +10,15 @@ const Navigator = ({ nodes, onNodeSelect, selectedNodeId }) => {
         <TabsTrigger value="docs">Documents</TabsTrigger>
       </TabsList>
       <TabsContent value="nodes">
-        <NavigatorNodes 
+        <NavigatorContent 
+          type="nodes"
           nodes={nodes} 
           onNodeSelect={onNodeSelect}
           selectedNodeId={selectedNodeId}
         />
       </TabsContent>
       <TabsContent value="docs">
-        <NavigatorDocs />
+        <NavigatorContent type="docs" />
       </TabsContent>
     </Tabs>
   );
