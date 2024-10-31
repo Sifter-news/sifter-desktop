@@ -37,7 +37,6 @@ const ThreeScene = ({
     }
   }, [viewMode, zoom, camera]);
 
-  // Update debug data with camera information
   useEffect(() => {
     if (camera && controlsRef.current) {
       const updateDebugData = () => {
@@ -53,10 +52,7 @@ const ThreeScene = ({
         }));
       };
 
-      // Update initially
       updateDebugData();
-
-      // Update on camera changes
       controlsRef.current.addEventListener('change', updateDebugData);
       return () => {
         controlsRef.current?.removeEventListener('change', updateDebugData);
@@ -82,11 +78,40 @@ const ThreeScene = ({
       <Grid size={100} divisions={24} />
       {showGuides && <DebugAxes />}
       
-      {/* Add the new ThreeDFlatNode */}
+      {/* Original node at x=0 */}
       <ThreeDFlatNode 
         position={[0, 3, 0]}
-        title="Example Node"
-        subline="This is a flat node that always faces the camera"
+        title="Node 1"
+        subline="This is node one"
+        avatarUrl="/default-image.png"
+      />
+      
+      {/* Additional nodes spaced 8 units apart */}
+      <ThreeDFlatNode 
+        position={[8, 3, 0]}
+        title="Node 2"
+        subline="This is node two"
+        avatarUrl="/default-image.png"
+      />
+      
+      <ThreeDFlatNode 
+        position={[16, 3, 0]}
+        title="Node 3"
+        subline="This is node three"
+        avatarUrl="/default-image.png"
+      />
+      
+      <ThreeDFlatNode 
+        position={[24, 3, 0]}
+        title="Node 4"
+        subline="This is node four"
+        avatarUrl="/default-image.png"
+      />
+      
+      <ThreeDFlatNode 
+        position={[32, 3, 0]}
+        title="Node 5"
+        subline="This is node five"
         avatarUrl="/default-image.png"
       />
       
