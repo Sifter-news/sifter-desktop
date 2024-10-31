@@ -7,7 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import NodeEditDialog from './NodeEditDialog';
+import UnifiedNodeEditModal from './UnifiedNodeEditModal';
 import { getNodeDimensions } from '@/utils/nodeDimensions';
 import { handleNodeDelete } from '@/utils/nodeDeleteUtils';
 
@@ -142,7 +142,7 @@ const TooltipButtons = ({
         </Button>
       </div>
 
-      <NodeEditDialog 
+      <UnifiedNodeEditModal 
         isOpen={showEditDialog}
         onClose={() => setShowEditDialog(false)}
         node={node}
