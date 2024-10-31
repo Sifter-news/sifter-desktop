@@ -1,6 +1,23 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/config/supabase';
 
+/*
+### profiles
+
+| name                    | type      | format  | required |
+|------------------------|-----------|---------|----------|
+| id                     | uuid      | uuid    | true     |
+| username               | varchar   | string  | true     |
+| email                  | varchar   | string  | false    |
+| created_at             | timestamp | string  | false    |
+| subscription_plan_id   | uuid      | uuid    | false    |
+| subscription_start_date| timestamp | string  | false    |
+| subscription_end_date  | timestamp | string  | false    |
+
+Foreign Key Relationships:
+- subscription_plan_id references subscription_plans.id
+*/
+
 const fromSupabase = async (query) => {
   const { data, error } = await query;
   if (error) throw error;
@@ -9,56 +26,22 @@ const fromSupabase = async (query) => {
 
 export const useProfile = (id) => useQuery({
   queryKey: ['profiles', id],
-  queryFn: async () => {
-    if (!id) return null;
-    
-    try {
-      const { data: existingProfile, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', id)
-        .single();
-      
-      if (error) throw error;
-      
-      if (existingProfile) {
-        return existingProfile;
-      }
-      
-      // If no profile exists, create one
-      const { data: { user } } = await supabase.auth.getUser();
-      const newProfile = {
-        id: id,
-        username: user?.email?.split('@')[0] || 'user',
-        email: user?.email,
-        created_at: new Date().toISOString()
-      };
-      
-      const { data: createdProfile, error: insertError } = await supabase
-        .from('profiles')
-        .insert([newProfile])
-        .select()
-        .single();
-      
-      if (insertError) throw insertError;
-      
-      return createdProfile || newProfile;
-    } catch (error) {
-      console.error('Profile fetch/create error:', error);
-      throw error;
-    }
-  },
-  enabled: !!id,
-  retry: false
+  queryFn: () => fromSupabase(
+    supabase.from('profiles').select('*').eq('id', id).single()
+  ),
+  enabled: !!id
 });
 
 export const useProfiles = () => useQuery({
   queryKey: ['profiles'],
-  queryFn: () => fromSupabase(supabase.from('profiles').select('*')),
+  queryFn: () => fromSupabase(
+    supabase.from('profiles').select('*')
+  )
 });
 
 export const useAddProfile = () => {
   const queryClient = useQueryClient();
+  
   return useMutation({
     mutationFn: async (newProfile) => {
       const { data, error } = await supabase
@@ -66,19 +49,20 @@ export const useAddProfile = () => {
         .insert([newProfile])
         .select()
         .single();
-      
+        
       if (error) throw error;
       return data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
       queryClient.setQueryData(['profiles', data.id], data);
-    },
+    }
   });
 };
 
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
+  
   return useMutation({
     mutationFn: async ({ id, ...updates }) => {
       const { data, error } = await supabase
@@ -94,12 +78,13 @@ export const useUpdateProfile = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
       queryClient.setQueryData(['profiles', data.id], data);
-    },
+    }
   });
 };
 
 export const useDeleteProfile = () => {
   const queryClient = useQueryClient();
+  
   return useMutation({
     mutationFn: async (id) => {
       const { error } = await supabase
@@ -113,6 +98,6 @@ export const useDeleteProfile = () => {
     onSuccess: (deletedId) => {
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
       queryClient.removeQueries({ queryKey: ['profiles', deletedId] });
-    },
+    }
   });
 };
