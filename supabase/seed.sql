@@ -2,144 +2,97 @@
 TRUNCATE TABLE public.investigations CASCADE;
 TRUNCATE TABLE public.reports CASCADE;
 TRUNCATE TABLE public.node CASCADE;
-TRUNCATE TABLE public.node_person CASCADE;
-TRUNCATE TABLE public.node_organization CASCADE;
-TRUNCATE TABLE public.node_object CASCADE;
 TRUNCATE TABLE public.node_concept CASCADE;
-TRUNCATE TABLE public.node_location CASCADE;
 TRUNCATE TABLE public.node_event CASCADE;
+TRUNCATE TABLE public.node_location CASCADE;
+TRUNCATE TABLE public.node_object CASCADE;
+TRUNCATE TABLE public.node_organization CASCADE;
+TRUNCATE TABLE public.node_person CASCADE;
 
--- Create admin user
-INSERT INTO auth.users (
-    instance_id,
-    id,
-    aud,
-    role,
-    email,
-    encrypted_password,
-    email_confirmed_at,
-    recovery_sent_at,
-    last_sign_in_at,
-    raw_app_meta_data,
-    raw_user_meta_data,
-    created_at,
-    updated_at,
-    confirmation_token,
-    email_change,
-    email_change_token_new,
-    recovery_token
-) VALUES (
-    '00000000-0000-0000-0000-000000000000',
-    '02ecf5ce-3663-4897-9b9f-c084dac6b3da',
-    'authenticated',
-    'authenticated',
-    'admin@sifter.news',
-    '$2a$10$PxwO5Ls8TzxEGXZRWqS.8OqJp6VxQyK9mOIJJmh8YOqIW5/p8wVLe', -- password is 'password'
-    NOW(),
-    NOW(),
-    NOW(),
-    '{"provider": "email", "providers": ["email"]}',
-    '{}',
-    NOW(),
-    NOW(),
-    '',
-    '',
-    '',
-    ''
-);
-
--- Create investigations with nodes and reports
+-- Create sample investigations
 DO $$
 DECLARE
-    new_investigation_id UUID;
-    new_node_id UUID;
-    node_styles TEXT[] := ARRAY['default', 'compact', 'postit'];
-    node_types TEXT[] := ARRAY['node_person', 'node_organization', 'node_object', 'node_concept', 'node_location', 'node_event'];
-    investigation_case JSONB;
-    report_title TEXT;
-    i INT;
-    j INT;
+    investigation_id uuid;
+    report_id uuid;
+    node_id uuid;
+    node_type text;
+    node_types text[] := ARRAY['node_person', 'node_organization', 'node_object', 'node_concept', 'node_location', 'node_event'];
 BEGIN
-    FOR i IN 1..5 LOOP
-        -- Create investigation
+    -- Create 3 sample investigations
+    FOR i IN 1..3 LOOP
         INSERT INTO public.investigations (
-            id,
             title,
             description,
             owner_id,
             visibility,
+            view_type,
             investigation_type
         ) VALUES (
-            uuid_generate_v4(),
-            'Investigation ' || i,
-            'Description for investigation ' || i,
+            'Sample Investigation ' || i,
+            'This is a sample investigation number ' || i,
             '02ecf5ce-3663-4897-9b9f-c084dac6b3da',
             'private',
+            'mind',
             'generic'
-        ) RETURNING id INTO new_investigation_id;
+        ) RETURNING id INTO investigation_id;
 
-        -- Create reports
-        FOR j IN 1..3 LOOP
+        -- Create 2 reports for each investigation
+        FOR j IN 1..2 LOOP
             INSERT INTO public.reports (
-                investigation_id,
                 title,
-                content
+                content,
+                investigation_id
             ) VALUES (
-                new_investigation_id,
                 'Report ' || j || ' for Investigation ' || i,
-                'Content for report ' || j || ' in investigation ' || i
-            );
+                'This is the content of report ' || j || ' for investigation ' || i,
+                investigation_id
+            ) RETURNING id INTO report_id;
         END LOOP;
 
-        -- Create nodes with different styles and types
-        FOR node_style IN SELECT unnest(node_styles)
+        -- Create nodes of different types for each investigation
+        FOREACH node_type IN ARRAY node_types
         LOOP
-            FOR node_type IN SELECT unnest(node_types)
-            LOOP
-                -- Insert base node
-                INSERT INTO public.node (
-                    id,
-                    title,
-                    description,
-                    investigation_id,
-                    visual_style,
-                    node_type,
-                    position_x,
-                    position_y,
-                    position_z
-                ) VALUES (
-                    uuid_generate_v4(),
-                    node_type || ' Node',
-                    'Description for ' || node_type,
-                    new_investigation_id,
-                    node_style,
-                    node_type,
-                    (random() * 1000)::numeric(10,2),
-                    (random() * 1000)::numeric(10,2),
-                    0
-                ) RETURNING id INTO new_node_id;
+            INSERT INTO public.node (
+                title,
+                description,
+                investigation_id,
+                node_type,
+                position_x,
+                position_y,
+                position_z,
+                visual_style
+            ) VALUES (
+                'Sample ' || node_type || ' Node',
+                'Description for ' || node_type || ' node',
+                investigation_id,
+                node_type,
+                (random() * 1000)::numeric,
+                (random() * 1000)::numeric,
+                0,
+                'default'
+            ) RETURNING id INTO node_id;
 
-                -- Insert type-specific data
-                CASE node_type
-                    WHEN 'node_person' THEN
-                        INSERT INTO public.node_person (node_id, birth_date, aliases)
-                        VALUES (new_node_id, '1990-01-01', ARRAY['alias1', 'alias2']);
-                    
-                    WHEN 'node_organization' THEN
-                        INSERT INTO public.node_organization (node_id, legal_name)
-                        VALUES (new_node_id, 'Organization ' || i);
-                    
-                    WHEN 'node_object' THEN
-                        INSERT INTO public.node_object (node_id, object_type)
-                        VALUES (new_node_id, 'physical');
-                    
-                    WHEN 'node_concept' THEN
-                        INSERT INTO public.node_concept (node_id, definition)
-                        VALUES (new_node_id, 'Definition for concept ' || i);
-                    
-                    ELSE NULL;
-                END CASE;
-            END LOOP;
+            -- Insert corresponding type-specific data
+            CASE node_type
+                WHEN 'node_person' THEN
+                    INSERT INTO public.node_person (node_id, birth_date)
+                    VALUES (node_id, NOW() - interval '30 years');
+                WHEN 'node_organization' THEN
+                    INSERT INTO public.node_organization (node_id, legal_name)
+                    VALUES (node_id, 'Organization ' || node_id);
+                WHEN 'node_object' THEN
+                    INSERT INTO public.node_object (node_id, object_type)
+                    VALUES (node_id, 'Sample Object');
+                WHEN 'node_concept' THEN
+                    INSERT INTO public.node_concept (node_id, definition)
+                    VALUES (node_id, 'Sample concept definition');
+                WHEN 'node_location' THEN
+                    INSERT INTO public.node_location (id, name, description)
+                    VALUES (node_id, 'Location ' || node_id, 'Sample location description');
+                WHEN 'node_event' THEN
+                    INSERT INTO public.node_event (id, event_name, event_type, investigation_id)
+                    VALUES (node_id, 'Event ' || node_id, 'Sample Event', investigation_id);
+            END CASE;
         END LOOP;
     END LOOP;
 END $$;
