@@ -1,9 +1,11 @@
 import React, { useRef, useState } from 'react';
-import { useThree, useFrame } from '@react-three/fiber';
+import { useThree, useFrame } from '@react-three/fiber'; // React Three Fiber hooks
 import { useDebug } from '@/contexts/DebugContext';
 import { getNodeDimensions3D, createNodeMaterial } from '@/utils/threeDUtils';
 
-const ThreeDNode = ({ 
+// Node3DDefault: A more traditional 3D node that can be viewed from different angles
+// This is good for spatial relationships and 3D visualization
+const Node3DDefault = ({ 
   node, 
   activeTool, 
   onUpdate, 
@@ -11,27 +13,31 @@ const ThreeDNode = ({
   onEndConnection,
   isHighlighted
 }) => {
-  const meshRef = useRef();
+  // References and state management
+  const meshRef = useRef(); // Reference to the 3D mesh
   const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredConnectionPoint, setHoveredConnectionPoint] = useState(null);
-  const { camera, gl } = useThree();
+  const { camera, gl } = useThree(); // Access to Three.js camera and renderer
 
+  // Get the dimensions based on the node's visual style
   const dimensions = getNodeDimensions3D(node.visualStyle);
   
-  // Double the z position
+  // Calculate the node's position in 3D space
   const position = [
     node.position[0],
     node.position[1],
-    node.position[2] * 2 || 0
+    node.position[2] * 2 || 0 // Double Z position for better depth perception
   ];
 
+  // Make non-cube nodes always face the camera
   useFrame(() => {
     if (meshRef.current && node.visualStyle !== 'cube') {
       meshRef.current.quaternion.copy(camera.quaternion);
     }
   });
 
+  // Handle mouse/touch interactions
   const handleInteractionStart = (e) => {
     if (activeTool !== 'select') return;
     e.stopPropagation();
@@ -48,6 +54,7 @@ const ThreeDNode = ({
     }
   };
 
+  // Connection points for linking nodes together
   const ConnectionPoint = ({ position, type }) => (
     <mesh
       position={position}
@@ -62,6 +69,7 @@ const ThreeDNode = ({
 
   return (
     <group position={position}>
+      {/* Main node mesh */}
       <mesh
         ref={meshRef}
         onPointerDown={handleInteractionStart}
@@ -76,6 +84,7 @@ const ThreeDNode = ({
           gl.domElement.style.cursor = 'default';
         }}
       >
+        {/* Use box geometry for cube style, plane for others */}
         {node.visualStyle === 'cube' ? (
           <boxGeometry args={[dimensions.width, dimensions.height, dimensions.depth]} />
         ) : (
@@ -84,6 +93,7 @@ const ThreeDNode = ({
         <primitive object={createNodeMaterial(isHovered, isHighlighted, node.visualStyle)} />
       </mesh>
       
+      {/* Add connection points for non-cube nodes */}
       {node.visualStyle !== 'cube' && (
         <>
           <ConnectionPoint 
@@ -100,4 +110,4 @@ const ThreeDNode = ({
   );
 };
 
-export default ThreeDNode;
+export default Node3DDefault;

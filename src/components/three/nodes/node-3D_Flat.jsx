@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { Text, Billboard, Html } from '@react-three/drei';
-import * as THREE from 'three';
+import { Text, Billboard, Html } from '@react-three/drei'; // drei provides helpful 3D components
+import * as THREE from 'three'; // THREE.js is the main 3D library
 import { Button } from "@/components/ui/button";
 import { Trash2, Layout, Square, StickyNote } from 'lucide-react';
 import {
@@ -10,9 +10,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const ThreeDFlatNode = ({ 
+// Node3DFlat: A flat card-like 3D node that always faces the camera
+// This is good for displaying information that should always be readable
+const Node3DFlat = ({ 
   node,
-  position = [0, 0, 0],
+  position = [0, 0, 0], // [x, y, z] position in 3D space
   title = "Title",
   subline = "Subline",
   avatarUrl = "/default-image.png",
@@ -24,18 +26,24 @@ const ThreeDFlatNode = ({
   onHover,
   onHoverEnd
 }) => {
+  // Reference to the 3D group element for potential animations
   const groupRef = useRef();
+  // Track if the mouse is hovering over this node
   const [isHovered, setIsHovered] = useState(false);
+  
+  // Load the avatar image as a texture for the 3D mesh
   const textureLoader = new THREE.TextureLoader();
   const avatarTexture = textureLoader.load(avatarUrl);
 
-  const avatarGeometry = new THREE.CircleGeometry(0.5, 32);
+  // Create a circular geometry for the avatar
+  const avatarGeometry = new THREE.CircleGeometry(0.5, 32); // radius: 0.5, segments: 32
   const avatarMaterial = new THREE.MeshBasicMaterial({
     map: avatarTexture,
     transparent: true,
-    side: THREE.DoubleSide
+    side: THREE.DoubleSide // Make the avatar visible from both sides
   });
 
+  // Handle mouse interactions
   const handlePointerOver = () => {
     if (activeTool === 'select') {
       setIsHovered(true);
@@ -56,6 +64,7 @@ const ThreeDFlatNode = ({
   };
 
   return (
+    // Billboard makes the node always face the camera
     <Billboard
       follow={true}
       lockX={false}
@@ -66,7 +75,7 @@ const ThreeDFlatNode = ({
       onClick={handleClick}
     >
       <group ref={groupRef} position={position}>
-        {/* Selection outline */}
+        {/* Selection outline - shows when hovered or selected */}
         {(isHovered || isSelected) && (
           <mesh position={[0, 0, -0.02]}>
             <planeGeometry args={[4.2, 2.2]} />
@@ -78,19 +87,19 @@ const ThreeDFlatNode = ({
           </mesh>
         )}
 
-        {/* Background plane */}
+        {/* White background plane */}
         <mesh position={[0, 0, -0.01]}>
           <planeGeometry args={[6, 1.5]} />
           <meshBasicMaterial color="white" transparent opacity={0.9} />
         </mesh>
 
-        {/* Avatar circle */}
+        {/* Circular avatar display */}
         <mesh position={[-0.75, 0, 0]}>
           <primitive object={avatarGeometry} />
           <primitive object={avatarMaterial} />
         </mesh>
 
-        {/* Title text */}
+        {/* Title text - positioned above the center */}
         <Text
           position={[-0.5, 0.3, 0]}
           fontSize={0.5}
@@ -101,7 +110,7 @@ const ThreeDFlatNode = ({
           {title}
         </Text>
 
-        {/* Subline text */}
+        {/* Subline text - positioned below the center */}
         <Text
           position={[-0.5, -0.1, 0]}
           fontSize={0.15}
@@ -112,7 +121,7 @@ const ThreeDFlatNode = ({
           {subline}
         </Text>
 
-        {/* Hover Tooltip */}
+        {/* Hover Tooltip - shows style options and delete button */}
         {isHovered && (
           <Html position={[0, 1.2, 0]} center>
             <div className="bg-black/80 text-white p-2 rounded-lg shadow-lg flex gap-2">
@@ -154,4 +163,4 @@ const ThreeDFlatNode = ({
   );
 };
 
-export default ThreeDFlatNode;
+export default Node3DFlat;
