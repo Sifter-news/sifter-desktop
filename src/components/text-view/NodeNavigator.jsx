@@ -4,7 +4,7 @@ import NodeList from './NodeList';
 import { useNodeKeyboardNavigation } from './hooks/useNodeKeyboardNavigation';
 import { useNodeSelection } from './hooks/useNodeSelection';
 import AIChatPanel from '../ai/AIChatPanel';
-import UnifiedNodeEditModal from '../node/UnifiedNodeEditModal';
+import UnifiedNodeEditModal from '../modals/ModalEdit_Node';
 import { toast } from 'sonner';
 
 const NodeNavigator = ({ 

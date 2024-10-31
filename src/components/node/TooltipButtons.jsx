@@ -7,7 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import UnifiedNodeEditModal from './UnifiedNodeEditModal';
+import UnifiedNodeEditModal from '../modals/ModalEdit_Node';
 import { getNodeDimensions } from '@/utils/nodeDimensions';
 import { handleNodeDelete } from '@/utils/nodeDeleteUtils';
 

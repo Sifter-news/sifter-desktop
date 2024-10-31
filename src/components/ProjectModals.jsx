@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import InvestigationModal from './modals/InvestigationModal';
+import InvestigationModal from './modals/ModalEdit_Investigation';
 import ContentModal from './ContentModal';
 
 const ProjectModals = ({ project, onProjectUpdate }) => {
