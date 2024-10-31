@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { OrbitControls } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 import Grid from '../Grid';
-import ThreeDNode from './nodes/ThreeDNode';
-import ThreeDFlatNode from './nodes/ThreeDFlatNode';
+import Node3DDefault from './nodes/node-3D_Default';
+import Node3DFlat from './nodes/node-3D_Flat';
 import ConnectionLine from '../ConnectionLine';
 import DebugAxes from './DebugAxes';
 import { useDebug } from '@/contexts/DebugContext';
@@ -86,7 +86,7 @@ const ThreeScene = ({
       {showGuides && <DebugAxes />}
       
       {/* Original node at x=0 */}
-      <ThreeDFlatNode 
+      <Node3DFlat 
         position={[0, 3, 0]}
         title="Node 1"
         subline="This is node one"
@@ -101,7 +101,7 @@ const ThreeScene = ({
       />
       
       {/* Additional nodes spaced 8 units apart */}
-      <ThreeDFlatNode 
+      <Node3DFlat 
         position={[8, 3, 0]}
         title="Node 2"
         subline="This is node two"
@@ -115,7 +115,7 @@ const ThreeScene = ({
         onHoverEnd={handleNodeHoverEnd}
       />
       
-      <ThreeDFlatNode 
+      <Node3DFlat 
         position={[16, 3, 0]}
         title="Node 3"
         subline="This is node three"
@@ -125,9 +125,11 @@ const ThreeScene = ({
         activeTool={activeTool}
         isSelected={selectedNodeId === 'node3'}
         onSelect={() => setSelectedNodeId('node3')}
+        onHover={() => handleNodeHover('node3')}
+        onHoverEnd={handleNodeHoverEnd}
       />
       
-      <ThreeDFlatNode 
+      <Node3DFlat 
         position={[24, 3, 0]}
         title="Node 4"
         subline="This is node four"
@@ -137,9 +139,11 @@ const ThreeScene = ({
         activeTool={activeTool}
         isSelected={selectedNodeId === 'node4'}
         onSelect={() => setSelectedNodeId('node4')}
+        onHover={() => handleNodeHover('node4')}
+        onHoverEnd={handleNodeHoverEnd}
       />
       
-      <ThreeDFlatNode 
+      <Node3DFlat 
         position={[32, 3, 0]}
         title="Node 5"
         subline="This is node five"
@@ -149,6 +153,8 @@ const ThreeScene = ({
         activeTool={activeTool}
         isSelected={selectedNodeId === 'node5'}
         onSelect={() => setSelectedNodeId('node5')}
+        onHover={() => handleNodeHover('node5')}
+        onHoverEnd={handleNodeHoverEnd}
       />
 
       <OrbitControls
