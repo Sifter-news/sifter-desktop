@@ -18,16 +18,16 @@ const NodeList = ({
         <div
           ref={provided.innerRef}
           {...provided.droppableProps}
-          className="space-y-1" // Changed from space-y-0 to space-y-1 for minimal spacing
+          className="space-y-1"
+          role="listbox"
+          aria-label="Node list"
         >
           {nodes.map((node, index) => node && (
             <div 
               key={node.id}
-              onMouseEnter={() => onNodeFocus(node.id)}
-              onMouseLeave={() => onNodeFocus(null)}
-              className={`transition-all duration-200 ${
-                focusedNodeId === node.id ? 'ring-2 ring-blue-500 rounded-lg' : ''
-              }`}
+              role="option"
+              aria-selected={selectedNodes.includes(node.id)}
+              tabIndex={focusedNodeId === node.id ? 0 : -1}
             >
               <NodeListItem
                 node={node}

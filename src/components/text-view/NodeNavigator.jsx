@@ -24,34 +24,41 @@ const NodeNavigator = ({
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const { setDebugData } = useDebug();
 
-  // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!nodes.length) return;
-
-      // Only handle up and down arrow keys
-      if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
-
-      e.preventDefault(); // Prevent default scroll behavior
 
       const currentIndex = nodes.findIndex(node => node.id === focusedNodeId);
       let nextIndex;
 
       switch (e.key) {
         case 'ArrowDown':
-          nextIndex = currentIndex < nodes.length - 1 ? currentIndex + 1 : currentIndex;
+        case 'Tab':
+          if (!e.shiftKey) {
+            e.preventDefault();
+            nextIndex = currentIndex < nodes.length - 1 ? currentIndex + 1 : 0;
+          }
           break;
         case 'ArrowUp':
-          nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
+        case 'Tab':
+          if (e.shiftKey) {
+            e.preventDefault();
+            nextIndex = currentIndex > 0 ? currentIndex - 1 : nodes.length - 1;
+          }
           break;
         default:
           return;
       }
 
-      const nextNode = nodes[nextIndex];
-      if (nextNode) {
-        onNodeFocus(nextNode.id);
-        setSelectedNodes([nextNode.id]);
+      if (nextIndex !== undefined) {
+        const nextNode = nodes[nextIndex];
+        if (nextNode) {
+          onNodeFocus(nextNode.id);
+          setSelectedNodes([nextNode.id]);
+          // Focus the element
+          const element = document.querySelector(`[data-node-id="${nextNode.id}"]`);
+          element?.focus();
+        }
       }
     };
 
