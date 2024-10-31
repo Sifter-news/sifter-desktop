@@ -85,7 +85,7 @@ const ThreeDFlatNode = ({
         </mesh>
 
         {/* Avatar circle */}
-        <mesh position={[-1.5, 0, 0]}>
+        <mesh position={[0, 0, 0]}>
           <primitive object={avatarGeometry} />
           <primitive object={avatarMaterial} />
         </mesh>
@@ -93,7 +93,7 @@ const ThreeDFlatNode = ({
         {/* Title text */}
         <Text
           position={[-0.5, 0.3, 0]}
-          fontSize={0.2}
+          fontSize={0.5}
           color="black"
           anchorX="left"
           anchorY="middle"
