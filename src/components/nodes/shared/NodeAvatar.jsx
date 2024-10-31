@@ -1,3 +1,4 @@
+// Merged from existing NodeAvatar.jsx
 import React from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FileText } from 'lucide-react';

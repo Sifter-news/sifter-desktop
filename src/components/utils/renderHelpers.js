@@ -1,4 +1,5 @@
-import { NODE_STYLES } from './nodeStyles';
+// Merged from existing render-related utilities
+import { NODE_STYLES } from './styleHelpers';
 
 export const getNodeDimensions = (visualStyle) => {
   const style = NODE_STYLES[visualStyle || 'default'];

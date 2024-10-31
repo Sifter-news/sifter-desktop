@@ -1,6 +1,6 @@
+// Merged from existing NodeBase.jsx
 import React from 'react';
 
-// Base class for all node types with shared properties and methods
 const NodeBase = ({ 
   id,
   title,
@@ -11,8 +11,7 @@ const NodeBase = ({
   metadata,
   avatar = '/default-image.png'
 }) => {
-  // Common properties all nodes share
-  const baseProps = {
+  return {
     id,
     title,
     description,
@@ -22,8 +21,6 @@ const NodeBase = ({
     metadata,
     avatar
   };
-
-  return baseProps;
 };
 
 export default NodeBase;

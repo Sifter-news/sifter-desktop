@@ -1,10 +1,10 @@
-// Position utilities for both 2D and 3D nodes
+// Merged from existing position-related utilities
 export const calculateNodePosition = (node, canvas) => {
   if (canvas === '3d') {
     return {
       x: node.position[0],
       y: node.position[1],
-      z: node.position[2] * 2 || 0 // Double Z position for better depth perception
+      z: node.position[2] * 2 || 0
     };
   }
   

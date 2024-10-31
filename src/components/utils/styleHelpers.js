@@ -1,3 +1,4 @@
+// Merged from existing style-related utilities
 export const NODE_STYLES = {
   compact: {
     width: 48,
