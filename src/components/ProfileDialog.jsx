@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input"; 
-import { UserIcon, LogOutIcon } from 'lucide-react';
+import { UserIcon, LogOutIcon, AtSignIcon, UserCircleIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/config/supabase';
 import { toast } from 'sonner';
@@ -64,8 +64,11 @@ const ProfileDialog = ({ user }) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="text-sm pr-0">
-          {name || username || user?.email?.split('@')[0] || 'Guest'}
+        <Button variant="ghost" className="flex items-center space-x-2 text-sm pr-0">
+          <div className="flex flex-col items-start">
+            <span className="font-medium">{username}</span>
+            <span className="text-xs text-gray-500">{user?.email}</span>
+          </div>
           <UserIcon className="h-4 w-4 ml-2" />
         </Button>
       </DialogTrigger>
