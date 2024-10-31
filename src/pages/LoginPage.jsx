@@ -1,12 +1,12 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { supabase } from '@/integrations/supabase/supabase';
-import { toast } from 'sonner';
-import LoginForm from '@/components/auth/LoginForm';
-import SocialLoginButtons from '@/components/auth/SocialLoginButtons';
+import { LoginForm, SocialLoginButtons } from '@/components/auth';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+  
   const handleSignUp = async (e) => {
     e.preventDefault();
     navigate('/signup');

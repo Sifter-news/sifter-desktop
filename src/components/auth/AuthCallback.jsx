@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/supabase';
+import { supabase } from '@/config/supabase';
 import { toast } from 'sonner';
 
 const AuthCallback = () => {

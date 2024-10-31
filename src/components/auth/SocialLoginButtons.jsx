@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Twitter } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/supabase';
+import { supabase } from '@/config/supabase';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
