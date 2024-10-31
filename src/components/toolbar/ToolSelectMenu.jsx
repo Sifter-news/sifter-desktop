@@ -56,7 +56,7 @@ const ToolSelectMenu = ({ activeTool, setActiveTool, viewMode }) => {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        <TooltipContent side="bottom">
+        <TooltipContent side="top" className="bg-black text-white border-white/10">
           <p>Select Tool ({currentTool.shortcut})</p>
         </TooltipContent>
       </Tooltip>

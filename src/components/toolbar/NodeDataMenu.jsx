@@ -74,7 +74,7 @@ const NodeDataMenu = ({ onAddNode, selectedStyle }) => {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        <TooltipContent side="bottom">
+        <TooltipContent side="top" className="bg-black text-white border-white/10">
           <p>Add New Node (N)</p>
         </TooltipContent>
       </Tooltip>

@@ -54,7 +54,7 @@ const NodeStyleMenu = ({ selectedStyle, onStyleChange }) => {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        <TooltipContent side="bottom">
+        <TooltipContent side="top" className="bg-black text-white border-white/10">
           <p>Node Style</p>
         </TooltipContent>
       </Tooltip>

@@ -67,7 +67,7 @@ const ZoomLevelMenu = ({ zoom, handleZoom }) => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <TooltipContent side="bottom">
+        <TooltipContent side="top" className="bg-black text-white border-white/10">
           <p>Zoom Level (⌘+ / ⌘-)</p>
         </TooltipContent>
       </Tooltip>
