@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageCircle, X } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/supabase';
+import { supabase } from '@/config/supabase';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import { processMessage } from '@/utils/chatUtils';
