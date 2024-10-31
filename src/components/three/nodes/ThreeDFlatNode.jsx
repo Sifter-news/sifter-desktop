@@ -1,16 +1,27 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Text, Billboard } from '@react-three/drei';
+import { Text, Billboard, Html } from '@react-three/drei';
 import * as THREE from 'three';
+import { Button } from "@/components/ui/button";
+import { Trash2, Layout, Square, StickyNote } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const ThreeDFlatNode = ({ 
   node,
   position = [0, 0, 0],
   title = "Title",
   subline = "Subline",
-  avatarUrl = "/default-image.png"
+  avatarUrl = "/default-image.png",
+  onDelete,
+  onStyleChange
 }) => {
   const groupRef = useRef();
+  const [isHovered, setIsHovered] = useState(false);
   const textureLoader = new THREE.TextureLoader();
   const avatarTexture = textureLoader.load(avatarUrl);
 
@@ -22,12 +33,17 @@ const ThreeDFlatNode = ({
     side: THREE.DoubleSide
   });
 
+  const handlePointerOver = () => setIsHovered(true);
+  const handlePointerOut = () => setIsHovered(false);
+
   return (
     <Billboard
       follow={true}
       lockX={false}
       lockY={false}
       lockZ={false}
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
     >
       <group ref={groupRef} position={position}>
         {/* Background plane */}
@@ -63,6 +79,44 @@ const ThreeDFlatNode = ({
         >
           {subline}
         </Text>
+
+        {/* Hover Tooltip */}
+        {isHovered && (
+          <Html position={[0, 1.2, 0]} center>
+            <div className="bg-black/80 text-white p-2 rounded-lg shadow-lg flex gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+                    <Layout className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-black text-white">
+                  <DropdownMenuItem onClick={() => onStyleChange('compact')}>
+                    <Square className="h-4 w-4 mr-2" />
+                    Compact (48x48)
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onStyleChange('default')}>
+                    <Layout className="h-4 w-4 mr-2" />
+                    Default (128x48)
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onStyleChange('postit')}>
+                    <StickyNote className="h-4 w-4 mr-2" />
+                    Post-it (256x256)
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-white hover:bg-red-500/50"
+                onClick={onDelete}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </Html>
+        )}
       </group>
     </Billboard>
   );

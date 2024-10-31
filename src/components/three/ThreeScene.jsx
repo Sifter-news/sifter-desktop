@@ -37,29 +37,6 @@ const ThreeScene = ({
     }
   }, [viewMode, zoom, camera]);
 
-  useEffect(() => {
-    if (camera && controlsRef.current) {
-      const updateDebugData = () => {
-        setDebugData(prev => ({
-          ...prev,
-          camera: {
-            position: { ...camera.position },
-            rotation: { ...camera.rotation },
-            fov: camera.fov,
-            zoom: camera.zoom,
-            distance: controlsRef.current.getDistance()
-          }
-        }));
-      };
-
-      updateDebugData();
-      controlsRef.current.addEventListener('change', updateDebugData);
-      return () => {
-        controlsRef.current?.removeEventListener('change', updateDebugData);
-      };
-    }
-  }, [camera, controlsRef, setDebugData]);
-
   const handlePointerMove = (event) => {
     if (activeConnection) {
       event.stopPropagation();
@@ -84,6 +61,8 @@ const ThreeScene = ({
         title="Node 1"
         subline="This is node one"
         avatarUrl="/default-image.png"
+        onDelete={() => handleNodeUpdate({ id: 'node1', action: 'delete' })}
+        onStyleChange={(style) => handleNodeUpdate({ id: 'node1', action: 'updateStyle', style })}
       />
       
       {/* Additional nodes spaced 8 units apart */}
@@ -92,6 +71,8 @@ const ThreeScene = ({
         title="Node 2"
         subline="This is node two"
         avatarUrl="/default-image.png"
+        onDelete={() => handleNodeUpdate({ id: 'node2', action: 'delete' })}
+        onStyleChange={(style) => handleNodeUpdate({ id: 'node2', action: 'updateStyle', style })}
       />
       
       <ThreeDFlatNode 
@@ -99,6 +80,8 @@ const ThreeScene = ({
         title="Node 3"
         subline="This is node three"
         avatarUrl="/default-image.png"
+        onDelete={() => handleNodeUpdate({ id: 'node3', action: 'delete' })}
+        onStyleChange={(style) => handleNodeUpdate({ id: 'node3', action: 'updateStyle', style })}
       />
       
       <ThreeDFlatNode 
@@ -106,6 +89,8 @@ const ThreeScene = ({
         title="Node 4"
         subline="This is node four"
         avatarUrl="/default-image.png"
+        onDelete={() => handleNodeUpdate({ id: 'node4', action: 'delete' })}
+        onStyleChange={(style) => handleNodeUpdate({ id: 'node4', action: 'updateStyle', style })}
       />
       
       <ThreeDFlatNode 
@@ -113,62 +98,8 @@ const ThreeScene = ({
         title="Node 5"
         subline="This is node five"
         avatarUrl="/default-image.png"
-      />
-      
-      {nodes?.map(node => (
-        <ThreeDNode 
-          key={node.id}
-          node={{
-            ...node,
-            position: [
-              node.position_x || node.x || 0,
-              node.position_y || node.y || 0,
-              node.position_z || node.z || 0
-            ],
-            width: node.width || 256,
-            height: node.height || 256
-          }}
-          activeTool={activeTool}
-          onUpdate={handleNodeUpdate}
-          onStartConnection={onStartConnection}
-          onEndConnection={onEndConnection}
-          allNodes={nodes}
-        />
-      ))}
-
-      {connections?.map((connection, index) => {
-        const sourceNode = nodes?.find(n => n.id === connection.source_id);
-        const targetNode = nodes?.find(n => n.id === connection.target_id);
-        
-        if (!sourceNode || !targetNode) return null;
-
-        const sourceY = connection.source_point === 'top' ? 2.5 : -2.5;
-        const targetY = connection.target_point === 'top' ? 2.5 : -2.5;
-
-        return (
-          <ConnectionLine
-            key={index}
-            start={[sourceNode.position_x || 0, sourceNode.position_y + sourceY || 0, 0]}
-            end={[targetNode.position_x || 0, targetNode.position_y + targetY || 0, 0]}
-          />
-        );
-      })}
-
-      {activeConnection && (
-        <ConnectionLine
-          start={activeConnection.sourcePosition}
-          end={activeConnection.targetPosition}
-        />
-      )}
-
-      <OrbitControls 
-        ref={controlsRef}
-        enableZoom={true}
-        enablePan={activeTool === 'pan'}
-        enableRotate={activeTool === 'pan'}
-        maxDistance={2000 / zoom}
-        minDistance={10}
-        camera={camera}
+        onDelete={() => handleNodeUpdate({ id: 'node5', action: 'delete' })}
+        onStyleChange={(style) => handleNodeUpdate({ id: 'node5', action: 'updateStyle', style })}
       />
     </group>
   );
