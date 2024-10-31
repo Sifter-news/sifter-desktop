@@ -80,12 +80,12 @@ const ThreeDFlatNode = ({
 
         {/* Background plane */}
         <mesh position={[0, 0, -0.01]}>
-          <planeGeometry args={[4, 2]} />
+          <planeGeometry args={[6, 1.5]} />
           <meshBasicMaterial color="white" transparent opacity={0.9} />
         </mesh>
 
         {/* Avatar circle */}
-        <mesh position={[0, 0, 0]}>
+        <mesh position={[-0.75, 0, 0]}>
           <primitive object={avatarGeometry} />
           <primitive object={avatarMaterial} />
         </mesh>
