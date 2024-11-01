@@ -36,7 +36,7 @@ const SidePanel = ({
       <AnimatePresence>
         {isExpanded ? (
           <motion.div 
-            className="fixed top-16 left-0 h-[calc(100vh-64px-8px)] bg-white shadow-lg z-50 w-[250px] rounded-xl mx-2 my-2"
+            className="fixed top-16 left-0 h-[calc(100vh-64px-8px)] bg-white shadow-lg z-50 w-[250px] rounded-xl mx-2 my-1"
             initial={{ x: -250 }}
             animate={{ x: 0 }}
             exit={{ x: -250 }}
