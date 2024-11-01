@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Brain, Clock, Map } from 'lucide-react';
+import { Brain, Clock, Map, Pencil } from 'lucide-react';
 import MindMapView from './MindMapView';
 import TimeView from './TimeView';
 import MapView from './MapView';
+import Canvas2DView from './Canvas2DView';
 import SidePanel from './SidePanel';
 import { useDebug } from '@/contexts/DebugContext';
 
@@ -18,7 +19,7 @@ const ProjectTabs = ({
   onUpdateReport, 
   focusedNodeId,
   onNodeFocus,
-  defaultView = 'mindmap'
+  defaultView = 'canvas2d'
 }) => {
   const selectedNode = nodes.find(node => node.id === focusedNodeId);
   const { setDebugData } = useDebug();
@@ -50,6 +51,10 @@ const ProjectTabs = ({
       <Tabs defaultValue={defaultView} className="w-full h-full" onValueChange={handleViewChange}>
         <div className="flex justify-center">
           <TabsList className="mx-auto bg-white bg-opacity-80 backdrop-blur-md z-10 fixed top-16">
+            <TabsTrigger value="canvas2d" className="flex items-center">
+              <Pencil className="w-4 h-4 mr-2" />
+              Canvas
+            </TabsTrigger>
             <TabsTrigger value="mindmap" className="flex items-center">
               <Brain className="w-4 h-4 mr-2" />
               Mind
@@ -65,6 +70,18 @@ const ProjectTabs = ({
           </TabsList>
         </div>
         <div className="flex-grow mt-12">
+          <TabsContent value="canvas2d" className="h-[calc(100vh-128px)]">
+            <Canvas2DView
+              project={project}
+              nodes={nodes}
+              setNodes={setNodes}
+              onAddNode={onAddNode}
+              onUpdateNode={onUpdateNode}
+              onDeleteNode={onDeleteNode}
+              focusedNodeId={focusedNodeId}
+              onNodeFocus={onNodeFocus}
+            />
+          </TabsContent>
           <TabsContent value="mindmap" className="h-[calc(100vh-128px)]">
             <MindMapView
               project={project}
