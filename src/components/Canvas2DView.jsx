@@ -41,7 +41,7 @@ const Canvas2DView = ({
   };
 
   return (
-    <div className="h-full w-full relative bg-[#594BFF]">
+    <div className="absolute inset-0 bg-[#594BFF]">
       <Canvas
         ref={canvasRef}
         nodes={nodes}
