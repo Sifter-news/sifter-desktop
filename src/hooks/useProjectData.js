@@ -3,6 +3,8 @@ import { supabase } from '@/config/supabase';
 import { toast } from 'sonner';
 import { useDebug } from '@/contexts/DebugContext';
 
+const DEFAULT_AVATAR = '/default-image.png';
+
 export const useProjectData = (id) => {
   const [project, setProject] = useState(null);
   const [nodes, setNodes] = useState([]);
@@ -23,7 +25,7 @@ export const useProjectData = (id) => {
     visualStyle: node.visual_style || 'default',
     nodeType: node.node_type || 'generic',
     parent_id: node.parent_id || null,
-    avatar: node.avatar || '/default-image.png',
+    avatar: node.avatar || DEFAULT_AVATAR,
     textSize: node.text_size || 'medium',
     textAlign: node.text_align || 'left',
     color: node.color || 'white',

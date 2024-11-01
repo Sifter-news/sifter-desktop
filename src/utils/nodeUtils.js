@@ -1,6 +1,8 @@
 import { toast } from 'sonner';
 import { supabase } from '@/config/supabase';
 
+const DEFAULT_AVATAR = '/default-image.png';
+
 // Dimension utilities
 export const getNodeDimensions = (visualStyle) => {
   switch (visualStyle) {
@@ -58,6 +60,7 @@ export const createNode = async (nodeData, projectId) => {
       .insert([{
         ...nodeData,
         investigation_id: projectId,
+        avatar: nodeData.avatar || DEFAULT_AVATAR
       }])
       .select()
       .single();
@@ -73,6 +76,11 @@ export const createNode = async (nodeData, projectId) => {
 
 export const updateNode = async (nodeId, updates) => {
   try {
+    // Ensure avatar is not accidentally cleared
+    if (!updates.avatar) {
+      delete updates.avatar;
+    }
+
     const { error } = await supabase
       .from('node')
       .update(updates)
