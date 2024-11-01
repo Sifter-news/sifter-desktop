@@ -16,25 +16,25 @@ export const AuthProvider = ({ children }) => {
   const handleAuthError = async () => {
     try {
       await supabase.auth.signOut();
+      setUser(null);
+      localStorage.clear();
+      
+      if (location.pathname !== '/login') {
+        navigate('/login');
+        toast.error('Session expired. Please sign in again.');
+      }
     } catch (error) {
-      console.error('Error signing out:', error);
-    }
-    setUser(null);
-    localStorage.clear();
-    
-    if (location.pathname !== '/login') {
-      navigate('/login');
-      toast.error('Session expired. Please sign in again.');
+      console.error('Error during auth error handling:', error);
     }
   };
 
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabase.auth.getSession();
         
-        if (sessionError) {
-          console.error('Session error:', sessionError);
+        if (error) {
+          console.error('Session error:', error);
           await handleAuthError();
           return;
         }
@@ -47,7 +47,16 @@ export const AuthProvider = ({ children }) => {
           return;
         }
 
-        setUser(session.user);
+        // Verify session is still valid
+        const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError || !currentUser) {
+          console.error('User verification error:', userError);
+          await handleAuthError();
+          return;
+        }
+
+        setUser(currentUser);
       } catch (error) {
         console.error('Auth initialization error:', error);
         await handleAuthError();
@@ -104,7 +113,10 @@ export const AuthProvider = ({ children }) => {
         const { error } = await supabase.auth.signUp({
           ...data,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+            data: {
+              username: data.email?.split('@')[0]
+            }
           }
         });
         if (error) throw error;
@@ -132,7 +144,8 @@ export const AuthProvider = ({ children }) => {
     
     signOut: async () => {
       try {
-        await supabase.auth.signOut({ scope: 'local' });
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
         localStorage.clear();
         navigate('/login');
       } catch (error) {
