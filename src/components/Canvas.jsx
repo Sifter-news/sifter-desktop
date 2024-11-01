@@ -5,6 +5,7 @@ import TwoDNode from './node/TwoDNode';
 import CanvasBackground from './canvas/CanvasBackground';
 import CanvasControls from './canvas/CanvasControls';
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
+import { supabase } from '@/config/supabase';
 
 const Canvas = forwardRef(({ 
   nodes, 
@@ -30,6 +31,27 @@ const Canvas = forwardRef(({
   const [nodeToDelete, setNodeToDelete] = useState(null);
   const [isPanning, setIsPanning] = useState(false);
   const { setDebugData } = useDebug();
+
+  const handleDelete = async (nodeId) => {
+    try {
+      const { error } = await supabase
+        .from('node')
+        .delete()
+        .eq('id', nodeId);
+
+      if (error) throw error;
+
+      // Update UI state after successful database deletion
+      setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
+      onNodeDelete?.(nodeId);
+      setShowDeleteConfirmation(false);
+      setNodeToDelete(null);
+      toast.success("Node deleted successfully");
+    } catch (error) {
+      console.error('Error deleting node:', error);
+      toast.error("Failed to delete node");
+    }
+  };
 
   const handleKeyDown = useCallback((e) => {
     if (focusedNodeId && (e.key === 'Delete' || e.key === 'Backspace')) {
@@ -88,18 +110,6 @@ const Canvas = forwardRef(({
       handlePanEnd?.();
     }
   }, [isPanning, handlePanEnd]);
-
-  const handleDelete = async (nodeId) => {
-    try {
-      await onNodeDelete(nodeId);
-      setShowDeleteConfirmation(false);
-      setNodeToDelete(null);
-      toast.success("Node deleted successfully");
-    } catch (error) {
-      console.error('Error deleting node:', error);
-      toast.error("Failed to delete node");
-    }
-  };
 
   return (
     <>
