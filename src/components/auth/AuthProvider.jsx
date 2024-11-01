@@ -47,12 +47,6 @@ export const AuthProvider = ({ children }) => {
           return;
         }
 
-        // Check if the session is valid and has a refresh token
-        if (!session.refresh_token) {
-          await handleAuthError();
-          return;
-        }
-
         setUser(session.user);
       } catch (error) {
         console.error('Auth initialization error:', error);
@@ -82,8 +76,6 @@ export const AuthProvider = ({ children }) => {
         case 'TOKEN_REFRESHED':
           if (session?.user) {
             setUser(session.user);
-          } else {
-            await handleAuthError();
           }
           break;
           
@@ -112,10 +104,7 @@ export const AuthProvider = ({ children }) => {
         const { error } = await supabase.auth.signUp({
           ...data,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
-            data: {
-              username: data.email.split('@')[0]
-            }
+            emailRedirectTo: `${window.location.origin}/auth/callback`
           }
         });
         if (error) throw error;
@@ -143,8 +132,7 @@ export const AuthProvider = ({ children }) => {
     
     signOut: async () => {
       try {
-        const { error } = await supabase.auth.signOut();
-        if (error) throw error;
+        await supabase.auth.signOut({ scope: 'local' });
         localStorage.clear();
         navigate('/login');
       } catch (error) {
