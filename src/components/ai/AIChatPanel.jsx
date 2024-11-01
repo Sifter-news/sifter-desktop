@@ -14,6 +14,11 @@ const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
+  // Extract context information
+  const contextInfo = initialContext?.match(/(?:node|investigation)_id: ([^,\s]+)/)?.[1];
+  const contextType = initialContext?.includes('node:') ? 'Node' : 'Project';
+  const contextTitle = initialContext?.match(/(?:node|project): ([^,\n]+)/)?.[1];
+
   useEffect(() => {
     const fetchProjectInfo = async () => {
       try {
@@ -103,14 +108,21 @@ const AIChatPanel = ({ isOpen, onClose, initialContext }) => {
 
   return (
     <div className="fixed top-[72px] right-[8px] bottom-[8px] w-[360px] bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col">
-      <div className="flex items-center justify-between p-4 border-b">
-        <div className="flex items-center gap-2">
-          <MessageCircle className="h-5 w-5 text-purple-500" />
-          <h2 className="font-semibold">Sift Assist</h2>
+      <div className="flex flex-col p-4 border-b">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <MessageCircle className="h-5 w-5 text-purple-500" />
+            <h2 className="font-semibold">Sift Assist</h2>
+          </div>
+          <Button variant="ghost" size="icon" onClick={onClose}>
+            <X className="h-4 w-4" />
+          </Button>
         </div>
-        <Button variant="ghost" size="icon" onClick={onClose}>
-          <X className="h-4 w-4" />
-        </Button>
+        {contextTitle && (
+          <div className="text-sm text-gray-500 mt-1">
+            {contextType}: {contextTitle}
+          </div>
+        )}
       </div>
 
       <ScrollArea className="flex-1 p-4">
