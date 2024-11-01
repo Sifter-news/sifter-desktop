@@ -36,16 +36,16 @@ const SidePanel = ({
       <AnimatePresence>
         {isExpanded ? (
           <motion.div 
-            className="fixed top-16 left-0 h-[calc(100vh-64px-2rem)] bg-white shadow-lg z-50 w-[250px] rounded-r-xl m-2"
+            className="fixed top-16 left-0 h-[calc(100vh-64px-2rem)] bg-white shadow-lg z-50 w-[250px] rounded-xl m-2"
             initial={{ x: -250 }}
             animate={{ x: 0 }}
             exit={{ x: -250 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
             <Tabs defaultValue="nodes" className="w-full">
-              <TabsList className="w-full">
-                <TabsTrigger value="nodes" className="flex-1">Nodes</TabsTrigger>
-                <TabsTrigger value="files" className="flex-1">Files</TabsTrigger>
+              <TabsList className="w-full rounded-t-xl">
+                <TabsTrigger value="nodes" className="flex-1 rounded-tl-xl">Nodes</TabsTrigger>
+                <TabsTrigger value="files" className="flex-1 rounded-tr-xl">Files</TabsTrigger>
               </TabsList>
               <TabsContent 
                 value="nodes"
@@ -89,7 +89,7 @@ const SidePanel = ({
         <Button
           variant="secondary"
           size="icon"
-          className={`flex items-center justify-center w-8 h-8 rounded-full shadow-lg bg-white hover:bg-gray-100 ${
+          className={`flex items-center justify-center w-8 h-8 rounded-xl shadow-lg bg-white hover:bg-gray-100 ${
             isExpanded ? 'ml-[266px]' : 'ml-4'
           }`}
           onClick={() => setIsExpanded(!isExpanded)}
