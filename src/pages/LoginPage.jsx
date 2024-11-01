@@ -1,5 +1,4 @@
 import React from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LoginForm, SocialLoginButtons } from '@/components/auth';
 import { useNavigate } from 'react-router-dom';
 
@@ -25,10 +24,11 @@ const LoginPage = () => {
       ></div>
       <div className="bg-white p-8 rounded-lg shadow-md w-96 z-10">
         <div className="flex justify-center mb-6">
-          <Avatar className="h-16 w-16">
-            <AvatarImage src="/placeholder.svg" alt="Sifter Logo" />
-            <AvatarFallback>SL</AvatarFallback>
-          </Avatar>
+          <img 
+            src="/placeholder.svg" 
+            alt="Sifter Logo" 
+            className="h-16 w-auto"
+          />
         </div>
         <h2 className="text-2xl font-bold text-center mb-6">Login to Sifter</h2>
         <LoginForm />
