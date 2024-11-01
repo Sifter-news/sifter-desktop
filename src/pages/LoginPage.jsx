@@ -37,7 +37,7 @@ const LoginPage = () => {
           <a 
             href="#" 
             onClick={handleSignUp}
-            className="text-sm text-gray-600 hover:text-gray-800 hover:underline"
+            className="text-sm text-gray-400 hover:text-gray-600 hover:underline"
           >
             Don't have an account? Sign Up
           </a>
