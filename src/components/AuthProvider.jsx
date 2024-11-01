@@ -14,13 +14,20 @@ export const AuthProvider = ({ children }) => {
   const location = useLocation();
 
   const handleAuthError = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    localStorage.clear();
-    
-    if (location.pathname !== '/login') {
-      navigate('/login');
-      toast.error('Session expired. Please sign in again.');
+    try {
+      // Clear all auth data
+      await supabase.auth.signOut();
+      setUser(null);
+      localStorage.removeItem('supabase.auth.token');
+      localStorage.removeItem('sb-refresh-token');
+      localStorage.removeItem('sb-access-token');
+      
+      if (location.pathname !== '/login') {
+        navigate('/login');
+        toast.error('Session expired. Please sign in again.');
+      }
+    } catch (error) {
+      console.error('Error during auth cleanup:', error);
     }
   };
 
@@ -36,7 +43,10 @@ export const AuthProvider = ({ children }) => {
         }
 
         if (!session) {
-          await handleAuthError();
+          setLoading(false);
+          if (location.pathname !== '/login') {
+            navigate('/login');
+          }
           return;
         }
 
@@ -114,10 +124,7 @@ export const AuthProvider = ({ children }) => {
     
     signOut: async () => {
       try {
-        const { error } = await supabase.auth.signOut();
-        if (error) throw error;
-        localStorage.clear();
-        navigate('/login');
+        await handleAuthError();
       } catch (error) {
         toast.error(error.message);
         throw error;
