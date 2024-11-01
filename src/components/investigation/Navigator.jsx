@@ -1,10 +1,9 @@
-import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NavigatorContent from './NavigatorContent';
 
 const NavigatorOut = ({ children }) => {
   return (
-    <div className="w-full h-full bg-white/10 backdrop-blur-sm">
+    <div className="w-full h-full bg-white/10 backdrop-blur-sm m-4 rounded-2xl">
       {children}
     </div>
   );
