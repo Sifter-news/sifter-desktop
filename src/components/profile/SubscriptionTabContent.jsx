@@ -1,9 +1,11 @@
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/config/supabase';
 import { Check, Zap } from 'lucide-react';
+import { toast } from 'sonner';
+import { getStripe } from '@/config/stripe';
 
 const SubscriptionTabContent = ({ userId }) => {
   const { data: subscription, isLoading } = useQuery({
@@ -27,6 +29,7 @@ const SubscriptionTabContent = ({ userId }) => {
       price: '$0',
       period: '(Free)',
       description: "What's included:",
+      stripe_price_id: null,
       features: [
         'Unlimited public projects',
         'Basic features',
@@ -40,6 +43,7 @@ const SubscriptionTabContent = ({ userId }) => {
       price: '$19',
       period: '/ month',
       description: 'Everything in Free, plus:',
+      stripe_price_id: import.meta.env.VITE_STRIPE_PRO_PRICE_ID,
       features: [
         'Private projects',
         '> 10x higher rate limits',
@@ -53,6 +57,7 @@ const SubscriptionTabContent = ({ userId }) => {
       name: 'TEAMS',
       price: null,
       description: 'Early access for partners',
+      stripe_price_id: null,
       features: [
         'Collaborate on projects',
         'Connect existing codebases',
@@ -61,6 +66,43 @@ const SubscriptionTabContent = ({ userId }) => {
       ]
     }
   ];
+
+  const handleSubscription = async (plan) => {
+    try {
+      if (plan.id === 'teams') {
+        // Handle teams plan differently (e.g., contact sales)
+        toast.info('Please contact our sales team for Teams plan');
+        return;
+      }
+
+      if (plan.id === 'free') {
+        // Handle downgrade to free plan
+        const { error } = await supabase.functions.invoke('handle-subscription-change', {
+          body: { action: 'downgrade', userId }
+        });
+        
+        if (error) throw error;
+        toast.success('Successfully downgraded to Free plan');
+        return;
+      }
+
+      // Create Stripe checkout session
+      const { data: { sessionId }, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: { priceId: plan.stripe_price_id, userId }
+      });
+
+      if (error) throw error;
+
+      // Redirect to Stripe checkout
+      const stripe = await getStripe();
+      const { error: stripeError } = await stripe.redirectToCheckout({ sessionId });
+      
+      if (stripeError) throw stripeError;
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Failed to process subscription: ' + error.message);
+    }
+  };
 
   if (isLoading) {
     return <div>Loading subscription details...</div>;
@@ -95,8 +137,16 @@ const SubscriptionTabContent = ({ userId }) => {
             <Button 
               className="w-full mt-6" 
               variant={plan.id === 'teams' ? 'outline' : 'default'}
+              onClick={() => handleSubscription(plan)}
+              disabled={subscription?.subscription_plan_id === plan.id}
             >
-              {plan.id === 'teams' ? 'Get in touch' : 'Manage subscription'}
+              {subscription?.subscription_plan_id === plan.id 
+                ? 'Current Plan'
+                : plan.id === 'teams' 
+                  ? 'Get in touch' 
+                  : plan.id === 'free' 
+                    ? 'Downgrade to Free'
+                    : 'Upgrade to ' + plan.name}
             </Button>
           </CardContent>
           {subscription?.subscription_plan_id === plan.id && (
