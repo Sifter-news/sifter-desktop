@@ -1,13 +1,13 @@
 import React from 'react';
-import Navigator from '../Navigator';
-import LeftPanel from '../LeftPanel';
+import Left_Navigator from '../../Left_Navigator';
+import LeftPanel from '../../LeftPanel';
 
 const InvestigationWrapper = ({ children }) => {
   return (
     <div className="flex h-screen">
       <LeftPanel />
       <div className="flex-1 flex flex-col">
-        <Navigator />
+        <Left_Navigator />
         <main className="flex-1 relative">
           {children}
         </main>
