@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
 import UserProfile from './UserProfile';
 import { Separator } from "@/components/ui/separator";
 import ModalEdit_Investigation from './modals/ModalEdit_Investigation';
@@ -67,7 +66,6 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
   return (
     <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-[9999]">
       <div className="mx-auto px-12 py-2 flex items-center">
-        {/* Left section with fixed width */}
         <div className="w-[200px] flex items-center space-x-4">
           <div className="flex items-center space-x-2">
             <img src="/favicon.ico" alt="Sifter Logo" className="h-8 w-8" />
@@ -76,7 +74,6 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
           </div>
         </div>
 
-        {/* Center section with absolute positioning */}
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center space-x-4">
           {projectName && (
             <div className="flex items-center space-x-4">
@@ -94,16 +91,11 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
           )}
         </div>
 
-        {/* Right section with fixed width */}
         <div className="ml-auto w-[200px] flex justify-end items-center space-x-2">
           {projectName && (
             <>
               <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
                 Dashboard
-              </Link>
-              <Separator orientation="vertical" className="h-4 mx-2" />
-              <Link to="/account" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
-                Account
               </Link>
               <Separator orientation="vertical" className="h-4 mx-2" />
               <Select value={investigatorType} onValueChange={handleTypeChange}>

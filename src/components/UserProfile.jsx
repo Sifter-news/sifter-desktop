@@ -1,5 +1,4 @@
 import React from 'react';
-import { Button } from "@/components/ui/button";
 import ProfileDialog from './ProfileDialog';
 
 const UserProfile = ({ user }) => {
