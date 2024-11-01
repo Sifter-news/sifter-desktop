@@ -36,7 +36,7 @@ const SidePanel = ({
       <AnimatePresence>
         {isExpanded ? (
           <motion.div 
-            className="fixed top-16 left-0 h-[calc(100vh-64px-8px)] bg-white shadow-lg z-50 w-[250px] rounded-xl mx-2 my-2"
+            className="fixed top-0 left-0 h-screen bg-white shadow-lg z-50 w-[250px] rounded-xl m-2"
             initial={{ x: -250 }}
             animate={{ x: 0 }}
             exit={{ x: -250 }}
@@ -84,13 +84,13 @@ const SidePanel = ({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
-        className="fixed top-20 left-0 z-50"
+        className="fixed top-4 left-0 z-50 ml-8"
       >
         <Button
           variant="secondary"
           size="icon"
-          className={`flex items-center justify-center w-8 h-8 rounded-xl shadow-lg bg-white hover:bg-gray-100 mt-4 ml-4 ${
-            isExpanded ? 'ml-[258px]' : ''
+          className={`flex items-center justify-center w-8 h-8 rounded-xl shadow-lg bg-white hover:bg-gray-100 ${
+            isExpanded ? 'ml-[266px]' : 'ml-4'
           }`}
           onClick={() => setIsExpanded(!isExpanded)}
         >
