@@ -21,17 +21,19 @@ const App = () => (
       <DebugProvider>
         <BrowserRouter>
           <AuthProvider>
-            <Toaster />
-            <DebugPanel />
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/new-project" element={<NewProjectPage />} />
-              <Route path="/project/:id" element={<ProjectView />} />
-              <Route path="/:username/project/:projectName" element={<ProjectPage />} />
-              <Route path="/subscription-plans" element={<SubscriptionPlans />} />
-              <Route path="/auth/callback" element={<AuthCallback />} />
-            </Routes>
+            <div className="relative">
+              <Toaster />
+              <DebugPanel />
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/new-project" element={<NewProjectPage />} />
+                <Route path="/project/:id" element={<ProjectView />} />
+                <Route path="/:username/project/:projectName" element={<ProjectPage />} />
+                <Route path="/subscription-plans" element={<SubscriptionPlans />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
+              </Routes>
+            </div>
           </AuthProvider>
         </BrowserRouter>
       </DebugProvider>
