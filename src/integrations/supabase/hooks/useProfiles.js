@@ -1,22 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/config/supabase';
 
-/*
-### profiles
-
-| name                    | type      | format  | required |
-|------------------------|-----------|---------|----------|
-| id                     | uuid      | uuid    | true     |
-| username               | varchar   | string  | true     |
-| email                  | varchar   | string  | false    |
-| created_at             | timestamp | string  | false    |
-| subscription_plan_id   | uuid      | uuid    | false    |
-| subscription_start_date| timestamp | string  | false    |
-| subscription_end_date  | timestamp | string  | false    |
-
-Foreign Key Relationships:
-- subscription_plan_id references subscription_plans.id
-*/
+const DEFAULT_AVATAR = '/default-image.png';
 
 const fromSupabase = async (query) => {
   const { data, error } = await query;
@@ -28,7 +13,10 @@ export const useProfile = (id) => useQuery({
   queryKey: ['profiles', id],
   queryFn: () => fromSupabase(
     supabase.from('profiles').select('*').eq('id', id).single()
-  ),
+  ).then(data => ({
+    ...data,
+    avatar_url: data?.avatar_url || DEFAULT_AVATAR
+  })),
   enabled: !!id
 });
 
@@ -36,7 +24,10 @@ export const useProfiles = () => useQuery({
   queryKey: ['profiles'],
   queryFn: () => fromSupabase(
     supabase.from('profiles').select('*')
-  )
+  ).then(data => data.map(profile => ({
+    ...profile,
+    avatar_url: profile?.avatar_url || DEFAULT_AVATAR
+  })))
 });
 
 export const useAddProfile = () => {
@@ -46,7 +37,10 @@ export const useAddProfile = () => {
     mutationFn: async (newProfile) => {
       const { data, error } = await supabase
         .from('profiles')
-        .insert([newProfile])
+        .insert([{
+          ...newProfile,
+          avatar_url: newProfile.avatar_url || DEFAULT_AVATAR
+        }])
         .select()
         .single();
         
