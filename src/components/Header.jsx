@@ -78,23 +78,32 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
           </div>
         </div>
 
-        <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center space-x-4">
           {projectName && (
-            <div className="flex flex-col items-center">
-              <div className="flex items-center space-x-4 mb-1">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="/default-image.png" alt="Project Avatar" />
-                  <AvatarFallback>P</AvatarFallback>
-                </Avatar>
-                <span 
-                  className="text-sm font-normal text-[#4B25F3] cursor-pointer hover:underline"
-                  onClick={() => setIsEditModalOpen(true)}
-                >
-                  {projectName}
-                </span>
-              </div>
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src="/default-image.png" alt="Project Avatar" />
+                <AvatarFallback>P</AvatarFallback>
+              </Avatar>
+              <span 
+                className="text-sm font-normal text-[#4B25F3] cursor-pointer hover:underline"
+                onClick={() => setIsEditModalOpen(true)}
+              >
+                {projectName}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div className="ml-auto w-[200px] flex justify-end items-center space-x-2">
+          {projectName && (
+            <>
+              <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
+                Dashboard
+              </Link>
+              <Separator orientation="vertical" className="h-4 mx-2" />
               <Select value={investigatorType} onValueChange={handleTypeChange}>
-                <SelectTrigger className="w-fit border-none focus:ring-0 [&>span]:line-clamp-1 px-2 text-xs text-gray-500">
+                <SelectTrigger className="w-fit border-none focus:ring-0 [&>span]:line-clamp-1 px-2">
                   <SelectValue placeholder="Select investigation type" />
                 </SelectTrigger>
                 <SelectContent className="w-fit min-w-[200px]">
@@ -122,19 +131,9 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
                   </SelectGroup>
                 </SelectContent>
               </Select>
-            </div>
-          )}
-        </div>
-
-        <div className="ml-auto w-[200px] flex justify-end items-center space-x-2">
-          {projectName && (
-            <>
-              <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
-                Dashboard
-              </Link>
-              <Separator orientation="vertical" className="h-4 mx-2" />
             </>
           )}
+          
           <UserProfile user={user} onUpdateUser={onUpdateUser} />
         </div>
       </div>
