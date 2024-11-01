@@ -47,6 +47,12 @@ export const AuthProvider = ({ children }) => {
           return;
         }
 
+        // Check if the session is valid and has a refresh token
+        if (!session.refresh_token) {
+          await handleAuthError();
+          return;
+        }
+
         setUser(session.user);
       } catch (error) {
         console.error('Auth initialization error:', error);
@@ -61,8 +67,10 @@ export const AuthProvider = ({ children }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       switch (event) {
         case 'SIGNED_IN':
-          setUser(session?.user ?? null);
-          toast.success('Successfully signed in!');
+          if (session?.user) {
+            setUser(session.user);
+            toast.success('Successfully signed in!');
+          }
           break;
           
         case 'SIGNED_OUT':
@@ -72,11 +80,17 @@ export const AuthProvider = ({ children }) => {
           break;
           
         case 'TOKEN_REFRESHED':
-          setUser(session?.user ?? null);
+          if (session?.user) {
+            setUser(session.user);
+          } else {
+            await handleAuthError();
+          }
           break;
           
         case 'USER_UPDATED':
-          setUser(session?.user ?? null);
+          if (session?.user) {
+            setUser(session.user);
+          }
           break;
           
         case 'USER_DELETED':
@@ -98,7 +112,10 @@ export const AuthProvider = ({ children }) => {
         const { error } = await supabase.auth.signUp({
           ...data,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+            data: {
+              username: data.email.split('@')[0]
+            }
           }
         });
         if (error) throw error;
@@ -111,7 +128,12 @@ export const AuthProvider = ({ children }) => {
     
     signIn: async (data) => {
       try {
-        const { error } = await supabase.auth.signInWithPassword(data);
+        const { error } = await supabase.auth.signInWithPassword({
+          ...data,
+          options: {
+            persistSession: true
+          }
+        });
         if (error) throw error;
       } catch (error) {
         toast.error(error.message);
