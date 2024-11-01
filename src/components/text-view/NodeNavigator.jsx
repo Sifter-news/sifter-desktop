@@ -6,6 +6,7 @@ import { useNodeSelection } from './hooks/useNodeSelection';
 import AIChatPanel from '../ai/AIChatPanel';
 import UnifiedNodeEditModal from '../modals/ModalEdit_Node';
 import { toast } from 'sonner';
+import { supabase } from '@/config/supabase';
 
 const NodeNavigator = ({ 
   nodes = [], 
@@ -33,6 +34,24 @@ const NodeNavigator = ({
     onNodeFocus,
     selectedNodes
   });
+
+  const handleNodeDelete = async (nodeId) => {
+    try {
+      const { error } = await supabase
+        .from('node')
+        .delete()
+        .eq('id', nodeId);
+
+      if (error) throw error;
+
+      // Only call onDeleteNode if database operation succeeds
+      onDeleteNode(nodeId);
+      toast.success('Node deleted successfully');
+    } catch (error) {
+      console.error('Error deleting node:', error);
+      toast.error('Failed to delete node');
+    }
+  };
 
   const filteredNodes = nodes.filter(node => {
     if (!node) return false;
@@ -65,7 +84,7 @@ const NodeNavigator = ({
           onUpdateNode={handleNodeUpdate}
           onAIConversation={() => setIsAIChatOpen(true)}
           focusedNodeId={focusedNodeId}
-          onDeleteNode={onDeleteNode}
+          onDeleteNode={handleNodeDelete}
           onEdit={setEditingNode}
         />
       </div>
@@ -76,7 +95,7 @@ const NodeNavigator = ({
           onClose={() => setEditingNode(null)}
           node={editingNode}
           onUpdate={handleNodeUpdate}
-          onDelete={onDeleteNode}
+          onDelete={handleNodeDelete}
         />
       )}
 
