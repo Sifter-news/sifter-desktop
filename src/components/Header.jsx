@@ -81,7 +81,7 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
           {projectName && (
             <div className="flex items-center space-x-4">
               <Avatar className="h-8 w-8">
-                <AvatarImage src="/default-image.png" alt="Project Avatar" />
+                <AvatarImage src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b" alt="Project Avatar" />
                 <AvatarFallback>P</AvatarFallback>
               </Avatar>
               <span 

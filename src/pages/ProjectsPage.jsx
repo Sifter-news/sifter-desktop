@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 const ProjectsPage = () => {
   const user = {
     name: 'User-Name',
-    avatar: '/default-image.png',
+    avatar: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b',
     email: 'user@example.com',
   };
 

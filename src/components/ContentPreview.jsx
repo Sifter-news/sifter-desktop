@@ -5,7 +5,7 @@ import ContentModal from './ContentModal';
 
 const ContentPreview = ({ content, onUpdate, type = 'article', showImage = true }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [image, setImage] = useState(content?.image || '/default-image.png');
+  const [image, setImage] = useState(content?.image || 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b');
 
   const handleCardClick = () => {
     setIsModalOpen(true);

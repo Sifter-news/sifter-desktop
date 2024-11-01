@@ -16,7 +16,7 @@ const ProfileDialog = ({ user }) => {
   const { mutate: updateProfile } = useUpdateProfile();
   const [username, setUsername] = useState('');
   const [name, setName] = useState('');
-  const [avatar, setAvatar] = useState('/default-image.png');
+  const [avatar, setAvatar] = useState('https://images.unsplash.com/photo-1488590528505-98d2b5aba04b');
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
