@@ -2,15 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/config/supabase';
 import { toast } from 'sonner';
 import { useProfile, useUpdateProfile } from '@/integrations/supabase/index';
-import ProfileTabContent from './profile/ProfileTabContent';
-import SecurityTabContent from './profile/SecurityTabContent';
-import PreferencesTabContent from './profile/PreferencesTabContent';
+import ProfileTabs from './profile/ProfileTabs';
 
 const ProfileDialog = ({ user }) => {
   const navigate = useNavigate();
@@ -167,43 +164,25 @@ const ProfileDialog = ({ user }) => {
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="profile">Profile</TabsTrigger>
-            <TabsTrigger value="security">Security</TabsTrigger>
-            <TabsTrigger value="preferences">Preferences</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="profile">
-            <ProfileTabContent
-              avatar={avatar}
-              username={username}
-              name={name}
-              email={user?.email}
-              onImageUpload={handleImageUpload}
-              onUsernameChange={(e) => setUsername(e.target.value)}
-              onNameChange={(e) => setName(e.target.value)}
-              onSave={handleSaveProfile}
-            />
-          </TabsContent>
-
-          <TabsContent value="security">
-            <SecurityTabContent
-              currentPassword={currentPassword}
-              newPassword={newPassword}
-              confirmPassword={confirmPassword}
-              onCurrentPasswordChange={(e) => setCurrentPassword(e.target.value)}
-              onNewPasswordChange={(e) => setNewPassword(e.target.value)}
-              onConfirmPasswordChange={(e) => setConfirmPassword(e.target.value)}
-              onPasswordReset={handlePasswordReset}
-              onDeleteAccount={handleDeleteAccount}
-            />
-          </TabsContent>
-
-          <TabsContent value="preferences">
-            <PreferencesTabContent onSignOut={handleSignOut} />
-          </TabsContent>
-        </Tabs>
+        <ProfileTabs
+          username={username}
+          name={name}
+          avatar={avatar}
+          email={user?.email}
+          currentPassword={currentPassword}
+          newPassword={newPassword}
+          confirmPassword={confirmPassword}
+          onImageUpload={handleImageUpload}
+          onUsernameChange={(e) => setUsername(e.target.value)}
+          onNameChange={(e) => setName(e.target.value)}
+          onCurrentPasswordChange={(e) => setCurrentPassword(e.target.value)}
+          onNewPasswordChange={(e) => setNewPassword(e.target.value)}
+          onConfirmPasswordChange={(e) => setConfirmPassword(e.target.value)}
+          onPasswordReset={handlePasswordReset}
+          onDeleteAccount={handleDeleteAccount}
+          onSaveProfile={handleSaveProfile}
+          onSignOut={handleSignOut}
+        />
       </DialogContent>
     </Dialog>
   );
