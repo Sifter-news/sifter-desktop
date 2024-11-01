@@ -4,7 +4,7 @@ import { FolderOpen, File, Upload } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-const FileTreeView = ({ files = [] }) => {
+const FileTreeView = ({ files = [], onNodeSelect }) => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const fileInputRef = useRef(null);
 
@@ -60,7 +60,8 @@ const FileTreeView = ({ files = [] }) => {
           {allFiles.map((file, index) => (
             <div 
               key={`${file.path}-${index}`}
-              className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md transition-colors"
+              className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md transition-colors cursor-pointer"
+              onClick={() => onNodeSelect && onNodeSelect(file)}
             >
               {file.type === 'folder' ? (
                 <FolderOpen className="h-4 w-4 text-blue-500" />
