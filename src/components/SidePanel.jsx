@@ -36,16 +36,16 @@ const SidePanel = ({
       <AnimatePresence>
         {isExpanded ? (
           <motion.div 
-            className="fixed top-0 left-0 h-screen bg-white shadow-lg z-50 w-[250px] rounded-xl m-2 p-2"
+            className="fixed top-0 left-0 h-screen bg-white shadow-lg z-50 w-[250px] rounded-xl m-2"
             initial={{ x: -250 }}
             animate={{ x: 0 }}
             exit={{ x: -250 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
             <Tabs defaultValue="nodes" className="w-full">
-              <TabsList className="w-full rounded-lg">
-                <TabsTrigger value="nodes" className="flex-1 rounded-l-lg">Nodes</TabsTrigger>
-                <TabsTrigger value="files" className="flex-1 rounded-r-lg">Files</TabsTrigger>
+              <TabsList className="w-full rounded-t-xl">
+                <TabsTrigger value="nodes" className="flex-1 rounded-tl-xl">Nodes</TabsTrigger>
+                <TabsTrigger value="files" className="flex-1 rounded-tr-xl">Files</TabsTrigger>
               </TabsList>
               <TabsContent 
                 value="nodes"
@@ -63,7 +63,7 @@ const SidePanel = ({
               </TabsContent>
               <TabsContent 
                 value="files" 
-                className="p-2"
+                className="p-4"
                 onMouseEnter={() => handleTabMouseEnter('Files')}
                 onMouseLeave={handleTabMouseLeave}
                 data-component="SidePanel:FilesTab"
@@ -89,7 +89,7 @@ const SidePanel = ({
         <Button
           variant="secondary"
           size="icon"
-          className={`flex items-center justify-center w-8 h-8 rounded-lg shadow-lg bg-white hover:bg-gray-100 ${
+          className={`flex items-center justify-center w-8 h-8 rounded-xl shadow-lg bg-white hover:bg-gray-100 ${
             isExpanded ? 'ml-[266px]' : 'ml-4'
           }`}
           onClick={() => setIsExpanded(!isExpanded)}
