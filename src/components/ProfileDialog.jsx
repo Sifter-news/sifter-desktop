@@ -182,6 +182,7 @@ const ProfileDialog = ({ user }) => {
           onDeleteAccount={handleDeleteAccount}
           onSaveProfile={handleSaveProfile}
           onSignOut={handleSignOut}
+          user={user}
         />
       </DialogContent>
     </Dialog>

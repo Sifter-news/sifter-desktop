@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfileTabContent from './ProfileTabContent';
 import SecurityTabContent from './SecurityTabContent';
 import PreferencesTabContent from './PreferencesTabContent';
+import SubscriptionTabContent from './SubscriptionTabContent';
 
 const ProfileTabs = ({ 
   username,
@@ -21,13 +22,15 @@ const ProfileTabs = ({
   onPasswordReset,
   onDeleteAccount,
   onSaveProfile,
-  onSignOut
+  onSignOut,
+  user
 }) => {
   return (
     <Tabs defaultValue="profile" className="w-full">
-      <TabsList className="grid w-full grid-cols-3">
+      <TabsList className="grid w-full grid-cols-4">
         <TabsTrigger value="profile">Profile</TabsTrigger>
         <TabsTrigger value="security">Security</TabsTrigger>
+        <TabsTrigger value="subscription">Subscription</TabsTrigger>
         <TabsTrigger value="preferences">Preferences</TabsTrigger>
       </TabsList>
 
@@ -55,6 +58,10 @@ const ProfileTabs = ({
           onPasswordReset={onPasswordReset}
           onDeleteAccount={onDeleteAccount}
         />
+      </TabsContent>
+
+      <TabsContent value="subscription">
+        <SubscriptionTabContent userId={user?.id} />
       </TabsContent>
 
       <TabsContent value="preferences">
