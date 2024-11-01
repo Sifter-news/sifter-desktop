@@ -89,8 +89,8 @@ const SidePanel = ({
         <Button
           variant="secondary"
           size="icon"
-          className={`flex items-center justify-center w-8 h-8 rounded-xl shadow-lg bg-white hover:bg-gray-100 m-4 ${
-            isExpanded ? 'ml-[266px]' : ''
+          className={`flex items-center justify-center w-8 h-8 rounded-xl shadow-lg bg-white hover:bg-gray-100 m-2 ${
+            isExpanded ? 'ml-[258px]' : ''
           }`}
           onClick={() => setIsExpanded(!isExpanded)}
         >
