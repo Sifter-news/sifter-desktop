@@ -1,25 +1,24 @@
-import { toast } from "sonner";
+import { supabase } from '@/config/supabase';
+import { toast } from 'sonner';
 
-export const handleNodeDelete = async (nodeId, onDelete, onClose, setShowDeleteDialog) => {
+export const handleNodeDelete = async (nodeId, onSuccess) => {
   try {
-    if (!onDelete) {
-      throw new Error("Delete handler not provided");
+    const { error } = await supabase
+      .from('node')
+      .delete()
+      .eq('id', nodeId);
+
+    if (error) throw error;
+    
+    // Call the success callback to update UI state
+    if (onSuccess) {
+      onSuccess(nodeId);
     }
     
-    await onDelete(nodeId);
-    toast.success("Node deleted successfully");
-    
-    if (setShowDeleteDialog) {
-      setShowDeleteDialog(false);
-    }
-    if (onClose) {
-      onClose();
-    }
+    toast.success('Node deleted successfully');
   } catch (error) {
     console.error('Error deleting node:', error);
-    toast.error("Failed to delete node");
-    if (setShowDeleteDialog) {
-      setShowDeleteDialog(false);
-    }
+    toast.error('Failed to delete node');
+    throw error;
   }
 };

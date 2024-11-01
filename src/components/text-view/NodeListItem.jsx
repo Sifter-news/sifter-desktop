@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useDebug } from '@/contexts/DebugContext';
 import UnifiedNodeEditModal from '../modals/ModalEdit_Node';
-import { supabase } from '@/config/supabase';
+import { handleNodeDelete } from '@/utils/nodeDeleteUtils';
 
 const NodeListItem = ({ 
   node, 
@@ -51,19 +51,9 @@ const NodeListItem = ({
   const handleDeleteClick = async (e) => {
     e.stopPropagation();
     try {
-      const { error } = await supabase
-        .from('node')
-        .delete()
-        .eq('id', node.id);
-
-      if (error) throw error;
-
-      // Call onDelete to update UI state after successful database deletion
-      onDelete(node.id);
-      toast.success('Node deleted successfully');
+      await handleNodeDelete(node.id, onDelete);
     } catch (error) {
-      console.error('Error deleting node:', error);
-      toast.error('Failed to delete node');
+      // Error is already handled in handleNodeDelete
     }
   };
 
