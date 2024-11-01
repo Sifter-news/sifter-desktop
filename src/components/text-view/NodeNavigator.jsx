@@ -42,14 +42,47 @@ const NodeNavigator = ({
         .delete()
         .eq('id', nodeId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error:', error);
+        throw error;
+      }
 
-      // Only call onDeleteNode if database operation succeeds
       onDeleteNode(nodeId);
       toast.success('Node deleted successfully');
     } catch (error) {
       console.error('Error deleting node:', error);
       toast.error('Failed to delete node');
+    }
+  };
+
+  const validateNodeData = (node) => {
+    const maxLength = 255; // New maximum length
+    if (node.type && node.type.length > maxLength) {
+      toast.error('Type field exceeds maximum length');
+      return false;
+    }
+    if (node.visual_style && node.visual_style.length > maxLength) {
+      toast.error('Visual style field exceeds maximum length');
+      return false;
+    }
+    if (node.node_type && node.node_type.length > maxLength) {
+      toast.error('Node type field exceeds maximum length');
+      return false;
+    }
+    return true;
+  };
+
+  const handleNodeUpdate = async (nodeId, updates) => {
+    if (!validateNodeData(updates)) {
+      return;
+    }
+    
+    try {
+      await onUpdateNode(nodeId, updates);
+      setEditingNode(null);
+      toast.success('Node updated successfully');
+    } catch (error) {
+      toast.error('Failed to update node');
     }
   };
 
@@ -60,16 +93,6 @@ const NodeNavigator = ({
       (node.description || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
-
-  const handleNodeUpdate = async (nodeId, updates) => {
-    try {
-      await onUpdateNode(nodeId, updates);
-      setEditingNode(null);
-      toast.success('Node updated successfully');
-    } catch (error) {
-      toast.error('Failed to update node');
-    }
-  };
 
   return (
     <div className="w-full h-full flex flex-col p-4 rounded-2xl">
