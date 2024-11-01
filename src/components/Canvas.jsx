@@ -66,7 +66,7 @@ const Canvas = forwardRef(({
   }, [handleKeyDown]);
 
   const handleMouseDown = useCallback((e) => {
-    if (activeTool === 'pan') {
+    if (e.button === 1 || activeTool === 'pan') { // Middle mouse button or pan tool
       setIsPanning(true);
       handlePanStart?.();
       e.preventDefault();
@@ -76,11 +76,11 @@ const Canvas = forwardRef(({
   const handleMouseMove = useCallback((e) => {
     if (isPanning) {
       handlePanMove?.({
-        movementX: e.movementX,
-        movementY: e.movementY
+        movementX: e.movementX / zoom,
+        movementY: e.movementY / zoom
       });
     }
-  }, [isPanning, handlePanMove]);
+  }, [isPanning, handlePanMove, zoom]);
 
   const handleMouseUp = useCallback(() => {
     if (isPanning) {
@@ -89,27 +89,15 @@ const Canvas = forwardRef(({
     }
   }, [isPanning, handlePanEnd]);
 
-  const handleDelete = async (nodeId) => {
-    try {
-      await onNodeDelete(nodeId);
-      setShowDeleteConfirmation(false);
-      setNodeToDelete(null);
-      toast.success("Node deleted successfully");
-    } catch (error) {
-      console.error('Error deleting node:', error);
-      toast.error("Failed to delete node");
-    }
-  };
-
   const transformStyle = {
-    transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
+    transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
     transformOrigin: '0 0',
   };
 
   return (
     <>
       <div 
-        className="w-full h-full bg-[#594BFF] overflow-hidden"
+        className="w-full h-full overflow-hidden cursor-auto"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -118,7 +106,7 @@ const Canvas = forwardRef(({
         ref={ref}
         tabIndex={0}
         onKeyDown={handleKeyDown}
-        style={{ cursor: isPanning ? 'grabbing' : 'default' }}
+        style={{ cursor: isPanning ? 'grabbing' : activeTool === 'pan' ? 'grab' : 'default' }}
       >
         <CanvasBackground zoom={zoom} position={position} />
         

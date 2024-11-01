@@ -42,7 +42,7 @@ const Canvas2DView = ({
   };
 
   return (
-    <div className="absolute inset-0 bg-[#594BFF]">
+    <div className="absolute inset-0 bg-white">
       <nav className="fixed top-0 left-0 right-0 z-10">
         <Toolbar 
           activeTool={activeTool}

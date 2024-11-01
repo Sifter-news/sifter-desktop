@@ -1,19 +1,30 @@
 import React from 'react';
 
 const CanvasBackground = ({ zoom, position }) => {
+  const smallGridSize = 8;
+  const largeGridSize = 8 * 8;
+  
   return (
-    <div 
-      className="absolute inset-0" 
-      style={{
-        width: '100%',
-        height: '100%',
-        border: '2px solid rgba(255, 255, 255, 0.2)',
-        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)',
-        backgroundSize: '120px 120px',
-        transformOrigin: '0 0',
-        transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
-      }}
-    />
+    <div className="absolute inset-0 bg-white">
+      <div 
+        className="absolute inset-0" 
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+            linear-gradient(to right, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 1px, transparent 1px)
+          `,
+          backgroundSize: `
+            ${smallGridSize * zoom}px ${smallGridSize * zoom}px,
+            ${smallGridSize * zoom}px ${smallGridSize * zoom}px,
+            ${largeGridSize * zoom}px ${largeGridSize * zoom}px,
+            ${largeGridSize * zoom}px ${largeGridSize * zoom}px
+          `,
+          transform: `translate(${position.x}px, ${position.y}px)`,
+        }}
+      />
+    </div>
   );
 };
 
