@@ -1,5 +1,4 @@
 import React from 'react';
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LoginForm, SocialLoginButtons } from '@/components/auth';
 import { useNavigate } from 'react-router-dom';
@@ -34,14 +33,15 @@ const LoginPage = () => {
         <h2 className="text-2xl font-bold text-center mb-6">Login to Sifter</h2>
         <LoginForm />
         <SocialLoginButtons />
-        <Button 
-          className="w-full mt-4" 
-          variant="outline" 
-          onClick={handleSignUp}
-          type="button"
-        >
-          Sign Up
-        </Button>
+        <div className="text-center mt-4">
+          <a 
+            href="#" 
+            onClick={handleSignUp}
+            className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+          >
+            Don't have an account? Sign Up
+          </a>
+        </div>
       </div>
     </div>
   );
