@@ -4,7 +4,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import NodeTooltip from './node/NodeTooltip';
 import UnifiedNodeEditModal from './modals/ModalEdit_Node';
 
-const MapView = ({ nodes, onUpdateNode, focusedNodeId, onNodeFocus, onDelete }) => {
+const MapView = ({ nodes, onUpdateNode, focusedNodeId, onNodeFocus, onDelete, zoom = 1 }) => {
   const [selectedNode, setSelectedNode] = useState(null);
   const token = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -17,13 +17,16 @@ const MapView = ({ nodes, onUpdateNode, focusedNodeId, onNodeFocus, onDelete }) 
     return <div className="p-4">Please add your Mapbox token to the .env file</div>;
   }
 
+  // Calculate zoom level for MapGL based on our zoom state
+  const mapZoom = 14 * zoom;
+
   return (
     <div className="h-full w-full relative">
       <MapGL
         initialViewState={{
           longitude: -122.4,
           latitude: 37.8,
-          zoom: 14
+          zoom: mapZoom
         }}
         style={{ width: '100%', height: '100%' }}
         mapStyle="mapbox://styles/mapbox/streets-v11"
@@ -35,6 +38,7 @@ const MapView = ({ nodes, onUpdateNode, focusedNodeId, onNodeFocus, onDelete }) 
               className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all duration-200 ${
                 focusedNodeId === node.id ? 'scale-125 z-10' : ''
               }`}
+              style={{ transform: `scale(${zoom})` }}
             >
               <div className={`w-4 h-4 rounded-full ${
                 focusedNodeId === node.id 

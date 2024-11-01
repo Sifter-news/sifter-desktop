@@ -101,6 +101,11 @@ const Canvas = forwardRef(({
     }
   };
 
+  const transformStyle = {
+    transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
+    transformOrigin: '0 0',
+  };
+
   return (
     <>
       <div 
@@ -117,7 +122,7 @@ const Canvas = forwardRef(({
       >
         <CanvasBackground zoom={zoom} position={position} />
         
-        <div className="relative">
+        <div className="relative" style={transformStyle}>
           {nodes.map(node => (
             <TwoDNode
               key={node.id}
