@@ -14,7 +14,7 @@ import DebugHeader from './debug/sections/DebugHeader';
 import { cn } from '@/lib/utils';
 
 const DebugPanel = () => {
-  const { isDebugOpen, setIsDebugOpen, debugData, showGuides, setShowGuides, hoveredElement } = useDebug();
+  const { setIsDebugOpen, debugData, showGuides, setShowGuides, hoveredElement } = useDebug();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState({
     focus: true,
@@ -29,8 +29,6 @@ const DebugPanel = () => {
       [section]: !prev[section]
     }));
   };
-
-  if (!isDebugOpen) return null;
 
   const SectionHeader = ({ title, section, icon: Icon }) => (
     <button
@@ -90,8 +88,8 @@ const DebugPanel = () => {
   return (
     <Rnd
       default={{
-        x: window.innerWidth - 400,
-        y: 16,
+        x: window.innerWidth / 2 - 192, // Center horizontally
+        y: 16, // Top of screen with small margin
         width: isCollapsed ? 40 : 384,
         height: isCollapsed ? 40 : 'auto',
       }}
