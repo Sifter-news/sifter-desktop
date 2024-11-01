@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NavigatorContent from './NavigatorContent';
+import Left_Navigator from '../Left_Navigator';
 
 const NavigatorOut = ({ children }) => {
   return (

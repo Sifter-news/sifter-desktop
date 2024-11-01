@@ -6,7 +6,7 @@ import ViewPerspectiveMenu from './toolbar/ViewPerspectiveMenu';
 import ZoomLevelMenu from './toolbar/ZoomLevelMenu';
 import NodeStyleMenu from './toolbar/NodeStyleMenu';
 import NodeDataMenu from './toolbar/NodeDataMenu';
-import AIChatPanel from './ai/AIChatPanel';
+import Right_AIChat from './Right_AI-Chat';
 import {
   Tooltip,
   TooltipContent,
@@ -100,7 +100,7 @@ const Toolbar = ({
         </div>
       </div>
 
-      <AIChatPanel 
+      <Right_AIChat 
         isOpen={isAIPanelOpen}
         onClose={() => setIsAIPanelOpen(false)}
         title="Sift Assist"
