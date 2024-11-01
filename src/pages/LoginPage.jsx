@@ -25,7 +25,7 @@ const LoginPage = () => {
       <div className="bg-white p-8 rounded-lg shadow-md w-96 z-10">
         <div className="flex justify-center mb-6">
           <img 
-            src="/placeholder.svg" 
+            src="https://lov-p-3964558a-5b48-4155-a181-8d109765ccfa.fly.dev/favicon.ico"
             alt="Sifter Logo" 
             className="h-16 w-auto"
           />

@@ -68,7 +68,11 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
       <div className="mx-auto px-12 py-2 flex items-center">
         <div className="w-[200px] flex items-center space-x-4">
           <div className="flex items-center space-x-2">
-            <img src="/favicon.ico" alt="Sifter Logo" className="h-8 w-8" />
+            <img 
+              src="https://lov-p-3964558a-5b48-4155-a181-8d109765ccfa.fly.dev/favicon.ico" 
+              alt="Sifter Logo" 
+              className="h-8 w-8" 
+            />
             <span className="text-sm font-normal">Sifter</span>
             <span className="text-sm font-normal text-gray-400">Beta</span>
           </div>
