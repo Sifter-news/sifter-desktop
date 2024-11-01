@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { format } from 'date-fns';
 
 const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
-  const [image, setImage] = useState(investigation.image || 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b');
+  const [image, setImage] = useState(investigation.image || '/placeholder.svg');
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
