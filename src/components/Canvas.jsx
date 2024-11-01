@@ -5,7 +5,6 @@ import TwoDNode from './node/TwoDNode';
 import CanvasBackground from './canvas/CanvasBackground';
 import CanvasControls from './canvas/CanvasControls';
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
-import { handleNodeDelete } from '@/utils/nodeDeleteUtils';
 
 const Canvas = forwardRef(({ 
   nodes, 
@@ -31,21 +30,6 @@ const Canvas = forwardRef(({
   const [nodeToDelete, setNodeToDelete] = useState(null);
   const [isPanning, setIsPanning] = useState(false);
   const { setDebugData } = useDebug();
-
-  const handleDelete = async (nodeId) => {
-    try {
-      await handleNodeDelete(nodeId, (deletedNodeId) => {
-        setNodes(prevNodes => prevNodes.filter(node => node.id !== deletedNodeId));
-        onNodeDelete?.(deletedNodeId);
-        setShowDeleteConfirmation(false);
-        setNodeToDelete(null);
-      });
-    } catch (error) {
-      // Error is already handled in handleNodeDelete
-      setShowDeleteConfirmation(false);
-      setNodeToDelete(null);
-    }
-  };
 
   const handleKeyDown = useCallback((e) => {
     if (focusedNodeId && (e.key === 'Delete' || e.key === 'Backspace')) {
@@ -104,6 +88,18 @@ const Canvas = forwardRef(({
       handlePanEnd?.();
     }
   }, [isPanning, handlePanEnd]);
+
+  const handleDelete = async (nodeId) => {
+    try {
+      await onNodeDelete(nodeId);
+      setShowDeleteConfirmation(false);
+      setNodeToDelete(null);
+      toast.success("Node deleted successfully");
+    } catch (error) {
+      console.error('Error deleting node:', error);
+      toast.error("Failed to delete node");
+    }
+  };
 
   return (
     <>
