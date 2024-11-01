@@ -99,15 +99,15 @@ const ProfileDialog = ({ user }) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="flex items-center space-x-2 text-sm pr-0">
+        <Button variant="ghost" className="flex items-center space-x-2 text-sm">
+          <div className="flex flex-col items-end mr-2">
+            <span className="font-medium">{username}</span>
+            <span className="text-xs text-gray-500">{user?.email}</span>
+          </div>
           <Avatar className="h-8 w-8">
             <AvatarImage src={avatar} alt={username} />
             <AvatarFallback><UserIcon className="h-4 w-4" /></AvatarFallback>
           </Avatar>
-          <div className="flex flex-col items-start">
-            <span className="font-medium">{username}</span>
-            <span className="text-xs text-gray-500">{user?.email}</span>
-          </div>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
