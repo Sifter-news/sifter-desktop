@@ -11,7 +11,7 @@ import DebugPositionSection from './sections/DebugPositionSection';
 import DebugFocusSection from './sections/DebugFocusSection';
 import DebugErrorSection from './sections/DebugErrorSection';
 import DebugHeader from './sections/DebugHeader';
-import DebugTestSection from './sections/DebugTestSection'; // Added import for DebugTestSection
+import DebugTestSection from './sections/DebugTestSection';
 import { cn } from '@/lib/utils';
 
 const DebugPanel = () => {
@@ -22,7 +22,7 @@ const DebugPanel = () => {
     state: true,
     position: true,
     errors: true,
-    test: true // Added for test section
+    test: true
   });
 
   const toggleSection = (section) => {
@@ -75,7 +75,6 @@ const DebugPanel = () => {
             {expandedSections.state && <DebugStateSection debugData={debugData} />}
           </div>
 
-          {/* Add new test section */}
           <div className={cn("transition-all", expandedSections.test ? "mb-4" : "mb-0")}>
             <SectionHeader title="Testing" section="test" />
             {expandedSections.test && (
@@ -105,18 +104,16 @@ const DebugPanel = () => {
       default={{
         x: window.innerWidth - 400,
         y: 16,
-        width: isCollapsed ? 40 : 384,
-        height: isCollapsed ? 40 : 'auto',
+        width: 384,
+        height: 'auto',
       }}
-      minWidth={isCollapsed ? 40 : 384}
-      minHeight={isCollapsed ? 40 : 200}
+      minWidth={384}
+      minHeight={200}
       bounds="window"
       enableResizing={!isCollapsed}
       style={{ zIndex: 99999 }}
     >
-      <div className={`bg-black/90 text-white rounded-lg shadow-xl backdrop-blur-sm border border-white/20 ${
-        isCollapsed ? 'w-10 h-10' : 'w-full h-full'
-      }`}>
+      <div className="w-full h-full bg-black/90 text-white rounded-lg shadow-xl backdrop-blur-sm border border-white/20">
         {panelContent}
       </div>
     </Rnd>
