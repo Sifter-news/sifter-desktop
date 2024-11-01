@@ -37,9 +37,11 @@ export const useNodeOperations = (setNodes) => {
 
       setNodes(prevNodes => [...prevNodes, nodeWithUI]);
       toast.success('Node added successfully');
+      return nodeWithUI;
     } catch (error) {
       console.error('Error adding node:', error);
       toast.error('Failed to add node');
+      throw error;
     }
   };
 
@@ -57,7 +59,6 @@ export const useNodeOperations = (setNodes) => {
         node_type: updates.nodeType
       };
 
-      // Remove undefined values
       Object.keys(databaseUpdates).forEach(key => 
         databaseUpdates[key] === undefined && delete databaseUpdates[key]
       );
@@ -77,6 +78,7 @@ export const useNodeOperations = (setNodes) => {
     } catch (error) {
       console.error('Error updating node:', error);
       toast.error('Failed to update node');
+      throw error;
     }
   };
 
@@ -90,10 +92,10 @@ export const useNodeOperations = (setNodes) => {
       if (error) throw error;
 
       setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
-      toast.success('Node deleted successfully');
+      return true;
     } catch (error) {
       console.error('Error deleting node:', error);
-      toast.error('Failed to delete node');
+      throw error;
     }
   };
 

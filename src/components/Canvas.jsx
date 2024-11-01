@@ -34,12 +34,14 @@ const Canvas = forwardRef(({
   const handleKeyDown = useCallback((e) => {
     if (focusedNodeId && (e.key === 'Delete' || e.key === 'Backspace')) {
       const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
-      if (nodeToDelete?.type === 'ai') {
-        setNodeToDelete(nodeToDelete);
-        setShowDeleteConfirmation(true);
-      } else {
-        onNodeDelete(focusedNodeId);
-        toast.success("Node deleted");
+      if (nodeToDelete) {
+        if (nodeToDelete.type === 'ai') {
+          setNodeToDelete(nodeToDelete);
+          setShowDeleteConfirmation(true);
+        } else {
+          onNodeDelete(focusedNodeId);
+          toast.success("Node deleted");
+        }
       }
     } else if (focusedNodeId && (e.metaKey || e.ctrlKey) && e.key === 'c') {
       const nodeToCopy = nodes.find(node => node.id === focusedNodeId);
@@ -87,6 +89,18 @@ const Canvas = forwardRef(({
     }
   }, [isPanning, handlePanEnd]);
 
+  const handleDelete = async (nodeId) => {
+    try {
+      await onNodeDelete(nodeId);
+      setShowDeleteConfirmation(false);
+      setNodeToDelete(null);
+      toast.success("Node deleted successfully");
+    } catch (error) {
+      console.error('Error deleting node:', error);
+      toast.error("Failed to delete node");
+    }
+  };
+
   return (
     <>
       <div 
@@ -98,6 +112,7 @@ const Canvas = forwardRef(({
         onWheel={handleWheel}
         ref={ref}
         tabIndex={0}
+        onKeyDown={handleKeyDown}
         style={{ cursor: isPanning ? 'grabbing' : 'default' }}
       >
         <CanvasBackground zoom={zoom} position={position} />
@@ -111,7 +126,7 @@ const Canvas = forwardRef(({
               onNodeUpdate={onNodeUpdate}
               onFocus={onNodeFocus}
               isFocused={focusedNodeId === node.id}
-              onDelete={onNodeDelete}
+              onDelete={() => handleDelete(node.id)}
               isDraggable={activeTool !== 'pan'}
               position={{ x: node.x, y: node.y }}
             />
@@ -123,7 +138,7 @@ const Canvas = forwardRef(({
         showDeleteConfirmation={showDeleteConfirmation}
         setShowDeleteConfirmation={setShowDeleteConfirmation}
         nodeToDelete={nodeToDelete}
-        onNodeDelete={onNodeDelete}
+        onNodeDelete={handleDelete}
       />
     </>
   );
