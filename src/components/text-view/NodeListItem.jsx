@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useDebug } from '@/contexts/DebugContext';
 import UnifiedNodeEditModal from '../modals/ModalEdit_Node';
+import { handleNodeDelete } from '@/utils/nodeDeleteUtils';
 
 const NodeListItem = ({ 
   node, 
@@ -45,6 +46,16 @@ const NodeListItem = ({
 
   const handleMouseLeave = () => {
     setHoveredElement(null);
+  };
+
+  const handleDeleteClick = async (e) => {
+    e.stopPropagation();
+    try {
+      await handleNodeDelete(node.id, onDelete);
+    } catch (error) {
+      console.error('Error deleting node:', error);
+      toast.error('Failed to delete node');
+    }
   };
 
   return (
@@ -107,10 +118,7 @@ const NodeListItem = ({
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-red-600"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete(node.id);
-                }}
+                onClick={handleDeleteClick}
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Delete
