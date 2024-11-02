@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { toast } from 'sonner';
-import Toolbar from './Toolbar';
+import Toolbar from '@/components/toolbar/ToolSelectMenu';
 import ThreeScene from './ThreeScene';
 import { useNodes } from '@/hooks/useNodes';
 import { useZoomPan } from '@/hooks/useZoomPan';
