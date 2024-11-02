@@ -42,32 +42,29 @@ const ProfileTabContent = ({
           </div>
         </div>
 
-        <div className="grid gap-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">Username</Label>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="username">Username</Label>
             <Input 
               id="username" 
               value={username}
               onChange={onUsernameChange}
-              className="col-span-3"
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">Name</Label>
+          <div className="space-y-2">
+            <Label htmlFor="name">Name</Label>
             <Input 
               id="name" 
               value={name}
               onChange={onNameChange}
-              className="col-span-3"
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="email" className="text-right">Email</Label>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
             <Input 
               id="email" 
               value={email} 
               disabled 
-              className="col-span-3"
             />
           </div>
         </div>
