@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { Plus, Calendar } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { NodeTooltip } from '@/01_components/05_investigation/nodes';
-import UnifiedNodeEditModal from '@/components/modals/ModalEdit_Node';
+import NodeTooltip from './node/NodeTooltip';
+import UnifiedNodeEditModal from './modals/ModalEdit_Node';
 import {
   Tooltip,
   TooltipContent,
