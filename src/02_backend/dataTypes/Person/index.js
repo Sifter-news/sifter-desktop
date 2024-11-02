@@ -1,15 +1,6 @@
 /**
- * @file Person.js
+ * @file Person/index.js
  * @description Data type definition for nodes representing individuals
- * 
- * Potential improvements:
- * - Add more biographical fields
- * - Add relationship mappings
- * - Add timeline integration
- * - Add document references
- * - Add social media links
- * - Add contact information
- * - Add role history
  */
 
 export const PersonNodeType = {
