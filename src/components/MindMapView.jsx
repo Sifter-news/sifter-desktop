@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ThreeDCanvas from '@/01_components/05_investigation/views/shared/ThreeDCanvas';
+import ThreeDCanvas from '../01_components/05_investigation/views/shared/ThreeDCanvas';
 import { mapNodePositions } from '@/utils/positionMapping';
 import { toast } from 'sonner';
 
