@@ -4,7 +4,7 @@ import { Brain, Clock, Map, Pencil } from 'lucide-react';
 import MindMapView from './MindMapView';
 import TimeView from './TimeView';
 import MapView from './MapView';
-import Canvas2DView from './Canvas2DView';
+import { CanvasView } from '@/01_components/05_investigation/views';
 import SidePanel from './SidePanel';
 import { useDebug } from '@/contexts/DebugContext';
 
@@ -71,7 +71,7 @@ const ProjectTabs = ({
         </div>
         <div className="flex-grow mt-12">
           <TabsContent value="canvas2d" className="h-[calc(100vh-128px)]">
-            <Canvas2DView
+            <CanvasView
               project={project}
               nodes={nodes}
               setNodes={setNodes}
