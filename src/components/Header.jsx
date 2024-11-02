@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import UserProfile from './UserProfile';
 import { Separator } from "@/components/ui/separator";
-import ModalEdit_Investigation from '@/01_components/01_global/modals/ModalEdit_Investigation';
+import ModalEdit_Investigation from './modals/ModalEdit_Investigation';
 import { supabase } from '@/config/supabase';
 import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

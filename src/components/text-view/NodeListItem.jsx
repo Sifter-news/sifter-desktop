@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useDebug } from '@/contexts/DebugContext';
-import UnifiedNodeEditModal from '@/01_components/01_global/modals/ModalEdit_Node';
+import UnifiedNodeEditModal from '../modals/ModalEdit_Node';
 import { handleNodeDelete } from '@/utils/nodeDeleteUtils';
 
 const NodeListItem = ({ 
