@@ -4,7 +4,7 @@ import NodeList from './NodeList';
 import { useNodeKeyboardNavigation } from './hooks/useNodeKeyboardNavigation';
 import { useNodeSelection } from './hooks/useNodeSelection';
 import AIChatPanel from '../ai/AIChatPanel';
-import UnifiedNodeEditModal from '../modals/ModalEdit_Node';
+import UnifiedNodeEditModal from '@/01_components/01_global/modals/ModalEdit_Node';
 import { toast } from 'sonner';
 import { supabase } from '@/config/supabase';
 
