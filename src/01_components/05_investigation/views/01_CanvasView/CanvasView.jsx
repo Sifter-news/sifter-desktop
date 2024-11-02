@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import Canvas from '@/components/Canvas';
-import Toolbar from '@/components/Toolbar';
-import { useZoomPan } from '@/hooks/useZoomPan';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/config/supabase';
+import Canvas from '@/components/Canvas';
+import { useZoomPan } from '@/hooks/useZoomPan';
+import NavigatorPanel from '../../viewsControls/NavigatorPanel';
+import Toolbar from '../../viewsControls/toolbar/Toolbar';
+import ViewToggle from '../../viewsControls/ViewToggle';
 
 const CanvasView = ({ 
   project, 
@@ -17,6 +19,7 @@ const CanvasView = ({
   onNodeFocus 
 }) => {
   const [activeTool, setActiveTool] = useState('select');
+  const [isNavigatorOpen, setIsNavigatorOpen] = useState(true);
   const {
     zoom,
     position,
@@ -71,49 +74,67 @@ const CanvasView = ({
     }
   };
 
-  const handleNodePositionUpdate = (nodeId, position) => {
-    handleNodeUpdate(nodeId, {
-      x: position.x,
-      y: position.y
-    });
-  };
-
   if (isLoading) {
     return <div className="flex items-center justify-center h-full">Loading nodes...</div>;
   }
 
   return (
-    <div className="absolute inset-0 bg-white">
-      <nav className="fixed top-0 left-0 right-0 z-10">
-        <Toolbar 
-          activeTool={activeTool}
-          setActiveTool={setActiveTool}
-          handleZoom={handleZoom}
-          zoom={zoom}
-          viewMode="2d"
-          onViewModeChange={() => {}}
-          onAddNode={onAddNode}
-        />
-      </nav>
-
-      <div className="absolute inset-0 pt-16">
-        <Canvas
+    <div className="relative h-full bg-white">
+      {/* Left Navigator Panel */}
+      <div className={`fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 z-50 transition-transform duration-300 ${
+        isNavigatorOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
+        <NavigatorPanel
           nodes={nodes}
-          setNodes={setNodes}
-          zoom={zoom}
-          position={position}
-          activeTool={activeTool}
-          setActiveTool={setActiveTool}
-          handlePanStart={handlePanStart}
-          handlePanMove={handlePanMove}
-          handlePanEnd={handlePanEnd}
-          handleWheel={handleWheel}
-          onNodeUpdate={handleNodeUpdate}
-          focusedNodeId={focusedNodeId}
-          onNodeFocus={onNodeFocus}
-          onNodeDelete={onDeleteNode}
-          onNodePositionUpdate={handleNodePositionUpdate}
+          onNodeSelect={onNodeFocus}
+          selectedNodeId={focusedNodeId}
         />
+      </div>
+
+      {/* Main Canvas Area */}
+      <div className={`h-full transition-all duration-300 ${
+        isNavigatorOpen ? 'ml-64' : 'ml-0'
+      }`}>
+        {/* Top Toolbar */}
+        <div className="fixed top-16 left-0 right-0 h-12 bg-white border-b z-40 flex items-center px-4">
+          <ViewToggle 
+            currentView="canvas"
+            onViewChange={() => {}}
+          />
+        </div>
+
+        {/* Bottom Toolbar */}
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40">
+          <Toolbar
+            activeTool={activeTool}
+            setActiveTool={setActiveTool}
+            handleZoom={handleZoom}
+            zoom={zoom}
+            viewMode="2d"
+            onViewModeChange={() => {}}
+            onAddNode={onAddNode}
+          />
+        </div>
+
+        {/* Canvas */}
+        <div className="absolute inset-0 pt-12">
+          <Canvas
+            nodes={nodes}
+            setNodes={setNodes}
+            zoom={zoom}
+            position={position}
+            activeTool={activeTool}
+            setActiveTool={setActiveTool}
+            handlePanStart={handlePanStart}
+            handlePanMove={handlePanMove}
+            handlePanEnd={handlePanEnd}
+            handleWheel={handleWheel}
+            onNodeUpdate={handleNodeUpdate}
+            focusedNodeId={focusedNodeId}
+            onNodeFocus={onNodeFocus}
+            onNodeDelete={onDeleteNode}
+          />
+        </div>
       </div>
     </div>
   );
