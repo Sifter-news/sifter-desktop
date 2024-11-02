@@ -1,46 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const InvestigationForm = ({ formData, setFormData, isLoading }) => {
   const { title, description, type, focus } = formData;
-
-  const getDealTypeLabel = (type) => {
-    const typeLabels = {
-      'pre-deal': 'Pre-Deal Due Diligence',
-      'post-deal': 'Post-Deal Due Diligence',
-      'aml': 'Anti-Money Laundering',
-      'kyc': 'Know Your Customer',
-      'regulatory': 'Regulatory Compliance',
-      'fraud': 'Fraud',
-      'background': 'Background Check',
-      'asset': 'Asset Tracing',
-      'generic': 'Generic'
-    };
-    return typeLabels[type] || type;
-  };
-
-  const getFocusLabel = (focus) => {
-    const focusLabels = {
-      'node_person': 'Person',
-      'node_organization': 'Organization',
-      'node_object': 'Object',
-      'node_concept': 'Concept',
-      'node_location': 'Location',
-      'node_event': 'Event'
-    };
-    return focusLabels[focus] || focus;
-  };
-
-  useEffect(() => {
-    if (!description && title) {
-      const dealType = getDealTypeLabel(type);
-      const focusType = getFocusLabel(focus);
-      const autoDescription = `${title} - A ${dealType} investigation focusing on ${focusType}.`;
-      setFormData(prev => ({ ...prev, description: autoDescription }));
-    }
-  }, [title, type, focus, description, setFormData]);
 
   return (
     <form className="grid gap-4 py-4">
@@ -50,7 +14,7 @@ const InvestigationForm = ({ formData, setFormData, isLoading }) => {
           id="title"
           value={title}
           onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-          placeholder="Investigation title"
+          placeholder={`Investigation title: "${title || ''}"`}
           disabled={isLoading}
         />
       </div>
@@ -119,7 +83,7 @@ const InvestigationForm = ({ formData, setFormData, isLoading }) => {
           id="description"
           value={description}
           onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-          placeholder="Investigation description"
+          placeholder={`Investigation description: "${description || ''}"`}
           className="min-h-[100px]"
           disabled={isLoading}
         />
