@@ -19,6 +19,7 @@ import {
 const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpdate, onProjectDelete }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [investigatorType, setInvestigatorType] = useState('generic');
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
     const fetchInvestigationType = async () => {
@@ -42,8 +43,27 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
       }
     };
 
+    const fetchUsername = async () => {
+      if (!user?.id) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('username, full_name')
+          .eq('id', user.id)
+          .single();
+          
+        if (error) throw error;
+        
+        setUsername(data?.full_name || data?.username || user.email?.split('@')[0] || '');
+      } catch (error) {
+        console.error('Error fetching username:', error);
+      }
+    };
+
     fetchInvestigationType();
-  }, [projectName]);
+    fetchUsername();
+  }, [projectName, user]);
 
   const handleTypeChange = async (value) => {
     setInvestigatorType(value);
@@ -134,6 +154,10 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
             </>
           )}
           
+          <div className="flex flex-col items-end">
+            <span className="text-sm font-medium">{username}</span>
+            <span className="text-xs text-gray-500">{user?.email}</span>
+          </div>
           <UserProfile user={user} onUpdateUser={onUpdateUser} />
         </div>
       </div>
