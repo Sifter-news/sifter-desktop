@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import BaseModal from './modals/BaseModal';
+import BaseModal from '@/01_components/01_global/modals/BaseModal';
 
 const ContentModal = ({ isOpen, onClose, content, onSave, type = 'article' }) => {
   const [title, setTitle] = useState('');

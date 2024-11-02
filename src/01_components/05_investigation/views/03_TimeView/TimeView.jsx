@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { Plus, Calendar } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import NodeTooltip from '@/components/node/NodeTooltip';
-import UnifiedNodeEditModal from '@/components/modals/ModalEdit_Node';
+import UnifiedNodeEditModal from '@/01_components/01_global/modals/ModalEdit_Node';
 import {
   Tooltip,
   TooltipContent,

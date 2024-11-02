@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import InvestigationCard from './InvestigationCard';
 import ReportCard from './ReportCard';
-import ReportEditModal from './modals/ModalEdit_Report';
+import ReportEditModal from '@/01_components/01_global/modals/ModalEdit_Report';
 import { MoreVertical, Pencil, Trash } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
