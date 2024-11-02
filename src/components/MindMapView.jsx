@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ThreeDCanvas from './ThreeDCanvas';
+import Canvas3D from '@/01_components/05_investigation/views/02_MindView/Canvas3D';
 import { mapNodePositions } from '@/utils/positionMapping';
 import { toast } from 'sonner';
 
@@ -32,7 +32,7 @@ const MindMapView = ({
 
   return (
     <div className="h-full w-full relative">
-      <ThreeDCanvas 
+      <Canvas3D 
         nodes={mappedNodes}
         setNodes={setNodes}
         onNodeUpdate={onUpdateNode}
