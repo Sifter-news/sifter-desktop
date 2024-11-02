@@ -5,7 +5,7 @@ import { supabase } from '@/config/supabase';
 import NodeTypeSelect from './NodeTypeSelect';
 import NodeStyleSelect from './NodeStyleSelect';
 import NodeMetadataFields from './NodeMetadataFields';
-import DeleteConfirmationDialog from '../text-view/DeleteConfirmationDialog';
+import DeleteConfirmationDialog from './DeleteConfirmationDialog';
 import NodeAvatarSection from './node-edit/NodeAvatarSection';
 import NodeBasicFields from './node-edit/NodeBasicFields';
 import NodeFooterActions from './node-edit/NodeFooterActions';
