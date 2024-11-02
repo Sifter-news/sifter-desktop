@@ -5,6 +5,7 @@ import Toolbar from '@/components/Toolbar';
 import { useZoomPan } from '@/hooks/useZoomPan';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/config/supabase';
+import NavigatorPanel from '../../viewsControls/NavigatorPanel';
 
 const CanvasView = ({ 
   project, 
@@ -17,6 +18,7 @@ const CanvasView = ({
   onNodeFocus 
 }) => {
   const [activeTool, setActiveTool] = useState('select');
+  const [showNavigator, setShowNavigator] = useState(true);
   const {
     zoom,
     position,
@@ -27,7 +29,6 @@ const CanvasView = ({
     handleWheel
   } = useZoomPan(1);
 
-  // Fetch nodes for the current project
   const { data: projectNodes, isLoading } = useQuery({
     queryKey: ['nodes', project?.id],
     queryFn: async () => {
@@ -83,37 +84,50 @@ const CanvasView = ({
   }
 
   return (
-    <div className="absolute inset-0 bg-white">
-      <nav className="fixed top-0 left-0 right-0 z-10">
-        <Toolbar 
-          activeTool={activeTool}
-          setActiveTool={setActiveTool}
-          handleZoom={handleZoom}
-          zoom={zoom}
-          viewMode="2d"
-          onViewModeChange={() => {}}
-          onAddNode={onAddNode}
-        />
-      </nav>
+    <div className="flex h-full bg-black">
+      {showNavigator && (
+        <div className="w-64 border-r border-white/10">
+          <NavigatorPanel
+            nodes={nodes}
+            selectedNodeId={focusedNodeId}
+            onNodeSelect={onNodeFocus}
+          />
+        </div>
+      )}
+      
+      <div className="flex-1 relative">
+        <nav className="fixed top-0 left-0 right-0 z-10">
+          <Toolbar 
+            activeTool={activeTool}
+            setActiveTool={setActiveTool}
+            handleZoom={handleZoom}
+            zoom={zoom}
+            viewMode="2d"
+            onViewModeChange={() => {}}
+            onAddNode={onAddNode}
+            onToggleNavigator={() => setShowNavigator(!showNavigator)}
+          />
+        </nav>
 
-      <div className="absolute inset-0 pt-16">
-        <Canvas
-          nodes={nodes}
-          setNodes={setNodes}
-          zoom={zoom}
-          position={position}
-          activeTool={activeTool}
-          setActiveTool={setActiveTool}
-          handlePanStart={handlePanStart}
-          handlePanMove={handlePanMove}
-          handlePanEnd={handlePanEnd}
-          handleWheel={handleWheel}
-          onNodeUpdate={handleNodeUpdate}
-          focusedNodeId={focusedNodeId}
-          onNodeFocus={onNodeFocus}
-          onNodeDelete={onDeleteNode}
-          onNodePositionUpdate={handleNodePositionUpdate}
-        />
+        <div className="absolute inset-0 pt-16">
+          <Canvas
+            nodes={nodes}
+            setNodes={setNodes}
+            zoom={zoom}
+            position={position}
+            activeTool={activeTool}
+            setActiveTool={setActiveTool}
+            handlePanStart={handlePanStart}
+            handlePanMove={handlePanMove}
+            handlePanEnd={handlePanEnd}
+            handleWheel={handleWheel}
+            onNodeUpdate={handleNodeUpdate}
+            focusedNodeId={focusedNodeId}
+            onNodeFocus={onNodeFocus}
+            onNodeDelete={onDeleteNode}
+            onNodePositionUpdate={handleNodePositionUpdate}
+          />
+        </div>
       </div>
     </div>
   );
