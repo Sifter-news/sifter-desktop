@@ -36,7 +36,7 @@ const ContentModal = ({ isOpen, onClose, content, onSave, type = 'article' }) =>
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title={content ? `Edit ${type}: "${content.title}"` : `Create New ${type}`}
+      title={content ? `Edit ${type}` : `Create New ${type}`}
       onSave={handleSave}
     >
       <div className="grid gap-4 py-4">
