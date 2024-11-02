@@ -156,7 +156,6 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
           
           <div className="flex flex-col items-end">
             <span className="text-sm font-medium">{username}</span>
-            <span className="text-xs text-gray-500">{user?.email}</span>
           </div>
           <UserProfile user={user} onUpdateUser={onUpdateUser} />
         </div>
