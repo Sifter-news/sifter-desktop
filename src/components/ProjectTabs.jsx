@@ -19,6 +19,8 @@ const ProjectTabs = ({
   onUpdateReport, 
   focusedNodeId,
   onNodeFocus,
+  viewMode,
+  onViewModeChange,
   defaultView = 'canvas2d'
 }) => {
   const selectedNode = nodes.find(node => node.id === focusedNodeId);
@@ -32,6 +34,7 @@ const ProjectTabs = ({
   }, [defaultView, setDebugData]);
 
   const handleViewChange = (view) => {
+    onViewModeChange(view);
     setDebugData(prev => ({
       ...prev,
       currentView: view
@@ -80,6 +83,7 @@ const ProjectTabs = ({
               onDeleteNode={onDeleteNode}
               focusedNodeId={focusedNodeId}
               onNodeFocus={onNodeFocus}
+              viewMode={viewMode}
             />
           </TabsContent>
           <TabsContent value="mindmap" className="h-[calc(100vh-128px)]">
@@ -94,6 +98,7 @@ const ProjectTabs = ({
               onUpdateReport={onUpdateReport}
               focusedNodeId={focusedNodeId}
               onNodeFocus={onNodeFocus}
+              viewMode={viewMode}
             />
           </TabsContent>
           <TabsContent value="timeline">
@@ -103,6 +108,7 @@ const ProjectTabs = ({
               onNodeFocus={onNodeFocus}
               onUpdateNode={onUpdateNode}
               onAddNode={onAddNode}
+              viewMode={viewMode}
             />
           </TabsContent>
           <TabsContent value="map">
@@ -111,6 +117,7 @@ const ProjectTabs = ({
               focusedNodeId={focusedNodeId}
               onNodeFocus={onNodeFocus}
               onUpdateNode={onUpdateNode}
+              viewMode={viewMode}
             />
           </TabsContent>
         </div>
