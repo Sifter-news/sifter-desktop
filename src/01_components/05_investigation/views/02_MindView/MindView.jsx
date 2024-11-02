@@ -1,19 +1,5 @@
-/**
- * @file MindView.jsx
- * @description Mind map view to represent data connections in 2D or 3D modes
- * 
- * Potential improvements:
- * - Add auto-layout algorithms
- * - Add zoom to fit functionality
- * - Add node grouping
- * - Add connection types
- * - Add mini-map for navigation
- * - Add node filtering
- * - Add node search
- */
-
 import React, { useEffect, useState } from 'react';
-import ThreeDCanvas from './ThreeDCanvas';
+import ThreeDCanvas from '@/components/ThreeDCanvas';
 import { mapNodePositions } from '@/utils/positionMapping';
 import { toast } from 'sonner';
 
