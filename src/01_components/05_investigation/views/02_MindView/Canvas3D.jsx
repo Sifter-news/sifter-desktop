@@ -3,14 +3,14 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { toast } from 'sonner';
 import Toolbar from './Toolbar';
-import ThreeScene from './three/ThreeScene';
+import ThreeScene from './ThreeScene';
 import { useNodes } from '@/hooks/useNodes';
 import { useZoomPan } from '@/hooks/useZoomPan';
 import { useDebug } from '@/contexts/DebugContext';
 import { calculateCameraPosition } from '@/utils/threeDUtils';
 import { supabase } from '@/config/supabase';
 
-const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
+const Canvas3D = ({ projectId, onAddNode, onNodeUpdate }) => {
   const [nodes, setNodes] = useState([]);
   const [activeTool, setActiveTool] = useState('pan');
   const [viewMode, setViewMode] = useState('2d');
@@ -86,7 +86,7 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
       </nav>
 
       <Canvas
-        camera={{ 
+        camera={{
           position: cameraPosition,
           fov: 45,
           near: 0.1,
@@ -121,4 +121,4 @@ const ThreeDCanvas = ({ projectId, onAddNode, onNodeUpdate }) => {
   );
 };
 
-export default ThreeDCanvas;
+export default Canvas3D;
