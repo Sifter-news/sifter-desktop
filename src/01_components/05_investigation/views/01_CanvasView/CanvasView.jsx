@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
-import { toast } from 'sonner';
-import Canvas from '@/components/Canvas';
 import Toolbar from '@/components/Toolbar';
-import { useZoomPan } from '@/hooks/useZoomPan';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/config/supabase';
 import NavigatorPanel from '../../viewsControls/NavigatorPanel';
 
 const CanvasView = ({ 
@@ -19,72 +14,14 @@ const CanvasView = ({
 }) => {
   const [activeTool, setActiveTool] = useState('select');
   const [showNavigator, setShowNavigator] = useState(true);
-  const {
-    zoom,
-    position,
-    handleZoom,
-    handlePanStart,
-    handlePanMove,
-    handlePanEnd,
-    handleWheel
-  } = useZoomPan(1);
+  const [zoom, setZoom] = useState(1);
 
-  const { data: projectNodes, isLoading } = useQuery({
-    queryKey: ['nodes', project?.id],
-    queryFn: async () => {
-      if (!project?.id) return [];
-      
-      const { data, error } = await supabase
-        .from('node')
-        .select('*')
-        .eq('investigation_id', project.id);
-        
-      if (error) {
-        toast.error('Failed to load nodes');
-        throw error;
-      }
-
-      const transformedNodes = data.map(node => ({
-        id: node.id,
-        title: node.title || '',
-        description: node.description || '',
-        x: node.position_x || 0,
-        y: node.position_y || 0,
-        width: node.width || 200,
-        height: node.height || 100,
-        visualStyle: node.visual_style || 'default',
-        nodeType: node.node_type || 'generic',
-        avatar: node.avatar || '/default-image.png'
-      }));
-
-      setNodes(transformedNodes);
-      return transformedNodes;
-    },
-    enabled: !!project?.id
-  });
-
-  const handleNodeUpdate = async (nodeId, updates) => {
-    try {
-      await onUpdateNode(nodeId, updates);
-      toast.success('Node updated successfully');
-    } catch (error) {
-      toast.error('Failed to update node');
-    }
+  const handleZoom = (newZoom) => {
+    setZoom(newZoom);
   };
-
-  const handleNodePositionUpdate = (nodeId, position) => {
-    handleNodeUpdate(nodeId, {
-      x: position.x,
-      y: position.y
-    });
-  };
-
-  if (isLoading) {
-    return <div className="flex items-center justify-center h-full">Loading nodes...</div>;
-  }
 
   return (
-    <div className="flex h-full bg-black">
+    <div className="flex h-full">
       {showNavigator && (
         <div className="w-64 border-r border-white/10">
           <NavigatorPanel
@@ -109,24 +46,8 @@ const CanvasView = ({
           />
         </nav>
 
-        <div className="absolute inset-0 pt-16">
-          <Canvas
-            nodes={nodes}
-            setNodes={setNodes}
-            zoom={zoom}
-            position={position}
-            activeTool={activeTool}
-            setActiveTool={setActiveTool}
-            handlePanStart={handlePanStart}
-            handlePanMove={handlePanMove}
-            handlePanEnd={handlePanEnd}
-            handleWheel={handleWheel}
-            onNodeUpdate={handleNodeUpdate}
-            focusedNodeId={focusedNodeId}
-            onNodeFocus={onNodeFocus}
-            onNodeDelete={onDeleteNode}
-            onNodePositionUpdate={handleNodePositionUpdate}
-          />
+        <div className="absolute inset-0 pt-16 bg-red-500">
+          {/* Red background canvas area */}
         </div>
       </div>
     </div>
