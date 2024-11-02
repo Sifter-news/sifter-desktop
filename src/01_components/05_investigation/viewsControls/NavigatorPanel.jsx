@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import NavigatorNodes from '../Navigator/NavigatorNodes';
-import NavigatorDocs from '../Navigator/NavigatorDocs';
+import NavigatorNodes from './Navigator/NavigatorNodes';
+import NavigatorDocs from './Navigator/NavigatorDocs';
 
 const NavigatorPanel = ({ 
   nodes, 
