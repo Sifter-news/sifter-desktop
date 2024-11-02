@@ -1,0 +1,11 @@
+{
+  "statusColors": {
+    "planned": "blue",
+    "ongoing": "green",
+    "completed": "gray",
+    "cancelled": "red"
+  },
+  "defaultDuration": 3600,
+  "timelineScales": ["hour", "day", "week", "month", "year"],
+  "defaultScale": "day"
+}

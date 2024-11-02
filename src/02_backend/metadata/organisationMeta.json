@@ -1,0 +1,17 @@
+{
+  "industries": [
+    "Technology",
+    "Healthcare",
+    "Finance",
+    "Education",
+    "Manufacturing",
+    "Retail",
+    "Other"
+  ],
+  "sizes": {
+    "small": "1-50 employees",
+    "medium": "51-250 employees",
+    "large": "251-1000 employees",
+    "enterprise": "1000+ employees"
+  }
+}

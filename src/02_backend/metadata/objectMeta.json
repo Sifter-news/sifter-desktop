@@ -1,0 +1,15 @@
+{
+  "categories": [
+    "Document",
+    "Physical Evidence",
+    "Digital Evidence",
+    "Weapon",
+    "Vehicle",
+    "Other"
+  ],
+  "statusColors": {
+    "active": "green",
+    "inactive": "gray",
+    "archived": "blue"
+  }
+}

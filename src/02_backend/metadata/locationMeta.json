@@ -1,0 +1,14 @@
+{
+  "types": {
+    "address": { "icon": "home", "color": "blue" },
+    "city": { "icon": "building", "color": "green" },
+    "country": { "icon": "globe", "color": "purple" },
+    "landmark": { "icon": "map-pin", "color": "red" }
+  },
+  "defaultZoomLevels": {
+    "address": 18,
+    "city": 12,
+    "country": 5,
+    "landmark": 16
+  }
+}

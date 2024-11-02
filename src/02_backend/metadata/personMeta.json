@@ -1,0 +1,22 @@
+{
+  "roles": [
+    "Witness",
+    "Suspect",
+    "Expert",
+    "Investigator",
+    "Other"
+  ],
+  "relationshipTypes": [
+    "Family",
+    "Professional",
+    "Social",
+    "Other"
+  ],
+  "defaultAvatarColors": [
+    "#FF6B6B",
+    "#4ECDC4",
+    "#45B7D1",
+    "#96CEB4",
+    "#FFEEAD"
+  ]
+}
