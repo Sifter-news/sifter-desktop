@@ -95,36 +95,34 @@ const Canvas = forwardRef(({
   };
 
   return (
-    <>
-      <div 
-        className="w-full h-full overflow-hidden cursor-auto"
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        onWheel={handleWheel}
-        ref={ref}
-        tabIndex={0}
-        onKeyDown={handleKeyDown}
-        style={{ cursor: isPanning ? 'grabbing' : activeTool === 'pan' ? 'grab' : 'default' }}
-      >
-        <CanvasBackground zoom={zoom} position={position} />
-        
-        <div className="relative" style={transformStyle}>
-          {nodes.map(node => (
-            <TwoDNode
-              key={node.id}
-              node={node}
-              zoom={zoom}
-              onNodeUpdate={onNodeUpdate}
-              onFocus={onNodeFocus}
-              isFocused={focusedNodeId === node.id}
-              onDelete={() => handleDelete(node.id)}
-              isDraggable={activeTool !== 'pan'}
-              position={{ x: node.x, y: node.y }}
-            />
-          ))}
-        </div>
+    <div 
+      className="w-full h-full overflow-hidden cursor-auto relative"
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      onWheel={handleWheel}
+      ref={ref}
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+      style={{ cursor: isPanning ? 'grabbing' : activeTool === 'pan' ? 'grab' : 'default' }}
+    >
+      <CanvasBackground zoom={zoom} position={position} />
+      
+      <div className="absolute inset-0" style={transformStyle}>
+        {nodes.map(node => (
+          <TwoDNode
+            key={node.id}
+            node={node}
+            zoom={zoom}
+            onNodeUpdate={onNodeUpdate}
+            onFocus={onNodeFocus}
+            isFocused={focusedNodeId === node.id}
+            onDelete={() => handleDelete(node.id)}
+            isDraggable={activeTool !== 'pan'}
+            position={{ x: node.x, y: node.y }}
+          />
+        ))}
       </div>
 
       <CanvasControls 
@@ -133,7 +131,7 @@ const Canvas = forwardRef(({
         nodeToDelete={nodeToDelete}
         onNodeDelete={handleDelete}
       />
-    </>
+    </div>
   );
 });
 

@@ -97,23 +97,25 @@ const Canvas2DView = ({
         />
       </nav>
 
-      <Canvas
-        nodes={nodes}
-        setNodes={setNodes}
-        zoom={zoom}
-        position={position}
-        activeTool={activeTool}
-        setActiveTool={setActiveTool}
-        handlePanStart={handlePanStart}
-        handlePanMove={handlePanMove}
-        handlePanEnd={handlePanEnd}
-        handleWheel={handleWheel}
-        onNodeUpdate={handleNodeUpdate}
-        focusedNodeId={focusedNodeId}
-        onNodeFocus={onNodeFocus}
-        onNodeDelete={onDeleteNode}
-        onNodePositionUpdate={handleNodePositionUpdate}
-      />
+      <div className="absolute inset-0 pt-16"> {/* Add padding-top to account for toolbar */}
+        <Canvas
+          nodes={nodes}
+          setNodes={setNodes}
+          zoom={zoom}
+          position={position}
+          activeTool={activeTool}
+          setActiveTool={setActiveTool}
+          handlePanStart={handlePanStart}
+          handlePanMove={handlePanMove}
+          handlePanEnd={handlePanEnd}
+          handleWheel={handleWheel}
+          onNodeUpdate={handleNodeUpdate}
+          focusedNodeId={focusedNodeId}
+          onNodeFocus={onNodeFocus}
+          onNodeDelete={onDeleteNode}
+          onNodePositionUpdate={handleNodePositionUpdate}
+        />
+      </div>
     </div>
   );
 };
