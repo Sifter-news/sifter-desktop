@@ -36,116 +36,40 @@ const Canvas = forwardRef(({
   const [activeConnection, setActiveConnection] = useState(null);
   const { setDebugData } = useDebug();
 
-  const handleKeyDown = useCallback((e) => {
-    if (focusedNodeId && (e.key === 'Delete' || e.key === 'Backspace')) {
-      const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
-      if (nodeToDelete) {
-        if (nodeToDelete.type === 'ai') {
-          setNodeToDelete(nodeToDelete);
-          setShowDeleteConfirmation(true);
-        } else {
-          onNodeDelete(focusedNodeId);
-          toast.success("Node deleted");
-        }
-      }
-    } else if (focusedNodeId && (e.metaKey || e.ctrlKey) && e.key === 'c') {
-      const nodeToCopy = nodes.find(node => node.id === focusedNodeId);
-      if (nodeToCopy) {
-        copyNode(nodeToCopy);
-        toast.success("Node copied to clipboard");
-      }
-    } else if ((e.metaKey || e.ctrlKey) && e.key === 'v') {
-      const newNode = pasteNode();
-      if (newNode) {
-        setNodes(prev => [...prev, newNode]);
-        toast.success("Node pasted from clipboard");
-      }
-    }
-  }, [focusedNodeId, nodes, onNodeDelete, setNodes]);
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [handleKeyDown]);
-
-  const handleMouseDown = useCallback((e) => {
-    if (e.button === 1 || activeTool === 'pan') {
-      setIsPanning(true);
-      handlePanStart?.();
-      e.preventDefault();
-    }
-  }, [activeTool, handlePanStart]);
-
-  const handleMouseMove = useCallback((e) => {
-    if (isPanning) {
-      handlePanMove?.({
-        movementX: e.movementX / zoom,
-        movementY: e.movementY / zoom
-      });
-    }
-    
-    if (activeConnection) {
-      const rect = ref.current.getBoundingClientRect();
-      const x = (e.clientX - rect.left - position.x) / zoom;
-      const y = (e.clientY - rect.top - position.y) / zoom;
-      setActiveConnection(prev => ({
-        ...prev,
-        endX: x,
-        endY: y
-      }));
-    }
-  }, [isPanning, handlePanMove, zoom, activeConnection, position.x, position.y, ref]);
-
-  const handleMouseUp = useCallback((e) => {
-    if (isPanning) {
-      setIsPanning(false);
-      handlePanEnd?.();
-    }
-
-    if (activeConnection) {
-      // Here you would check if the mouse is over another node's connection point
-      // and create a permanent connection if it is
-      setActiveConnection(null);
-    }
-  }, [isPanning, handlePanEnd, activeConnection]);
-
-  const startConnection = (nodeId, startX, startY) => {
-    setActiveConnection({
-      startX,
-      startY,
-      endX: startX,
-      endY: startY,
-      sourceNodeId: nodeId
-    });
-  };
-
-  const transformStyle = {
-    transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
-    transformOrigin: '0 0',
-  };
-
   // Calculate the visible canvas area
   const canvasWidth = 10000;
   const canvasHeight = 10000;
   const centerOffsetX = -canvasWidth / 2;
   const centerOffsetY = -canvasHeight / 2;
 
+  const handleNodeDrag = useCallback((nodeId, dragData) => {
+    // Convert screen coordinates back to canvas coordinates
+    const canvasX = dragData.x - canvasWidth/2;
+    const canvasY = dragData.y - canvasHeight/2;
+    
+    onNodeUpdate(nodeId, {
+      x: canvasX,
+      y: canvasY
+    });
+  }, [onNodeUpdate, canvasWidth, canvasHeight]);
+
+  const transformStyle = {
+    transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
+    transformOrigin: '0 0',
+  };
+
   return (
     <div 
       className="w-full h-full overflow-hidden cursor-auto relative"
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
+      onMouseDown={handlePanStart}
+      onMouseMove={handlePanMove}
+      onMouseUp={handlePanEnd}
+      onMouseLeave={handlePanEnd}
       onWheel={handleWheel}
       ref={ref}
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
-      style={{ cursor: isPanning ? 'grabbing' : activeTool === 'pan' ? 'grab' : 'default' }}
       onDragOver={onDragOver}
       onDrop={onDrop}
+      style={{ cursor: isPanning ? 'grabbing' : activeTool === 'pan' ? 'grab' : 'default' }}
     >
       <CanvasBackground zoom={zoom} position={position} />
       
@@ -175,6 +99,7 @@ const Canvas = forwardRef(({
             startY={activeConnection.startY}
             endX={activeConnection.endX}
             endY={activeConnection.endY}
+            isDashed
           />
         )}
 
@@ -183,7 +108,7 @@ const Canvas = forwardRef(({
             key={node.id}
             node={node}
             zoom={zoom}
-            onNodeUpdate={onNodeUpdate}
+            onNodeUpdate={handleNodeDrag}
             onFocus={onNodeFocus}
             isFocused={focusedNodeId === node.id}
             onDelete={() => onNodeDelete(node.id)}
