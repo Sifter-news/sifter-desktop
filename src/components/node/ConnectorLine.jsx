@@ -1,9 +1,6 @@
 import React from 'react';
 
 const ConnectorLine = ({ startX, startY, endX, endY }) => {
-  const angle = Math.atan2(endY - startY, endX - startX);
-  const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
-
   return (
     <svg
       style={{

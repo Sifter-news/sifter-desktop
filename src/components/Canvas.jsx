@@ -4,6 +4,7 @@ import { useDebug } from '@/contexts/DebugContext';
 import TwoDNode from './node/TwoDNode';
 import CanvasBackground from './canvas/CanvasBackground';
 import CanvasControls from './canvas/CanvasControls';
+import ConnectorLine from './node/ConnectorLine';
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 
 const Canvas = forwardRef(({ 
@@ -29,6 +30,8 @@ const Canvas = forwardRef(({
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [nodeToDelete, setNodeToDelete] = useState(null);
   const [isPanning, setIsPanning] = useState(false);
+  const [connections, setConnections] = useState([]);
+  const [activeConnection, setActiveConnection] = useState(null);
   const { setDebugData } = useDebug();
 
   const handleKeyDown = useCallback((e) => {
@@ -66,7 +69,7 @@ const Canvas = forwardRef(({
   }, [handleKeyDown]);
 
   const handleMouseDown = useCallback((e) => {
-    if (e.button === 1 || activeTool === 'pan') { // Middle mouse button or pan tool
+    if (e.button === 1 || activeTool === 'pan') {
       setIsPanning(true);
       handlePanStart?.();
       e.preventDefault();
@@ -80,14 +83,41 @@ const Canvas = forwardRef(({
         movementY: e.movementY / zoom
       });
     }
-  }, [isPanning, handlePanMove, zoom]);
+    
+    if (activeConnection) {
+      const rect = ref.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left - position.x) / zoom;
+      const y = (e.clientY - rect.top - position.y) / zoom;
+      setActiveConnection(prev => ({
+        ...prev,
+        endX: x,
+        endY: y
+      }));
+    }
+  }, [isPanning, handlePanMove, zoom, activeConnection, position.x, position.y, ref]);
 
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = useCallback((e) => {
     if (isPanning) {
       setIsPanning(false);
       handlePanEnd?.();
     }
-  }, [isPanning, handlePanEnd]);
+
+    if (activeConnection) {
+      // Here you would check if the mouse is over another node's connection point
+      // and create a permanent connection if it is
+      setActiveConnection(null);
+    }
+  }, [isPanning, handlePanEnd, activeConnection]);
+
+  const startConnection = (nodeId, startX, startY) => {
+    setActiveConnection({
+      startX,
+      startY,
+      endX: startX,
+      endY: startY,
+      sourceNodeId: nodeId
+    });
+  };
 
   const transformStyle = {
     transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
@@ -112,6 +142,27 @@ const Canvas = forwardRef(({
       <CanvasBackground zoom={zoom} position={position} />
       
       <div className="absolute inset-0" style={transformStyle}>
+        {/* Render permanent connections */}
+        {connections.map((connection, index) => (
+          <ConnectorLine
+            key={`connection-${index}`}
+            startX={connection.startX}
+            startY={connection.startY}
+            endX={connection.endX}
+            endY={connection.endY}
+          />
+        ))}
+
+        {/* Render active connection being drawn */}
+        {activeConnection && (
+          <ConnectorLine
+            startX={activeConnection.startX}
+            startY={activeConnection.startY}
+            endX={activeConnection.endX}
+            endY={activeConnection.endY}
+          />
+        )}
+
         {nodes.map(node => (
           <TwoDNode
             key={node.id}
@@ -123,6 +174,7 @@ const Canvas = forwardRef(({
             onDelete={() => onNodeDelete(node.id)}
             isDraggable={activeTool !== 'pan'}
             position={{ x: node.x, y: node.y }}
+            onStartConnection={startConnection}
           />
         ))}
       </div>
