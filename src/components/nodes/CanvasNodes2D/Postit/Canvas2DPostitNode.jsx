@@ -1,4 +1,5 @@
 import React from 'react';
+import { Rnd } from 'react-rnd';
 import NodeBase from '../../NodeBase';
 import NodeAvatar from '../../shared/NodeAvatar';
 import NodeTitle from '../../shared/NodeTitle';
@@ -17,49 +18,79 @@ const Canvas2DPostitNode = ({
   onTitleChange,
   onTitleBlur,
   zoom,
-  position
+  position,
+  onUpdateNode
 }) => {
   const baseProps = NodeBase(node);
   const style = getNodeStyle(baseProps.visualStyle, isHovered, isSelected);
 
+  const handleResize = (e, direction, ref, delta, position) => {
+    onUpdateNode(node.id, {
+      width: parseInt(ref.style.width),
+      height: parseInt(ref.style.height),
+      x: position.x,
+      y: position.y
+    });
+  };
+
   return (
-    <div 
-      className={`w-64 h-64 p-4 bg-yellow-100 rounded-lg flex flex-col ${style}`}
+    <Rnd 
+      size={{ width: node.width || 256, height: node.height || 256 }}
+      position={{ x: node.x, y: node.y }}
+      onResize={handleResize}
+      scale={zoom}
+      minWidth={150}
+      minHeight={150}
+      className={`${style} bg-yellow-100 rounded-lg flex flex-col`}
       onClick={onSelect}
-      style={{
-        position: 'absolute',
-        left: `${node.x}px`,
-        top: `${node.y}px`,
-        transform: 'translate(0, 0)',
-        transformOrigin: '0 0',
-        willChange: 'transform, left, top'
+      resizeHandleClasses={{
+        top: 'border-t-2 border-blue-500 cursor-ns-resize opacity-0 group-hover:opacity-100',
+        right: 'border-r-2 border-blue-500 cursor-ew-resize opacity-0 group-hover:opacity-100',
+        bottom: 'border-b-2 border-blue-500 cursor-ns-resize opacity-0 group-hover:opacity-100',
+        left: 'border-l-2 border-blue-500 cursor-ew-resize opacity-0 group-hover:opacity-100',
+        topRight: 'w-3 h-3 border-2 border-blue-500 bg-white rounded-sm cursor-ne-resize opacity-0 group-hover:opacity-100',
+        bottomRight: 'w-3 h-3 border-2 border-blue-500 bg-white rounded-sm cursor-se-resize opacity-0 group-hover:opacity-100',
+        bottomLeft: 'w-3 h-3 border-2 border-blue-500 bg-white rounded-sm cursor-sw-resize opacity-0 group-hover:opacity-100',
+        topLeft: 'w-3 h-3 border-2 border-blue-500 bg-white rounded-sm cursor-nw-resize opacity-0 group-hover:opacity-100'
+      }}
+      enableResizing={{
+        top: true,
+        right: true,
+        bottom: true,
+        left: true,
+        topRight: true,
+        bottomRight: true,
+        bottomLeft: true,
+        topLeft: true
       }}
     >
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <NodeAvatar 
-            src={baseProps.avatar} 
-            alt={baseProps.title}
-          />
-          <NodeTitle 
-            title={baseProps.title}
-            isEditing={isEditing}
-            onChange={onTitleChange}
-            onBlur={onTitleBlur}
-          />
+      <div className="p-4 h-full">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <NodeAvatar 
+              src={baseProps.avatar} 
+              alt={baseProps.title}
+            />
+            <NodeTitle 
+              title={baseProps.title}
+              isEditing={isEditing}
+              onChange={onTitleChange}
+              onBlur={onTitleBlur}
+            />
+          </div>
+          {isHovered && (
+            <NodeEditMenu
+              onEdit={onEdit}
+              onDelete={onDelete}
+              onAIConversation={onAIConversation}
+            />
+          )}
         </div>
-        {isHovered && (
-          <NodeEditMenu
-            onEdit={onEdit}
-            onDelete={onDelete}
-            onAIConversation={onAIConversation}
-          />
-        )}
+        <p className="text-sm text-gray-600 flex-grow overflow-auto">
+          {baseProps.description}
+        </p>
       </div>
-      <p className="text-sm text-gray-600 flex-grow">
-        {baseProps.description}
-      </p>
-    </div>
+    </Rnd>
   );
 };
 
