@@ -5,6 +5,7 @@ import TwoDNode from '@/components/node/TwoDNode';
 import CanvasBackground from '@/components/canvas/CanvasBackground';
 import CanvasControls from './CanvasControls';
 import ConnectorLine from '@/components/node/ConnectorLine';
+import AIChatPanel from '@/01_components/05_investigation/viewsControls/AIChatPanel';
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 import { useZoomPan } from '@/hooks/useZoomPan';
 import { handleNodeDrag } from './handlers/nodeHandlers';
@@ -26,6 +27,7 @@ const CanvasView = ({
   const [activeTool, setActiveTool] = useState('select');
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [nodeToDelete, setNodeToDelete] = useState(null);
+  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const { setDebugData } = useDebug();
   const { zoom, position, handleZoom, handleWheel } = useZoomPan();
   const { connections, activeConnection, handleConnectionStart, handleConnectionEnd, setActiveConnection } = useConnectionHandling();
@@ -157,6 +159,14 @@ const CanvasView = ({
         setActiveTool={setActiveTool}
         zoom={zoom}
         handleZoom={handleZoom}
+        onAIChatToggle={() => setIsAIChatOpen(!isAIChatOpen)}
+        isAIChatOpen={isAIChatOpen}
+      />
+
+      <AIChatPanel
+        isOpen={isAIChatOpen}
+        onClose={() => setIsAIChatOpen(false)}
+        initialContext={`Viewing canvas with ${nodes.length} nodes`}
       />
     </div>
   );
