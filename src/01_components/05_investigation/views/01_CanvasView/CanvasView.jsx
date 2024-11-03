@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import Canvas from '@/components/Canvas';
 import { useZoomPan } from '@/hooks/useZoomPan';
+import CanvasControls from './CanvasControls';
 
 const CanvasView = ({ 
   nodes, 
@@ -60,6 +61,12 @@ const CanvasView = ({
         onNodeDelete={onDeleteNode}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
+      />
+      <CanvasControls
+        activeTool={activeTool}
+        setActiveTool={setActiveTool}
+        zoom={zoom}
+        handleZoom={handleZoom}
       />
     </div>
   );
