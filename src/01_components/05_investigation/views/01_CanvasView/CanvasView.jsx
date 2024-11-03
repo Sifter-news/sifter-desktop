@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useDebug } from '@/contexts/DebugContext';
 import TwoDNode from '@/components/node/TwoDNode';
@@ -9,11 +9,10 @@ import AIChatPanel from '@/01_components/05_investigation/viewsControls/AIChatPa
 import { useZoomPan } from '@/hooks/useZoomPan';
 import { handleNodeDrag } from './handlers/nodeHandlers';
 import { handleCanvasInteraction } from './handlers/canvasHandlers';
-import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useConnectionHandling } from './hooks/useConnectionHandling';
 import { NODE_STYLES } from '@/utils/nodeStyles';
 import { useNodeRendering } from './hooks/useNodeRendering.jsx';
-import { supabase } from '@/integrations/supabase/supabase';
+import { useNodeDeletion } from './hooks/useNodeDeletion';
 
 const CanvasView = ({ 
   nodes, 
@@ -27,44 +26,11 @@ const CanvasView = ({
   const canvasRef = useRef(null);
   const contentRef = useRef(null);
   const [activeTool, setActiveTool] = useState('select');
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [nodeToDelete, setNodeToDelete] = useState(null);
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const { setDebugData } = useDebug();
   const { zoom, position, handleZoom, handleWheel } = useZoomPan();
-
-  const handleDeleteNode = async (nodeId) => {
-    try {
-      // Delete from database
-      const { error } = await supabase
-        .from('node')
-        .delete()
-        .eq('id', nodeId);
-
-      if (error) throw error;
-
-      // Delete from local state
-      onDeleteNode(nodeId);
-      toast.success('Node deleted successfully');
-    } catch (error) {
-      console.error('Error deleting node:', error);
-      toast.error('Failed to delete node');
-    }
-  };
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Delete' && focusedNodeId) {
-        e.preventDefault();
-        handleDeleteNode(focusedNodeId);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [focusedNodeId]);
+  
+  const { handleDeleteNode } = useNodeDeletion(focusedNodeId, onDeleteNode);
   
   const { 
     connections, 
