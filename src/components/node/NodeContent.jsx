@@ -117,7 +117,7 @@ const NodeContent = ({
                 value={localDescription}
                 onChange={(e) => setLocalDescription(e.target.value)}
                 onBlur={handleInputBlur}
-                className="bg-transparent border-none resize-none text-sm h-[calc(100%-40px)] focus:ring-0 focus:outline-none"
+                className="bg-transparent border-none resize-none text-sm h-[calc(100%-40px)] focus:ring-0 focus:outline-none focus:border-none"
                 placeholder="Write your note here..."
               />
             ) : (
@@ -150,7 +150,7 @@ const NodeContent = ({
                 value={localDescription}
                 onChange={(e) => setLocalDescription(e.target.value)}
                 onBlur={handleInputBlur}
-                className="bg-transparent border-none resize-none mt-2 focus:ring-0 focus:outline-none"
+                className="bg-transparent border-none resize-none mt-2 focus:ring-0 focus:outline-none focus:border-none"
               />
             ) : (
               <div className="text-sm text-gray-600 mt-2">{node.description}</div>
