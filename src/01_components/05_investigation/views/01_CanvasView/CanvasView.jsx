@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useDebug } from '@/contexts/DebugContext';
 import TwoDNode from '@/components/node/TwoDNode';
@@ -29,7 +29,7 @@ const CanvasView = ({
   const [isPanning, setIsPanning] = useState(false);
   const { setDebugData } = useDebug();
   const { zoom, position, handleZoom, handlePanStart, handlePanMove, handlePanEnd, handleWheel } = useZoomPan();
-  const { connections, activeConnection, handleConnectionStart, handleConnectionEnd } = useConnectionHandling();
+  const { connections, activeConnection, handleConnectionStart, handleConnectionEnd, setActiveConnection } = useConnectionHandling();
 
   const handleKeyDown = useKeyboardShortcuts({
     focusedNodeId,
@@ -138,7 +138,6 @@ const CanvasView = ({
             node={node}
             zoom={zoom}
             onNodeUpdate={(id, updates) => {
-              // Adjust position based on zoom and pan
               if (updates.x !== undefined || updates.y !== undefined) {
                 const adjustedUpdates = {
                   ...updates,
