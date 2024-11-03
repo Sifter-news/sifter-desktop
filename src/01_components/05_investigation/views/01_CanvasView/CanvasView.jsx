@@ -6,7 +6,6 @@ import CanvasBackground from '@/components/canvas/CanvasBackground';
 import CanvasControls from './CanvasControls';
 import ConnectorLine from '@/components/node/ConnectorLine';
 import AIChatPanel from '@/01_components/05_investigation/viewsControls/AIChatPanel';
-import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 import { useZoomPan } from '@/hooks/useZoomPan';
 import { handleNodeDrag } from './handlers/nodeHandlers';
 import { handleCanvasInteraction } from './handlers/canvasHandlers';
@@ -30,16 +29,14 @@ const CanvasView = ({
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const { setDebugData } = useDebug();
   const { zoom, position, handleZoom, handleWheel } = useZoomPan();
-  const { connections, activeConnection, handleConnectionStart, handleConnectionEnd, setActiveConnection } = useConnectionHandling();
-
-  const handleKeyDown = useKeyboardShortcuts({
-    focusedNodeId,
-    nodes,
-    onDeleteNode,
-    setNodes,
-    setNodeToDelete,
-    setShowDeleteConfirmation
-  });
+  const { 
+    connections, 
+    activeConnection, 
+    handleConnectionStart, 
+    handleConnectionMove,
+    handleConnectionEnd, 
+    setActiveConnection 
+  } = useConnectionHandling();
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -48,14 +45,20 @@ const CanvasView = ({
     };
   }, [handleKeyDown]);
 
-  const { handleMouseDown, handleMouseMove, handleMouseUp } = handleCanvasInteraction({
-    activeTool,
-    activeConnection,
-    canvasRef,
-    position,
-    zoom,
-    setActiveConnection
-  });
+  const handleMouseMove = (e) => {
+    if (activeConnection) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left - position.x) / zoom;
+      const y = (e.clientY - rect.top - position.y) / zoom;
+      handleConnectionMove({ clientX: x, clientY: y });
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (activeConnection) {
+      setActiveConnection(null);
+    }
+  };
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -96,6 +99,8 @@ const CanvasView = ({
       tabIndex={0}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
     >
       <CanvasBackground zoom={zoom} position={position} />
       
@@ -103,10 +108,6 @@ const CanvasView = ({
         ref={contentRef}
         className="absolute inset-0 will-change-transform" 
         style={transformStyle}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
         onWheel={handleWheel}
       >
         {connections.map((connection, index) => (
@@ -125,6 +126,7 @@ const CanvasView = ({
             startY={activeConnection.startY}
             endX={activeConnection.endX}
             endY={activeConnection.endY}
+            isDashed
           />
         )}
 
@@ -133,23 +135,14 @@ const CanvasView = ({
             key={node.id}
             node={node}
             zoom={zoom}
-            onNodeUpdate={(id, updates) => {
-              if (updates.x !== undefined || updates.y !== undefined) {
-                const adjustedUpdates = {
-                  ...updates,
-                  x: updates.x !== undefined ? updates.x : node.x,
-                  y: updates.y !== undefined ? updates.y : node.y
-                };
-                onUpdateNode(id, adjustedUpdates);
-              } else {
-                onUpdateNode(id, updates);
-              }
-            }}
+            onNodeUpdate={onUpdateNode}
             onFocus={onNodeFocus}
             isFocused={focusedNodeId === node.id}
             onDelete={() => onDeleteNode(node.id)}
             isDraggable={true}
             position={{ x: node.x, y: node.y }}
+            onStartConnection={handleConnectionStart}
+            onEndConnection={handleConnectionEnd}
           />
         ))}
       </div>
