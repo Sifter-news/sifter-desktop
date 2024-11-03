@@ -74,13 +74,15 @@ const ModalEdit_Node = ({
 
       if (error) throw error;
 
-      await onUpdate(node.id, {
+      // Transform the data back to the frontend format
+      const updatedNode = {
         ...node,
         ...data,
         nodeType: data.node_type,
         visualStyle: data.visual_style
-      });
+      };
 
+      await onUpdate(node.id, updatedNode);
       toast.success("Node updated successfully");
       onClose();
     } catch (error) {
