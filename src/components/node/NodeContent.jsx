@@ -4,6 +4,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FileText } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { supabase } from '@/config/supabase';
+import { toast } from 'sonner';
 
 const DEFAULT_IMAGE = '/default-image.png';
 
@@ -40,9 +42,36 @@ const NodeContent = ({
     textSizeClasses[textSize],
     colorClasses[color],
     `text-${textAlign}`,
-    "transition-all duration-200 w-full h-full",
-    isFocused ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' : ''
+    "transition-all duration-200 w-full h-full"
   );
+
+  const handleSave = async (updates) => {
+    try {
+      const { error } = await supabase
+        .from('node')
+        .update({
+          title: updates.title,
+          description: updates.description,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', node.id);
+
+      if (error) throw error;
+      toast.success('Changes saved');
+    } catch (error) {
+      console.error('Error saving changes:', error);
+      toast.error('Failed to save changes');
+    }
+  };
+
+  const handleInputBlur = async (e) => {
+    const updates = {
+      title: localTitle,
+      description: localDescription
+    };
+    await handleSave(updates);
+    handleBlur(e);
+  };
 
   const renderNode = () => {
     switch (style) {
@@ -57,7 +86,7 @@ const NodeContent = ({
         );
       case 'postit':
         return (
-          <div className={cn("p-4", baseClasses)}>
+          <div className={cn("p-4 shadow-md", baseClasses)}>
             <div className="flex items-center gap-2 mb-2">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={node.avatar || DEFAULT_IMAGE} alt={node.title} />
@@ -67,7 +96,7 @@ const NodeContent = ({
                 <Input
                   value={localTitle}
                   onChange={(e) => setLocalTitle(e.target.value)}
-                  onBlur={handleBlur}
+                  onBlur={handleInputBlur}
                   className="bg-transparent border-none flex-1"
                   placeholder="Title"
                   autoFocus
@@ -80,7 +109,7 @@ const NodeContent = ({
               <Textarea
                 value={localDescription}
                 onChange={(e) => setLocalDescription(e.target.value)}
-                onBlur={handleBlur}
+                onBlur={handleInputBlur}
                 className="bg-transparent border-none resize-none text-sm h-[calc(100%-40px)]"
                 placeholder="Write your note here..."
               />
@@ -101,7 +130,7 @@ const NodeContent = ({
                 <Input
                   value={localTitle}
                   onChange={(e) => setLocalTitle(e.target.value)}
-                  onBlur={handleBlur}
+                  onBlur={handleInputBlur}
                   className="bg-transparent border-none flex-1"
                   autoFocus
                 />
@@ -113,7 +142,7 @@ const NodeContent = ({
               <Textarea
                 value={localDescription}
                 onChange={(e) => setLocalDescription(e.target.value)}
-                onBlur={handleBlur}
+                onBlur={handleInputBlur}
                 className="bg-transparent border-none resize-none mt-2"
               />
             ) : (
