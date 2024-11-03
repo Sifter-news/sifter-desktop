@@ -18,6 +18,7 @@ const Canvas = forwardRef(({
   handlePanMove, 
   handlePanEnd,
   handleWheel,
+  handleZoom,
   onNodeUpdate,
   focusedNodeId,
   onNodeFocus,
@@ -25,7 +26,8 @@ const Canvas = forwardRef(({
   onDragOver,
   onDrop,
   onAIConversation,
-  onNodePositionUpdate
+  onNodePositionUpdate,
+  setPosition
 }, ref) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [nodeToDelete, setNodeToDelete] = useState(null);
@@ -189,10 +191,9 @@ const Canvas = forwardRef(({
       </div>
 
       <CanvasControls 
-        showDeleteConfirmation={showDeleteConfirmation}
-        setShowDeleteConfirmation={setShowDeleteConfirmation}
-        nodeToDelete={nodeToDelete}
-        onNodeDelete={onNodeDelete}
+        zoom={zoom}
+        handleZoom={handleZoom}
+        setPosition={setPosition}
       />
     </div>
   );

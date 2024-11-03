@@ -14,7 +14,16 @@ const CanvasView = ({
 }) => {
   const canvasRef = useRef(null);
   const [activeTool, setActiveTool] = useState('select');
-  const { zoom, position, handleZoom, handlePanStart, handlePanMove, handlePanEnd, handleWheel } = useZoomPan();
+  const { 
+    zoom, 
+    position, 
+    handleZoom, 
+    handlePanStart, 
+    handlePanMove, 
+    handlePanEnd, 
+    handleWheel,
+    setPosition 
+  } = useZoomPan();
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -55,6 +64,7 @@ const CanvasView = ({
         handlePanMove={handlePanMove}
         handlePanEnd={handlePanEnd}
         handleWheel={handleWheel}
+        handleZoom={handleZoom}
         onNodeUpdate={onUpdateNode}
         focusedNodeId={focusedNodeId}
         onNodeFocus={onNodeFocus}
@@ -62,6 +72,7 @@ const CanvasView = ({
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         selectedNodeId={selectedNodeId}
+        setPosition={setPosition}
       />
     </div>
   );
