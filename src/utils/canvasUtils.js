@@ -5,6 +5,25 @@ export const snapToGrid = (x, y, gridSize = 8) => {
   };
 };
 
+export const snapToSingleAxis = (startPos, currentPos) => {
+  // Calculate deltas
+  const deltaX = Math.abs(currentPos.x - startPos.x);
+  const deltaY = Math.abs(currentPos.y - startPos.y);
+  
+  // If moving more horizontally than vertically, lock to X axis
+  if (deltaX > deltaY) {
+    return {
+      x: snapToGrid(currentPos.x, currentPos.y).x,
+      y: startPos.y
+    };
+  }
+  // Otherwise lock to Y axis
+  return {
+    x: startPos.x,
+    y: snapToGrid(currentPos.x, currentPos.y).y
+  };
+};
+
 export const getCanvasCoordinates = (clientX, clientY, rect, zoom, position) => {
   const x = (clientX - rect.left - position.x) / zoom;
   const y = (clientY - rect.top - position.y) / zoom;
