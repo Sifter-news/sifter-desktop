@@ -156,10 +156,6 @@ const NodeStyleTooltip = ({
               {label}
             </DropdownMenuItem>
           ))}
-          <DropdownMenuItem onClick={() => onColorChange('custom')}>
-            <div className="w-4 h-4 rounded bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 mr-2" />
-            Custom Color
-          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
