@@ -98,7 +98,7 @@ const CanvasView = ({
   const transformStyle = {
     transform: `scale(${zoom})`,
     transformOrigin: '0 0',
-    transition: 'transform 0.1s ease-out',
+    willChange: 'transform',
     touchAction: 'none'
   };
 

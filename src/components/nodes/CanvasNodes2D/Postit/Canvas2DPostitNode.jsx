@@ -31,7 +31,8 @@ const Canvas2DPostitNode = ({
         left: `${node.x}px`,
         top: `${node.y}px`,
         transform: 'translate(0, 0)',
-        transformOrigin: '0 0'
+        transformOrigin: '0 0',
+        willChange: 'transform, left, top'
       }}
     >
       <div className="flex items-center justify-between mb-4">
