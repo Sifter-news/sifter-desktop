@@ -95,6 +95,24 @@ const CanvasView = ({
     }
   };
 
+  const handleNodeDragStart = (nodeId, e) => {
+    if (e.altKey) {
+      // Find the original node
+      const originalNode = nodes.find(node => node.id === nodeId);
+      if (originalNode) {
+        // Create a duplicate node at the same position
+        const duplicateNode = {
+          ...originalNode,
+          id: Date.now().toString(), // Generate a new ID
+          x: originalNode.x,
+          y: originalNode.y
+        };
+        onAddNode(duplicateNode);
+        toast.success('Node duplicated');
+      }
+    }
+  };
+
   const transformStyle = {
     transform: `scale(${zoom})`,
     transformOrigin: '0 0',
@@ -107,10 +125,7 @@ const CanvasView = ({
       className="w-full h-screen overflow-hidden cursor-auto relative bg-gray-900"
       ref={canvasRef}
       tabIndex={0}
-      onDragOver={(e) => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'copy';
-      }}
+      onDragOver={handleDragOver}
       onDrop={handleDrop}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -159,6 +174,7 @@ const CanvasView = ({
               onStartConnection={handleConnectionStart}
               onEndConnection={handleConnectionEnd}
               dimensions={style}
+              onDragStart={handleNodeDragStart}
             />
           );
         })}
