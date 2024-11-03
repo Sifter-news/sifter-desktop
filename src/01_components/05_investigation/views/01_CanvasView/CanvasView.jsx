@@ -6,12 +6,12 @@ import CanvasBackground from '@/components/canvas/CanvasBackground';
 import CanvasControls from './CanvasControls';
 import ConnectorLine from '@/components/node/ConnectorLine';
 import AIChatPanel from '@/01_components/05_investigation/viewsControls/AIChatPanel';
-import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 import { useZoomPan } from '@/hooks/useZoomPan';
 import { handleNodeDrag } from './handlers/nodeHandlers';
 import { handleCanvasInteraction } from './handlers/canvasHandlers';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useConnectionHandling } from './hooks/useConnectionHandling';
+import { NODE_STYLES } from '@/utils/nodeStyles';
 
 const CanvasView = ({ 
   nodes, 
@@ -30,7 +30,14 @@ const CanvasView = ({
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const { setDebugData } = useDebug();
   const { zoom, position, handleZoom, handleWheel } = useZoomPan();
-  const { connections, activeConnection, handleConnectionStart, handleConnectionEnd, setActiveConnection } = useConnectionHandling();
+  const { 
+    connections, 
+    activeConnection, 
+    handleConnectionStart, 
+    handleConnectionMove,
+    handleConnectionEnd, 
+    setActiveConnection 
+  } = useConnectionHandling();
 
   const handleKeyDown = useKeyboardShortcuts({
     focusedNodeId,
@@ -48,14 +55,20 @@ const CanvasView = ({
     };
   }, [handleKeyDown]);
 
-  const { handleMouseDown, handleMouseMove, handleMouseUp } = handleCanvasInteraction({
-    activeTool,
-    activeConnection,
-    canvasRef,
-    position,
-    zoom,
-    setActiveConnection
-  });
+  const handleMouseMove = (e) => {
+    if (activeConnection) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left - position.x) / zoom;
+      const y = (e.clientY - rect.top - position.y) / zoom;
+      handleConnectionMove({ clientX: x, clientY: y });
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (activeConnection) {
+      setActiveConnection(null);
+    }
+  };
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -83,22 +96,21 @@ const CanvasView = ({
   };
 
   const transformStyle = {
-    transform: `translate(-50%, -50%) scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
-    transformOrigin: 'center center',
+    transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
+    transformOrigin: '0 0',
     transition: 'transform 0.1s ease-out',
-    touchAction: 'none',
-    position: 'absolute',
-    top: '50%',
-    left: '50%'
+    touchAction: 'none'
   };
 
   return (
     <div 
-      className="w-full h-screen overflow-hidden cursor-auto relative p-0"
+      className="w-full h-screen overflow-hidden cursor-auto relative bg-gray-900"
       ref={canvasRef}
       tabIndex={0}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
     >
       <CanvasBackground zoom={zoom} position={position} />
       
@@ -106,10 +118,6 @@ const CanvasView = ({
         ref={contentRef}
         className="absolute inset-0 will-change-transform" 
         style={transformStyle}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
         onWheel={handleWheel}
       >
         {connections.map((connection, index) => (
@@ -128,33 +136,29 @@ const CanvasView = ({
             startY={activeConnection.startY}
             endX={activeConnection.endX}
             endY={activeConnection.endY}
+            isDashed
           />
         )}
 
-        {nodes.map(node => (
-          <TwoDNode
-            key={node.id}
-            node={node}
-            zoom={zoom}
-            onNodeUpdate={(id, updates) => {
-              if (updates.x !== undefined || updates.y !== undefined) {
-                const adjustedUpdates = {
-                  ...updates,
-                  x: updates.x !== undefined ? updates.x : node.x,
-                  y: updates.y !== undefined ? updates.y : node.y
-                };
-                onUpdateNode(id, adjustedUpdates);
-              } else {
-                onUpdateNode(id, updates);
-              }
-            }}
-            onFocus={onNodeFocus}
-            isFocused={focusedNodeId === node.id}
-            onDelete={() => onDeleteNode(node.id)}
-            isDraggable={true}
-            position={{ x: node.x, y: node.y }}
-          />
-        ))}
+        {nodes.map(node => {
+          const style = NODE_STYLES[node.visualStyle || 'default'];
+          return (
+            <TwoDNode
+              key={node.id}
+              node={node}
+              zoom={zoom}
+              onNodeUpdate={onUpdateNode}
+              onFocus={onNodeFocus}
+              isFocused={focusedNodeId === node.id}
+              onDelete={() => onDeleteNode(node.id)}
+              isDraggable={true}
+              position={{ x: node.x, y: node.y }}
+              onStartConnection={handleConnectionStart}
+              onEndConnection={handleConnectionEnd}
+              dimensions={style}
+            />
+          );
+        })}
       </div>
 
       <CanvasControls 
