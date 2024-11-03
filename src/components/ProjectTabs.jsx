@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Brain, Clock, Map, Pencil } from 'lucide-react';
 import MindMapView from './MindMapView';
@@ -7,7 +7,6 @@ import MapView from './MapView';
 import { CanvasView } from '@/01_components/05_investigation/views';
 import SidePanel from './SidePanel';
 import { useDebug } from '@/contexts/DebugContext';
-import Toolbar from '@/01_components/05_investigation/viewsControls/Toolbar';
 
 const ProjectTabs = ({ 
   project, 
@@ -24,9 +23,6 @@ const ProjectTabs = ({
 }) => {
   const selectedNode = nodes.find(node => node.id === focusedNodeId);
   const { setDebugData } = useDebug();
-  const [activeTool, setActiveTool] = useState('select');
-  const [currentView, setCurrentView] = useState(defaultView);
-  const [showAIChat, setShowAIChat] = useState(false);
 
   useEffect(() => {
     setDebugData(prev => ({
@@ -36,7 +32,6 @@ const ProjectTabs = ({
   }, [defaultView, setDebugData]);
 
   const handleViewChange = (view) => {
-    setCurrentView(view);
     setDebugData(prev => ({
       ...prev,
       currentView: view
@@ -74,19 +69,6 @@ const ProjectTabs = ({
             </TabsTrigger>
           </TabsList>
         </div>
-
-        <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 z-50">
-          <Toolbar 
-            viewMode={currentView}
-            onViewModeChange={handleViewChange}
-            onAIChatToggle={() => setShowAIChat(!showAIChat)}
-            onAddNode={onAddNode}
-            activeTool={activeTool}
-            setActiveTool={setActiveTool}
-            showViewToggle={currentView !== 'canvas2d'}
-          />
-        </div>
-
         <div className="flex-grow mt-12">
           <TabsContent value="canvas2d" className="h-[calc(100vh-128px)]">
             <CanvasView
@@ -98,8 +80,6 @@ const ProjectTabs = ({
               onDeleteNode={onDeleteNode}
               focusedNodeId={focusedNodeId}
               onNodeFocus={onNodeFocus}
-              activeTool={activeTool}
-              setActiveTool={setActiveTool}
             />
           </TabsContent>
           <TabsContent value="mindmap" className="h-[calc(100vh-128px)]">
