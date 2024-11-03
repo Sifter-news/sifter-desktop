@@ -18,7 +18,7 @@ export const useNodeOperations = (setNodes) => {
       };
 
       const { data, error } = await supabase
-        .from('node')
+        .from('node')  // Changed from 'nodes' to 'node'
         .insert([nodeData])
         .select()
         .single();
@@ -64,7 +64,7 @@ export const useNodeOperations = (setNodes) => {
       );
 
       const { error } = await supabase
-        .from('node')
+        .from('node')  // Changed from 'nodes' to 'node'
         .update(databaseUpdates)
         .eq('id', nodeId);
 
@@ -85,7 +85,7 @@ export const useNodeOperations = (setNodes) => {
   const handleDeleteNode = async (nodeId) => {
     try {
       const { error } = await supabase
-        .from('node')
+        .from('node')  // Changed from 'nodes' to 'node'
         .delete()
         .eq('id', nodeId);
 
