@@ -83,10 +83,13 @@ const CanvasView = ({
   };
 
   const transformStyle = {
-    transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
-    transformOrigin: '0 0',
+    transform: `translate(-50%, -50%) scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
+    transformOrigin: 'center center',
     transition: 'transform 0.1s ease-out',
-    touchAction: 'none'
+    touchAction: 'none',
+    position: 'absolute',
+    top: '50%',
+    left: '50%'
   };
 
   return (
