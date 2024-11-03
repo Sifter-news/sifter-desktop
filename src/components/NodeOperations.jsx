@@ -18,15 +18,17 @@ export const useNodeOperations = (setNodes) => {
         node_type: newNode.nodeType || 'generic'
       };
 
+      console.log('Adding node with data:', nodeData);
+
       const { data, error } = await supabase
-        .from('node')
+        .from('nodes')  // Changed from 'node' to 'nodes' to match schema
         .insert([nodeData])
         .select()
         .single();
 
       if (error) {
         console.error('Database error:', error);
-        toast.error('Failed to add node');
+        toast.error(`Failed to add node: ${error.message}`);
         return null;
       }
 
@@ -58,6 +60,8 @@ export const useNodeOperations = (setNodes) => {
     }
 
     try {
+      console.log('Updating node:', nodeId, 'with updates:', updates);
+
       const databaseUpdates = {
         title: updates.title,
         description: updates.description,
@@ -77,14 +81,16 @@ export const useNodeOperations = (setNodes) => {
         databaseUpdates[key] === undefined && delete databaseUpdates[key]
       );
 
+      console.log('Prepared database updates:', databaseUpdates);
+
       const { error } = await supabase
-        .from('node')
+        .from('nodes')  // Changed from 'node' to 'nodes' to match schema
         .update(databaseUpdates)
         .eq('id', nodeId);
 
       if (error) {
         console.error('Database error:', error);
-        toast.error('Failed to update node');
+        toast.error(`Failed to update node: ${error.message}`);
         return;
       }
 
@@ -95,7 +101,7 @@ export const useNodeOperations = (setNodes) => {
       toast.success('Node updated successfully');
     } catch (error) {
       console.error('Error updating node:', error);
-      toast.error('Failed to update node');
+      toast.error(`Failed to update node: ${error.message}`);
     }
   };
 
@@ -107,13 +113,13 @@ export const useNodeOperations = (setNodes) => {
 
     try {
       const { error } = await supabase
-        .from('node')
+        .from('nodes')  // Changed from 'node' to 'nodes' to match schema
         .delete()
         .eq('id', nodeId);
 
       if (error) {
         console.error('Database error:', error);
-        toast.error('Failed to delete node');
+        toast.error(`Failed to delete node: ${error.message}`);
         return false;
       }
 
@@ -122,7 +128,7 @@ export const useNodeOperations = (setNodes) => {
       return true;
     } catch (error) {
       console.error('Error deleting node:', error);
-      toast.error('Failed to delete node');
+      toast.error(`Failed to delete node: ${error.message}`);
       return false;
     }
   };
