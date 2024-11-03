@@ -25,7 +25,7 @@ const NodeRenderer = ({
   const [localTitle, setLocalTitle] = useState(node.title);
   const [localDescription, setLocalDescription] = useState(node.description);
   const [showTooltip, setShowTooltip] = useState(false);
-  const [position, setPosition] = useState({ x: node.x, y: node.y });
+  const [position, setPosition] = useState({ x: node.x || 0, y: node.y || 0 });
   const [isHovered, setIsHovered] = useState(false);
   const [textSize, setTextSize] = useState(node.textSize || 'medium');
   const [textAlign, setTextAlign] = useState(node.textAlign || 'left');
@@ -40,6 +40,11 @@ const NodeRenderer = ({
       setShowTooltip(false);
     }
   }, [isFocused]);
+
+  useEffect(() => {
+    // Update position when node coordinates change
+    setPosition({ x: node.x || 0, y: node.y || 0 });
+  }, [node.x, node.y]);
 
   const handleDragStart = (e, d) => {
     dragStartPos.current = { x: d.x, y: d.y };

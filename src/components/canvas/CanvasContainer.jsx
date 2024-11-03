@@ -14,16 +14,19 @@ const CanvasContainer = ({
   
   const transformStyle = {
     transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
-    transformOrigin: '0 0',
+    transformOrigin: '50% 50%',
     width: `${canvasWidth}px`,
     height: `${canvasHeight}px`,
-    left: `${centerOffsetX}px`,
-    top: `${centerOffsetY}px`
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    marginLeft: `${centerOffsetX}px`,
+    marginTop: `${centerOffsetY}px`
   };
 
   return (
     <div 
-      className={`absolute inset-0 ${showGuides ? 'outline outline-1 outline-blue-500/20' : ''}`}
+      className={`${showGuides ? 'outline outline-1 outline-blue-500/20' : ''}`}
       style={transformStyle}
       data-canvas-container
     >
