@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 import NodeContent from './NodeContent';
 import ConnectionDot from './ConnectionDot';
+import { getNodeDimensions } from '@/utils/nodeStyles';
 
 const TwoDNode = ({ 
   node, 
@@ -11,11 +12,11 @@ const TwoDNode = ({
   isFocused,
   onDelete,
   isDraggable = true,
-  position = { x: 0, y: 0 },
-  onStartConnection,
-  onEndConnection,
-  dimensions
+  position = { x: 0, y: 0 }
 }) => {
+  const dimensions = getNodeDimensions(node.visualStyle || 'default');
+  const [isDrawingConnection, setIsDrawingConnection] = useState(false);
+  const [connectionStart, setConnectionStart] = useState(null);
   const [hoveredConnection, setHoveredConnection] = useState(null);
 
   const handleDragStop = (e, d) => {
@@ -25,6 +26,16 @@ const TwoDNode = ({
         y: d.y
       });
     }
+  };
+
+  const handleStartConnection = (position) => {
+    setIsDrawingConnection(true);
+    setConnectionStart(position);
+  };
+
+  const handleEndConnection = () => {
+    setIsDrawingConnection(false);
+    setConnectionStart(null);
   };
 
   return (
@@ -39,12 +50,11 @@ const TwoDNode = ({
       }`}
       bounds="parent"
     >
-      <div onClick={() => onFocus?.(node.id)} className="relative w-full h-full">
+      <div onClick={() => onFocus?.(node.id)} className="relative">
         <NodeContent
           style={node.visualStyle}
           node={node}
           isFocused={isFocused}
-          dimensions={dimensions}
         />
         
         <ConnectionDot 
@@ -52,32 +62,28 @@ const TwoDNode = ({
           isHovered={hoveredConnection === 'top'}
           onHover={() => setHoveredConnection('top')}
           onLeaveHover={() => setHoveredConnection(null)}
-          onStartConnection={onStartConnection}
-          nodeId={node.id}
+          onStartConnection={() => handleStartConnection('top')}
         />
         <ConnectionDot 
           position="right"
           isHovered={hoveredConnection === 'right'}
           onHover={() => setHoveredConnection('right')}
           onLeaveHover={() => setHoveredConnection(null)}
-          onStartConnection={onStartConnection}
-          nodeId={node.id}
+          onStartConnection={() => handleStartConnection('right')}
         />
         <ConnectionDot 
           position="bottom"
           isHovered={hoveredConnection === 'bottom'}
           onHover={() => setHoveredConnection('bottom')}
           onLeaveHover={() => setHoveredConnection(null)}
-          onStartConnection={onStartConnection}
-          nodeId={node.id}
+          onStartConnection={() => handleStartConnection('bottom')}
         />
         <ConnectionDot 
           position="left"
           isHovered={hoveredConnection === 'left'}
           onHover={() => setHoveredConnection('left')}
           onLeaveHover={() => setHoveredConnection(null)}
-          onStartConnection={onStartConnection}
-          nodeId={node.id}
+          onStartConnection={() => handleStartConnection('left')}
         />
       </div>
     </Rnd>
