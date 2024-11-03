@@ -59,7 +59,6 @@ const NodeContent = ({
 
       if (error) throw error;
 
-      // Call onUpdateNode to update the UI state immediately
       if (onUpdateNode) {
         onUpdateNode(node.id, updates);
       }
@@ -105,7 +104,7 @@ const NodeContent = ({
                   value={localTitle}
                   onChange={(e) => setLocalTitle(e.target.value)}
                   onBlur={handleInputBlur}
-                  className="bg-transparent border-none flex-1"
+                  className="bg-transparent border-none focus:ring-0 focus:outline-none flex-1"
                   placeholder="Title"
                   autoFocus
                 />
@@ -118,7 +117,7 @@ const NodeContent = ({
                 value={localDescription}
                 onChange={(e) => setLocalDescription(e.target.value)}
                 onBlur={handleInputBlur}
-                className="bg-transparent border-none resize-none text-sm h-[calc(100%-40px)]"
+                className="bg-transparent border-none resize-none text-sm h-[calc(100%-40px)] focus:ring-0 focus:outline-none"
                 placeholder="Write your note here..."
               />
             ) : (
@@ -139,7 +138,7 @@ const NodeContent = ({
                   value={localTitle}
                   onChange={(e) => setLocalTitle(e.target.value)}
                   onBlur={handleInputBlur}
-                  className="bg-transparent border-none flex-1"
+                  className="bg-transparent border-none focus:ring-0 focus:outline-none flex-1"
                   autoFocus
                 />
               ) : (
@@ -151,7 +150,7 @@ const NodeContent = ({
                 value={localDescription}
                 onChange={(e) => setLocalDescription(e.target.value)}
                 onBlur={handleInputBlur}
-                className="bg-transparent border-none resize-none mt-2"
+                className="bg-transparent border-none resize-none mt-2 focus:ring-0 focus:outline-none"
               />
             ) : (
               <div className="text-sm text-gray-600 mt-2">{node.description}</div>
