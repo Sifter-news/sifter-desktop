@@ -11,6 +11,7 @@ import { handleNodeDrag } from './handlers/nodeHandlers';
 import { handleCanvasInteraction } from './handlers/canvasHandlers';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useConnectionHandling } from './hooks/useConnectionHandling';
+import { getNodeDimensions } from '@/utils/nodeStyles';
 
 const CanvasView = ({ 
   nodes, 
@@ -37,6 +38,15 @@ const CanvasView = ({
     handleConnectionEnd, 
     setActiveConnection 
   } = useConnectionHandling();
+
+  const handleKeyDown = useKeyboardShortcuts({
+    focusedNodeId,
+    nodes,
+    onDeleteNode,
+    setNodes,
+    setNodeToDelete,
+    setShowDeleteConfirmation
+  });
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
