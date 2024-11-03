@@ -22,7 +22,7 @@ const TwoDNode = ({
   const [showTooltip, setShowTooltip] = useState(false);
   const [textSize, setTextSize] = useState(node.textSize || 'medium');
   const [textAlign, setTextAlign] = useState(node.textAlign || 'left');
-  const [color, setColor] = useState(node.color || 'bg-white');
+  const [color, setColor] = useState(node.color || 'bg-white'); // Set default color to white
   const [hoveredDot, setHoveredDot] = useState(null);
 
   const handleDragStart = (e, d) => {

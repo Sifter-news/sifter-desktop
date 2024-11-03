@@ -102,6 +102,7 @@ const CanvasView = ({
       title: 'New Node',
       description: '',
       visualStyle: 'default',
+      color: 'bg-white', // Set default color to white for new nodes
       x,
       y,
       nodeType: 'generic'
