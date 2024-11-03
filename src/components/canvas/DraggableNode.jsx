@@ -1,47 +1,84 @@
-import React from 'react';
-import TwoDNode from '../node/TwoDNode';
-import { useCanvasCoordinates } from '@/hooks/useCanvasCoordinates';
+import React, { useState, useRef } from 'react';
+import NodeRenderer from '../NodeRenderer';
+import { snapToGrid } from '@/utils/canvasUtils';
 
 const DraggableNode = ({
   node,
   zoom,
   position,
-  canvasWidth,
-  canvasHeight,
   onNodeUpdate,
   onFocus,
   isFocused,
-  onDelete,
-  isDraggable,
-  activeTool
+  isDraggable = true,
+  activeTool,
+  allNodes
 }) => {
-  const { screenToCanvas, canvasToScreen } = useCanvasCoordinates(canvasWidth, canvasHeight, zoom, position);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartPos = useRef(null);
+  const nodeRef = useRef(null);
 
-  const handleDrag = (nodeId, dragData, rect) => {
-    const canvasPos = screenToCanvas(dragData.x, dragData.y, rect);
-    onNodeUpdate(nodeId, {
-      x: canvasPos.x,
-      y: canvasPos.y
+  const handleDragStart = (e) => {
+    if (activeTool !== 'select') return;
+    
+    const rect = nodeRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    dragStartPos.current = {
+      x: node.x,
+      y: node.y,
+      mouseX: e.clientX,
+      mouseY: e.clientY
+    };
+    setIsDragging(true);
+  };
+
+  const handleDrag = (e) => {
+    if (!isDragging || !dragStartPos.current) return;
+
+    const deltaX = (e.clientX - dragStartPos.current.mouseX) / zoom;
+    const deltaY = (e.clientY - dragStartPos.current.mouseY) / zoom;
+
+    const newX = dragStartPos.current.x + deltaX;
+    const newY = dragStartPos.current.y + deltaY;
+
+    const { x: snappedX, y: snappedY } = snapToGrid(newX, newY);
+
+    onNodeUpdate(node.id, {
+      x: snappedX,
+      y: snappedY
     });
   };
 
-  const screenPosition = canvasToScreen(node.x, node.y);
+  const handleDragEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    dragStartPos.current = null;
+  };
 
   return (
-    <TwoDNode
-      key={node.id}
-      node={node}
-      zoom={zoom}
-      onNodeUpdate={(nodeId, dragData) => {
-        const rect = document.querySelector('[data-canvas="true"]').getBoundingClientRect();
-        handleDrag(nodeId, dragData, rect);
+    <div
+      ref={nodeRef}
+      style={{
+        position: 'absolute',
+        left: `${node.x}px`,
+        top: `${node.y}px`,
+        cursor: activeTool === 'select' ? 'grab' : 'default'
       }}
-      onFocus={onFocus}
-      isFocused={isFocused}
-      onDelete={onDelete}
-      isDraggable={isDraggable && activeTool !== 'pan'}
-      position={screenPosition}
-    />
+      onMouseDown={handleDragStart}
+      onMouseMove={handleDrag}
+      onMouseUp={handleDragEnd}
+      onMouseLeave={handleDragEnd}
+    >
+      <NodeRenderer
+        node={node}
+        zoom={zoom}
+        onNodeUpdate={onNodeUpdate}
+        onFocus={onFocus}
+        isFocused={isFocused}
+        isDragging={isDragging}
+        allNodes={allNodes}
+      />
+    </div>
   );
 };
 
