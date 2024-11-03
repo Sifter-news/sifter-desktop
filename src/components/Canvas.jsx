@@ -106,6 +106,8 @@ const Canvas = forwardRef(({
       tabIndex={0}
       onKeyDown={handleKeyDown}
       style={{ cursor: isPanning ? 'grabbing' : activeTool === 'pan' ? 'grab' : 'default' }}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
     >
       <CanvasBackground zoom={zoom} position={position} />
       
@@ -118,7 +120,7 @@ const Canvas = forwardRef(({
             onNodeUpdate={onNodeUpdate}
             onFocus={onNodeFocus}
             isFocused={focusedNodeId === node.id}
-            onDelete={() => handleDelete(node.id)}
+            onDelete={() => onNodeDelete(node.id)}
             isDraggable={activeTool !== 'pan'}
             position={{ x: node.x, y: node.y }}
           />
@@ -129,7 +131,7 @@ const Canvas = forwardRef(({
         showDeleteConfirmation={showDeleteConfirmation}
         setShowDeleteConfirmation={setShowDeleteConfirmation}
         nodeToDelete={nodeToDelete}
-        onNodeDelete={handleDelete}
+        onNodeDelete={onNodeDelete}
       />
     </div>
   );
