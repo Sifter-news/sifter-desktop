@@ -87,7 +87,7 @@ const NodeContent = ({
       case 'postit':
         return (
           <div 
-            className={cn("w-[256px] h-[256px] p-4 rotate-1", baseClasses)}
+            className={cn("w-[256px] h-[256px] p-4", baseClasses)} // Removed rotate-1
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             data-component="NodeContent:PostIt"
