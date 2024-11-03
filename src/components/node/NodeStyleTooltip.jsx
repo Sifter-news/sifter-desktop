@@ -5,7 +5,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
   AlignCenter,
@@ -19,9 +18,7 @@ import {
   Brain,
   MapPin,
   Calendar,
-  Pencil,
   MessageCircle,
-  Palette
 } from 'lucide-react';
 
 const textSizes = {
@@ -31,20 +28,11 @@ const textSizes = {
   huge: "text-xl"
 };
 
-const nodeColors = {
-  white: "bg-white",
-  yellow: "bg-yellow-100",
-  green: "bg-green-100",
-  blue: "bg-blue-100"
-};
-
 const NodeStyleTooltip = ({ 
   onStyleChange, 
   onTextSizeChange, 
   onAlignmentChange,
   onTypeChange,
-  onColorChange,
-  onEdit,
   onAIChat,
   position = { x: 0, y: 0 } 
 }) => {
@@ -137,31 +125,6 @@ const NodeStyleTooltip = ({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-8 w-8">
-            <Palette className="h-5 w-5" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          {Object.entries(nodeColors).map(([color, className]) => (
-            <DropdownMenuItem 
-              key={color} 
-              onClick={() => onColorChange(color)}
-              className={className}
-            >
-              {color.charAt(0).toUpperCase() + color.slice(1)}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <DropdownMenuSeparator />
-
-      <Button variant="ghost" size="sm" className="h-8 w-8" onClick={onEdit}>
-        <Pencil className="h-5 w-5" />
-      </Button>
 
       <Button 
         variant="ghost" 

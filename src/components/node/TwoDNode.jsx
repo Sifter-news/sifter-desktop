@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 import NodeContent from './NodeContent';
 import ConnectionDot from './ConnectionDot';
+import NodeStyleTooltip from './NodeStyleTooltip';
 
 const TwoDNode = ({ 
   node, 
@@ -15,8 +16,13 @@ const TwoDNode = ({
   onStartConnection,
   onEndConnection,
   dimensions,
-  onDragStart
+  onDragStart,
+  onAIConversation
 }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [textSize, setTextSize] = useState(node.textSize || 'medium');
+  const [textAlign, setTextAlign] = useState(node.textAlign || 'left');
+
   const handleDragStart = (e, d) => {
     if (onDragStart) {
       onDragStart(node.id, e);
@@ -32,6 +38,12 @@ const TwoDNode = ({
     }
   };
 
+  const handleNodeClick = (e) => {
+    e.stopPropagation();
+    setShowTooltip(true);
+    onFocus?.(node.id);
+  };
+
   return (
     <Rnd
       size={{ width: dimensions.width, height: dimensions.height }}
@@ -40,17 +52,44 @@ const TwoDNode = ({
       onDragStop={handleDragStop}
       disableDragging={!isDraggable}
       scale={zoom}
-      className={`relative transition-all duration-200 group ${
+      className={`relative transition-all duration-200 ${
         isFocused ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' : ''
       }`}
+      onClick={handleNodeClick}
       bounds="parent"
     >
-      <div onClick={() => onFocus?.(node.id)} className="relative w-full h-full">
+      {showTooltip && isFocused && (
+        <NodeStyleTooltip
+          position={position}
+          onStyleChange={(style) => {
+            const newDimensions = dimensions;
+            onNodeUpdate(node.id, { 
+              visualStyle: style,
+              width: newDimensions.width,
+              height: newDimensions.height
+            });
+          }}
+          onTextSizeChange={(size) => {
+            setTextSize(size);
+            onNodeUpdate(node.id, { textSize: size });
+          }}
+          onAlignmentChange={(align) => {
+            setTextAlign(align);
+            onNodeUpdate(node.id, { textAlign: align });
+          }}
+          onTypeChange={(type) => onNodeUpdate(node.id, { nodeType: type })}
+          onAIChat={() => onAIConversation?.(node)}
+        />
+      )}
+
+      <div onClick={handleNodeClick} className="relative w-full h-full">
         <NodeContent
           style={node.visualStyle}
           node={node}
           isFocused={isFocused}
           dimensions={dimensions}
+          textSize={textSize}
+          textAlign={textAlign}
         />
         
         <ConnectionDot 

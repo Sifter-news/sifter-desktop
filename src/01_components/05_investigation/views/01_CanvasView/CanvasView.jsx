@@ -12,6 +12,7 @@ import { handleCanvasInteraction } from './handlers/canvasHandlers';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useConnectionHandling } from './hooks/useConnectionHandling';
 import { NODE_STYLES } from '@/utils/nodeStyles';
+import { useNodeRendering } from './hooks/useNodeRendering';
 
 const CanvasView = ({ 
   nodes, 
@@ -30,6 +31,7 @@ const CanvasView = ({
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const { setDebugData } = useDebug();
   const { zoom, position, handleZoom, handleWheel } = useZoomPan();
+  
   const { 
     connections, 
     activeConnection, 
@@ -46,6 +48,18 @@ const CanvasView = ({
     setNodes,
     setNodeToDelete,
     setShowDeleteConfirmation
+  });
+
+  const { renderNodes } = useNodeRendering({
+    nodes,
+    focusedNodeId,
+    onNodeFocus,
+    onUpdateNode,
+    onDeleteNode,
+    zoom,
+    handleConnectionStart,
+    handleConnectionEnd,
+    NODE_STYLES
   });
 
   useEffect(() => {
@@ -111,22 +125,6 @@ const CanvasView = ({
     toast.success('New node added');
   };
 
-  const handleNodeDragStart = (nodeId, e) => {
-    if (e.altKey) {
-      const originalNode = nodes.find(node => node.id === nodeId);
-      if (originalNode) {
-        const duplicateNode = {
-          ...originalNode,
-          id: Date.now().toString(),
-          x: originalNode.x,
-          y: originalNode.y
-        };
-        onAddNode(duplicateNode);
-        toast.success('Node duplicated');
-      }
-    }
-  };
-
   const transformStyle = {
     transform: `scale(${zoom})`,
     transformOrigin: '0 0',
@@ -172,26 +170,7 @@ const CanvasView = ({
           />
         )}
 
-        {nodes.map(node => {
-          const style = NODE_STYLES[node.visualStyle || 'default'];
-          return (
-            <TwoDNode
-              key={node.id}
-              node={node}
-              zoom={zoom}
-              onNodeUpdate={onUpdateNode}
-              onFocus={onNodeFocus}
-              isFocused={focusedNodeId === node.id}
-              onDelete={() => onDeleteNode(node.id)}
-              isDraggable={true}
-              position={{ x: node.x, y: node.y }}
-              onStartConnection={handleConnectionStart}
-              onEndConnection={handleConnectionEnd}
-              dimensions={style}
-              onDragStart={handleNodeDragStart}
-            />
-          );
-        })}
+        {renderNodes()}
       </div>
 
       <CanvasControls 
