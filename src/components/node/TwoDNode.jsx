@@ -58,7 +58,7 @@ const TwoDNode = ({
       onDragStop={handleDragStop}
       disableDragging={!isDraggable}
       scale={zoom}
-      className={`relative transition-all duration-200 bg-white ${
+      className={`relative transition-all duration-200 ${
         isFocused ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' : ''
       }`}
       onClick={handleNodeClick}
@@ -89,7 +89,7 @@ const TwoDNode = ({
         />
       )}
 
-      <div onClick={handleNodeClick} className="relative w-full h-full bg-white rounded-lg shadow-sm">
+      <div onClick={handleNodeClick} className="relative w-full h-full">
         <NodeContent
           style={node.visualStyle}
           node={node}
