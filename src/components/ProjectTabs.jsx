@@ -7,6 +7,7 @@ import MapView from './MapView';
 import { CanvasView } from '@/01_components/05_investigation/views';
 import SidePanel from './SidePanel';
 import { useDebug } from '@/contexts/DebugContext';
+import Toolbar from '@/01_components/05_investigation/viewsControls/Toolbar';
 
 const ProjectTabs = ({ 
   project, 
@@ -23,6 +24,8 @@ const ProjectTabs = ({
 }) => {
   const selectedNode = nodes.find(node => node.id === focusedNodeId);
   const { setDebugData } = useDebug();
+  const [viewMode, setViewMode] = React.useState('2d');
+  const [isAIChatOpen, setIsAIChatOpen] = React.useState(false);
 
   useEffect(() => {
     setDebugData(prev => ({
@@ -45,6 +48,13 @@ const ProjectTabs = ({
         onUpdateNode={onUpdateNode}
         onNodeFocus={onNodeFocus}
         selectedNode={selectedNode}
+        onAddNode={onAddNode}
+      />
+      
+      <Toolbar 
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        onAIChatToggle={() => setIsAIChatOpen(!isAIChatOpen)}
         onAddNode={onAddNode}
       />
       
