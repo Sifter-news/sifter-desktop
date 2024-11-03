@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { UserIcon, ImageIcon } from 'lucide-react';
+import { toast } from 'sonner';
 
 const ProfileTabContent = ({ 
   avatar, 
@@ -16,6 +17,22 @@ const ProfileTabContent = ({
   onNameChange, 
   onSave 
 }) => {
+  const handleImageChange = async (event) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      try {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          onImageUpload(reader.result);
+        };
+        reader.readAsDataURL(file);
+        toast.success('Profile image updated');
+      } catch (error) {
+        toast.error('Error updating profile image');
+      }
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -37,7 +54,7 @@ const ProfileTabContent = ({
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={onImageUpload}
+              onChange={handleImageChange}
             />
           </div>
         </div>

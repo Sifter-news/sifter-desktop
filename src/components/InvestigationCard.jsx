@@ -3,6 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Link } from 'react-router-dom';
 import { Input } from "@/components/ui/input";
 import { format } from 'date-fns';
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { FileText } from 'lucide-react';
 
 const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
   const [image, setImage] = useState(investigation.image || '/placeholder.svg');
@@ -41,16 +43,23 @@ const InvestigationCard = ({ investigation, onUpdateInvestigation }) => {
           }}
         ></div>
         <div className="absolute left-4 top-4 bottom-4 w-64 bg-white rounded-[24px] overflow-hidden">
-          <div className="absolute top-4 right-4 w-8 h-8 bg-white rounded-full shadow-md"></div>
+          <div className="absolute top-4 right-4">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={image} alt={investigation.title} />
+              <AvatarFallback><FileText className="h-4 w-4" /></AvatarFallback>
+            </Avatar>
+          </div>
           <div className="h-[180px] w-full overflow-hidden relative">
-            <img 
-              src={image}
-              alt={investigation.title || 'Investigation'}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.src = '/placeholder.svg';
-              }}
-            />
+            <Avatar className="w-full h-full rounded-none">
+              <AvatarImage 
+                src={image}
+                alt={investigation.title || 'Investigation'}
+                className="w-full h-full object-cover"
+              />
+              <AvatarFallback className="w-full h-full">
+                <FileText className="h-12 w-12" />
+              </AvatarFallback>
+            </Avatar>
             <Input
               type="file"
               accept="image/*"
