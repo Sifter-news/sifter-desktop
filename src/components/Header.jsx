@@ -5,6 +5,8 @@ import { Separator } from "@/components/ui/separator";
 import ModalEdit_Investigation from './modals/ModalEdit_Investigation';
 import { supabase } from '@/config/supabase';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { User } from "lucide-react";
 
 const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpdate, onProjectDelete }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -66,15 +68,32 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
 
         <div className="ml-auto w-[200px] flex justify-end items-center space-x-2">
           {projectName && (
-            <>
-              <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
-                Dashboard
-              </Link>
-            </>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
+                    Dashboard
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Go to Dashboard</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
           
           <div className="flex flex-col items-end">
-            <span className="text-sm font-medium">{username}</span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <span className="text-sm font-medium hidden md:inline">{username}</span>
+                  <User className="h-5 w-5 md:hidden text-gray-600" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{username}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
           <UserProfile user={user} onUpdateUser={onUpdateUser} />
         </div>
