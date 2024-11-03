@@ -24,6 +24,12 @@ const Canvas2DPostitNode = ({
     <div 
       className={`w-64 h-64 p-4 bg-yellow-100 rounded-lg flex flex-col ${style}`}
       onClick={onSelect}
+      style={{
+        position: 'absolute',
+        left: node.x,
+        top: node.y,
+        transform: 'none'
+      }}
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
