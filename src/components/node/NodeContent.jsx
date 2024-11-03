@@ -29,7 +29,8 @@ const NodeContent = ({
   textSize = "medium",
   textAlign = "left",
   color = "white",
-  dimensions
+  dimensions,
+  onUpdateNode
 }) => {
   const colorClasses = {
     white: "bg-white",
@@ -57,6 +58,12 @@ const NodeContent = ({
         .eq('id', node.id);
 
       if (error) throw error;
+
+      // Call onUpdateNode to update the UI state
+      if (onUpdateNode) {
+        onUpdateNode(node.id, updates);
+      }
+      
       toast.success('Changes saved');
     } catch (error) {
       console.error('Error saving changes:', error);
