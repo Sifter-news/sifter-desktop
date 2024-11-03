@@ -52,9 +52,10 @@ const NodeStyleTooltip = ({
     <div 
       className="absolute bg-white rounded-lg shadow-lg p-2 flex gap-1 z-50"
       style={{ 
-        left: position.x,
-        top: position.y - 8,
-        transform: 'translateY(-100%)' 
+        left: '50%',
+        bottom: '100%',
+        transform: 'translateX(-50%)',
+        marginBottom: '8px'
       }}
     >
       <DropdownMenu>
