@@ -72,8 +72,8 @@ const CanvasView = ({
   const handleMouseMove = useCallback((e) => {
     if (isPanning) {
       handlePanMove?.({
-        movementX: e.movementX / zoom,
-        movementY: e.movementY / zoom
+        movementX: e.movementX,
+        movementY: e.movementY
       });
     }
     
@@ -128,6 +128,7 @@ const CanvasView = ({
   const transformStyle = {
     transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
     transformOrigin: '0 0',
+    transition: isPanning ? 'none' : 'transform 0.1s ease-out'
   };
 
   return (
@@ -140,14 +141,16 @@ const CanvasView = ({
       onWheel={handleWheel}
       ref={canvasRef}
       tabIndex={0}
-      onKeyDown={handleKeyDown}
       style={{ cursor: isPanning ? 'grabbing' : activeTool === 'pan' ? 'grab' : 'default' }}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
       <CanvasBackground zoom={zoom} position={position} />
       
-      <div className="absolute inset-0" style={transformStyle}>
+      <div 
+        className="absolute inset-0 will-change-transform" 
+        style={transformStyle}
+      >
         {connections.map((connection, index) => (
           <ConnectorLine
             key={`connection-${index}`}
