@@ -9,7 +9,8 @@ const CanvasView = ({
   onUpdateNode, 
   onDeleteNode,
   focusedNodeId,
-  onNodeFocus 
+  onNodeFocus,
+  selectedNodeId 
 }) => {
   const canvasRef = useRef(null);
   const [activeTool, setActiveTool] = useState('select');
@@ -60,6 +61,7 @@ const CanvasView = ({
         onNodeDelete={onDeleteNode}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
+        selectedNodeId={selectedNodeId}
       />
     </div>
   );
