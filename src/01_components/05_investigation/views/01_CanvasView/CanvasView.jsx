@@ -12,7 +12,7 @@ import { handleCanvasInteraction } from './handlers/canvasHandlers';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useConnectionHandling } from './hooks/useConnectionHandling';
 import { NODE_STYLES } from '@/utils/nodeStyles';
-import { useNodeRendering } from './hooks/useNodeRendering';
+import { useNodeRendering } from './hooks/useNodeRendering.jsx';
 
 const CanvasView = ({ 
   nodes, 
@@ -193,3 +193,4 @@ const CanvasView = ({
 };
 
 export default CanvasView;
+
