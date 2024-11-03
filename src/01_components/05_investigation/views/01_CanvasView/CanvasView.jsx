@@ -13,6 +13,7 @@ import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useConnectionHandling } from './hooks/useConnectionHandling';
 import { NODE_STYLES } from '@/utils/nodeStyles';
 import { useNodeRendering } from './hooks/useNodeRendering.jsx';
+import { supabase } from '@/integrations/supabase/supabase';
 
 const CanvasView = ({ 
   nodes, 
@@ -31,6 +32,39 @@ const CanvasView = ({
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const { setDebugData } = useDebug();
   const { zoom, position, handleZoom, handleWheel } = useZoomPan();
+
+  const handleDeleteNode = async (nodeId) => {
+    try {
+      // Delete from database
+      const { error } = await supabase
+        .from('node')
+        .delete()
+        .eq('id', nodeId);
+
+      if (error) throw error;
+
+      // Delete from local state
+      onDeleteNode(nodeId);
+      toast.success('Node deleted successfully');
+    } catch (error) {
+      console.error('Error deleting node:', error);
+      toast.error('Failed to delete node');
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Delete' && focusedNodeId) {
+        e.preventDefault();
+        handleDeleteNode(focusedNodeId);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [focusedNodeId]);
   
   const { 
     connections, 
@@ -41,33 +75,17 @@ const CanvasView = ({
     setActiveConnection 
   } = useConnectionHandling();
 
-  const handleKeyDown = useKeyboardShortcuts({
-    focusedNodeId,
-    nodes,
-    onDeleteNode,
-    setNodes,
-    setNodeToDelete,
-    setShowDeleteConfirmation
-  });
-
   const { renderNodes } = useNodeRendering({
     nodes,
     focusedNodeId,
     onNodeFocus,
     onUpdateNode,
-    onDeleteNode,
+    onDeleteNode: handleDeleteNode,
     zoom,
     handleConnectionStart,
     handleConnectionEnd,
     NODE_STYLES
   });
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [handleKeyDown]);
 
   const handleMouseMove = (e) => {
     if (activeConnection) {
@@ -193,4 +211,3 @@ const CanvasView = ({
 };
 
 export default CanvasView;
-
