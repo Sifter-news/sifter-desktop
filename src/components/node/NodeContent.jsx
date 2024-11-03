@@ -67,7 +67,6 @@ const NodeContent = ({
     } catch (error) {
       console.error('Error saving changes:', error);
       toast.error('Failed to save changes');
-      throw error;
     }
   };
 
@@ -104,7 +103,7 @@ const NodeContent = ({
                   value={localTitle}
                   onChange={(e) => setLocalTitle(e.target.value)}
                   onBlur={handleInputBlur}
-                  className="bg-transparent border-none focus:ring-0 focus:outline-none flex-1"
+                  className="bg-transparent border-none focus:ring-0 focus:outline-none focus:border-none focus:shadow-none selection:bg-transparent flex-1"
                   placeholder="Title"
                   autoFocus
                 />
@@ -138,7 +137,7 @@ const NodeContent = ({
                   value={localTitle}
                   onChange={(e) => setLocalTitle(e.target.value)}
                   onBlur={handleInputBlur}
-                  className="bg-transparent border-none focus:ring-0 focus:outline-none flex-1"
+                  className="bg-transparent border-none focus:ring-0 focus:outline-none focus:border-none focus:shadow-none selection:bg-transparent flex-1"
                   autoFocus
                 />
               ) : (
