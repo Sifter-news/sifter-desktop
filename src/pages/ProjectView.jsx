@@ -4,7 +4,6 @@ import Header from '../components/Header';
 import ProjectTabs from '../components/ProjectTabs';
 import ProjectModals from '../components/ProjectModals';
 import ContentModal from '../components/ContentModal';
-import Toolbar from '@/01_components/05_investigation/viewsControls/Toolbar';
 import { useProjectData } from '../hooks/useProjectData';
 import { useNodeOperations } from '../components/NodeOperations';
 import { useDebug } from '@/contexts/DebugContext';
@@ -14,26 +13,27 @@ const ProjectView = () => {
   const [selectedContent, setSelectedContent] = useState(null);
   const [isContentModalOpen, setIsContentModalOpen] = useState(false);
   const [focusedNodeId, setFocusedNodeId] = useState(null);
-  const [viewMode, setViewMode] = useState('canvas2d');
-  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const { setDebugData } = useDebug();
   
   const { project, setProject, nodes, setNodes, loading } = useProjectData(id);
   const { handleAddNode, handleUpdateNode, handleDeleteNode } = useNodeOperations(setNodes);
 
+  // Set initial view to mindmap and update debug data
   useEffect(() => {
     setDebugData(prev => ({
       ...prev,
-      currentView: viewMode
+      currentView: 'mindmap'
     }));
-  }, [setDebugData, viewMode]);
+  }, [setDebugData]);
 
-  const handleViewModeChange = (newMode) => {
-    setViewMode(newMode);
+  const user = {
+    name: 'User-Name',
+    avatar: '/default-image.png',
+    email: 'user@example.com',
   };
 
-  const handleAIChatToggle = () => {
-    setIsAIChatOpen(!isAIChatOpen);
+  const handleProjectUpdate = (updatedProject) => {
+    setProject(updatedProject);
   };
 
   if (loading) {
@@ -47,33 +47,24 @@ const ProjectView = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header 
-        user={project.user} 
+        user={user} 
         projectName={project.title} 
         onProjectClick={() => {}}
       />
-      <div className="flex-grow relative">
-        <ProjectTabs
-          project={project}
-          nodes={nodes}
-          setNodes={setNodes}
-          onAddNode={(node) => handleAddNode(node, id)}
-          onUpdateNode={handleUpdateNode}
-          onDeleteNode={handleDeleteNode}
-          focusedNodeId={focusedNodeId}
-          onNodeFocus={setFocusedNodeId}
-          viewMode={viewMode}
-          onViewModeChange={handleViewModeChange}
-        />
-        <Toolbar 
-          viewMode={viewMode}
-          onViewModeChange={handleViewModeChange}
-          onAIChatToggle={handleAIChatToggle}
-          onAddNode={(node) => handleAddNode(node, id)}
-        />
-      </div>
+      <ProjectTabs
+        project={project}
+        nodes={nodes}
+        setNodes={setNodes}
+        onAddNode={(node) => handleAddNode(node, id)}
+        onUpdateNode={handleUpdateNode}
+        onDeleteNode={handleDeleteNode}
+        focusedNodeId={focusedNodeId}
+        onNodeFocus={setFocusedNodeId}
+        defaultView="mindmap"
+      />
       <ProjectModals
         project={project}
-        onProjectUpdate={(updatedProject) => setProject(updatedProject)}
+        onProjectUpdate={handleProjectUpdate}
       />
       <ContentModal
         isOpen={isContentModalOpen}
