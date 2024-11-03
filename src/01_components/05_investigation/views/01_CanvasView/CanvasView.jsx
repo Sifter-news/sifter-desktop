@@ -140,21 +140,25 @@ const CanvasView = ({
           />
         )}
 
-        {nodes.map(node => (
-          <TwoDNode
-            key={node.id}
-            node={node}
-            zoom={zoom}
-            onNodeUpdate={onUpdateNode}
-            onFocus={onNodeFocus}
-            isFocused={focusedNodeId === node.id}
-            onDelete={() => onDeleteNode(node.id)}
-            isDraggable={true}
-            position={{ x: node.x, y: node.y }}
-            onStartConnection={handleConnectionStart}
-            onEndConnection={handleConnectionEnd}
-          />
-        ))}
+        {nodes.map(node => {
+          const dimensions = getNodeDimensions(node.visualStyle || 'default');
+          return (
+            <TwoDNode
+              key={node.id}
+              node={node}
+              zoom={zoom}
+              onNodeUpdate={onUpdateNode}
+              onFocus={onNodeFocus}
+              isFocused={focusedNodeId === node.id}
+              onDelete={() => onDeleteNode(node.id)}
+              isDraggable={true}
+              position={{ x: node.x, y: node.y }}
+              onStartConnection={handleConnectionStart}
+              onEndConnection={handleConnectionEnd}
+              dimensions={dimensions}
+            />
+          );
+        })}
       </div>
 
       <CanvasControls 
