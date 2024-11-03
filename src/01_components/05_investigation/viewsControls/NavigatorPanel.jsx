@@ -12,7 +12,7 @@ const NavigatorPanel = ({
   onDocumentSelect 
 }) => {
   return (
-    <div className="w-full h-full bg-white/10 backdrop-blur-sm -mt-1 mb-1">
+    <div className="w-full h-full bg-white/10 backdrop-blur-sm -mt-1 p-2">
       <Tabs defaultValue="nodes" className="w-full">
         <TabsList className="w-full">
           <TabsTrigger value="nodes">Nodes</TabsTrigger>
