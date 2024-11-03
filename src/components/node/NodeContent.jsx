@@ -59,7 +59,7 @@ const NodeContent = ({
 
       if (error) throw error;
 
-      // Call onUpdateNode to update the UI state
+      // Call onUpdateNode to update the UI state immediately
       if (onUpdateNode) {
         onUpdateNode(node.id, updates);
       }
