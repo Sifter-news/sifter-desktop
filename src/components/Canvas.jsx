@@ -6,7 +6,6 @@ import CanvasBackground from './canvas/CanvasBackground';
 import CanvasControls from './canvas/CanvasControls';
 import ConnectorLine from './node/ConnectorLine';
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
-import { TransformWrapper, TransformComponent, Minimap } from 'react-zoom-pan-pinch';
 
 const Canvas = forwardRef(({ 
   nodes, 
@@ -69,9 +68,70 @@ const Canvas = forwardRef(({
     };
   }, [handleKeyDown]);
 
+  const handleMouseDown = useCallback((e) => {
+    if (e.button === 1 || activeTool === 'pan') {
+      setIsPanning(true);
+      handlePanStart?.();
+      e.preventDefault();
+    }
+  }, [activeTool, handlePanStart]);
+
+  const handleMouseMove = useCallback((e) => {
+    if (isPanning) {
+      handlePanMove?.({
+        movementX: e.movementX / zoom,
+        movementY: e.movementY / zoom
+      });
+    }
+    
+    if (activeConnection) {
+      const rect = ref.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left - position.x) / zoom;
+      const y = (e.clientY - rect.top - position.y) / zoom;
+      setActiveConnection(prev => ({
+        ...prev,
+        endX: x,
+        endY: y
+      }));
+    }
+  }, [isPanning, handlePanMove, zoom, activeConnection, position.x, position.y, ref]);
+
+  const handleMouseUp = useCallback((e) => {
+    if (isPanning) {
+      setIsPanning(false);
+      handlePanEnd?.();
+    }
+
+    if (activeConnection) {
+      // Here you would check if the mouse is over another node's connection point
+      // and create a permanent connection if it is
+      setActiveConnection(null);
+    }
+  }, [isPanning, handlePanEnd, activeConnection]);
+
+  const startConnection = (nodeId, startX, startY) => {
+    setActiveConnection({
+      startX,
+      startY,
+      endX: startX,
+      endY: startY,
+      sourceNodeId: nodeId
+    });
+  };
+
+  const transformStyle = {
+    transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
+    transformOrigin: '0 0',
+  };
+
   return (
     <div 
       className="w-full h-full overflow-hidden cursor-auto relative"
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      onWheel={handleWheel}
       ref={ref}
       tabIndex={0}
       onKeyDown={handleKeyDown}
@@ -79,93 +139,45 @@ const Canvas = forwardRef(({
       onDragOver={onDragOver}
       onDrop={onDrop}
     >
-      <TransformWrapper
-        initialScale={1}
-        minScale={0.1}
-        maxScale={4}
-        wheel={{ step: 0.1 }}
-        onPanning={({ state }) => {
-          handlePanMove?.({
-            movementX: state.positionX,
-            movementY: state.positionY
-          });
-        }}
-      >
-        {({ zoomIn, zoomOut, resetTransform }) => (
-          <>
-            <TransformComponent
-              wrapperStyle={{ width: '100%', height: '100%' }}
-            >
-              <div className="w-[8000px] h-[8000px] relative">
-                <CanvasBackground zoom={zoom} position={position} />
-                
-                <div className="absolute inset-0">
-                  {connections.map((connection, index) => (
-                    <ConnectorLine
-                      key={`connection-${index}`}
-                      startX={connection.startX}
-                      startY={connection.startY}
-                      endX={connection.endX}
-                      endY={connection.endY}
-                    />
-                  ))}
+      <CanvasBackground zoom={zoom} position={position} />
+      
+      <div className="absolute inset-0" style={transformStyle}>
+        {/* Render permanent connections */}
+        {connections.map((connection, index) => (
+          <ConnectorLine
+            key={`connection-${index}`}
+            startX={connection.startX}
+            startY={connection.startY}
+            endX={connection.endX}
+            endY={connection.endY}
+          />
+        ))}
 
-                  {activeConnection && (
-                    <ConnectorLine
-                      startX={activeConnection.startX}
-                      startY={activeConnection.startY}
-                      endX={activeConnection.endX}
-                      endY={activeConnection.endY}
-                    />
-                  )}
-
-                  {nodes.map(node => (
-                    <TwoDNode
-                      key={node.id}
-                      node={node}
-                      zoom={zoom}
-                      onNodeUpdate={onNodeUpdate}
-                      onFocus={onNodeFocus}
-                      isFocused={focusedNodeId === node.id}
-                      onDelete={() => onNodeDelete(node.id)}
-                      isDraggable={activeTool !== 'pan'}
-                      position={{ x: node.x, y: node.y }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </TransformComponent>
-
-            <div className="absolute bottom-20 right-4 flex flex-col gap-2">
-              <button
-                onClick={() => zoomIn()}
-                className="bg-black/90 text-white p-2 rounded-lg hover:bg-black/80"
-              >
-                +
-              </button>
-              <button
-                onClick={() => zoomOut()}
-                className="bg-black/90 text-white p-2 rounded-lg hover:bg-black/80"
-              >
-                -
-              </button>
-              <button
-                onClick={() => resetTransform()}
-                className="bg-black/90 text-white p-2 rounded-lg hover:bg-black/80"
-              >
-                Reset
-              </button>
-            </div>
-
-            <div className="absolute bottom-20 left-4 w-[200px] h-[150px] bg-black/90 rounded-lg overflow-hidden">
-              <Minimap
-                className="w-full h-full"
-                style={{ background: 'rgba(0,0,0,0.1)' }}
-              />
-            </div>
-          </>
+        {/* Render active connection being drawn */}
+        {activeConnection && (
+          <ConnectorLine
+            startX={activeConnection.startX}
+            startY={activeConnection.startY}
+            endX={activeConnection.endX}
+            endY={activeConnection.endY}
+          />
         )}
-      </TransformWrapper>
+
+        {nodes.map(node => (
+          <TwoDNode
+            key={node.id}
+            node={node}
+            zoom={zoom}
+            onNodeUpdate={onNodeUpdate}
+            onFocus={onNodeFocus}
+            isFocused={focusedNodeId === node.id}
+            onDelete={() => onNodeDelete(node.id)}
+            isDraggable={activeTool !== 'pan'}
+            position={{ x: node.x, y: node.y }}
+            onStartConnection={startConnection}
+          />
+        ))}
+      </div>
 
       <CanvasControls 
         showDeleteConfirmation={showDeleteConfirmation}
