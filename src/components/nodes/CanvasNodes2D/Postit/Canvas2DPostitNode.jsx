@@ -23,7 +23,6 @@ const Canvas2DPostitNode = ({
 }) => {
   const baseProps = NodeBase(node);
   const style = getNodeStyle(baseProps.visualStyle, isHovered, isSelected);
-  const nodeColor = node.color || 'bg-yellow-100';
 
   const handleResize = (e, direction, ref, delta, position) => {
     onUpdateNode(node.id, {
@@ -42,7 +41,7 @@ const Canvas2DPostitNode = ({
       scale={zoom}
       minWidth={150}
       minHeight={150}
-      className={`${style} ${nodeColor} rounded-lg shadow-md`}
+      className={`${style} bg-yellow-100 rounded-lg flex flex-col h-full`}
       onClick={onSelect}
       resizeHandleClasses={{
         top: 'border-t-2 border-blue-500 cursor-ns-resize opacity-0 group-hover:opacity-100',
