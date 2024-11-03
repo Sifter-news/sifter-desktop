@@ -7,6 +7,10 @@ import CanvasControls from './CanvasControls';
 import ConnectorLine from '@/components/node/ConnectorLine';
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 import { useZoomPan } from '@/hooks/useZoomPan';
+import { handleNodeDrag } from './handlers/nodeHandlers';
+import { handleCanvasInteraction } from './handlers/canvasHandlers';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { useConnectionHandling } from './hooks/useConnectionHandling';
 
 const CanvasView = ({ 
   nodes, 
@@ -23,37 +27,18 @@ const CanvasView = ({
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [nodeToDelete, setNodeToDelete] = useState(null);
   const [isPanning, setIsPanning] = useState(false);
-  const [connections, setConnections] = useState([]);
-  const [activeConnection, setActiveConnection] = useState(null);
   const { setDebugData } = useDebug();
   const { zoom, position, handleZoom, handlePanStart, handlePanMove, handlePanEnd, handleWheel } = useZoomPan();
+  const { connections, activeConnection, handleConnectionStart, handleConnectionEnd } = useConnectionHandling();
 
-  const handleKeyDown = useCallback((e) => {
-    if (focusedNodeId && (e.key === 'Delete' || e.key === 'Backspace')) {
-      const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
-      if (nodeToDelete) {
-        if (nodeToDelete.type === 'ai') {
-          setNodeToDelete(nodeToDelete);
-          setShowDeleteConfirmation(true);
-        } else {
-          onDeleteNode(focusedNodeId);
-          toast.success("Node deleted");
-        }
-      }
-    } else if (focusedNodeId && (e.metaKey || e.ctrlKey) && e.key === 'c') {
-      const nodeToCopy = nodes.find(node => node.id === focusedNodeId);
-      if (nodeToCopy) {
-        copyNode(nodeToCopy);
-        toast.success("Node copied to clipboard");
-      }
-    } else if ((e.metaKey || e.ctrlKey) && e.key === 'v') {
-      const newNode = pasteNode();
-      if (newNode) {
-        setNodes(prev => [...prev, newNode]);
-        toast.success("Node pasted from clipboard");
-      }
-    }
-  }, [focusedNodeId, nodes, onDeleteNode, setNodes]);
+  const handleKeyDown = useKeyboardShortcuts({
+    focusedNodeId,
+    nodes,
+    onDeleteNode,
+    setNodes,
+    setNodeToDelete,
+    setShowDeleteConfirmation
+  });
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -62,49 +47,19 @@ const CanvasView = ({
     };
   }, [handleKeyDown]);
 
-  const handleMouseDown = useCallback((e) => {
-    if (e.button === 1 || activeTool === 'pan') {
-      setIsPanning(true);
-      handlePanStart?.();
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  }, [activeTool, handlePanStart]);
-
-  const handleMouseMove = useCallback((e) => {
-    if (isPanning && contentRef.current) {
-      handlePanMove?.({
-        movementX: e.movementX,
-        movementY: e.movementY
-      });
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    
-    if (activeConnection) {
-      const rect = canvasRef.current.getBoundingClientRect();
-      const x = (e.clientX - rect.left - position.x) / zoom;
-      const y = (e.clientY - rect.top - position.y) / zoom;
-      setActiveConnection(prev => ({
-        ...prev,
-        endX: x,
-        endY: y
-      }));
-    }
-  }, [isPanning, handlePanMove, zoom, activeConnection, position.x, position.y]);
-
-  const handleMouseUp = useCallback((e) => {
-    if (isPanning) {
-      setIsPanning(false);
-      handlePanEnd?.();
-      e.preventDefault();
-      e.stopPropagation();
-    }
-
-    if (activeConnection) {
-      setActiveConnection(null);
-    }
-  }, [isPanning, handlePanEnd, activeConnection]);
+  const { handleMouseDown, handleMouseMove, handleMouseUp } = handleCanvasInteraction({
+    activeTool,
+    isPanning,
+    setIsPanning,
+    handlePanStart,
+    handlePanMove,
+    handlePanEnd,
+    activeConnection,
+    canvasRef,
+    position,
+    zoom,
+    setActiveConnection
+  });
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -182,7 +137,19 @@ const CanvasView = ({
             key={node.id}
             node={node}
             zoom={zoom}
-            onNodeUpdate={onUpdateNode}
+            onNodeUpdate={(id, updates) => {
+              // Adjust position based on zoom and pan
+              if (updates.x !== undefined || updates.y !== undefined) {
+                const adjustedUpdates = {
+                  ...updates,
+                  x: updates.x !== undefined ? updates.x : node.x,
+                  y: updates.y !== undefined ? updates.y : node.y
+                };
+                onUpdateNode(id, adjustedUpdates);
+              } else {
+                onUpdateNode(id, updates);
+              }
+            }}
             onFocus={onNodeFocus}
             isFocused={focusedNodeId === node.id}
             onDelete={() => onDeleteNode(node.id)}
