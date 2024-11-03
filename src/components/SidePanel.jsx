@@ -84,7 +84,7 @@ const SidePanel = ({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
-        className="fixed top-[64px] left-0 z-50"
+        className="fixed bottom-8 left-0 z-50"
       >
         <Button
           variant="secondary"
