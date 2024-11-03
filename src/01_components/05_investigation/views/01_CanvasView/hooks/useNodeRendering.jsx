@@ -18,7 +18,10 @@ export const useNodeRendering = ({
       return (
         <TwoDNode
           key={node.id}
-          node={node}
+          node={{
+            ...node,
+            color: node.color || 'bg-white' // Set default color to white
+          }}
           zoom={zoom}
           onNodeUpdate={onUpdateNode}
           onFocus={onNodeFocus}
