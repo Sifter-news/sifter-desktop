@@ -18,6 +18,7 @@ const CanvasView = ({
   onNodeFocus 
 }) => {
   const canvasRef = useRef(null);
+  const contentRef = useRef(null);
   const [activeTool, setActiveTool] = useState('select');
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [nodeToDelete, setNodeToDelete] = useState(null);
@@ -66,15 +67,18 @@ const CanvasView = ({
       setIsPanning(true);
       handlePanStart?.();
       e.preventDefault();
+      e.stopPropagation();
     }
   }, [activeTool, handlePanStart]);
 
   const handleMouseMove = useCallback((e) => {
-    if (isPanning) {
+    if (isPanning && contentRef.current) {
       handlePanMove?.({
         movementX: e.movementX,
         movementY: e.movementY
       });
+      e.preventDefault();
+      e.stopPropagation();
     }
     
     if (activeConnection) {
@@ -93,6 +97,8 @@ const CanvasView = ({
     if (isPanning) {
       setIsPanning(false);
       handlePanEnd?.();
+      e.preventDefault();
+      e.stopPropagation();
     }
 
     if (activeConnection) {
@@ -128,28 +134,29 @@ const CanvasView = ({
   const transformStyle = {
     transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
     transformOrigin: '0 0',
-    transition: isPanning ? 'none' : 'transform 0.1s ease-out'
+    transition: isPanning ? 'none' : 'transform 0.1s ease-out',
+    touchAction: 'none'
   };
 
   return (
     <div 
       className="w-full h-screen overflow-hidden cursor-auto relative"
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-      onWheel={handleWheel}
       ref={canvasRef}
       tabIndex={0}
-      style={{ cursor: isPanning ? 'grabbing' : activeTool === 'pan' ? 'grab' : 'default' }}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
       <CanvasBackground zoom={zoom} position={position} />
       
       <div 
+        ref={contentRef}
         className="absolute inset-0 will-change-transform" 
         style={transformStyle}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onWheel={handleWheel}
       >
         {connections.map((connection, index) => (
           <ConnectorLine
