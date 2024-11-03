@@ -16,7 +16,7 @@ import {
 
 const ViewToggle = ({ currentView, onViewChange }) => {
   const views = [
-    { id: 'canvas', icon: Grid2x2, label: 'Canvas View', shortcut: '2' },
+    { id: '2d', icon: Grid2x2, label: '2D View', shortcut: '2' },
     { id: '3d', icon: Axis3D, label: '3D View', shortcut: '3' }
   ];
 

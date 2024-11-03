@@ -10,7 +10,7 @@ import {
 
 const ViewToggle = ({ currentView, onViewChange }) => {
   const views = {
-    'canvas': 'Canvas View',
+    '2d': '2D View',
     '3d': '3D View',
     'flat': 'Flat View'
   };
