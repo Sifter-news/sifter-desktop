@@ -36,9 +36,13 @@ const CanvasView = ({
     
     if (nodeType === 'postit') {
       const rect = canvasRef.current.getBoundingClientRect();
-      // Adjust for canvas center offset and zoom
-      const x = ((e.clientX - rect.left - position.x) / zoom) + (rect.width / (2 * zoom));
-      const y = ((e.clientY - rect.top - position.y) / zoom) + (rect.height / (2 * zoom));
+      // Calculate position relative to the current view center
+      const viewCenterX = -position.x / zoom;
+      const viewCenterY = -position.y / zoom;
+      
+      // Add the relative mouse position from the view center
+      const x = viewCenterX + ((e.clientX - rect.left) / zoom);
+      const y = viewCenterY + ((e.clientY - rect.top) / zoom);
       
       onAddNode({
         title: 'New Note',
