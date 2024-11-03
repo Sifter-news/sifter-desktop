@@ -65,8 +65,12 @@ const Canvas = forwardRef(({
         setNodes(prev => [...prev, newNode]);
         toast.success("Node pasted from clipboard");
       }
+    } else if (e.key === 'v') {
+      setActiveTool('select');
+    } else if (e.key === 'h') {
+      setActiveTool('pan');
     }
-  }, [focusedNodeId, nodes, onNodeDelete, setNodes]);
+  }, [focusedNodeId, nodes, onNodeDelete, setNodes, setActiveTool]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -189,6 +193,8 @@ const Canvas = forwardRef(({
         zoom={zoom}
         handleZoom={handleZoom}
         setPosition={setPosition}
+        activeTool={activeTool}
+        setActiveTool={setActiveTool}
       />
     </div>
   );
