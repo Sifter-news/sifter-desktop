@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Rnd } from 'react-rnd';
+import { GripVertical } from 'lucide-react';
 import NodeContent from './NodeContent';
-import NodeTooltip from './NodeTooltip';
+import NodeStyleTooltip from './NodeStyleTooltip';
 import { isColliding, findNonCollidingPosition } from '@/utils/collisionUtils';
+import { getNodeDimensions } from '@/utils/nodeStyles';
 
 const NodeRenderer = ({ 
   node, 
@@ -23,12 +25,42 @@ const NodeRenderer = ({
   const [localDescription, setLocalDescription] = useState(node.description);
   const [showTooltip, setShowTooltip] = useState(false);
   const [position, setPosition] = useState({ x: node.x, y: node.y });
+  const [isHovered, setIsHovered] = useState(false);
+  const [textSize, setTextSize] = useState(node.textSize || 'medium');
+  const [textAlign, setTextAlign] = useState(node.textAlign || 'left');
+  const [nodeColor, setNodeColor] = useState(node.color || 'white');
+  const dragStartPos = useRef(null);
+
+  const dimensions = getNodeDimensions(node?.visualStyle || 'default');
 
   useEffect(() => {
     if (!isFocused) {
       setShowTooltip(false);
     }
   }, [isFocused]);
+
+  const handleDragStart = (e, d) => {
+    dragStartPos.current = { x: d.x, y: d.y };
+    onDragStart?.(e, d);
+  };
+
+  const handleDrag = (e, d) => {
+    setPosition({ x: d.x, y: d.y });
+    onDrag?.(e, d);
+  };
+
+  const handleDragStop = (e, d) => {
+    if (!dragStartPos.current) return;
+    
+    const finalPosition = findNonCollidingPosition(
+      { ...node, x: d.x, y: d.y },
+      allNodes.filter(n => n.id !== node.id)
+    );
+    
+    setPosition(finalPosition);
+    dragStartPos.current = null;
+    onDragEnd?.(e, { ...d, ...finalPosition });
+  };
 
   const handleNodeClick = (e) => {
     e.stopPropagation();
@@ -40,39 +72,60 @@ const NodeRenderer = ({
     setIsEditing(false);
     onNodeUpdate(node.id, {
       title: localTitle,
-      description: localDescription
+      description: localDescription,
+      textSize,
+      textAlign,
+      color: nodeColor
     });
   };
 
-  const handleDragStop = (e, d) => {
-    const otherNodes = allNodes.filter(n => n.id !== node.id);
-    const newPosition = findNonCollidingPosition(
-      { ...node, x: d.x, y: d.y },
-      otherNodes
-    );
-    
-    setPosition(newPosition);
-    onDragEnd?.(e, { ...d, x: newPosition.x, y: newPosition.y });
-  };
-
   return (
-    <div className="group">
+    <div 
+      className="group"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <Rnd
-        size={{ width: node.width || 200, height: node.height || 100 }}
+        size={{ width: dimensions.width, height: dimensions.height }}
         position={position}
-        onDragStart={onDragStart}
-        onDrag={onDrag}
+        onDragStart={handleDragStart}
+        onDrag={handleDrag}
         onDragStop={handleDragStop}
         scale={zoom}
-        className={`relative ${
-          isFocused 
-            ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' 
-            : 'hover:ring-1 hover:ring-blue-300 hover:ring-offset-1 hover:shadow-md hover:scale-[1.01]'
+        className={`relative transition-all duration-200 ${
+          isFocused ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' : 
+          isHovered ? 'ring-1 ring-blue-300 ring-offset-1 shadow-md scale-[1.01]' : ''
         } ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         onClick={handleNodeClick}
-        enableResizing={false}
+        enableResizing={dimensions.resizable}
         bounds="parent"
       >
+        {isHovered && (
+          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-white/90 rounded-t-md px-2 py-1 cursor-grab active:cursor-grabbing">
+            <GripVertical className="h-4 w-4 text-gray-400" />
+          </div>
+        )}
+        
+        {showTooltip && (
+          <NodeStyleTooltip
+            position={position}
+            onStyleChange={(style) => {
+              const newDimensions = getNodeDimensions(style);
+              onNodeUpdate(node.id, { 
+                visualStyle: style,
+                width: newDimensions.width,
+                height: newDimensions.height
+              });
+            }}
+            onTextSizeChange={setTextSize}
+            onAlignmentChange={setTextAlign}
+            onTypeChange={(type) => onNodeUpdate(node.id, { nodeType: type })}
+            onColorChange={setNodeColor}
+            onEdit={() => setIsEditing(true)}
+            onAIChat={() => onAIConversation(node)}
+          />
+        )}
+        
         <NodeContent
           style={node.visualStyle}
           isEditing={isEditing}
@@ -82,15 +135,11 @@ const NodeRenderer = ({
           handleBlur={handleBlur}
           setLocalTitle={setLocalTitle}
           setLocalDescription={setLocalDescription}
-          handleNodeClick={handleNodeClick}
           isFocused={isFocused}
-        />
-        <NodeTooltip
-          node={node}
-          showTooltip={showTooltip}
-          onAIConversation={onAIConversation}
-          onDelete={onDelete}
-          onUpdateNode={onNodeUpdate}
+          textSize={textSize}
+          textAlign={textAlign}
+          color={nodeColor}
+          dimensions={dimensions}
         />
       </Rnd>
     </div>

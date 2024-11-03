@@ -107,7 +107,10 @@ const CanvasView = ({
       className="w-full h-screen overflow-hidden cursor-auto relative bg-gray-900"
       ref={canvasRef}
       tabIndex={0}
-      onDragOver={handleDragOver}
+      onDragOver={(e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+      }}
       onDrop={handleDrop}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
