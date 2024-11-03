@@ -29,7 +29,7 @@ const CanvasView = ({
   const [nodeToDelete, setNodeToDelete] = useState(null);
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const { setDebugData } = useDebug();
-  const { zoom, position, handleZoom, handleWheel, setPosition } = useZoomPan();
+  const { zoom, position, handleZoom, handleWheel } = useZoomPan();
   const { 
     connections, 
     activeConnection, 
@@ -54,21 +54,6 @@ const CanvasView = ({
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [handleKeyDown]);
-
-  // New effect to center the view on the focused node
-  useEffect(() => {
-    if (focusedNodeId && canvasRef.current) {
-      const focusedNode = nodes.find(node => node.id === focusedNodeId);
-      if (focusedNode) {
-        const canvasRect = canvasRef.current.getBoundingClientRect();
-        const centerX = (canvasRect.width / 2) - (focusedNode.x * zoom);
-        const centerY = (canvasRect.height / 2) - (focusedNode.y * zoom);
-        
-        setPosition({ x: centerX, y: centerY });
-        toast.success('Centered view on selected node');
-      }
-    }
-  }, [focusedNodeId, nodes, zoom]);
 
   const handleMouseMove = (e) => {
     if (activeConnection) {
@@ -113,7 +98,7 @@ const CanvasView = ({
   const transformStyle = {
     transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
     transformOrigin: '0 0',
-    transition: 'transform 0.3s ease-out',
+    transition: 'transform 0.1s ease-out',
     touchAction: 'none'
   };
 
