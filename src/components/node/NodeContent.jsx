@@ -20,7 +20,7 @@ const NodeContent = ({
   const baseClasses = cn(
     textSizeClasses[textSize],
     `text-${textAlign}`,
-    color, // Use the provided color instead of forcing white
+    color,
     "p-4 w-full h-full transition-all duration-200 rounded-lg shadow-sm"
   );
 
