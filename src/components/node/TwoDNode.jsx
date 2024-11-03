@@ -45,7 +45,7 @@ const TwoDNode = ({
       onDragStop={handleDragStop}
       disableDragging={!isDraggable}
       scale={zoom}
-      className={`relative transition-all duration-200 ${
+      className={`relative transition-all duration-200 group ${
         isFocused ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' : ''
       }`}
       bounds="parent"
@@ -57,7 +57,6 @@ const TwoDNode = ({
           isFocused={isFocused}
         />
         
-        {/* Connection points */}
         <ConnectionDot 
           position="top"
           isHovered={hoveredConnection === 'top'}
