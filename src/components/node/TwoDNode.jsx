@@ -22,6 +22,7 @@ const TwoDNode = ({
   const [showTooltip, setShowTooltip] = useState(false);
   const [textSize, setTextSize] = useState(node.textSize || 'medium');
   const [textAlign, setTextAlign] = useState(node.textAlign || 'left');
+  const [color, setColor] = useState(node.color || 'bg-white');
 
   const handleDragStart = (e, d) => {
     if (onDragStart) {
@@ -42,6 +43,11 @@ const TwoDNode = ({
     e.stopPropagation();
     setShowTooltip(true);
     onFocus?.(node.id);
+  };
+
+  const handleColorChange = (newColor) => {
+    setColor(newColor);
+    onNodeUpdate(node.id, { color: newColor });
   };
 
   return (
@@ -78,6 +84,7 @@ const TwoDNode = ({
             onNodeUpdate(node.id, { textAlign: align });
           }}
           onTypeChange={(type) => onNodeUpdate(node.id, { nodeType: type })}
+          onColorChange={handleColorChange}
           onAIChat={() => onAIConversation?.(node)}
         />
       )}
@@ -90,6 +97,7 @@ const TwoDNode = ({
           dimensions={dimensions}
           textSize={textSize}
           textAlign={textAlign}
+          color={color}
         />
         
         <ConnectionDot 

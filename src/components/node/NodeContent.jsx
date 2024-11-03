@@ -14,12 +14,14 @@ const NodeContent = ({
   isFocused,
   dimensions,
   textSize = "medium",
-  textAlign = "left"
+  textAlign = "left",
+  color = "bg-white"
 }) => {
   const baseClasses = cn(
     textSizeClasses[textSize],
     `text-${textAlign}`,
-    "p-4 w-full h-full transition-all duration-200"
+    color,
+    "p-4 w-full h-full transition-all duration-200 rounded-lg shadow-sm"
   );
 
   return (

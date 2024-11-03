@@ -19,6 +19,7 @@ import {
   MapPin,
   Calendar,
   MessageCircle,
+  Palette,
 } from 'lucide-react';
 
 const textSizes = {
@@ -28,12 +29,23 @@ const textSizes = {
   huge: "text-xl"
 };
 
+const colors = {
+  white: { label: 'White', value: 'bg-white' },
+  yellow: { label: 'Yellow', value: 'bg-yellow-100' },
+  blue: { label: 'Blue', value: 'bg-blue-100' },
+  green: { label: 'Green', value: 'bg-green-100' },
+  pink: { label: 'Pink', value: 'bg-pink-100' },
+  purple: { label: 'Purple', value: 'bg-purple-100' },
+  orange: { label: 'Orange', value: 'bg-orange-100' },
+};
+
 const NodeStyleTooltip = ({ 
   onStyleChange, 
   onTextSizeChange, 
   onAlignmentChange,
   onTypeChange,
   onAIChat,
+  onColorChange,
   position = { x: 0, y: 0 } 
 }) => {
   return (
@@ -122,6 +134,30 @@ const NodeStyleTooltip = ({
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => onTypeChange('node_event')}>
             <Calendar className="h-5 w-5 mr-2" /> Event
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-8 w-8">
+            <Palette className="h-5 w-5" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          {Object.entries(colors).map(([key, { label, value }]) => (
+            <DropdownMenuItem 
+              key={key} 
+              onClick={() => onColorChange(value)}
+              className="flex items-center gap-2"
+            >
+              <div className={`w-4 h-4 rounded ${value}`} />
+              {label}
+            </DropdownMenuItem>
+          ))}
+          <DropdownMenuItem onClick={() => onColorChange('custom')}>
+            <div className="w-4 h-4 rounded bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 mr-2" />
+            Custom Color
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
