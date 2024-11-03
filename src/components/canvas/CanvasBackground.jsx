@@ -1,8 +1,8 @@
 import React from 'react';
 
 const CanvasBackground = ({ zoom, position }) => {
-  const smallGridSize = 8;
-  const largeGridSize = 8 * 8;
+  const smallGridSize = 2;
+  const largeGridSize = 2 * 8;
   
   return (
     <div className="absolute inset-0 bg-white">
