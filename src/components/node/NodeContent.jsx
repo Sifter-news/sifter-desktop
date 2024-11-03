@@ -68,6 +68,7 @@ const NodeContent = ({
     } catch (error) {
       console.error('Error saving changes:', error);
       toast.error('Failed to save changes');
+      throw error;
     }
   };
 
@@ -77,7 +78,7 @@ const NodeContent = ({
       description: localDescription
     };
     await handleSave(updates);
-    handleBlur(e);
+    handleBlur?.(e);
   };
 
   const renderNode = () => {
