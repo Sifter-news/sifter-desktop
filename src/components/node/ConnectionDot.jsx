@@ -9,10 +9,10 @@ const ConnectionDot = ({
 }) => {
   const baseStyles = "absolute w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-all duration-200 transform cursor-crosshair";
   const positionStyles = {
-    top: "left-1/2 -translate-x-1/2 -top-4",
-    bottom: "left-1/2 -translate-x-1/2 -bottom-4",
-    left: "top-1/2 -translate-y-1/2 -left-4",
-    right: "top-1/2 -translate-y-1/2 -right-4"
+    top: "left-1/2 -translate-x-1/2 -top-1",
+    bottom: "left-1/2 -translate-x-1/2 -bottom-1",
+    left: "top-1/2 -translate-y-1/2 -left-1",
+    right: "top-1/2 -translate-y-1/2 -right-1"
   };
 
   return (

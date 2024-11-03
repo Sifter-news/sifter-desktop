@@ -25,13 +25,12 @@ const NodeRenderer = ({
   const [localTitle, setLocalTitle] = useState(node.title);
   const [localDescription, setLocalDescription] = useState(node.description);
   const [showTooltip, setShowTooltip] = useState(false);
-  const [position, setPosition] = useState({ x: node.x || 0, y: node.y || 0 });
+  const [position, setPosition] = useState({ x: node.x, y: node.y });
   const [isHovered, setIsHovered] = useState(false);
   const [textSize, setTextSize] = useState(node.textSize || 'medium');
   const [textAlign, setTextAlign] = useState(node.textAlign || 'left');
   const [nodeColor, setNodeColor] = useState(node.color || 'white');
   const dragStartPos = useRef(null);
-  const lastPosition = useRef(position);
 
   const dimensions = getNodeDimensions(node?.visualStyle || 'default');
 
@@ -41,14 +40,8 @@ const NodeRenderer = ({
     }
   }, [isFocused]);
 
-  useEffect(() => {
-    // Update position when node coordinates change
-    setPosition({ x: node.x || 0, y: node.y || 0 });
-  }, [node.x, node.y]);
-
   const handleDragStart = (e, d) => {
     dragStartPos.current = { x: d.x, y: d.y };
-    lastPosition.current = { x: d.x, y: d.y };
     onDragStart?.(e, d);
   };
 
@@ -56,16 +49,8 @@ const NodeRenderer = ({
     if (!dragStartPos.current) return;
     
     const snappedPosition = snapToSingleAxis(dragStartPos.current, { x: d.x, y: d.y });
-    
-    // Apply smooth interpolation between last position and new position
-    const interpolatedPosition = {
-      x: lastPosition.current.x + (snappedPosition.x - lastPosition.current.x) * 0.5,
-      y: lastPosition.current.y + (snappedPosition.y - lastPosition.current.y) * 0.5
-    };
-    
-    lastPosition.current = interpolatedPosition;
-    setPosition(interpolatedPosition);
-    onDrag?.(e, { ...d, ...interpolatedPosition });
+    setPosition(snappedPosition);
+    onDrag?.(e, { ...d, ...snappedPosition });
   };
 
   const handleDragStop = (e, d) => {
@@ -80,7 +65,6 @@ const NodeRenderer = ({
     
     setPosition(finalPosition);
     dragStartPos.current = null;
-    lastPosition.current = finalPosition;
     onDragEnd?.(e, { ...d, ...finalPosition });
   };
 
@@ -114,17 +98,16 @@ const NodeRenderer = ({
         onDrag={handleDrag}
         onDragStop={handleDragStop}
         scale={zoom}
-        className={`relative transition-all duration-200 ease-out transform ${
+        className={`relative transition-all duration-200 ${
           isFocused ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' : 
           isHovered ? 'ring-1 ring-blue-300 ring-offset-1 shadow-md scale-[1.01]' : ''
         } ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         onClick={handleNodeClick}
         enableResizing={dimensions.resizable}
         bounds="parent"
-        dragHandleClassName="drag-handle"
       >
         {isHovered && (
-          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-white/90 rounded-t-md px-2 py-1 cursor-grab active:cursor-grabbing drag-handle">
+          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-white/90 rounded-t-md px-2 py-1 cursor-grab active:cursor-grabbing">
             <GripVertical className="h-4 w-4 text-gray-400" />
           </div>
         )}

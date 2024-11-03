@@ -18,11 +18,11 @@ const ProjectView = () => {
   const { project, setProject, nodes, setNodes, loading } = useProjectData(id);
   const { handleAddNode, handleUpdateNode, handleDeleteNode } = useNodeOperations(setNodes);
 
-  // Set initial view to canvas2d and update debug data
+  // Set initial view to mindmap and update debug data
   useEffect(() => {
     setDebugData(prev => ({
       ...prev,
-      currentView: 'canvas2d'
+      currentView: 'mindmap'
     }));
   }, [setDebugData]);
 
@@ -60,7 +60,7 @@ const ProjectView = () => {
         onDeleteNode={handleDeleteNode}
         focusedNodeId={focusedNodeId}
         onNodeFocus={setFocusedNodeId}
-        defaultView="canvas2d"
+        defaultView="mindmap"
       />
       <ProjectModals
         project={project}

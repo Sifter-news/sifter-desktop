@@ -9,21 +9,11 @@ const CanvasView = ({
   onUpdateNode, 
   onDeleteNode,
   focusedNodeId,
-  onNodeFocus,
-  selectedNodeId 
+  onNodeFocus 
 }) => {
   const canvasRef = useRef(null);
   const [activeTool, setActiveTool] = useState('select');
-  const { 
-    zoom, 
-    position, 
-    handleZoom, 
-    handlePanStart, 
-    handlePanMove, 
-    handlePanEnd, 
-    handleWheel,
-    setPosition 
-  } = useZoomPan();
+  const { zoom, position, handleZoom, handlePanStart, handlePanMove, handlePanEnd, handleWheel } = useZoomPan();
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -36,13 +26,8 @@ const CanvasView = ({
     
     if (nodeType === 'postit') {
       const rect = canvasRef.current.getBoundingClientRect();
-      // Calculate position relative to the current view center
-      const viewCenterX = -position.x / zoom;
-      const viewCenterY = -position.y / zoom;
-      
-      // Add the relative mouse position from the view center
-      const x = viewCenterX + ((e.clientX - rect.left) / zoom);
-      const y = viewCenterY + ((e.clientY - rect.top) / zoom);
+      const x = (e.clientX - rect.left - position.x) / zoom;
+      const y = (e.clientY - rect.top - position.y) / zoom;
       
       onAddNode({
         title: 'New Note',
@@ -69,15 +54,12 @@ const CanvasView = ({
         handlePanMove={handlePanMove}
         handlePanEnd={handlePanEnd}
         handleWheel={handleWheel}
-        handleZoom={handleZoom}
         onNodeUpdate={onUpdateNode}
         focusedNodeId={focusedNodeId}
         onNodeFocus={onNodeFocus}
         onNodeDelete={onDeleteNode}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
-        selectedNodeId={selectedNodeId}
-        setPosition={setPosition}
       />
     </div>
   );

@@ -1,10 +1,10 @@
 import React, { forwardRef, useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useDebug } from '@/contexts/DebugContext';
+import TwoDNode from './node/TwoDNode';
 import CanvasBackground from './canvas/CanvasBackground';
 import CanvasControls from './canvas/CanvasControls';
-import CanvasContainer from './canvas/CanvasContainer';
-import DraggableNode from './canvas/DraggableNode';
+import ConnectorLine from './node/ConnectorLine';
 import { copyNode, pasteNode } from '@/utils/clipboardUtils';
 
 const Canvas = forwardRef(({ 
@@ -18,22 +18,34 @@ const Canvas = forwardRef(({
   handlePanMove, 
   handlePanEnd,
   handleWheel,
-  handleZoom,
   onNodeUpdate,
   focusedNodeId,
   onNodeFocus,
   onNodeDelete,
   onDragOver,
   onDrop,
-  setPosition
+  onAIConversation,
+  onNodePositionUpdate
 }, ref) => {
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [nodeToDelete, setNodeToDelete] = useState(null);
   const [isPanning, setIsPanning] = useState(false);
+  const [connections, setConnections] = useState([]);
+  const [activeConnection, setActiveConnection] = useState(null);
   const { setDebugData } = useDebug();
 
   const handleKeyDown = useCallback((e) => {
     if (focusedNodeId && (e.key === 'Delete' || e.key === 'Backspace')) {
-      onNodeDelete(focusedNodeId);
-      toast.success("Node deleted");
+      const nodeToDelete = nodes.find(node => node.id === focusedNodeId);
+      if (nodeToDelete) {
+        if (nodeToDelete.type === 'ai') {
+          setNodeToDelete(nodeToDelete);
+          setShowDeleteConfirmation(true);
+        } else {
+          onNodeDelete(focusedNodeId);
+          toast.success("Node deleted");
+        }
+      }
     } else if (focusedNodeId && (e.metaKey || e.ctrlKey) && e.key === 'c') {
       const nodeToCopy = nodes.find(node => node.id === focusedNodeId);
       if (nodeToCopy) {
@@ -46,22 +58,20 @@ const Canvas = forwardRef(({
         setNodes(prev => [...prev, newNode]);
         toast.success("Node pasted from clipboard");
       }
-    } else if (e.key === 'v') {
-      setActiveTool('select');
-    } else if (e.key === 'h') {
-      setActiveTool('pan');
     }
-  }, [focusedNodeId, nodes, onNodeDelete, setNodes, setActiveTool]);
+  }, [focusedNodeId, nodes, onNodeDelete, setNodes]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [handleKeyDown]);
 
   const handleMouseDown = useCallback((e) => {
     if (e.button === 1 || activeTool === 'pan') {
       setIsPanning(true);
-      handlePanStart?.(e);
+      handlePanStart?.();
       e.preventDefault();
     }
   }, [activeTool, handlePanStart]);
@@ -73,14 +83,46 @@ const Canvas = forwardRef(({
         movementY: e.movementY / zoom
       });
     }
-  }, [isPanning, handlePanMove, zoom]);
+    
+    if (activeConnection) {
+      const rect = ref.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left - position.x) / zoom;
+      const y = (e.clientY - rect.top - position.y) / zoom;
+      setActiveConnection(prev => ({
+        ...prev,
+        endX: x,
+        endY: y
+      }));
+    }
+  }, [isPanning, handlePanMove, zoom, activeConnection, position.x, position.y, ref]);
 
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = useCallback((e) => {
     if (isPanning) {
       setIsPanning(false);
       handlePanEnd?.();
     }
-  }, [isPanning, handlePanEnd]);
+
+    if (activeConnection) {
+      // Here you would check if the mouse is over another node's connection point
+      // and create a permanent connection if it is
+      setActiveConnection(null);
+    }
+  }, [isPanning, handlePanEnd, activeConnection]);
+
+  const startConnection = (nodeId, startX, startY) => {
+    setActiveConnection({
+      startX,
+      startY,
+      endX: startX,
+      endY: startY,
+      sourceNodeId: nodeId
+    });
+  };
+
+  const transformStyle = {
+    transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
+    transformOrigin: '0 0',
+  };
 
   return (
     <div 
@@ -93,35 +135,55 @@ const Canvas = forwardRef(({
       ref={ref}
       tabIndex={0}
       onKeyDown={handleKeyDown}
+      style={{ cursor: isPanning ? 'grabbing' : activeTool === 'pan' ? 'grab' : 'default' }}
       onDragOver={onDragOver}
       onDrop={onDrop}
-      style={{ cursor: isPanning ? 'grabbing' : activeTool === 'pan' ? 'grab' : 'default' }}
-      data-canvas="true"
     >
       <CanvasBackground zoom={zoom} position={position} />
       
-      <CanvasContainer zoom={zoom} position={position}>
+      <div className="absolute inset-0" style={transformStyle}>
+        {/* Render permanent connections */}
+        {connections.map((connection, index) => (
+          <ConnectorLine
+            key={`connection-${index}`}
+            startX={connection.startX}
+            startY={connection.startY}
+            endX={connection.endX}
+            endY={connection.endY}
+          />
+        ))}
+
+        {/* Render active connection being drawn */}
+        {activeConnection && (
+          <ConnectorLine
+            startX={activeConnection.startX}
+            startY={activeConnection.startY}
+            endX={activeConnection.endX}
+            endY={activeConnection.endY}
+          />
+        )}
+
         {nodes.map(node => (
-          <DraggableNode
+          <TwoDNode
             key={node.id}
             node={node}
             zoom={zoom}
-            position={position}
             onNodeUpdate={onNodeUpdate}
             onFocus={onNodeFocus}
             isFocused={focusedNodeId === node.id}
-            activeTool={activeTool}
-            allNodes={nodes}
+            onDelete={() => onNodeDelete(node.id)}
+            isDraggable={activeTool !== 'pan'}
+            position={{ x: node.x, y: node.y }}
+            onStartConnection={startConnection}
           />
         ))}
-      </CanvasContainer>
+      </div>
 
       <CanvasControls 
-        zoom={zoom}
-        handleZoom={handleZoom}
-        setPosition={setPosition}
-        activeTool={activeTool}
-        setActiveTool={setActiveTool}
+        showDeleteConfirmation={showDeleteConfirmation}
+        setShowDeleteConfirmation={setShowDeleteConfirmation}
+        nodeToDelete={nodeToDelete}
+        onNodeDelete={onNodeDelete}
       />
     </div>
   );
