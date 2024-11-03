@@ -5,6 +5,13 @@ import { Separator } from "@/components/ui/separator";
 import ModalEdit_Investigation from './modals/ModalEdit_Investigation';
 import { supabase } from '@/config/supabase';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User, Mail, LayoutDashboard } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpdate, onProjectDelete }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -66,17 +73,37 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
 
         <div className="ml-auto w-[200px] flex justify-end items-center space-x-2">
           {projectName && (
-            <>
-              <Link to="/" className="text-sm font-normal text-gray-400 hover:text-gray-600 transition-colors">
-                Dashboard
-              </Link>
-            </>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link to="/" className="text-gray-600 hover:text-gray-900 transition-colors">
+                    <span className="hidden md:inline">Dashboard</span>
+                    <LayoutDashboard className="h-5 w-5 md:hidden" />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Dashboard</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
           
-          <div className="flex flex-col items-end">
-            <span className="text-sm font-medium">{username}</span>
+          <div className="flex items-center space-x-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center">
+                    <span className="hidden md:inline font-medium">{username}</span>
+                    <User className="h-5 w-5 md:hidden" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{username}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <UserProfile user={user} onUpdateUser={onUpdateUser} />
           </div>
-          <UserProfile user={user} onUpdateUser={onUpdateUser} />
         </div>
       </div>
 
