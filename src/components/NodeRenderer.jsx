@@ -31,6 +31,7 @@ const NodeRenderer = ({
   const [textAlign, setTextAlign] = useState(node.textAlign || 'left');
   const [nodeColor, setNodeColor] = useState(node.color || 'white');
   const dragStartPos = useRef(null);
+  const lastPosition = useRef(position);
 
   const dimensions = getNodeDimensions(node?.visualStyle || 'default');
 
@@ -42,6 +43,7 @@ const NodeRenderer = ({
 
   const handleDragStart = (e, d) => {
     dragStartPos.current = { x: d.x, y: d.y };
+    lastPosition.current = { x: d.x, y: d.y };
     onDragStart?.(e, d);
   };
 
@@ -49,8 +51,16 @@ const NodeRenderer = ({
     if (!dragStartPos.current) return;
     
     const snappedPosition = snapToSingleAxis(dragStartPos.current, { x: d.x, y: d.y });
-    setPosition(snappedPosition);
-    onDrag?.(e, { ...d, ...snappedPosition });
+    
+    // Apply smooth interpolation between last position and new position
+    const interpolatedPosition = {
+      x: lastPosition.current.x + (snappedPosition.x - lastPosition.current.x) * 0.5,
+      y: lastPosition.current.y + (snappedPosition.y - lastPosition.current.y) * 0.5
+    };
+    
+    lastPosition.current = interpolatedPosition;
+    setPosition(interpolatedPosition);
+    onDrag?.(e, { ...d, ...interpolatedPosition });
   };
 
   const handleDragStop = (e, d) => {
@@ -65,6 +75,7 @@ const NodeRenderer = ({
     
     setPosition(finalPosition);
     dragStartPos.current = null;
+    lastPosition.current = finalPosition;
     onDragEnd?.(e, { ...d, ...finalPosition });
   };
 
@@ -98,16 +109,17 @@ const NodeRenderer = ({
         onDrag={handleDrag}
         onDragStop={handleDragStop}
         scale={zoom}
-        className={`relative transition-all duration-200 ${
+        className={`relative transition-all duration-200 ease-out transform ${
           isFocused ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg scale-[1.02]' : 
           isHovered ? 'ring-1 ring-blue-300 ring-offset-1 shadow-md scale-[1.01]' : ''
         } ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         onClick={handleNodeClick}
         enableResizing={dimensions.resizable}
         bounds="parent"
+        dragHandleClassName="drag-handle"
       >
         {isHovered && (
-          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-white/90 rounded-t-md px-2 py-1 cursor-grab active:cursor-grabbing">
+          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-white/90 rounded-t-md px-2 py-1 cursor-grab active:cursor-grabbing drag-handle">
             <GripVertical className="h-4 w-4 text-gray-400" />
           </div>
         )}
