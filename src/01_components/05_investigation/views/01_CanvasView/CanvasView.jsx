@@ -132,7 +132,7 @@ const CanvasView = ({
 
   return (
     <div 
-      className="w-full h-full overflow-hidden cursor-auto relative"
+      className="w-full h-screen overflow-hidden cursor-auto relative"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
