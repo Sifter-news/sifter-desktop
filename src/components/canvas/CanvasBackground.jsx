@@ -5,7 +5,7 @@ const CanvasBackground = ({ zoom, position }) => {
   const largeGridSize = 2 * 8;
   
   return (
-    <div className="absolute inset-0 bg-white">
+    <div className="absolute inset-0 bg-white w-[8000px] h-[8000px]">
       <div 
         className="absolute inset-0" 
         style={{
