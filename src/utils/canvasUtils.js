@@ -89,9 +89,9 @@ export const useZoomPan = (initialZoom = 1) => {
 };
 
 export const findAvailablePosition = (nodes) => {
-  const nodeWidth = 200; // Assuming a default node width
-  const nodeHeight = 200; // Assuming a default node height
-  const padding = 20; // Space between nodes
+  const nodeWidth = 200;
+  const nodeHeight = 200;
+  const padding = 20;
 
   let x = 0;
   let y = 0;
@@ -123,30 +123,4 @@ export const findAvailablePosition = (nodes) => {
       maxY = y + nodeHeight;
     }
   }
-};
-
-export const snapToGrid = (x, y, gridSize = 1) => {
-  return {
-    x: Math.round(x / gridSize) * gridSize,
-    y: Math.round(y / gridSize) * gridSize
-  };
-};
-
-export const snapToSingleAxis = (startPos, currentPos) => {
-  // Calculate deltas
-  const deltaX = Math.abs(currentPos.x - startPos.x);
-  const deltaY = Math.abs(currentPos.y - startPos.y);
-  
-  // If moving more horizontally than vertically, lock to X axis
-  if (deltaX > deltaY) {
-    return {
-      x: snapToGrid(currentPos.x, currentPos.y).x,
-      y: startPos.y
-    };
-  }
-  // Otherwise lock to Y axis
-  return {
-    x: startPos.x,
-    y: snapToGrid(currentPos.x, currentPos.y).y
-  };
 };
