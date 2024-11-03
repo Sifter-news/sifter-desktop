@@ -20,7 +20,7 @@ const ProjectTabs = ({
   onUpdateReport, 
   focusedNodeId,
   onNodeFocus,
-  defaultView = 'canvas2d'
+  defaultView = 'canvas2d'  // Changed default here
 }) => {
   const selectedNode = nodes.find(node => node.id === focusedNodeId);
   const { setDebugData } = useDebug();
@@ -58,7 +58,7 @@ const ProjectTabs = ({
         onAddNode={onAddNode}
       />
       
-      <Tabs defaultValue={defaultView} className="w-full h-full" onValueChange={handleViewChange}>
+      <Tabs defaultValue="canvas2d" className="w-full h-full" onValueChange={handleViewChange}>
         <div className="flex justify-center">
           <TabsList className="mx-auto bg-white bg-opacity-80 backdrop-blur-md z-10 fixed top-16">
             <TabsTrigger value="canvas2d" className="flex items-center">
