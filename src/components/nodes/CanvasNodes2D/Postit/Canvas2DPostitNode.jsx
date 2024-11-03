@@ -15,7 +15,9 @@ const Canvas2DPostitNode = ({
   onAIConversation,
   isEditing,
   onTitleChange,
-  onTitleBlur
+  onTitleBlur,
+  zoom,
+  position
 }) => {
   const baseProps = NodeBase(node);
   const style = getNodeStyle(baseProps.visualStyle, isHovered, isSelected);
@@ -26,9 +28,10 @@ const Canvas2DPostitNode = ({
       onClick={onSelect}
       style={{
         position: 'absolute',
-        left: node.x,
-        top: node.y,
-        transform: 'none'
+        left: `${node.x}px`,
+        top: `${node.y}px`,
+        transform: 'translate(0, 0)',
+        transformOrigin: '0 0'
       }}
     >
       <div className="flex items-center justify-between mb-4">

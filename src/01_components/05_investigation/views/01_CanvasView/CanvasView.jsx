@@ -96,7 +96,7 @@ const CanvasView = ({
   };
 
   const transformStyle = {
-    transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
+    transform: `scale(${zoom})`,
     transformOrigin: '0 0',
     transition: 'transform 0.1s ease-out',
     touchAction: 'none'
