@@ -13,9 +13,9 @@ const TwoDNode = ({
   isDraggable = true,
   position = { x: 0, y: 0 },
   onStartConnection,
-  onEndConnection
+  onEndConnection,
+  dimensions
 }) => {
-  const dimensions = getNodeDimensions(node.visualStyle || 'default');
   const [hoveredConnection, setHoveredConnection] = useState(null);
 
   const handleDragStop = (e, d) => {
@@ -39,11 +39,12 @@ const TwoDNode = ({
       }`}
       bounds="parent"
     >
-      <div onClick={() => onFocus?.(node.id)} className="relative">
+      <div onClick={() => onFocus?.(node.id)} className="relative w-full h-full">
         <NodeContent
           style={node.visualStyle}
           node={node}
           isFocused={isFocused}
+          dimensions={dimensions}
         />
         
         <ConnectionDot 

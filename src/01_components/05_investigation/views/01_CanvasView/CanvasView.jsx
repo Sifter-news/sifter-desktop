@@ -11,7 +11,7 @@ import { handleNodeDrag } from './handlers/nodeHandlers';
 import { handleCanvasInteraction } from './handlers/canvasHandlers';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useConnectionHandling } from './hooks/useConnectionHandling';
-import { getNodeDimensions } from '@/utils/nodeStyles';
+import { NODE_STYLES } from '@/utils/nodeStyles';
 
 const CanvasView = ({ 
   nodes, 
@@ -104,7 +104,7 @@ const CanvasView = ({
 
   return (
     <div 
-      className="w-full h-screen overflow-hidden cursor-auto relative p-0"
+      className="w-full h-screen overflow-hidden cursor-auto relative bg-gray-900"
       ref={canvasRef}
       tabIndex={0}
       onDragOver={handleDragOver}
@@ -141,7 +141,7 @@ const CanvasView = ({
         )}
 
         {nodes.map(node => {
-          const dimensions = getNodeDimensions(node.visualStyle || 'default');
+          const style = NODE_STYLES[node.visualStyle || 'default'];
           return (
             <TwoDNode
               key={node.id}
@@ -155,7 +155,7 @@ const CanvasView = ({
               position={{ x: node.x, y: node.y }}
               onStartConnection={handleConnectionStart}
               onEndConnection={handleConnectionEnd}
-              dimensions={dimensions}
+              dimensions={style}
             />
           );
         })}
