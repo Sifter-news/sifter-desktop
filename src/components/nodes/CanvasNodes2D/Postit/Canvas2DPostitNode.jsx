@@ -41,7 +41,7 @@ const Canvas2DPostitNode = ({
       scale={zoom}
       minWidth={150}
       minHeight={150}
-      className={`${style} bg-yellow-100 rounded-lg flex flex-col h-full`}
+      className={`${style} bg-yellow-100 rounded-lg flex flex-col`}
       onClick={onSelect}
       resizeHandleClasses={{
         top: 'border-t-2 border-blue-500 cursor-ns-resize opacity-0 group-hover:opacity-100',
