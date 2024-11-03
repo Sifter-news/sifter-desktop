@@ -95,7 +95,7 @@ const CanvasView = ({
 
   return (
     <div 
-      className="w-full h-screen overflow-hidden cursor-auto relative"
+      className="w-full h-screen overflow-hidden cursor-auto relative p-0" // Removed padding here
       ref={canvasRef}
       tabIndex={0}
       onDragOver={handleDragOver}
