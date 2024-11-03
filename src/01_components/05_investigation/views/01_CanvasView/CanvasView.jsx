@@ -26,9 +26,8 @@ const CanvasView = ({
   const [activeTool, setActiveTool] = useState('select');
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [nodeToDelete, setNodeToDelete] = useState(null);
-  const [isPanning, setIsPanning] = useState(false);
   const { setDebugData } = useDebug();
-  const { zoom, position, handleZoom, handlePanStart, handlePanMove, handlePanEnd, handleWheel } = useZoomPan();
+  const { zoom, position, handleZoom, handleWheel } = useZoomPan();
   const { connections, activeConnection, handleConnectionStart, handleConnectionEnd, setActiveConnection } = useConnectionHandling();
 
   const handleKeyDown = useKeyboardShortcuts({
@@ -49,11 +48,6 @@ const CanvasView = ({
 
   const { handleMouseDown, handleMouseMove, handleMouseUp } = handleCanvasInteraction({
     activeTool,
-    isPanning,
-    setIsPanning,
-    handlePanStart,
-    handlePanMove,
-    handlePanEnd,
     activeConnection,
     canvasRef,
     position,
@@ -89,13 +83,13 @@ const CanvasView = ({
   const transformStyle = {
     transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
     transformOrigin: '0 0',
-    transition: isPanning ? 'none' : 'transform 0.1s ease-out',
+    transition: 'transform 0.1s ease-out',
     touchAction: 'none'
   };
 
   return (
     <div 
-      className="w-full h-screen overflow-hidden cursor-auto relative p-0" // Removed padding here
+      className="w-full h-screen overflow-hidden cursor-auto relative p-0"
       ref={canvasRef}
       tabIndex={0}
       onDragOver={handleDragOver}
@@ -152,7 +146,7 @@ const CanvasView = ({
             onFocus={onNodeFocus}
             isFocused={focusedNodeId === node.id}
             onDelete={() => onDeleteNode(node.id)}
-            isDraggable={activeTool !== 'pan'}
+            isDraggable={true}
             position={{ x: node.x, y: node.y }}
           />
         ))}

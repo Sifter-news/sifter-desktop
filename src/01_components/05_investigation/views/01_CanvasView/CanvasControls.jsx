@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { MousePointer2, Move, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { MousePointer2, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -37,24 +37,6 @@ const CanvasControls = ({
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">Select (V)</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className={`h-8 w-8 rounded-lg ${
-                  activeTool === 'pan' ? 'bg-blue-600 text-white' : 'text-white hover:bg-white/10'
-                }`}
-                onClick={() => setActiveTool('pan')}
-              >
-                <Move className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="left">Pan (H)</TooltipContent>
           </Tooltip>
         </TooltipProvider>
 
