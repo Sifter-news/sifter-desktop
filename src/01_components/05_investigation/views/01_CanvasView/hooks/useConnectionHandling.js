@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { toast } from 'sonner';
 
 export const useConnectionHandling = () => {
   const [connections, setConnections] = useState([]);
@@ -27,7 +28,7 @@ export const useConnectionHandling = () => {
 
   const handleConnectionEnd = useCallback((targetNodeId, targetPosition) => {
     if (activeConnection && targetNodeId !== activeConnection.sourceNodeId) {
-      setConnections(prev => [...prev, {
+      const newConnection = {
         id: `${activeConnection.sourceNodeId}-${targetNodeId}`,
         sourceNodeId: activeConnection.sourceNodeId,
         targetNodeId,
@@ -37,13 +38,30 @@ export const useConnectionHandling = () => {
         startY: activeConnection.startY,
         endX: activeConnection.endX,
         endY: activeConnection.endY
-      }]);
+      };
+
+      setConnections(prev => {
+        // Check for existing connection
+        const exists = prev.some(conn => 
+          (conn.sourceNodeId === newConnection.sourceNodeId && conn.targetNodeId === newConnection.targetNodeId) ||
+          (conn.sourceNodeId === newConnection.targetNodeId && conn.targetNodeId === newConnection.sourceNodeId)
+        );
+
+        if (exists) {
+          toast.error('Connection already exists between these nodes');
+          return prev;
+        }
+
+        toast.success('Connection created');
+        return [...prev, newConnection];
+      });
       setActiveConnection(null);
     }
   }, [activeConnection]);
 
   const removeConnection = useCallback((connectionId) => {
     setConnections(prev => prev.filter(conn => conn.id !== connectionId));
+    toast.success('Connection removed');
   }, []);
 
   return {
