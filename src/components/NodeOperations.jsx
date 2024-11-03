@@ -12,7 +12,6 @@ export const useNodeOperations = (setNodes) => {
         visual_style: newNode.visualStyle || 'default',
         position_x: newNode.x || 0,
         position_y: newNode.y || 0,
-        position_z: newNode.z || 0,
         width: newNode.width || 200,
         height: newNode.height || 100,
         node_type: newNode.nodeType || 'generic'
@@ -24,17 +23,12 @@ export const useNodeOperations = (setNodes) => {
         .select()
         .single();
 
-      if (error) {
-        console.error('Database error:', error);
-        toast.error('Failed to add node');
-        return null;
-      }
+      if (error) throw error;
 
       const nodeWithUI = {
         ...data,
         x: data.position_x,
         y: data.position_y,
-        z: data.position_z,
         width: data.width,
         height: data.height,
         visualStyle: data.visual_style,
@@ -47,16 +41,11 @@ export const useNodeOperations = (setNodes) => {
     } catch (error) {
       console.error('Error adding node:', error);
       toast.error('Failed to add node');
-      return null;
+      throw error;
     }
   };
 
   const handleUpdateNode = async (nodeId, updates) => {
-    if (!nodeId) {
-      console.error('No node ID provided for update operation');
-      return;
-    }
-
     try {
       const databaseUpdates = {
         title: updates.title,
@@ -65,14 +54,11 @@ export const useNodeOperations = (setNodes) => {
         visual_style: updates.visualStyle,
         position_x: updates.x,
         position_y: updates.y,
-        position_z: updates.z,
         width: updates.width,
         height: updates.height,
-        node_type: updates.nodeType,
-        updated_at: new Date().toISOString()
+        node_type: updates.nodeType
       };
 
-      // Remove undefined values
       Object.keys(databaseUpdates).forEach(key => 
         databaseUpdates[key] === undefined && delete databaseUpdates[key]
       );
@@ -82,11 +68,7 @@ export const useNodeOperations = (setNodes) => {
         .update(databaseUpdates)
         .eq('id', nodeId);
 
-      if (error) {
-        console.error('Database error:', error);
-        toast.error('Failed to update node');
-        return;
-      }
+      if (error) throw error;
 
       setNodes(prevNodes => prevNodes.map(node => 
         node.id === nodeId ? { ...node, ...updates } : node
@@ -96,34 +78,24 @@ export const useNodeOperations = (setNodes) => {
     } catch (error) {
       console.error('Error updating node:', error);
       toast.error('Failed to update node');
+      throw error;
     }
   };
 
   const handleDeleteNode = async (nodeId) => {
-    if (!nodeId) {
-      console.error('No node ID provided for delete operation');
-      return false;
-    }
-
     try {
       const { error } = await supabase
         .from('node')
         .delete()
         .eq('id', nodeId);
 
-      if (error) {
-        console.error('Database error:', error);
-        toast.error('Failed to delete node');
-        return false;
-      }
+      if (error) throw error;
 
       setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
-      toast.success('Node deleted successfully');
       return true;
     } catch (error) {
       console.error('Error deleting node:', error);
-      toast.error('Failed to delete node');
-      return false;
+      throw error;
     }
   };
 

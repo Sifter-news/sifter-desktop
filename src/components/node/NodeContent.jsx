@@ -47,11 +47,6 @@ const NodeContent = ({
   );
 
   const handleSave = async (updates) => {
-    if (!node?.id) {
-      console.error('No node ID provided for save operation');
-      return;
-    }
-
     try {
       const { error } = await supabase
         .from('node')
@@ -62,11 +57,7 @@ const NodeContent = ({
         })
         .eq('id', node.id);
 
-      if (error) {
-        console.error('Database error:', error);
-        toast.error('Failed to save changes');
-        return;
-      }
+      if (error) throw error;
 
       if (onUpdateNode) {
         onUpdateNode(node.id, updates);
