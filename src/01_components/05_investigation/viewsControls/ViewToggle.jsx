@@ -31,11 +31,10 @@ const ViewToggle = ({ currentView, onViewChange }) => {
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="ghost" 
-                size="sm"
-                className="h-8 rounded-lg bg-gray-700 hover:bg-gray-600 text-white hover:text-white flex items-center gap-1.5 px-3"
+                size="icon"
+                className="h-8 w-8 rounded-lg bg-gray-700 hover:bg-gray-600 text-white hover:text-white"
               >
                 <Icon className="h-4 w-4" />
-                <span className="ml-1">{currentViewData.label}</span>
               </Button>
             </DropdownMenuTrigger>
           </TooltipTrigger>
