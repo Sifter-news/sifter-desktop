@@ -21,7 +21,12 @@ const App = () => {
             <Route path="/project/:id" element={<ProjectView />} />
             <Route path="/account" element={<AccountPage />} />
           </Routes>
-          <Toaster />
+          <Toaster 
+            position="bottom-center" 
+            offset="16"
+            expand={false}
+            richColors
+          />
         </AuthProvider>
       </Router>
     </QueryClientProvider>
