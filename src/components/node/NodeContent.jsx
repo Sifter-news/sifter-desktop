@@ -15,13 +15,13 @@ const NodeContent = ({
   dimensions,
   textSize = "medium",
   textAlign = "left",
-  color = "bg-white" // Set default color to white
+  color = "bg-white"
 }) => {
   const baseClasses = cn(
     textSizeClasses[textSize],
     `text-${textAlign}`,
-    color || "bg-white", // Ensure white is used if no color is provided
-    "p-4 w-full h-full transition-all duration-200 rounded-lg shadow-sm"
+    color || "bg-white",
+    "p-4 w-full h-full transition-all duration-200 rounded-lg shadow-sm bg-white"
   );
 
   return (
