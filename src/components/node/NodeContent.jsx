@@ -63,7 +63,7 @@ const NodeContent = ({
                 <AvatarImage src={node.avatar || DEFAULT_IMAGE} alt={node.title} />
                 <AvatarFallback><FileText className="h-4 w-4" /></AvatarFallback>
               </Avatar>
-              {isEditing ? (
+              {isFocused ? (
                 <Input
                   value={localTitle}
                   onChange={(e) => setLocalTitle(e.target.value)}
@@ -76,7 +76,7 @@ const NodeContent = ({
                 <div className="font-medium flex-1">{node.title}</div>
               )}
             </div>
-            {isEditing ? (
+            {isFocused ? (
               <Textarea
                 value={localDescription}
                 onChange={(e) => setLocalDescription(e.target.value)}
@@ -97,7 +97,7 @@ const NodeContent = ({
                 <AvatarImage src={node.avatar || DEFAULT_IMAGE} alt={node.title} />
                 <AvatarFallback><FileText className="h-4 w-4" /></AvatarFallback>
               </Avatar>
-              {isEditing ? (
+              {isFocused ? (
                 <Input
                   value={localTitle}
                   onChange={(e) => setLocalTitle(e.target.value)}
@@ -109,7 +109,7 @@ const NodeContent = ({
                 <div className="font-medium flex-1">{node.title}</div>
               )}
             </div>
-            {isEditing ? (
+            {isFocused ? (
               <Textarea
                 value={localDescription}
                 onChange={(e) => setLocalDescription(e.target.value)}
