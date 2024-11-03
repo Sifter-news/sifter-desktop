@@ -1,5 +1,4 @@
 import React from 'react';
-import { cn } from "@/lib/utils";
 
 const ConnectionDot = ({ 
   position, 
@@ -9,11 +8,12 @@ const ConnectionDot = ({
   onStartConnection,
   nodeId
 }) => {
+  const baseStyles = "absolute w-2 h-2 rounded-full bg-black/30 hover:bg-black/50 transition-all duration-200 transform cursor-crosshair opacity-0 group-hover:opacity-100";
   const positionStyles = {
-    top: "left-1/2 -translate-x-1/2 -top-1",
-    bottom: "left-1/2 -translate-x-1/2 -bottom-1",
-    left: "top-1/2 -translate-y-1/2 -left-1",
-    right: "top-1/2 -translate-y-1/2 -right-1"
+    top: "left-1/2 -translate-x-1/2 -top-4",
+    bottom: "left-1/2 -translate-x-1/2 -bottom-4",
+    left: "top-1/2 -translate-y-1/2 -left-4",
+    right: "top-1/2 -translate-y-1/2 -right-4"
   };
 
   const handleMouseDown = (e) => {
@@ -26,13 +26,7 @@ const ConnectionDot = ({
 
   return (
     <div
-      className={cn(
-        "absolute w-3 h-3 rounded-full bg-white/30 hover:bg-white/50 transition-all duration-200",
-        "transform cursor-crosshair opacity-0 group-hover:opacity-100",
-        "ring-2 ring-white/50 hover:ring-white",
-        isHovered && "scale-150 bg-white/70",
-        positionStyles[position]
-      )}
+      className={`${baseStyles} ${positionStyles[position]} ${isHovered ? 'scale-150' : 'scale-100'}`}
       onMouseEnter={onHover}
       onMouseLeave={onLeaveHover}
       onMouseDown={handleMouseDown}

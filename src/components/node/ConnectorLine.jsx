@@ -1,15 +1,6 @@
 import React from 'react';
 
-const ConnectorLine = ({ startX, startY, endX, endY, isDashed = false }) => {
-  // Calculate control points for orthogonal path
-  const midX = (startX + endX) / 2;
-  const midY = (startY + endY) / 2;
-  const path = `M ${startX} ${startY} 
-                L ${midX} ${startY} 
-                Q ${midX} ${midY} ${midX} ${midY}
-                L ${midX} ${endY}
-                L ${endX} ${endY}`;
-
+const ConnectorLine = ({ startX, startY, endX, endY }) => {
   return (
     <svg
       style={{
@@ -33,14 +24,13 @@ const ConnectorLine = ({ startX, startY, endX, endY, isDashed = false }) => {
           <polygon points="0 0, 10 3.5, 0 7" fill="#fff" />
         </marker>
       </defs>
-      <path
-        d={path}
+      <line
+        x1={startX}
+        y1={startY}
+        x2={endX}
+        y2={endY}
         stroke="#fff"
         strokeWidth="2"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeDasharray={isDashed ? "5,5" : "none"}
         markerEnd="url(#arrowhead)"
       />
     </svg>
