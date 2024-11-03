@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { MousePointer2, ZoomIn, ZoomOut, RotateCcw, MessageCircle } from 'lucide-react';
+import { MousePointer2, ZoomIn, ZoomOut, RotateCcw, MessageCircle, Plus } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -15,7 +15,8 @@ const CanvasControls = ({
   zoom,
   handleZoom,
   onAIChatToggle,
-  isAIChatOpen
+  isAIChatOpen,
+  onAddNode
 }) => {
   const zoomIn = () => handleZoom(0.1);
   const zoomOut = () => handleZoom(-0.1);
@@ -39,6 +40,22 @@ const CanvasControls = ({
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">Select (V)</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-lg text-white hover:bg-white/10"
+                onClick={onAddNode}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left">Add Node (N)</TooltipContent>
           </Tooltip>
         </TooltipProvider>
 

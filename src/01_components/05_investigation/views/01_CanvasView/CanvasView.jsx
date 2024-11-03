@@ -95,15 +95,29 @@ const CanvasView = ({
     }
   };
 
+  const handleAddNode = () => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = (window.innerWidth / 2 - rect.left - position.x) / zoom;
+    const y = (window.innerHeight / 2 - rect.top - position.y) / zoom;
+    
+    onAddNode({
+      title: 'New Node',
+      description: '',
+      visualStyle: 'default',
+      x,
+      y,
+      nodeType: 'generic'
+    });
+    toast.success('New node added');
+  };
+
   const handleNodeDragStart = (nodeId, e) => {
     if (e.altKey) {
-      // Find the original node
       const originalNode = nodes.find(node => node.id === nodeId);
       if (originalNode) {
-        // Create a duplicate node at the same position
         const duplicateNode = {
           ...originalNode,
-          id: Date.now().toString(), // Generate a new ID
+          id: Date.now().toString(),
           x: originalNode.x,
           y: originalNode.y
         };
@@ -187,6 +201,7 @@ const CanvasView = ({
         handleZoom={handleZoom}
         onAIChatToggle={() => setIsAIChatOpen(!isAIChatOpen)}
         isAIChatOpen={isAIChatOpen}
+        onAddNode={handleAddNode}
       />
 
       <AIChatPanel
