@@ -146,7 +146,7 @@ const ProfileDialog = ({ user }) => {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" className="flex items-center space-x-2 text-sm">
-          <div className="flex flex-col items-end mr-2">
+          <div className="hidden md:flex flex-col items-end mr-2">
             <span className="font-medium">{username}</span>
             <span className="text-xs text-gray-500">{user?.email}</span>
           </div>
