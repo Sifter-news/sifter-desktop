@@ -126,6 +126,12 @@ const Canvas = forwardRef(({
     transformOrigin: '0 0',
   };
 
+  // Calculate the visible canvas area
+  const canvasWidth = 10000;
+  const canvasHeight = 10000;
+  const centerOffsetX = -canvasWidth / 2;
+  const centerOffsetY = -canvasHeight / 2;
+
   return (
     <div 
       className="w-full h-full overflow-hidden cursor-auto relative"
@@ -147,13 +153,12 @@ const Canvas = forwardRef(({
         className="absolute inset-0" 
         style={{
           ...transformStyle,
-          width: '10000px',  // Make canvas much wider than viewport
-          height: '10000px', // Make canvas much taller than viewport
-          left: '-5000px',   // Center the canvas
-          top: '-5000px'     // Center the canvas
+          width: `${canvasWidth}px`,
+          height: `${canvasHeight}px`,
+          left: `${centerOffsetX}px`,
+          top: `${centerOffsetY}px`
         }}
       >
-        {/* Render permanent connections */}
         {connections.map((connection, index) => (
           <ConnectorLine
             key={`connection-${index}`}
@@ -164,7 +169,6 @@ const Canvas = forwardRef(({
           />
         ))}
 
-        {/* Render active connection being drawn */}
         {activeConnection && (
           <ConnectorLine
             startX={activeConnection.startX}
@@ -184,7 +188,10 @@ const Canvas = forwardRef(({
             isFocused={focusedNodeId === node.id}
             onDelete={() => onNodeDelete(node.id)}
             isDraggable={activeTool !== 'pan'}
-            position={{ x: node.x, y: node.y }}
+            position={{ 
+              x: node.x + canvasWidth/2, 
+              y: node.y + canvasHeight/2 
+            }}
             onStartConnection={startConnection}
           />
         ))}
