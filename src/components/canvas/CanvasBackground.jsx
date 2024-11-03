@@ -7,8 +7,12 @@ const CanvasBackground = ({ zoom, position }) => {
   return (
     <div className="absolute inset-0 bg-white">
       <div 
-        className="absolute inset-0" 
+        className="absolute" 
         style={{
+          width: '10000px',
+          height: '10000px',
+          left: '-5000px',
+          top: '-5000px',
           backgroundImage: `
             linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
             linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px),

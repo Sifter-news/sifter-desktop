@@ -141,7 +141,16 @@ const Canvas = forwardRef(({
     >
       <CanvasBackground zoom={zoom} position={position} />
       
-      <div className="absolute inset-0" style={transformStyle}>
+      <div 
+        className="absolute inset-0" 
+        style={{
+          ...transformStyle,
+          width: '10000px',  // Make canvas much wider than viewport
+          height: '10000px', // Make canvas much taller than viewport
+          left: '-5000px',   // Center the canvas
+          top: '-5000px'     // Center the canvas
+        }}
+      >
         {/* Render permanent connections */}
         {connections.map((connection, index) => (
           <ConnectorLine
