@@ -22,7 +22,7 @@ const TwoDNode = ({
   const [showTooltip, setShowTooltip] = useState(false);
   const [textSize, setTextSize] = useState(node.textSize || 'medium');
   const [textAlign, setTextAlign] = useState(node.textAlign || 'left');
-  const [color, setColor] = useState(node.color || 'bg-white'); // Set default color to white
+  const [color, setColor] = useState(node.color || 'bg-white');
   const [hoveredDot, setHoveredDot] = useState(null);
 
   const handleDragStart = (e, d) => {
@@ -60,11 +60,7 @@ const TwoDNode = ({
     onNodeUpdate(node.id, { color: newColor });
   };
 
-  const connectionPoints = [
-    'top-left', 'top-center', 'top-right',
-    'middle-left', 'middle-right',
-    'bottom-left', 'bottom-center', 'bottom-right'
-  ];
+  const connectionPoints = ['left', 'right', 'top', 'bottom'];
 
   return (
     <Rnd
@@ -80,16 +76,6 @@ const TwoDNode = ({
       }`}
       onClick={handleNodeClick}
       bounds="parent"
-      resizeHandleClasses={{
-        top: 'border-t-2 border-blue-500 cursor-ns-resize opacity-0 group-hover:opacity-100',
-        right: 'border-r-2 border-blue-500 cursor-ew-resize opacity-0 group-hover:opacity-100',
-        bottom: 'border-b-2 border-blue-500 cursor-ns-resize opacity-0 group-hover:opacity-100',
-        left: 'border-l-2 border-blue-500 cursor-ew-resize opacity-0 group-hover:opacity-100',
-        topRight: 'w-3 h-3 border-2 border-blue-500 bg-white rounded-sm cursor-ne-resize opacity-0 group-hover:opacity-100',
-        bottomRight: 'w-3 h-3 border-2 border-blue-500 bg-white rounded-sm cursor-se-resize opacity-0 group-hover:opacity-100',
-        bottomLeft: 'w-3 h-3 border-2 border-blue-500 bg-white rounded-sm cursor-sw-resize opacity-0 group-hover:opacity-100',
-        topLeft: 'w-3 h-3 border-2 border-blue-500 bg-white rounded-sm cursor-nw-resize opacity-0 group-hover:opacity-100'
-      }}
       enableResizing={{
         top: true,
         right: true,

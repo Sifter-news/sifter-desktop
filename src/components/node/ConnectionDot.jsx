@@ -13,14 +13,10 @@ const ConnectionDot = ({
   // Calculate position styles based on the dot's position
   const getPositionStyles = () => {
     const positions = {
-      'top-left': '-top-1.5 -left-1.5',
-      'top-center': '-top-1.5 left-1/2 -translate-x-1/2',
-      'top-right': '-top-1.5 -right-1.5',
-      'middle-left': 'top-1/2 -left-1.5 -translate-y-1/2',
-      'middle-right': 'top-1/2 -right-1.5 -translate-y-1/2',
-      'bottom-left': '-bottom-1.5 -left-1.5',
-      'bottom-center': '-bottom-1.5 left-1/2 -translate-x-1/2',
-      'bottom-right': '-bottom-1.5 -right-1.5'
+      'left': 'top-1/2 -left-1.5 -translate-y-1/2',
+      'right': 'top-1/2 -right-1.5 -translate-y-1/2',
+      'top': '-top-1.5 left-1/2 -translate-x-1/2',
+      'bottom': '-bottom-1.5 left-1/2 -translate-x-1/2'
     };
     return positions[position] || '';
   };
