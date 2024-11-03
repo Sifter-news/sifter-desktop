@@ -22,7 +22,7 @@ export const useNodeDeletion = (focusedNodeId, onDeleteNode) => {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Delete' && focusedNodeId) {
+      if ((e.key === 'Delete' || e.key === 'Backspace') && focusedNodeId) {
         e.preventDefault();
         handleDeleteNode(focusedNodeId);
       }
