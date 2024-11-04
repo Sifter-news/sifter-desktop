@@ -23,8 +23,7 @@ import {
 import UnifiedNodeEditModal from '../modals/ModalEdit_Node';
 
 const colors = {
-  white: { label: 'Pure White', class: 'bg-white' },
-  offwhite: { label: 'Off White', class: 'bg-gray-50' },
+  white: { label: 'White', class: 'bg-white' },
   yellow: { label: 'Yellow', class: 'bg-yellow-100' },
   blue: { label: 'Blue', class: 'bg-blue-100' },
   green: { label: 'Green', class: 'bg-green-100' },
@@ -97,7 +96,7 @@ const NodeStyleTooltip = ({
         <Popover open={colorMenuOpen} onOpenChange={setColorMenuOpen}>
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 h-7 px-2">
-              <div className={`w-4 h-4 rounded-full ${currentColor} ring-1 ring-white/30`} />
+              <div className={`w-4 h-4 rounded-full ${currentColor}`} />
               <ChevronDown className="h-4 w-4 ml-1" />
             </Button>
           </PopoverTrigger>
@@ -111,7 +110,7 @@ const NodeStyleTooltip = ({
                   onClick={() => handleColorChange(bgClass)}
                   className="justify-start h-7"
                 >
-                  <div className={`w-4 h-4 rounded-full mr-2 ${bgClass} ring-1 ring-black/10`} />
+                  <div className={`w-4 h-4 rounded-full mr-2 ${bgClass}`} />
                   {label}
                 </Button>
               ))}
