@@ -1,78 +1,84 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useDebug } from '@/contexts/DebugContext';
+import TwoDNode from '@/components/node/TwoDNode';
 import CanvasBackground from '@/components/canvas/CanvasBackground';
 import CanvasControls from './CanvasControls';
+import ConnectorLine from '@/components/node/ConnectorLine';
 import AIChatPanel from '@/01_components/05_investigation/viewsControls/AIChatPanel';
-import SelectionBox from '@/components/canvas/SelectionBox';
 import { useZoomPan } from '@/hooks/useZoomPan';
+import { handleNodeDrag } from './handlers/nodeHandlers';
+import { handleCanvasInteraction } from './handlers/canvasHandlers';
 import { useConnectionHandling } from './hooks/useConnectionHandling';
+import { NODE_STYLES } from '@/utils/nodeStyles';
+import { useNodeRendering } from './hooks/useNodeRendering.jsx';
 import { useNodeDeletion } from './hooks/useNodeDeletion';
-import { useNodeSelection } from '@/hooks/useNodeSelection';
-import CanvasContent from './CanvasContent';
+import { useKeyboardModifiers } from './hooks/useKeyboardModifiers';
 
 const CanvasView = ({ 
   nodes, 
-  setNodes, 
-  onAddNode, 
-  onUpdateNode, 
+  onUpdateNode,
   onDeleteNode,
+  onAddNode,
   focusedNodeId,
-  onNodeFocus 
+  onNodeFocus,
+  defaultView = 'canvas'
 }) => {
   const canvasRef = useRef(null);
   const contentRef = useRef(null);
   const [activeTool, setActiveTool] = useState('select');
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
+  const [isPanning, setIsPanning] = useState(false);
   const { setDebugData } = useDebug();
-  const { zoom, position, handleZoom, handleWheel } = useZoomPan();
+  const { zoom, position, handleZoom, handleWheel, setPosition } = useZoomPan();
+  const { isSpacePressed } = useKeyboardModifiers();
   
   const { handleDeleteNode } = useNodeDeletion(focusedNodeId, onDeleteNode);
   
   const { 
-    connections, 
-    activeConnection, 
-    handleConnectionStart, 
+    isConnecting,
+    startNodeId,
+    handleConnectionStart,
     handleConnectionMove,
-    handleConnectionEnd, 
-    setActiveConnection 
+    handleConnectionEnd,
+    temporaryConnection
   } = useConnectionHandling();
 
-  const {
-    selectionStart,
-    selectionEnd,
-    selectedNodes,
-    isDragging,
-    startSelection,
-    updateSelection,
-    endSelection,
-    setSelectedNodes
-  } = useNodeSelection(zoom);
+  const { renderedNodes } = useNodeRendering({
+    nodes,
+    zoom,
+    position,
+    focusedNodeId,
+    onNodeFocus,
+    onUpdateNode,
+    isConnecting,
+    handleConnectionStart,
+    handleConnectionEnd,
+    NODE_STYLES
+  });
 
+  // Handle clipboard operations
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'c' && focusedNodeId) {
         const nodeToCopy = nodes.find(node => node.id === focusedNodeId);
         if (nodeToCopy) {
-          const { id, x, y, ...nodeData } = nodeToCopy;
-          localStorage.setItem('clipboard-node', JSON.stringify(nodeData));
+          localStorage.setItem('copiedNode', JSON.stringify(nodeToCopy));
           toast.success('Node copied to clipboard');
         }
       }
-
+      
       if ((e.metaKey || e.ctrlKey) && e.key === 'v') {
-        const clipboardData = localStorage.getItem('clipboard-node');
-        if (clipboardData) {
-          const nodeData = JSON.parse(clipboardData);
-          const rect = canvasRef.current.getBoundingClientRect();
-          const x = (window.innerWidth / 2 - rect.left - position.x) / zoom;
-          const y = (window.innerHeight / 2 - rect.top - position.y) / zoom;
-          
-          onAddNode({
-            ...nodeData,
-            x,
-            y
-          });
+        const copiedNode = localStorage.getItem('copiedNode');
+        if (copiedNode) {
+          const node = JSON.parse(copiedNode);
+          const newNode = {
+            ...node,
+            id: crypto.randomUUID(),
+            x: node.x + 20,
+            y: node.y + 20
+          };
+          onAddNode(newNode);
           toast.success('Node pasted from clipboard');
         }
       }
@@ -80,39 +86,33 @@ const CanvasView = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [nodes, focusedNodeId, zoom, position, onAddNode]);
+  }, [focusedNodeId, nodes, onAddNode]);
 
   const handleMouseMove = (e) => {
-    if (activeConnection) {
-      const rect = canvasRef.current.getBoundingClientRect();
+    if (!canvasRef.current) return;
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    
+    if (isConnecting) {
       const x = (e.clientX - rect.left - position.x) / zoom;
       const y = (e.clientY - rect.top - position.y) / zoom;
       handleConnectionMove({ clientX: x, clientY: y });
-    }
-    if (isDragging) {
-      updateSelection(e, nodes, position);
+    } else if (isSpacePressed && e.buttons === 1) {
+      setIsPanning(true);
+      setPosition(prev => ({
+        x: prev.x + e.movementX,
+        y: prev.y + e.movementY
+      }));
     }
   };
 
   const handleMouseUp = () => {
-    if (activeConnection) {
-      setActiveConnection(null);
-    }
-    if (isDragging) {
-      endSelection();
-    }
+    setIsPanning(false);
   };
 
   const handleCanvasClick = (e) => {
     if (e.target === e.currentTarget || e.target === contentRef.current) {
       onNodeFocus(null);
-      setSelectedNodes([]);
-    }
-  };
-
-  const handleMouseDown = (e) => {
-    if (e.target === e.currentTarget || e.target === contentRef.current) {
-      startSelection(e);
     }
   };
 
@@ -123,43 +123,35 @@ const CanvasView = ({
 
   const handleDrop = (e) => {
     e.preventDefault();
-    const nodeType = e.dataTransfer.getData('nodeType');
+    const rect = canvasRef.current.getBoundingClientRect();
+    const data = e.dataTransfer.getData('application/json');
     
-    if (nodeType === 'postit') {
-      const rect = canvasRef.current.getBoundingClientRect();
-      const x = (e.clientX - rect.left - position.x) / zoom;
-      const y = (e.clientY - rect.top - position.y) / zoom;
-      
-      onAddNode({
-        title: 'New Note',
-        description: '',
-        visualStyle: 'postit',
-        color: 'bg-white',
-        x,
-        y,
-        nodeType: 'generic'
-      });
+    if (data) {
+      try {
+        const nodeData = JSON.parse(data);
+        const dropX = (e.clientX - rect.left - position.x) / zoom;
+        const dropY = (e.clientY - rect.top - position.y) / zoom;
+        
+        const newNode = {
+          ...nodeData,
+          id: crypto.randomUUID(),
+          x: dropX,
+          y: dropY,
+          width: nodeData.width || 200,
+          height: nodeData.height || 100
+        };
+        
+        onAddNode(newNode);
+      } catch (error) {
+        console.error('Error parsing dropped data:', error);
+      }
     }
   };
 
-  const handleAddNode = () => {
-    const rect = canvasRef.current.getBoundingClientRect();
-    const x = (window.innerWidth / 2 - rect.left - position.x) / zoom;
-    const y = (window.innerHeight / 2 - rect.top - position.y) / zoom;
-    
-    onAddNode({
-      title: 'New Node',
-      description: '',
-      visualStyle: 'default',
-      color: 'bg-white',
-      x,
-      y,
-      nodeType: 'generic'
-    });
-    toast.success('New node added');
-  };
-
-  const transformStyle = {
+  const contentStyle = {
+    position: 'absolute',
+    top: position.y,
+    left: position.x,
     transform: `scale(${zoom})`,
     transformOrigin: '0 0',
     willChange: 'transform',
@@ -168,58 +160,48 @@ const CanvasView = ({
 
   return (
     <div 
-      className="w-full h-screen overflow-hidden cursor-auto relative bg-gray-900 scrollbar-hide"
+      className="w-full h-screen overflow-hidden relative bg-gray-900 scrollbar-hide"
       ref={canvasRef}
       tabIndex={0}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
-      onMouseDown={handleMouseDown}
       onClick={handleCanvasClick}
+      onWheel={handleWheel}
+      style={{ cursor: isSpacePressed ? (isPanning ? 'grabbing' : 'grab') : 'default' }}
     >
       <CanvasBackground zoom={zoom} position={position} />
       
-      <CanvasContent
-        contentRef={contentRef}
-        transformStyle={transformStyle}
-        handleWheel={handleWheel}
-        handleCanvasClick={handleCanvasClick}
-        connections={connections}
-        activeConnection={activeConnection}
-        nodes={nodes}
-        focusedNodeId={focusedNodeId}
-        onNodeFocus={onNodeFocus}
-        onUpdateNode={onUpdateNode}
-        onDeleteNode={handleDeleteNode}
+      <div ref={contentRef} style={contentStyle}>
+        {renderedNodes}
+        
+        {isConnecting && temporaryConnection && (
+          <ConnectorLine
+            startX={temporaryConnection.startX}
+            startY={temporaryConnection.startY}
+            endX={temporaryConnection.endX}
+            endY={temporaryConnection.endY}
+            isTemporary={true}
+          />
+        )}
+      </div>
+
+      <CanvasControls
         zoom={zoom}
-        handleConnectionStart={handleConnectionStart}
-        handleConnectionEnd={handleConnectionEnd}
-        selectedNodes={selectedNodes}
-      />
-
-      {isDragging && (
-        <SelectionBox
-          startPoint={selectionStart}
-          currentPoint={selectionEnd}
-        />
-      )}
-
-      <CanvasControls 
+        onZoomChange={handleZoom}
         activeTool={activeTool}
         setActiveTool={setActiveTool}
-        zoom={zoom}
-        handleZoom={handleZoom}
-        onAIChatToggle={() => setIsAIChatOpen(!isAIChatOpen)}
         isAIChatOpen={isAIChatOpen}
-        onAddNode={handleAddNode}
+        setIsAIChatOpen={setIsAIChatOpen}
       />
 
-      <AIChatPanel
-        isOpen={isAIChatOpen}
-        onClose={() => setIsAIChatOpen(false)}
-        initialContext={`Viewing canvas with ${nodes.length} nodes`}
-      />
+      {isAIChatOpen && (
+        <AIChatPanel
+          isOpen={isAIChatOpen}
+          onClose={() => setIsAIChatOpen(false)}
+        />
+      )}
     </div>
   );
 };
