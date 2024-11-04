@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 import NodeContent from './NodeContent';
 import ConnectionDot from './ConnectionDot';
-import NodeStyleTooltip from './NodeStyleTooltip';
+import NodeStyleTooltip from '@/01_components/06_nodes/tooltips/NodeTooltip';
 
 const TwoDNode = ({ 
   node, 
