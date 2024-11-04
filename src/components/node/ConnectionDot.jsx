@@ -10,15 +10,16 @@ const ConnectionDot = ({
   isActive = false
 }) => {
   const getPosition = () => {
+    const offset = '6px'; // Consistent offset for all positions
     switch (position) {
       case 'left':
-        return 'left-[-4px] top-1/2 -translate-x-1/2 -translate-y-1/2';
+        return `left-[-${offset}] top-1/2 -translate-x-1/2 -translate-y-1/2`;
       case 'right':
-        return 'right-[-4px] top-1/2 translate-x-1/2 -translate-y-1/2';
+        return `right-[-${offset}] top-1/2 translate-x-1/2 -translate-y-1/2`;
       case 'top':
-        return 'top-[-4px] left-1/2 -translate-x-1/2 -translate-y-1/2';
+        return `top-[-${offset}] left-1/2 -translate-x-1/2 -translate-y-1/2`;
       case 'bottom':
-        return 'bottom-[-4px] left-1/2 -translate-x-1/2 translate-y-1/2';
+        return `bottom-[-${offset}] left-1/2 -translate-x-1/2 translate-y-1/2`;
       default:
         return '';
     }
@@ -30,7 +31,7 @@ const ConnectionDot = ({
 
   return (
     <div
-      className={`absolute w-[4px] h-[4px] rounded-full cursor-pointer ring-2 ring-white shadow-[0_0_8px_rgba(0,0,0,0.4)]
+      className={`absolute w-3 h-3 rounded-full cursor-pointer ring-2 ring-white shadow-[0_0_8px_rgba(0,0,0,0.4)]
         ${getPosition()}
         ${isActive ? 'bg-blue-600' : isHovered ? 'bg-blue-400' : 'bg-gray-400'} 
         transition-all duration-200 hover:scale-150`}
