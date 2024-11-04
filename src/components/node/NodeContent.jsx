@@ -22,7 +22,7 @@ const NodeContent = ({
     textSizeClasses[textSize],
     `text-${textAlign}`,
     color,
-    "p-2 w-full h-full transition-all duration-200 rounded-lg shadow-sm bg-white"
+    "p-4 w-full h-full transition-all duration-200 rounded-lg shadow-sm bg-white"
   );
 
   // Render compact style (avatar only)
@@ -37,7 +37,7 @@ const NodeContent = ({
   // Render default style (avatar + title only)
   return (
     <div className={baseClasses}>
-      <div className="flex items-center h-full gap-3">
+      <div className="flex items-start gap-3">
         <NodeAvatar src={node.avatar} alt={node.title} />
         <div className="flex-1 min-w-0">
           <div className="font-medium truncate">{node.title}</div>
