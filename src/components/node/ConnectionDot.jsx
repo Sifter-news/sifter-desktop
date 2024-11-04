@@ -12,13 +12,13 @@ const ConnectionDot = ({
   const getPosition = () => {
     switch (position) {
       case 'left':
-        return 'left-[-4px] top-1/2 -translate-x-1/2 -translate-y-1/2';
+        return 'left-[-8px] top-1/2 -translate-x-1/2 -translate-y-1/2';
       case 'right':
-        return 'right-[-4px] top-1/2 translate-x-1/2 -translate-y-1/2';
+        return 'right-[-8px] top-1/2 translate-x-1/2 -translate-y-1/2';
       case 'top':
-        return 'top-[-4px] left-1/2 -translate-x-1/2 -translate-y-1/2';
+        return 'top-[-8px] left-1/2 -translate-x-1/2 -translate-y-1/2';
       case 'bottom':
-        return 'bottom-[-4px] left-1/2 -translate-x-1/2 translate-y-1/2';
+        return 'bottom-[-8px] left-1/2 -translate-x-1/2 translate-y-1/2';
       default:
         return '';
     }
