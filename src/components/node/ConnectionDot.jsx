@@ -28,8 +28,8 @@ const ConnectionDot = ({
     <div
       className={`absolute w-2 h-2 rounded-full cursor-crosshair
         ${getPosition()} 
-        ${isHovered ? 'scale-[2] border-2 border-black' : 'scale-100 border border-gray-400'} 
-        transition-all duration-200 origin-center`}
+        ${isHovered ? 'border-2 border-black' : 'border border-gray-400'} 
+        transition-all duration-200`}
       onMouseEnter={onHover}
       onMouseLeave={onLeaveHover}
       onMouseDown={(e) => {
@@ -42,7 +42,7 @@ const ConnectionDot = ({
       }}
       draggable={false}
     >
-      <div className="absolute top-1/2 left-1/2 w-[2px] h-[2px] bg-black opacity-50 -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute top-1/2 left-1/2 w-[1px] h-[1px] bg-black -translate-x-1/2 -translate-y-1/2" />
     </div>
   );
 };
