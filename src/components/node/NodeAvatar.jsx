@@ -1,25 +1,6 @@
 import React from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { FileText, User, Building2, Box, Brain, MapPin, Calendar } from 'lucide-react';
-
-const getNodeTypeIcon = (nodeType) => {
-  switch (nodeType) {
-    case 'node_person':
-      return <User className="h-4 w-4" />;
-    case 'node_organization':
-      return <Building2 className="h-4 w-4" />;
-    case 'node_object':
-      return <Box className="h-4 w-4" />;
-    case 'node_concept':
-      return <Brain className="h-4 w-4" />;
-    case 'node_location':
-      return <MapPin className="h-4 w-4" />;
-    case 'node_event':
-      return <Calendar className="h-4 w-4" />;
-    default:
-      return <FileText className="h-4 w-4" />;
-  }
-};
+import { getNodeTypeIcon } from '@/utils/nodeConstants';
 
 const NodeAvatar = ({ src, alt, size = "default", onImageUpload, nodeType }) => {
   const sizeClasses = {
@@ -27,6 +8,8 @@ const NodeAvatar = ({ src, alt, size = "default", onImageUpload, nodeType }) => 
     default: "h-8 w-8",
     large: "h-10 w-10"
   };
+
+  const Icon = getNodeTypeIcon(nodeType);
 
   const handleImageChange = (event) => {
     const file = event.target.files?.[0];
@@ -43,7 +26,7 @@ const NodeAvatar = ({ src, alt, size = "default", onImageUpload, nodeType }) => 
     <div className="relative group">
       <Avatar className={sizeClasses[size]}>
         <AvatarImage src={src || "/default-image.png"} alt={alt} />
-        <AvatarFallback>{getNodeTypeIcon(nodeType)}</AvatarFallback>
+        <AvatarFallback><Icon className="h-4 w-4" /></AvatarFallback>
       </Avatar>
       {onImageUpload && (
         <input

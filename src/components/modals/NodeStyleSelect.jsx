@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Layout, Square, StickyNote } from 'lucide-react';
+import { NODE_STYLES } from '@/utils/nodeConstants';
 
 const NodeStyleSelect = ({ value, onChange }) => {
   return (
@@ -19,24 +19,14 @@ const NodeStyleSelect = ({ value, onChange }) => {
           <SelectValue placeholder="Select style" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="default">
-            <div className="flex items-center">
-              <Square className="h-4 w-4 mr-2" />
-              Default
-            </div>
-          </SelectItem>
-          <SelectItem value="compact">
-            <div className="flex items-center">
-              <Layout className="h-4 w-4 mr-2" />
-              Compact
-            </div>
-          </SelectItem>
-          <SelectItem value="postit">
-            <div className="flex items-center">
-              <StickyNote className="h-4 w-4 mr-2" />
-              Post-it
-            </div>
-          </SelectItem>
+          {Object.entries(NODE_STYLES).map(([key, { label, icon: Icon }]) => (
+            <SelectItem key={key} value={key}>
+              <div className="flex items-center">
+                <Icon className="h-4 w-4 mr-2" />
+                {label}
+              </div>
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>

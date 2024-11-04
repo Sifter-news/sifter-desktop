@@ -1,21 +1,22 @@
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
+import { getNodeTypeLabel } from '@/utils/nodeConstants';
 
 const NodeSubline = ({ type, metadata }) => {
   const getTypeLabel = () => {
     switch (type) {
       case 'node_person':
-        return metadata?.occupation || 'Person';
+        return metadata?.occupation || getNodeTypeLabel(type);
       case 'node_organization':
-        return metadata?.industry || 'Organization';
+        return metadata?.industry || getNodeTypeLabel(type);
       case 'node_location':
-        return metadata?.address || 'Location';
+        return metadata?.address || getNodeTypeLabel(type);
       case 'node_event':
-        return metadata?.date || 'Event';
+        return metadata?.date || getNodeTypeLabel(type);
       case 'node_object':
-        return metadata?.category || 'Object';
+        return metadata?.category || getNodeTypeLabel(type);
       default:
-        return 'Note';
+        return getNodeTypeLabel(type);
     }
   };
 
