@@ -20,7 +20,7 @@ export const useNodeRendering = ({
           key={node.id}
           node={{
             ...node,
-            color: node.color || 'bg-white' // Set default color to white
+            color: node.color || 'bg-white'
           }}
           zoom={zoom}
           onNodeUpdate={onUpdateNode}
@@ -32,6 +32,7 @@ export const useNodeRendering = ({
           onStartConnection={handleConnectionStart}
           onEndConnection={handleConnectionEnd}
           dimensions={style}
+          showTooltip={focusedNodeId === node.id} // Add this prop
         />
       );
     });

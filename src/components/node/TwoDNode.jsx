@@ -17,9 +17,9 @@ const TwoDNode = ({
   onEndConnection,
   dimensions,
   onDragStart,
-  onAIConversation
+  onAIConversation,
+  showTooltip = false // Add this prop
 }) => {
-  const [showTooltip, setShowTooltip] = useState(false);
   const [textSize, setTextSize] = useState(node.textSize || 'medium');
   const [textAlign, setTextAlign] = useState(node.textAlign || 'left');
   const [color, setColor] = useState(node.color || 'bg-white');
@@ -51,7 +51,6 @@ const TwoDNode = ({
 
   const handleNodeClick = (e) => {
     e.stopPropagation();
-    setShowTooltip(true);
     onFocus?.(node.id);
   };
 
@@ -87,8 +86,9 @@ const TwoDNode = ({
         topLeft: true
       }}
     >
-      {showTooltip && isFocused && (
+      {showTooltip && (
         <NodeStyleTooltip
+          node={node}
           position={position}
           onStyleChange={(style) => {
             const newDimensions = dimensions;
@@ -109,6 +109,7 @@ const TwoDNode = ({
           onTypeChange={(type) => onNodeUpdate(node.id, { nodeType: type })}
           onColorChange={handleColorChange}
           onAIChat={() => onAIConversation?.(node)}
+          onDelete={() => onDelete?.(node.id)}
         />
       )}
 
