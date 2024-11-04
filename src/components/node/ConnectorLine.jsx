@@ -10,12 +10,18 @@ const ConnectorLine = ({
   onClick,
   className = ""
 }) => {
-  // Calculate control points for the curved path
-  const midY = startY + (endY - startY) / 2;
+  // Calculate the midpoint and radius for rounded corners
+  const midX = startX;
+  const midY = endY;
+  const radius = 20; // Radius for the rounded corners
+  
+  // Create path with rounded corners using arcTo commands
   const path = `
     M ${startX} ${startY}
-    L ${startX} ${midY}
-    Q ${startX} ${endY} ${startX + 20} ${endY}
+    L ${midX} ${startY + (startY < endY ? radius : -radius)}
+    Q ${midX} ${startY + (startY < endY ? 0 : 0)} ${midX + (startX < endX ? radius : -radius)} ${startY}
+    L ${endX - (startX < endX ? radius : -radius)} ${midY}
+    Q ${endX} ${midY} ${endX} ${midY + (startY < endY ? -radius : radius)}
     L ${endX} ${endY}
   `;
 
@@ -32,15 +38,27 @@ const ConnectorLine = ({
       }}
       onClick={onClick}
     >
+      <defs>
+        <marker
+          id="arrowhead"
+          markerWidth="10"
+          markerHeight="7"
+          refX="9"
+          refY="3.5"
+          orient="auto"
+        >
+          <polygon points="0 0, 10 3.5, 0 7" fill={isSelected ? "#3b82f6" : "#6B7280"} />
+        </marker>
+      </defs>
       <path
         d={path}
-        stroke={isSelected ? "#3b82f6" : "#9CA3AF"}
-        strokeWidth={isSelected ? "2" : "1.5"}
+        stroke={isSelected ? "#3b82f6" : "#6B7280"}
+        strokeWidth={isSelected ? "3" : "2"}
         strokeDasharray={isDashed ? "5,5" : "none"}
-        strokeOpacity="0.6"
+        strokeOpacity="0.5"
         fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        markerEnd="url(#arrowhead)"
+        className={className}
       />
     </svg>
   );
