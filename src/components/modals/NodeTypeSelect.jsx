@@ -7,24 +7,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { FileText, User, Building2, Package, Brain, MapPin, Calendar } from 'lucide-react';
 
 const NodeTypeSelect = ({ value, onChange }) => {
   return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger>
-        <SelectValue placeholder="Select node type" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectItem value="generic">
+    <div className="grid w-full items-center gap-1.5">
+      <Label htmlFor="type">Node Type</Label>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger>
+          <SelectValue placeholder="Select node type" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="note">
             <div className="flex items-center">
               <FileText className="h-4 w-4 mr-2" />
-              Generic Node
+              Note
             </div>
           </SelectItem>
-        </SelectGroup>
-        <SelectGroup>
           <SelectItem value="node_person">
             <div className="flex items-center">
               <User className="h-4 w-4 mr-2" />
@@ -61,9 +61,9 @@ const NodeTypeSelect = ({ value, onChange }) => {
               Event
             </div>
           </SelectItem>
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+        </SelectContent>
+      </Select>
+    </div>
   );
 };
 
