@@ -63,7 +63,7 @@ const NodeStyleTooltip = ({
     <>
       <div 
         className="absolute -top-12 left-1/2 transform -translate-x-1/2 flex items-center gap-2 p-2 bg-black/50 backdrop-blur-sm rounded-lg shadow-lg"
-        style={{ zIndex: 'auto' }}
+        style={{ zIndex: 40 }}
       >
         <Button
           variant="ghost"
