@@ -10,24 +10,10 @@ import {
 import { Layout, Square, StickyNote } from 'lucide-react';
 
 const NodeStyleSelect = ({ value, onChange }) => {
-  const getCurrentIcon = () => {
-    const icons = {
-      default: Square,
-      compact: Layout,
-      expanded: Layout,
-      postit: StickyNote
-    };
-    const Icon = icons[value] || Square;
-    return <Icon className="h-4 w-4 mr-2" />;
-  };
-
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger>
-        <div className="flex items-center">
-          {getCurrentIcon()}
-          <SelectValue placeholder="Select style" />
-        </div>
+        <SelectValue placeholder="Select style" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>

@@ -10,27 +10,10 @@ import {
 import { FileText, User, Building2, Package, Brain, MapPin, Calendar } from 'lucide-react';
 
 const NodeTypeSelect = ({ value, onChange }) => {
-  const getCurrentIcon = () => {
-    const icons = {
-      generic: FileText,
-      node_person: User,
-      node_organization: Building2,
-      node_object: Package,
-      node_concept: Brain,
-      node_location: MapPin,
-      node_event: Calendar
-    };
-    const Icon = icons[value] || FileText;
-    return <Icon className="h-4 w-4 mr-2" />;
-  };
-
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger>
-        <div className="flex items-center">
-          {getCurrentIcon()}
-          <SelectValue placeholder="Select node type" />
-        </div>
+        <SelectValue placeholder="Select node type" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
