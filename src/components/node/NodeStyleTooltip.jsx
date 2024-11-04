@@ -1,201 +1,141 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
+import { Layout, Type, MessageCircle, Pencil } from 'lucide-react';
 import {
-  AlignCenter,
-  AlignLeft,
-  Type,
-  Layout,
-  FileText,
-  User,
-  Building2,
-  Package,
-  Brain,
-  MapPin,
-  Calendar,
-  MessageCircle,
-  ChevronDown,
-  Square,
-  StickyNote,
-} from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
-const textSizes = {
-  small: { label: "Small", class: "text-sm" },
-  medium: { label: "Medium", class: "text-base" },
-  large: { label: "Large", class: "text-lg" },
-  huge: { label: "Huge", class: "text-xl" }
-};
-
-const colors = {
-  white: { label: 'White', value: 'bg-white', textColor: 'text-black' },
-  yellow: { label: 'Yellow', value: 'bg-yellow-100', textColor: 'text-black' },
-  blue: { label: 'Blue', value: 'bg-blue-100', textColor: 'text-black' },
-  green: { label: 'Green', value: 'bg-green-100', textColor: 'text-black' },
-  pink: { label: 'Pink', value: 'bg-pink-100', textColor: 'text-black' },
-  purple: { label: 'Purple', value: 'bg-purple-100', textColor: 'text-black' },
-  orange: { label: 'Orange', value: 'bg-orange-100', textColor: 'text-black' },
-};
-
-const styles = {
-  default: { label: 'Default', icon: Layout, dimensions: '200×100' },
-  compact: { label: 'Compact', icon: Square, dimensions: '48×48' },
-  postit: { label: 'Post-it', icon: StickyNote, dimensions: '256×256' }
-};
-
-const NodeStyleTooltip = ({ 
-  onStyleChange, 
-  onTextSizeChange, 
+const NodeStyleTooltip = ({
+  position,
+  onStyleChange,
+  onTextSizeChange,
   onAlignmentChange,
   onTypeChange,
-  onAIChat,
   onColorChange,
-  position = { x: 0, y: 0 },
-  selectedTextSize = 'medium',
-  selectedColor = 'bg-white',
-  selectedAlignment = 'left',
-  selectedStyle = 'default'
+  onEdit,
+  onAIChat
 }) => {
   return (
     <div 
-      className="absolute bg-black/90 rounded-lg shadow-lg p-2 flex gap-1 z-50"
-      style={{ 
-        left: '50%',
-        bottom: '100%',
-        transform: 'translateX(-50%)',
-        marginBottom: '8px'
-      }}
+      className="absolute -top-12 left-1/2 transform -translate-x-1/2 flex items-center gap-2 p-2 bg-black/50 backdrop-blur-sm rounded-lg shadow-lg"
+      style={{ zIndex: 'auto' }} // Remove any explicit z-index to match node layering
     >
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-10 w-10 text-white hover:bg-white/10 flex items-center gap-1">
-            <div className={`w-6 h-6 rounded ${selectedColor}`} />
-            <ChevronDown className="h-3 w-3 text-white/70" />
+      <Button
+        variant="ghost"
+        size="sm"
+        className="text-white hover:bg-white/20"
+        onClick={onEdit}
+      >
+        <Pencil className="h-4 w-4 mr-2" />
+        Edit
+      </Button>
+
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+            <Layout className="h-4 w-4 mr-2" />
+            Style
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-black/90 text-white border-white/10">
-          {Object.entries(colors).map(([key, { label, value, textColor }]) => (
-            <DropdownMenuItem 
-              key={key} 
-              onClick={() => onColorChange(value)}
-              className="flex items-center gap-2"
+        </PopoverTrigger>
+        <PopoverContent className="w-32">
+          <div className="flex flex-col space-y-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onStyleChange('default')}
             >
-              <div className={`w-4 h-4 rounded ${value}`} />
-              <span className={value === selectedColor ? 'font-bold' : ''}>{label}</span>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-10 w-10 text-white hover:bg-white/10 flex items-center gap-1">
-            <Type className="h-6 w-6" />
-            <ChevronDown className="h-3 w-3 text-white/70" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-black/90 text-white border-white/10">
-          {Object.entries(textSizes).map(([size, { label, class: sizeClass }]) => (
-            <DropdownMenuItem 
-              key={size} 
-              onClick={() => onTextSizeChange(size)}
-              className={`${sizeClass} ${size === selectedTextSize ? 'font-bold' : ''}`}
+              Default
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onStyleChange('compact')}
             >
-              {label}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-10 w-10 text-white hover:bg-white/10 flex items-center gap-1">
-            {selectedAlignment === 'left' ? (
-              <AlignLeft className="h-6 w-6" />
-            ) : (
-              <AlignCenter className="h-6 w-6" />
-            )}
-            <ChevronDown className="h-3 w-3 text-white/70" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-black/90 text-white border-white/10">
-          <DropdownMenuItem onClick={() => onAlignmentChange('left')}>
-            <AlignLeft className="h-6 w-6 mr-2" />
-            Left
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onAlignmentChange('center')}>
-            <AlignCenter className="h-6 w-6 mr-2" />
-            Center
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-10 w-10 text-white hover:bg-white/10 flex items-center gap-1">
-            {React.createElement(styles[selectedStyle].icon, { className: "h-6 w-6" })}
-            <ChevronDown className="h-3 w-3 text-white/70" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-black/90 text-white border-white/10">
-          {Object.entries(styles).map(([value, { label, icon: Icon, dimensions }]) => (
-            <DropdownMenuItem 
-              key={value} 
-              onClick={() => onStyleChange(value)}
-              className="flex items-center gap-2"
+              Compact
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onStyleChange('postit')}
             >
-              <Icon className="h-6 w-6 mr-2" />
-              <span className={value === selectedStyle ? 'font-bold' : ''}>
-                {label} ({dimensions})
-              </span>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+              Post-it
+            </Button>
+          </div>
+        </PopoverContent>
+      </Popover>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-10 w-10 text-white hover:bg-white/10 flex items-center gap-1">
-            <FileText className="h-6 w-6" />
-            <ChevronDown className="h-3 w-3 text-white/70" />
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+            <Type className="h-4 w-4 mr-2" />
+            Type
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-black/90 text-white border-white/10">
-          <DropdownMenuItem onClick={() => onTypeChange('generic')}>
-            <FileText className="h-6 w-6 mr-2" /> Generic Note
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onTypeChange('node_person')}>
-            <User className="h-6 w-6 mr-2" /> Person
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onTypeChange('node_organization')}>
-            <Building2 className="h-6 w-6 mr-2" /> Organization
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onTypeChange('node_object')}>
-            <Package className="h-6 w-6 mr-2" /> Object
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onTypeChange('node_concept')}>
-            <Brain className="h-6 w-6 mr-2" /> Concept
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onTypeChange('node_location')}>
-            <MapPin className="h-6 w-6 mr-2" /> Location
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onTypeChange('node_event')}>
-            <Calendar className="h-6 w-6 mr-2" /> Event
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </PopoverTrigger>
+        <PopoverContent className="w-40">
+          <div className="flex flex-col space-y-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onTypeChange('generic')}
+            >
+              Generic Note
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onTypeChange('node_person')}
+            >
+              Person
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onTypeChange('node_organization')}
+            >
+              Organization
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onTypeChange('node_object')}
+            >
+              Object
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onTypeChange('node_concept')}
+            >
+              Concept
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onTypeChange('node_location')}
+            >
+              Location
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onTypeChange('node_event')}
+            >
+              Event
+            </Button>
+          </div>
+        </PopoverContent>
+      </Popover>
 
-      <Button 
-        variant="ghost" 
-        size="sm" 
-        className="h-10 w-10 text-white hover:bg-purple-500/50 bg-purple-500/25"
+      <Button
+        variant="ghost"
+        size="sm"
+        className="text-white hover:bg-purple-700 bg-purple-600"
         onClick={onAIChat}
       >
-        <MessageCircle className="h-6 w-6" />
+        <MessageCircle className="h-4 w-4 mr-2" />
+        AI
       </Button>
     </div>
   );
