@@ -10,12 +10,20 @@ const ConnectorLine = ({
   onClick,
   className = ""
 }) => {
-  // Calculate the midpoint for the elbow
+  // Calculate the midpoint and radius for rounded corners
   const midX = startX;
   const midY = endY;
-
-  // Create elbowed path with right angles
-  const path = `M ${startX} ${startY} L ${midX} ${midY} L ${endX} ${endY}`;
+  const radius = 20; // Radius for the rounded corners
+  
+  // Create path with rounded corners using arcTo commands
+  const path = `
+    M ${startX} ${startY}
+    L ${midX} ${startY + (startY < endY ? radius : -radius)}
+    Q ${midX} ${startY + (startY < endY ? 0 : 0)} ${midX + (startX < endX ? radius : -radius)} ${startY}
+    L ${endX - (startX < endX ? radius : -radius)} ${midY}
+    Q ${endX} ${midY} ${endX} ${midY + (startY < endY ? -radius : radius)}
+    L ${endX} ${endY}
+  `;
 
   return (
     <svg
