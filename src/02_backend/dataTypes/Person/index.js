@@ -6,49 +6,58 @@
 export const PersonNodeType = {
   type: 'node_person',
   fields: {
-    fullName: {
+    knownAs: {
       type: 'string',
-      required: true,
+      required: false,
+      maxLength: 255
+    },
+    title: {
+      type: 'string',
+      required: false,
+      maxLength: 50
+    },
+    firstName: {
+      type: 'string',
+      required: false,
+      maxLength: 100
+    },
+    middleName: {
+      type: 'string',
+      required: false,
+      maxLength: 100
+    },
+    lastName: {
+      type: 'string',
+      required: false,
       maxLength: 100
     },
     dateOfBirth: {
       type: 'date',
       required: false
     },
-    nationality: {
-      type: 'string',
+    dateOfDeath: {
+      type: 'date',
       required: false
     },
-    occupation: {
+    gender: {
       type: 'string',
+      enum: ['Male', 'Female', 'Other'],
       required: false
     },
-    organizations: {
-      type: 'array',
-      items: {
-        type: 'reference',
-        nodeType: 'node_organization'
-      }
+    background: {
+      type: 'text',
+      required: false
     },
-    locations: {
+    roles: {
       type: 'array',
       items: {
-        type: 'reference',
-        nodeType: 'node_location'
-      }
-    },
-    events: {
-      type: 'array',
-      items: {
-        type: 'reference',
-        nodeType: 'node_event'
+        type: 'string'
       }
     },
     metadata: {
       type: 'object',
       properties: {
         avatar: { type: 'string' },
-        biography: { type: 'string' },
         aliases: { type: 'array', items: { type: 'string' } },
         tags: { type: 'array', items: { type: 'string' } }
       }
