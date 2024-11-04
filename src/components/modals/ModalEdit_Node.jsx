@@ -119,8 +119,20 @@ const ModalEdit_Node = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[425px] overflow-hidden">
+          <NodeAvatarSection 
+            avatar={formData.avatar} 
+            onImageUpload={(file) => {
+              if (file) {
+                setFormData(prev => ({
+                  ...prev,
+                  avatar: URL.createObjectURL(file)
+                }));
+              }
+            }} 
+          />
+          
+          <DialogHeader className="mt-4">
             <DialogTitle>Edit Node</DialogTitle>
           </DialogHeader>
           
@@ -139,18 +151,6 @@ const ModalEdit_Node = ({
               }
             />
           </div>
-
-          <NodeAvatarSection 
-            avatar={formData.avatar} 
-            onImageUpload={(file) => {
-              if (file) {
-                setFormData(prev => ({
-                  ...prev,
-                  avatar: URL.createObjectURL(file)
-                }));
-              }
-            }} 
-          />
 
           <div className="grid gap-4 py-4">
             <NodeBasicFields
