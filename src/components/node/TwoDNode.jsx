@@ -41,12 +41,15 @@ const TwoDNode = ({
   };
 
   const handleResize = (e, direction, ref, delta, position) => {
-    onNodeUpdate(node.id, {
-      width: ref.style.width,
-      height: ref.style.height,
-      x: position.x,
-      y: position.y
-    });
+    // Only allow resizing for non-compact and non-default views
+    if (node.visualStyle !== 'compact' && node.visualStyle !== 'default') {
+      onNodeUpdate(node.id, {
+        width: ref.style.width,
+        height: ref.style.height,
+        x: position.x,
+        y: position.y
+      });
+    }
   };
 
   const handleNodeClick = (e) => {
@@ -62,6 +65,18 @@ const TwoDNode = ({
 
   const connectionPoints = ['left', 'right', 'top', 'bottom'];
 
+  // Determine if resizing should be enabled based on the node style
+  const enableResizing = node.visualStyle !== 'compact' && node.visualStyle !== 'default' ? {
+    top: true,
+    right: true,
+    bottom: true,
+    left: true,
+    topRight: true,
+    bottomRight: true,
+    bottomLeft: true,
+    topLeft: true
+  } : false;
+
   return (
     <Rnd
       size={{ width: dimensions.width, height: dimensions.height }}
@@ -76,16 +91,7 @@ const TwoDNode = ({
       }`}
       onClick={handleNodeClick}
       bounds="parent"
-      enableResizing={{
-        top: true,
-        right: true,
-        bottom: true,
-        left: true,
-        topRight: true,
-        bottomRight: true,
-        bottomLeft: true,
-        topLeft: true
-      }}
+      enableResizing={enableResizing}
     >
       {showTooltip && isFocused && (
         <NodeStyleTooltip
