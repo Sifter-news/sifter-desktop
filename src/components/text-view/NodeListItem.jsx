@@ -46,7 +46,7 @@ const NodeListItem = ({
       onMouseLeave={handleMouseLeave}
     >
       <div className="flex items-center flex-1 min-w-0">
-        <div className="cursor-grab">
+        <div className="opacity-0 group-hover:opacity-100 transition-opacity cursor-grab">
           <GripVertical className="h-4 w-4 text-gray-400" />
         </div>
 
