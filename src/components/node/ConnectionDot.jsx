@@ -24,6 +24,10 @@ const ConnectionDot = ({
     }
   };
 
+  const handleMouseDown = (e) => {
+    e.stopPropagation();
+  };
+
   return (
     <div
       className={`absolute w-2 h-2 rounded-full cursor-pointer
@@ -32,6 +36,7 @@ const ConnectionDot = ({
         transition-all duration-200 hover:scale-150`}
       onMouseEnter={onHover}
       onMouseLeave={onLeaveHover}
+      onMouseDown={handleMouseDown}
       onClick={(e) => {
         e.stopPropagation();
         onDotClick(nodeId, position);
