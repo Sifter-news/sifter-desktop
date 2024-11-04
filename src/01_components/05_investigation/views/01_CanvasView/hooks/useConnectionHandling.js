@@ -26,7 +26,7 @@ export const useConnectionHandling = () => {
     }
   }, [activeConnection]);
 
-  const handleConnectionEnd = useCallback((targetNodeId, targetPosition) => {
+  const handleConnectionEnd = useCallback((targetNodeId, targetPosition, endPoint) => {
     if (activeConnection && targetNodeId !== activeConnection.sourceNodeId) {
       const newConnection = {
         id: `${activeConnection.sourceNodeId}-${targetNodeId}`,
@@ -36,8 +36,8 @@ export const useConnectionHandling = () => {
         targetPosition,
         startX: activeConnection.startX,
         startY: activeConnection.startY,
-        endX: activeConnection.endX,
-        endY: activeConnection.endY
+        endX: endPoint.x,
+        endY: endPoint.y
       };
       
       setConnections(prev => [...prev, newConnection]);
