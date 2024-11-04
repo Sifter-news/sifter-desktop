@@ -52,7 +52,7 @@ const NodeStyleTooltip = ({
   return (
     <>
       <div 
-        className="absolute -top-10 left-1/2 transform -translate-x-1/2 flex items-center gap-1 p-1.5 bg-black rounded-lg shadow-lg"
+        className="absolute -top-12 left-1/2 transform -translate-x-1/2 flex items-center gap-1 p-1.5 bg-black rounded-lg shadow-lg"
         style={{ zIndex: 'auto' }}
       >
         <TooltipProvider>
