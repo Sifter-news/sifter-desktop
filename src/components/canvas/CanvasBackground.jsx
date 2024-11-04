@@ -3,9 +3,9 @@ import React, { useMemo } from 'react';
 const CanvasBackground = ({ zoom, position }) => {
   const gridConfig = useMemo(() => {
     // Base sizes in pixels
-    const smallGrid = 8;
-    const mediumGrid = 16;
-    const largeGrid = 24;
+    const smallGrid = 16;  // Doubled from 8 to reduce density
+    const mediumGrid = 32; // Doubled from 16 to reduce density
+    const largeGrid = 48;  // Doubled from 24 to reduce density
     
     // Determine which grid size to use based on zoom level
     let primarySize;
@@ -18,7 +18,7 @@ const CanvasBackground = ({ zoom, position }) => {
     }
     
     return {
-      dotSize: Math.max(1, Math.min(2, zoom * 2)), // Dot size scales with zoom but has min/max
+      dotSize: 2, // Fixed 2px dot size
       spacing: primarySize,
       opacity: Math.min(0.3, 0.1 + zoom * 0.1) // Opacity increases with zoom but caps at 0.3
     };
