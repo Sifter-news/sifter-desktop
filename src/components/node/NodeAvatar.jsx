@@ -1,48 +1,39 @@
-import React, { useRef } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { PencilIcon } from 'lucide-react';
+import React from 'react';
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { FileText } from 'lucide-react';
 
-const NodeAvatar = ({ avatar, onAvatarChange }) => {
-  const fileInputRef = useRef(null);
-
-  const handleAvatarClick = () => {
-    fileInputRef.current?.click();
+const NodeAvatar = ({ src, alt, size = "default", onImageUpload }) => {
+  const sizeClasses = {
+    small: "h-6 w-6",
+    default: "h-8 w-8",
+    large: "h-10 w-10"
   };
 
-  const handleImageUpload = async (event) => {
+  const handleImageChange = (event) => {
     const file = event.target.files?.[0];
-    if (file) {
+    if (file && onImageUpload) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        onAvatarChange(reader.result);
+        onImageUpload(reader.result);
       };
       reader.readAsDataURL(file);
     }
   };
 
   return (
-    <div className="flex items-center justify-center mb-4">
-      <div 
-        className="relative group cursor-pointer"
-        onClick={handleAvatarClick}
-      >
-        <Avatar className="h-24 w-24">
-          <AvatarImage src={avatar || '/default-image.png'} alt="Node avatar" />
-          <AvatarFallback>NA</AvatarFallback>
-        </Avatar>
-        <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-          <PencilIcon className="h-6 w-6 text-white" />
-        </div>
-        <Input
-          ref={fileInputRef}
+    <div className="relative group">
+      <Avatar className={sizeClasses[size]}>
+        <AvatarImage src={src || "/default-image.png"} alt={alt} />
+        <AvatarFallback><FileText className="h-4 w-4" /></AvatarFallback>
+      </Avatar>
+      {onImageUpload && (
+        <input
           type="file"
           accept="image/*"
-          onChange={handleImageUpload}
-          className="hidden"
+          onChange={handleImageChange}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         />
-      </div>
+      )}
     </div>
   );
 };
