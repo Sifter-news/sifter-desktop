@@ -63,7 +63,7 @@ const NodeStyleTooltip = ({
     <>
       <div 
         className="absolute -top-12 left-1/2 transform -translate-x-1/2 flex items-center gap-2 p-2 bg-black/50 backdrop-blur-sm rounded-lg shadow-lg"
-        style={{ zIndex: 40 }}
+        style={{ zIndex: 'auto' }}
       >
         <Button
           variant="ghost"
@@ -78,7 +78,7 @@ const NodeStyleTooltip = ({
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
               <div className={`w-4 h-4 rounded-full ${currentColor}`} />
-              <ChevronDown className="h-2.67 w-2.67" /> {/* Reduced size */}
+              <ChevronDown className="h-4 w-4 ml-1" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-32">
@@ -106,7 +106,7 @@ const NodeStyleTooltip = ({
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
               <CurrentStyleIcon className="h-4 w-4" />
-              <ChevronDown className="h-2.67 w-2.67" /> {/* Reduced size */}
+              <ChevronDown className="h-4 w-4 ml-1" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-32">
@@ -134,7 +134,7 @@ const NodeStyleTooltip = ({
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
               <CurrentTypeIcon className="h-4 w-4" />
-              <ChevronDown className="h-2.67 w-2.67" /> {/* Reduced size */}
+              <ChevronDown className="h-4 w-4 ml-1" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-40">
