@@ -74,12 +74,21 @@ const CanvasView = ({
       const rect = canvasRef.current.getBoundingClientRect();
       const x = (e.clientX - rect.left - position.x) / zoom;
       const y = (e.clientY - rect.top - position.y) / zoom;
-      setActiveConnection({
+      
+      // Create a new connection with both ends at the drop point
+      const newConnection = {
+        id: `connection-${Date.now()}`,
         startX: x,
         startY: y,
         endX: x,
-        endY: y
-      });
+        endY: y,
+        isAnchored: true, // New flag to indicate this is an anchored connection
+        sourceNodeId: null,
+        targetNodeId: null
+      };
+      
+      setConnections(prev => [...prev, newConnection]);
+      toast.success('Connection added to canvas');
     }
   };
 

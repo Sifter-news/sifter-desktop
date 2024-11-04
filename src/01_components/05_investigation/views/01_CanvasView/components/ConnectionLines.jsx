@@ -9,7 +9,6 @@ const ConnectionLines = ({
 }) => {
   return (
     <>
-      {/* Render existing connections */}
       {connections.map((connection) => (
         <ConnectorLine
           key={connection.id}
@@ -20,14 +19,14 @@ const ConnectionLines = ({
           isSelected={selectedConnectionId === connection.id}
           onClick={() => onSelectConnection(connection)}
           className={`cursor-pointer hover:stroke-blue-500 ${
-            connection.type === 'hierarchical' ? 'stroke-gray-400' : 'stroke-gray-300'
+            connection.isAnchored ? 'stroke-blue-400' : 'stroke-gray-300'
           }`}
-          strokeWidth={connection.type === 'hierarchical' ? 2 : 1.5}
-          strokeOpacity={connection.type === 'hierarchical' ? 0.6 : 0.4}
+          strokeWidth={connection.isAnchored ? 2 : 1.5}
+          strokeOpacity={0.6}
+          isDashed={!connection.sourceNodeId || !connection.targetNodeId}
         />
       ))}
 
-      {/* Render active connection being drawn */}
       {activeConnection && (
         <ConnectorLine
           startX={activeConnection.startX}
