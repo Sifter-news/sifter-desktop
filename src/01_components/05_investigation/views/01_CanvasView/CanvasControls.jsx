@@ -22,6 +22,11 @@ const CanvasControls = ({
   const zoomOut = () => handleZoom(-0.1);
   const resetZoom = () => handleZoom(1 - zoom);
 
+  const handleDragStart = (e) => {
+    e.dataTransfer.setData('connectionType', 'default');
+    e.dataTransfer.effectAllowed = 'copy';
+  };
+
   return (
     <div className={`fixed bottom-4 transition-all duration-300 ${isAIChatOpen ? 'right-[376px]' : 'right-4'} bg-black/90 backdrop-blur-sm rounded-xl shadow-lg p-0.75 border border-white/20`}>
       <div className="bg-black/90 rounded-xl px-1.5 py-2 flex flex-col items-center space-y-2">
@@ -49,15 +54,14 @@ const CanvasControls = ({
               <Button
                 variant="ghost"
                 size="icon"
-                className={`h-8 w-8 rounded-lg ${
-                  activeTool === 'connect' ? 'bg-blue-600 text-white' : 'text-white hover:bg-white/10'
-                }`}
-                onClick={() => setActiveTool('connect')}
+                className="h-8 w-8 rounded-lg text-white hover:bg-white/10"
+                draggable
+                onDragStart={handleDragStart}
               >
                 <GitBranch className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="left">Connect Nodes (C)</TooltipContent>
+            <TooltipContent side="left">Drag to add Connection</TooltipContent>
           </Tooltip>
         </TooltipProvider>
 

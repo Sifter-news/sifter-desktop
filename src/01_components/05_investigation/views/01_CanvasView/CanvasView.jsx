@@ -60,6 +60,29 @@ const CanvasView = ({
     zoom
   });
 
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    if (e.dataTransfer.types.includes('connectionType')) {
+      e.dataTransfer.dropEffect = 'copy';
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const connectionType = e.dataTransfer.getData('connectionType');
+    if (connectionType) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left - position.x) / zoom;
+      const y = (e.clientY - rect.top - position.y) / zoom;
+      setActiveConnection({
+        startX: x,
+        startY: y,
+        endX: x,
+        endY: y
+      });
+    }
+  };
+
   const handleMouseMove = (e) => {
     if (activeConnection || selectedConnection) {
       const rect = canvasRef.current.getBoundingClientRect();
@@ -100,6 +123,8 @@ const CanvasView = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onClick={handleCanvasClick}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
     >
       <CanvasBackground zoom={zoom} position={position} />
       
