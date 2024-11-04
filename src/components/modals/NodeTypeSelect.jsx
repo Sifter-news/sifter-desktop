@@ -11,12 +11,34 @@ import { Label } from "@/components/ui/label";
 import { FileText, User, Building2, Package, Brain, MapPin, Calendar } from 'lucide-react';
 
 const NodeTypeSelect = ({ value, onChange }) => {
+  const getDisplayValue = (type) => {
+    switch(type) {
+      case 'note':
+      case 'generic':
+        return 'Note';
+      case 'node_person':
+        return 'Person';
+      case 'node_organization':
+        return 'Organization';
+      case 'node_object':
+        return 'Object';
+      case 'node_concept':
+        return 'Concept';
+      case 'node_location':
+        return 'Location';
+      case 'node_event':
+        return 'Event';
+      default:
+        return 'Note';
+    }
+  };
+
   return (
     <div className="grid w-full items-center gap-1.5">
       <Label htmlFor="type">Type</Label>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger>
-          <SelectValue placeholder="Select type" />
+          <SelectValue>{getDisplayValue(value)}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="note">

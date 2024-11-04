@@ -147,17 +147,17 @@ const ModalEdit_Node = ({
             />
 
             <div className="grid grid-cols-2 gap-4">
-              <NodeTypeSelect
-                value={formData.nodeType}
-                onChange={(nodeType) => 
-                  setFormData(prev => ({ ...prev, nodeType }))
-                }
-              />
-
               <NodeStyleSelect
                 value={formData.visualStyle}
                 onChange={(visualStyle) => 
                   setFormData(prev => ({ ...prev, visualStyle }))
+                }
+              />
+
+              <NodeTypeSelect
+                value={formData.nodeType}
+                onChange={(nodeType) => 
+                  setFormData(prev => ({ ...prev, nodeType }))
                 }
               />
             </div>
