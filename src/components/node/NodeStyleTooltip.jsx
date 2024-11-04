@@ -1,6 +1,20 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Layout, Type, MessageCircle, Pencil, ChevronDown, Square, StickyNote } from 'lucide-react';
+import { 
+  Layout, 
+  MessageCircle, 
+  Pencil, 
+  ChevronDown, 
+  Square, 
+  StickyNote,
+  FileText,
+  User,
+  Building2,
+  Box,
+  Brain,
+  MapPin,
+  Calendar
+} from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -25,13 +39,13 @@ const styles = {
 };
 
 const nodeTypes = {
-  generic: { label: 'Note', icon: Type },
-  node_person: { label: 'Person', icon: Type },
-  node_organization: { label: 'Organization', icon: Type },
-  node_object: { label: 'Object', icon: Type },
-  node_concept: { label: 'Concept', icon: Type },
-  node_location: { label: 'Location', icon: Type },
-  node_event: { label: 'Event', icon: Type }
+  generic: { label: 'Note', icon: FileText },
+  node_person: { label: 'Person', icon: User },
+  node_organization: { label: 'Organization', icon: Building2 },
+  node_object: { label: 'Object', icon: Box },
+  node_concept: { label: 'Concept', icon: Brain },
+  node_location: { label: 'Location', icon: MapPin },
+  node_event: { label: 'Event', icon: Calendar }
 };
 
 const NodeStyleTooltip = ({
@@ -57,7 +71,7 @@ const NodeStyleTooltip = ({
   const currentType = node?.nodeType || 'generic';
   
   const CurrentStyleIcon = styles[currentStyle]?.icon || Square;
-  const CurrentTypeIcon = nodeTypes[currentType]?.icon || Type;
+  const CurrentTypeIcon = nodeTypes[currentType]?.icon || FileText;
   
   return (
     <>
