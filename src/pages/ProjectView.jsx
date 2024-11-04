@@ -8,7 +8,7 @@ import ContentModal from '../components/ContentModal';
 import { useProjectData } from '../hooks/useProjectData';
 import { useNodeOperations } from '../components/NodeOperations';
 import { useDebug } from '@/contexts/DebugContext';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/components/auth';
 
 const ProjectView = () => {
   const { id } = useParams();
@@ -23,21 +23,22 @@ const ProjectView = () => {
   const { handleAddNode, handleUpdateNode, handleDeleteNode } = useNodeOperations(setNodes);
 
   useEffect(() => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
+    const checkAuth = async () => {
+      if (!user) {
+        navigate('/login');
+        return;
+      }
 
-    setDebugData(prev => ({
-      ...prev,
-      currentView: 'mindmap'
-    }));
+      setDebugData(prev => ({
+        ...prev,
+        currentView: 'mindmap'
+      }));
+    };
+
+    checkAuth();
   }, [user, navigate, setDebugData]);
 
-  if (!user) {
-    return null;
-  }
-
+  // Show loading state while checking auth and loading project
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-white">
@@ -46,6 +47,19 @@ const ProjectView = () => {
     );
   }
 
+  // Show auth check message
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-white">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-900">Please log in</h2>
+          <p className="mt-2 text-gray-600">You need to be logged in to view this project.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show not found message if project doesn't exist
   if (!project) {
     return (
       <div className="flex items-center justify-center h-screen bg-white">
