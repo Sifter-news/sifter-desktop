@@ -1,18 +1,4 @@
-import React from 'react';
+import { getNodeTypeIcon } from '@/utils/nodeConstants';
 
-const nodeTypeIcons = {
-  node_person: '👤',
-  node_organization: '🏢',
-  node_object: '📦',
-  node_concept: '💡',
-  node_location: '📍',
-  node_event: '📅',
-  group: '📁',
-  generic: '📝'
-};
-
-export const getNodeTypeIcon = (nodeType) => {
-  return nodeTypeIcons[nodeType] || '📝';
-};
-
-export default nodeTypeIcons;
+export { getNodeTypeIcon };
+export default getNodeTypeIcon;

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { getNodeTypeIcon } from './NodeTypeIcon';
 import { GripVertical, Pencil, Trash2, MoreVertical, MessageCircle } from 'lucide-react';
 import {
   DropdownMenu,
@@ -13,6 +12,7 @@ import { toast } from "sonner";
 import { useDebug } from '@/contexts/DebugContext';
 import UnifiedNodeEditModal from '../modals/ModalEdit_Node';
 import { handleNodeDelete } from '@/utils/nodeDeleteUtils';
+import { getNodeTypeIcon, getNodeTypeLabel } from '@/utils/nodeConstants';
 
 const NodeListItem = ({ 
   node, 
@@ -27,6 +27,7 @@ const NodeListItem = ({
 }) => {
   const { setHoveredElement } = useDebug();
   const [showEditModal, setShowEditModal] = React.useState(false);
+  const Icon = getNodeTypeIcon(node.nodeType);
   
   if (!node) return null;
 
@@ -46,16 +47,6 @@ const NodeListItem = ({
 
   const handleMouseLeave = () => {
     setHoveredElement(null);
-  };
-
-  const handleDeleteClick = async (e) => {
-    e.stopPropagation();
-    try {
-      await handleNodeDelete(node.id, onDelete);
-    } catch (error) {
-      console.error('Error deleting node:', error);
-      toast.error('Failed to delete node');
-    }
   };
 
   return (
@@ -82,50 +73,25 @@ const NodeListItem = ({
           >
             <Avatar className="h-5 w-5">
               <AvatarImage src={node.avatar || "/default-image.png"} alt={node.title} />
-              <AvatarFallback>{getNodeTypeIcon(node.nodeType)}</AvatarFallback>
+              <AvatarFallback><Icon className="h-4 w-4" /></AvatarFallback>
             </Avatar>
             <div>
-              <div className={`font-medium text-sm ${isSelected ? 'text-blue-700' : ''}`}>{node.title}</div>
-              <div className="text-xs text-gray-500">{node.nodeType || 'Note'}</div>
+              <div className={`font-medium text-sm ${isSelected ? 'text-blue-700' : ''}`}>
+                {node.title}
+              </div>
+              <div className="text-xs text-gray-500">
+                {getNodeTypeLabel(node.nodeType)}
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-6 w-6 p-0">
-                <MoreVertical className="h-3 w-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={(e) => {
-                e.stopPropagation();
-                setShowEditModal(true);
-              }}>
-                <Pencil className="h-4 w-4 mr-2" />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onAIConversation(node);
-                }}
-                className="bg-purple-600 hover:bg-purple-700 text-white focus:bg-purple-700 focus:text-white"
-              >
-                <MessageCircle className="h-4 w-4 mr-2" />
-                AI Conversation
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="text-red-600"
-                onClick={handleDeleteClick}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        <NodeListItemActions 
+          node={node}
+          onEdit={() => setShowEditModal(true)}
+          onDelete={onDelete}
+          onAIConversation={onAIConversation}
+        />
       </div>
 
       <UnifiedNodeEditModal
