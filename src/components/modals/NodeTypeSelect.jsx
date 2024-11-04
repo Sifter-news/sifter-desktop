@@ -14,9 +14,11 @@ const NodeTypeSelect = ({ value, onChange }) => {
   return (
     <div className="grid w-full items-center gap-1.5">
       <Label htmlFor="type">Type</Label>
-      <Select value={value} onValueChange={onChange}>
+      <Select value={value || 'generic'} onValueChange={onChange}>
         <SelectTrigger>
-          <SelectValue placeholder="Select type" />
+          <SelectValue>
+            {NODE_TYPES[value]?.label || 'Generic Note'}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>

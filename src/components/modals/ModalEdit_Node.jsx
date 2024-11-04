@@ -65,20 +65,18 @@ const ModalEdit_Node = ({
         updated_at: new Date().toISOString()
       };
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('node')
         .update(updates)
-        .eq('id', node.id)
-        .select()
-        .single();
+        .eq('id', node.id);
 
       if (error) throw error;
 
       const updatedNode = {
         ...node,
-        ...data,
-        nodeType: data.node_type,
-        visualStyle: data.visual_style
+        ...updates,
+        nodeType: updates.node_type,
+        visualStyle: updates.visual_style
       };
 
       await onUpdate(node.id, updatedNode);
