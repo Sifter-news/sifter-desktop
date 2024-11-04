@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Layout, Type, MessageCircle, Pencil, ChevronDown } from 'lucide-react';
+import { Layout, Type, MessageCircle, Pencil, ChevronDown, Square, StickyNote } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -17,6 +17,22 @@ const colors = {
   orange: { label: 'Orange', class: 'bg-orange-100' },
 };
 
+const styles = {
+  default: { label: 'Default', icon: Square },
+  compact: { label: 'Compact', icon: Layout },
+  postit: { label: 'Post-it', icon: StickyNote }
+};
+
+const nodeTypes = {
+  generic: { label: 'Generic Note', icon: Type },
+  node_person: { label: 'Person', icon: Type },
+  node_organization: { label: 'Organization', icon: Type },
+  node_object: { label: 'Object', icon: Type },
+  node_concept: { label: 'Concept', icon: Type },
+  node_location: { label: 'Location', icon: Type },
+  node_event: { label: 'Event', icon: Type }
+};
+
 const NodeStyleTooltip = ({
   position,
   onStyleChange,
@@ -29,6 +45,11 @@ const NodeStyleTooltip = ({
   node
 }) => {
   const currentColor = node?.color || 'bg-white';
+  const currentStyle = node?.visualStyle || 'default';
+  const currentType = node?.nodeType || 'generic';
+  
+  const CurrentStyleIcon = styles[currentStyle]?.icon || Square;
+  const CurrentTypeIcon = nodeTypes[currentType]?.icon || Type;
   
   return (
     <div 
@@ -73,34 +94,25 @@ const NodeStyleTooltip = ({
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-            <Layout className="h-4 w-4 mr-2" />
-            Style
+            <CurrentStyleIcon className="h-4 w-4 mr-2" />
+            {styles[currentStyle]?.label}
             <ChevronDown className="h-4 w-4 ml-1" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-32">
           <div className="flex flex-col space-y-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onStyleChange('default')}
-            >
-              Default
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onStyleChange('compact')}
-            >
-              Compact
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onStyleChange('postit')}
-            >
-              Post-it
-            </Button>
+            {Object.entries(styles).map(([key, { label, icon: Icon }]) => (
+              <Button
+                key={key}
+                variant="ghost"
+                size="sm"
+                onClick={() => onStyleChange(key)}
+                className="justify-start"
+              >
+                <Icon className="h-4 w-4 mr-2" />
+                {label}
+              </Button>
+            ))}
           </div>
         </PopoverContent>
       </Popover>
@@ -108,62 +120,25 @@ const NodeStyleTooltip = ({
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-            <Type className="h-4 w-4 mr-2" />
-            Type
+            <CurrentTypeIcon className="h-4 w-4 mr-2" />
+            {nodeTypes[currentType]?.label}
             <ChevronDown className="h-4 w-4 ml-1" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-40">
           <div className="flex flex-col space-y-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onTypeChange('generic')}
-            >
-              Generic Note
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onTypeChange('node_person')}
-            >
-              Person
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onTypeChange('node_organization')}
-            >
-              Organization
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onTypeChange('node_object')}
-            >
-              Object
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onTypeChange('node_concept')}
-            >
-              Concept
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onTypeChange('node_location')}
-            >
-              Location
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onTypeChange('node_event')}
-            >
-              Event
-            </Button>
+            {Object.entries(nodeTypes).map(([key, { label, icon: Icon }]) => (
+              <Button
+                key={key}
+                variant="ghost"
+                size="sm"
+                onClick={() => onTypeChange(key)}
+                className="justify-start"
+              >
+                <Icon className="h-4 w-4 mr-2" />
+                {label}
+              </Button>
+            ))}
           </div>
         </PopoverContent>
       </Popover>
