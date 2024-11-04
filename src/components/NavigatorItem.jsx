@@ -137,8 +137,8 @@ const NavigatorItem = ({
       'node_concept': 'Concept',
       'node_location': 'Location',
       'node_event': 'Event',
-      'node': 'Generic Note',
-      'generic': 'Generic Note'
+      'node': 'Note',
+      'generic': 'Note'
     };
     return types[nodeType] || 'Generic Note';
   };

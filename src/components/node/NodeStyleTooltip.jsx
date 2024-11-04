@@ -25,7 +25,7 @@ const styles = {
 };
 
 const nodeTypes = {
-  generic: { label: 'Generic Note', icon: Type },
+  generic: { label: 'Note', icon: Type },
   node_person: { label: 'Person', icon: Type },
   node_organization: { label: 'Organization', icon: Type },
   node_object: { label: 'Object', icon: Type },

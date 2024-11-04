@@ -27,7 +27,7 @@ const AddNodeButton = ({ handleAddNodeWithStyle }) => {
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'generic')}>
           <FileText className="h-4 w-4 mr-2" />
-          Generic Note
+          Note
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleAddNodeWithStyle('generic', 'node_person')}>
           <User className="h-4 w-4 mr-2" />

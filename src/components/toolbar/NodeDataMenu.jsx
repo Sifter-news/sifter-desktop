@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/tooltip";
 
 const nodeTypes = {
-  generic: { label: "Generic Note", icon: FileText, shortcut: "N" },
+  generic: { label: "Note", icon: FileText, shortcut: "N" },
   node_person: { label: "Person", icon: User, shortcut: "P" },
   node_organization: { label: "Organization", icon: Building2, shortcut: "O" },
   node_object: { label: "Object", icon: Package, shortcut: "B" },

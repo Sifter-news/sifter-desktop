@@ -15,7 +15,7 @@ const NodeTooltipContent = ({ node, onStyleChange, onTypeChange, onAIConversatio
   };
 
   const nodeTypes = {
-    generic: "Generic Note",
+    generic: "Note",
     node_person: "Person",
     node_organization: "Organization",
     node_object: "Object",

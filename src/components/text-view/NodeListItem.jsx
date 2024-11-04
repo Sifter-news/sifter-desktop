@@ -86,7 +86,7 @@ const NodeListItem = ({
             </Avatar>
             <div>
               <div className={`font-medium text-sm ${isSelected ? 'text-blue-700' : ''}`}>{node.title}</div>
-              <div className="text-xs text-gray-500">{node.nodeType || 'Generic Note'}</div>
+              <div className="text-xs text-gray-500">{node.nodeType || 'Note'}</div>
             </div>
           </div>
         </div>
