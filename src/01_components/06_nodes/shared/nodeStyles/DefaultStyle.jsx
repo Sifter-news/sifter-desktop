@@ -25,7 +25,7 @@ export const DefaultNodeStyle = {
   appearance: {
     borderRadius: 8,
     padding: 16,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FFFFFF', // Explicitly set white as default
     borderColor: 'gray-200',
     shadowSize: 'sm'
   },

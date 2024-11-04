@@ -20,7 +20,7 @@ export const useNodeRendering = ({
           key={node.id}
           node={{
             ...node,
-            color: node.color || 'bg-white' // Set default color to white
+            color: node.color || 'bg-white' // Explicitly set white as default background
           }}
           zoom={zoom}
           onNodeUpdate={onUpdateNode}

@@ -16,7 +16,7 @@ const NodeContent = ({
   dimensions,
   textSize = "medium",
   textAlign = "left",
-  color = "bg-white"
+  color = "bg-white" // Set white as default color
 }) => {
   const baseClasses = cn(
     textSizeClasses[textSize],
