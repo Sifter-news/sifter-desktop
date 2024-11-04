@@ -1,16 +1,24 @@
 import React from 'react';
 import ConnectorLine from '@/components/node/ConnectorLine';
 
-const ConnectionLines = ({ connections, activeConnection }) => {
+const ConnectionLines = ({ 
+  connections, 
+  activeConnection, 
+  onSelectConnection,
+  selectedConnectionId 
+}) => {
   return (
     <>
-      {connections.map((connection, index) => (
+      {connections.map((connection) => (
         <ConnectorLine
-          key={`connection-${index}`}
+          key={connection.id}
           startX={connection.startX}
           startY={connection.startY}
           endX={connection.endX}
           endY={connection.endY}
+          isSelected={selectedConnectionId === connection.id}
+          onClick={() => onSelectConnection(connection)}
+          className="cursor-pointer hover:stroke-blue-500"
         />
       ))}
 

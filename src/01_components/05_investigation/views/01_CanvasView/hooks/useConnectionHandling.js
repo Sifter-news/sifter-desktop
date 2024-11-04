@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 export const useConnectionHandling = () => {
   const [connections, setConnections] = useState([]);
   const [activeConnection, setActiveConnection] = useState(null);
+  const [selectedConnection, setSelectedConnection] = useState(null);
 
   const handleConnectionStart = useCallback((sourceNodeId, sourcePosition, startPoint) => {
     setActiveConnection({
@@ -23,13 +24,20 @@ export const useConnectionHandling = () => {
         endX: point.clientX,
         endY: point.clientY
       }));
+    } else if (selectedConnection) {
+      // Move existing connection
+      setConnections(prev => prev.map(conn => 
+        conn.id === selectedConnection.id 
+          ? { ...conn, endX: point.clientX, endY: point.clientY }
+          : conn
+      ));
     }
-  }, [activeConnection]);
+  }, [activeConnection, selectedConnection]);
 
   const handleConnectionEnd = useCallback((targetNodeId, targetPosition) => {
     if (activeConnection && targetNodeId !== activeConnection.sourceNodeId) {
       const newConnection = {
-        id: `${activeConnection.sourceNodeId}-${targetNodeId}`,
+        id: `${activeConnection.sourceNodeId}-${targetNodeId}-${Date.now()}`,
         sourceNodeId: activeConnection.sourceNodeId,
         targetNodeId,
         sourcePosition: activeConnection.sourcePosition,
@@ -51,16 +59,24 @@ export const useConnectionHandling = () => {
 
   const removeConnection = useCallback((connectionId) => {
     setConnections(prev => prev.filter(conn => conn.id !== connectionId));
+    setSelectedConnection(null);
     toast.success('Connection removed');
+  }, []);
+
+  const selectConnection = useCallback((connection) => {
+    setSelectedConnection(connection);
   }, []);
 
   return {
     connections,
     activeConnection,
+    selectedConnection,
     handleConnectionStart,
     handleConnectionMove,
     handleConnectionEnd,
     removeConnection,
-    setActiveConnection
+    selectConnection,
+    setActiveConnection,
+    setSelectedConnection
   };
 };

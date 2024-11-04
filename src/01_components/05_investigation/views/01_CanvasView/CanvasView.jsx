@@ -30,11 +30,14 @@ const CanvasView = ({
   
   const { 
     connections, 
-    activeConnection, 
+    activeConnection,
+    selectedConnection,
     handleConnectionStart, 
     handleConnectionMove,
-    handleConnectionEnd, 
-    setActiveConnection 
+    handleConnectionEnd,
+    selectConnection,
+    setActiveConnection,
+    setSelectedConnection
   } = useConnectionHandling();
 
   const { renderNodes } = useNodeRendering({
@@ -58,7 +61,7 @@ const CanvasView = ({
   });
 
   const handleMouseMove = (e) => {
-    if (activeConnection) {
+    if (activeConnection || selectedConnection) {
       const rect = canvasRef.current.getBoundingClientRect();
       const x = (e.clientX - rect.left - position.x) / zoom;
       const y = (e.clientY - rect.top - position.y) / zoom;
@@ -69,6 +72,16 @@ const CanvasView = ({
   const handleMouseUp = () => {
     if (activeConnection) {
       setActiveConnection(null);
+    }
+    if (selectedConnection) {
+      setSelectedConnection(null);
+    }
+  };
+
+  const handleCanvasClick = (e) => {
+    if (e.target === e.currentTarget || e.target === contentRef.current) {
+      onNodeFocus(null);
+      setSelectedConnection(null);
     }
   };
 
@@ -86,11 +99,7 @@ const CanvasView = ({
       tabIndex={0}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
-      onClick={(e) => {
-        if (e.target === e.currentTarget || e.target === contentRef.current) {
-          onNodeFocus(null);
-        }
-      }}
+      onClick={handleCanvasClick}
     >
       <CanvasBackground zoom={zoom} position={position} />
       
@@ -103,6 +112,8 @@ const CanvasView = ({
         <ConnectionLines 
           connections={connections}
           activeConnection={activeConnection}
+          selectedConnectionId={selectedConnection?.id}
+          onSelectConnection={selectConnection}
         />
         {renderNodes()}
       </div>

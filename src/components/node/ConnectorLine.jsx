@@ -1,6 +1,15 @@
 import React from 'react';
 
-const ConnectorLine = ({ startX, startY, endX, endY, isDashed = false }) => {
+const ConnectorLine = ({ 
+  startX, 
+  startY, 
+  endX, 
+  endY, 
+  isDashed = false,
+  isSelected = false,
+  onClick,
+  className = ""
+}) => {
   // Calculate control points for the curved line
   const midX = (startX + endX) / 2;
   const midY = (startY + endY) / 2;
@@ -16,9 +25,10 @@ const ConnectorLine = ({ startX, startY, endX, endY, isDashed = false }) => {
         left: 0,
         width: '100%',
         height: '100%',
-        pointerEvents: 'none',
+        pointerEvents: 'all',
         zIndex: 10
       }}
+      onClick={onClick}
     >
       <defs>
         <marker
@@ -29,15 +39,17 @@ const ConnectorLine = ({ startX, startY, endX, endY, isDashed = false }) => {
           refY="3.5"
           orient="auto"
         >
-          <polygon points="0 0, 10 3.5, 0 7" fill="#000" />
+          <polygon points="0 0, 10 3.5, 0 7" fill={isSelected ? "#3b82f6" : "#000"} />
         </marker>
       </defs>
       <path
         d={path}
-        stroke="#000"
-        strokeWidth="2"
+        stroke={isSelected ? "#3b82f6" : "#000"}
+        strokeWidth={isSelected ? "3" : "2"}
+        strokeDasharray={isDashed ? "5,5" : "none"}
         fill="none"
         markerEnd="url(#arrowhead)"
+        className={className}
       />
     </svg>
   );
