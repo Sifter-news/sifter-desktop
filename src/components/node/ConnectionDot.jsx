@@ -42,7 +42,7 @@ const ConnectionDot = ({
       }}
       draggable={false}
     >
-      <div className="absolute top-1/2 left-1/2 w-[1px] h-[1px] bg-black -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute top-1/2 left-1/2 w-[2px] h-[2px] bg-black opacity-50 -translate-x-1/2 -translate-y-1/2" />
     </div>
   );
 };
