@@ -52,8 +52,11 @@ const NodeStyleTooltip = ({
   return (
     <>
       <div 
-        className="absolute -top-16 left-1/2 transform -translate-x-1/2 flex items-center gap-1 p-1.5 bg-black rounded-lg shadow-lg"
-        style={{ zIndex: 9999 }} // Ensure tooltip is above all other elements
+        className="fixed left-1/2 transform -translate-x-1/2 flex items-center gap-1 p-1.5 bg-black rounded-lg shadow-lg"
+        style={{ 
+          top: position?.y ? `${position.y - 64}px` : '-4rem',
+          zIndex: 99999 
+        }}
       >
         <TooltipProvider>
           <Tooltip>
@@ -66,7 +69,7 @@ const NodeStyleTooltip = ({
                   </Button>
                 </PopoverTrigger>
               </TooltipTrigger>
-              <PopoverContent className="w-32">
+              <PopoverContent className="w-32" style={{ zIndex: 99999 }}>
                 <div className="flex flex-col space-y-0.5">
                   {Object.entries(textSizes).map(([size, label]) => (
                     <Button
@@ -85,7 +88,7 @@ const NodeStyleTooltip = ({
                 </div>
               </PopoverContent>
             </Popover>
-            <TooltipContent side="top" className="bg-black text-white">
+            <TooltipContent side="top" className="bg-black text-white" style={{ zIndex: 99999 }}>
               <p>Text Size</p>
             </TooltipContent>
           </Tooltip>
@@ -128,7 +131,7 @@ const NodeStyleTooltip = ({
                 <Pencil className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="top" className="bg-black text-white">
+            <TooltipContent side="top" className="bg-black text-white" style={{ zIndex: 99999 }}>
               <p>Edit Node</p>
             </TooltipContent>
           </Tooltip>
@@ -146,7 +149,7 @@ const NodeStyleTooltip = ({
                 <MessageCircle className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="top" className="bg-black text-white">
+            <TooltipContent side="top" className="bg-black text-white" style={{ zIndex: 99999 }}>
               <p>AI Chat</p>
             </TooltipContent>
           </Tooltip>
