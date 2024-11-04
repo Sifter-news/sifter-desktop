@@ -72,6 +72,11 @@ const NodeStyleTooltip = ({
   
   const CurrentStyleIcon = styles[currentStyle]?.icon || Square;
   const CurrentTypeIcon = nodeTypes[currentType]?.icon || FileText;
+
+  const handleColorChange = (colorClass) => {
+    onColorChange(colorClass);
+    setColorMenuOpen(false);
+  };
   
   return (
     <>
@@ -102,10 +107,7 @@ const NodeStyleTooltip = ({
                   key={key}
                   variant="ghost"
                   size="sm"
-                  onClick={() => {
-                    onColorChange(bgClass);
-                    setColorMenuOpen(false);
-                  }}
+                  onClick={() => handleColorChange(bgClass)}
                   className="justify-start"
                 >
                   <div className={`w-4 h-4 rounded-full mr-2 ${bgClass}`} />
