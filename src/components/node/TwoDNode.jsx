@@ -3,7 +3,6 @@ import { Rnd } from 'react-rnd';
 import NodeContent from './NodeContent';
 import ConnectionDot from './ConnectionDot';
 import NodeStyleTooltip from './NodeStyleTooltip';
-import { toast } from 'sonner';
 
 const TwoDNode = ({ 
   node, 
@@ -18,8 +17,7 @@ const TwoDNode = ({
   onEndConnection,
   dimensions,
   onDragStart,
-  onAIConversation,
-  onAddNode
+  onAIConversation
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [textSize, setTextSize] = useState(node.textSize || 'medium');
@@ -48,9 +46,9 @@ const TwoDNode = ({
     onFocus?.(node.id);
   };
 
-  const handleDotClick = (nodeId, point) => {
+  const handleDotClick = (nodeId, point, position) => {
     if (onStartConnection) {
-      onStartConnection(nodeId, point);
+      onStartConnection(nodeId, point, position);
     }
   };
 
@@ -68,7 +66,7 @@ const TwoDNode = ({
       onDragStart={handleDragStart}
       onDragStop={handleDragStop}
       scale={zoom}
-      className={`group relative transition-all duration-200 bg-white ${
+      className={`group relative transition-all duration-200 ${
         isFocused ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg' : ''
       }`}
       onClick={handleNodeClick}

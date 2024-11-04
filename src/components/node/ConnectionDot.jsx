@@ -25,25 +25,26 @@ const ConnectionDot = ({
     }
   };
 
-  const handleClick = (e) => {
+  const handleMouseDown = (e) => {
+    e.preventDefault();
     e.stopPropagation();
     const rect = e.currentTarget.getBoundingClientRect();
     const point = {
       x: rect.left + rect.width / 2,
       y: rect.top + rect.height / 2
     };
-    onDotClick(nodeId, point);
+    onDotClick(nodeId, point, position);
   };
 
   return (
     <div
-      className={`absolute w-2 h-2 rounded-full cursor-crosshair ring-1 ring-white shadow-md
+      className={`absolute w-3 h-3 rounded-full cursor-crosshair ring-1 ring-white shadow-md
         ${getPosition()}
         ${isActive ? 'bg-blue-600 scale-125' : isHovered ? 'bg-blue-400' : 'bg-gray-400'} 
         transition-all duration-200 hover:scale-150 z-50`}
       onMouseEnter={onHover}
       onMouseLeave={onLeaveHover}
-      onClick={handleClick}
+      onMouseDown={handleMouseDown}
       style={{
         aspectRatio: '1 / 1',
       }}

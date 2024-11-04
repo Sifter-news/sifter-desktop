@@ -5,11 +5,14 @@ export const useConnectionHandling = () => {
   const [connections, setConnections] = useState([]);
   const [activeConnection, setActiveConnection] = useState(null);
   const [selectedConnection, setSelectedConnection] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
 
-  const handleConnectionStart = useCallback((nodeId, point) => {
+  const handleConnectionStart = useCallback((nodeId, point, position) => {
+    setIsDragging(true);
     setActiveConnection({
       id: `temp-${Date.now()}`,
       sourceNodeId: nodeId,
+      sourcePosition: position,
       startX: point.x,
       startY: point.y,
       endX: point.x,
@@ -18,22 +21,24 @@ export const useConnectionHandling = () => {
     });
   }, []);
 
-  const handleConnectionMove = useCallback((point) => {
-    if (activeConnection) {
+  const handleConnectionMove = useCallback((e) => {
+    if (activeConnection && isDragging) {
       setActiveConnection(prev => ({
         ...prev,
-        endX: point.x,
-        endY: point.y
+        endX: e.clientX,
+        endY: e.clientY
       }));
     }
-  }, [activeConnection]);
+  }, [activeConnection, isDragging]);
 
-  const handleConnectionEnd = useCallback((targetNodeId, point) => {
+  const handleConnectionEnd = useCallback((targetNodeId, point, position) => {
     if (activeConnection && targetNodeId !== activeConnection.sourceNodeId) {
       const newConnection = {
         id: `connection-${Date.now()}`,
         sourceNodeId: activeConnection.sourceNodeId,
         targetNodeId,
+        sourcePosition: activeConnection.sourcePosition,
+        targetPosition: position,
         startX: activeConnection.startX,
         startY: activeConnection.startY,
         endX: point.x,
@@ -45,6 +50,7 @@ export const useConnectionHandling = () => {
       toast.success('Connection created');
     }
     setActiveConnection(null);
+    setIsDragging(false);
   }, [activeConnection]);
 
   const selectConnection = useCallback((connection) => {
@@ -61,6 +67,7 @@ export const useConnectionHandling = () => {
     connections,
     activeConnection,
     selectedConnection,
+    isDragging,
     handleConnectionStart,
     handleConnectionMove,
     handleConnectionEnd,
