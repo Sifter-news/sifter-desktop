@@ -18,7 +18,7 @@ const NodeFooterActions = ({
           onClick={onDelete}
           disabled={isLoading}
         >
-          Delete Node
+          Delete
         </Button>
         {showAIButton && onAIConversation && (
           <Button
@@ -27,8 +27,7 @@ const NodeFooterActions = ({
             onClick={onAIConversation}
             disabled={isLoading}
           >
-            <MessageCircle className="h-4 w-4 mr-2" />
-            AI Chat
+            AI
           </Button>
         )}
       </div>
@@ -37,7 +36,7 @@ const NodeFooterActions = ({
           Cancel
         </Button>
         <Button onClick={onSave} disabled={isLoading}>
-          {isLoading ? "Saving..." : "Save changes"}
+          Save
         </Button>
       </div>
     </div>
