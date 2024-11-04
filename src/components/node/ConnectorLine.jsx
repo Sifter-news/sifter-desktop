@@ -8,7 +8,9 @@ const ConnectorLine = ({
   isDashed = false,
   isSelected = false,
   onClick,
-  className = ""
+  className = "",
+  strokeWidth = 2,
+  strokeOpacity = 0.6
 }) => {
   // Calculate the midpoint for the elbow
   const midX = startX;
@@ -39,15 +41,19 @@ const ConnectorLine = ({
           refY="3.5"
           orient="auto"
         >
-          <polygon points="0 0, 10 3.5, 0 7" fill={isSelected ? "#3b82f6" : "#6B7280"} />
+          <polygon 
+            points="0 0, 10 3.5, 0 7" 
+            fill={isSelected ? "#3b82f6" : "#6B7280"} 
+            opacity={strokeOpacity}
+          />
         </marker>
       </defs>
       <path
         d={path}
         stroke={isSelected ? "#3b82f6" : "#6B7280"}
-        strokeWidth={isSelected ? "3" : "2"}
+        strokeWidth={strokeWidth}
         strokeDasharray={isDashed ? "5,5" : "none"}
-        strokeOpacity="0.5"
+        strokeOpacity={strokeOpacity}
         fill="none"
         markerEnd="url(#arrowhead)"
         className={className}
