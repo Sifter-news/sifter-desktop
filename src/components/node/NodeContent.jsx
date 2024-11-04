@@ -22,13 +22,13 @@ const NodeContent = ({
     textSizeClasses[textSize],
     `text-${textAlign}`,
     color,
-    "p-2 w-full h-full transition-all duration-200 rounded-lg shadow-sm"
+    "p-2 w-full h-full transition-all duration-200 rounded-lg shadow-sm bg-white"
   );
 
   // Render compact style (avatar only)
   if (style === 'compact') {
     return (
-      <div className={cn(baseClasses, "flex items-center justify-center p-2")}>
+      <div className={cn(baseClasses, "flex items-center justify-center p-2 bg-white")}>
         <NodeAvatar src={node.avatar} alt={node.title} size="large" nodeType={node.nodeType} />
       </div>
     );

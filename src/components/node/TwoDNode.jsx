@@ -41,7 +41,6 @@ const TwoDNode = ({
   };
 
   const handleResize = (e, direction, ref, delta, position) => {
-    // Only allow resizing for non-compact and non-default views
     if (node.visualStyle !== 'compact' && node.visualStyle !== 'default') {
       onNodeUpdate(node.id, {
         width: ref.style.width,
@@ -65,7 +64,6 @@ const TwoDNode = ({
 
   const connectionPoints = ['left', 'right', 'top', 'bottom'];
 
-  // Determine if resizing should be enabled based on the node style
   const enableResizing = node.visualStyle !== 'compact' && node.visualStyle !== 'default' ? {
     top: true,
     right: true,
@@ -86,7 +84,7 @@ const TwoDNode = ({
       onResize={handleResize}
       disableDragging={!isDraggable}
       scale={zoom}
-      className={`group relative transition-all duration-200 ${
+      className={`group relative transition-all duration-200 bg-white ${
         isFocused ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg' : ''
       }`}
       onClick={handleNodeClick}
@@ -118,7 +116,7 @@ const TwoDNode = ({
         />
       )}
 
-      <div className="relative w-full h-full">
+      <div className="relative w-full h-full bg-white rounded-lg">
         <NodeContent
           style={node.visualStyle}
           node={node}
