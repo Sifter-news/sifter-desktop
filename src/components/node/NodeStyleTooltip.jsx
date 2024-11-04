@@ -71,14 +71,13 @@ const NodeStyleTooltip = ({
           className="text-white hover:bg-white/20"
           onClick={() => setShowEditModal(true)}
         >
-          <Pencil className="h-4 w-4 mr-2" />
-          Edit
+          <Pencil className="h-4 w-4" />
         </Button>
 
         <Popover open={colorMenuOpen} onOpenChange={setColorMenuOpen}>
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-              <div className={`w-4 h-4 rounded-full mr-2 ${currentColor}`} />
+              <div className={`w-4 h-4 rounded-full ${currentColor}`} />
               <ChevronDown className="h-4 w-4 ml-1" />
             </Button>
           </PopoverTrigger>
@@ -106,8 +105,7 @@ const NodeStyleTooltip = ({
         <Popover open={styleMenuOpen} onOpenChange={setStyleMenuOpen}>
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-              <CurrentStyleIcon className="h-4 w-4 mr-2" />
-              {styles[currentStyle]?.label}
+              <CurrentStyleIcon className="h-4 w-4" />
               <ChevronDown className="h-4 w-4 ml-1" />
             </Button>
           </PopoverTrigger>
@@ -135,8 +133,7 @@ const NodeStyleTooltip = ({
         <Popover open={typeMenuOpen} onOpenChange={setTypeMenuOpen}>
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-              <CurrentTypeIcon className="h-4 w-4 mr-2" />
-              {nodeTypes[currentType]?.label}
+              <CurrentTypeIcon className="h-4 w-4" />
               <ChevronDown className="h-4 w-4 ml-1" />
             </Button>
           </PopoverTrigger>
