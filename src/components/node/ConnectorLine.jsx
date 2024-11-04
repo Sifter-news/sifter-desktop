@@ -29,12 +29,12 @@ const ConnectorLine = ({ startX, startY, endX, endY, isDashed = false }) => {
           refY="3.5"
           orient="auto"
         >
-          <polygon points="0 0, 10 3.5, 0 7" fill="#fff" />
+          <polygon points="0 0, 10 3.5, 0 7" fill="#000" />
         </marker>
       </defs>
       <path
         d={path}
-        stroke="#fff"
+        stroke="#000"
         strokeWidth="2"
         fill="none"
         strokeDasharray={isDashed ? "5,5" : "none"}
