@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 import NodeContent from './NodeContent';
 import ConnectionDot from './ConnectionDot';
-import NodeStyleTooltip from '@/01_components/06_nodes/tooltips/NodeTooltip';
+import NodeStyleTooltip from './NodeStyleTooltip';
 
 const TwoDNode = ({ 
   node, 
@@ -17,9 +17,9 @@ const TwoDNode = ({
   onEndConnection,
   dimensions,
   onDragStart,
-  onAIConversation,
-  showTooltip = false
+  onAIConversation
 }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
   const [textSize, setTextSize] = useState(node.textSize || 'medium');
   const [textAlign, setTextAlign] = useState(node.textAlign || 'left');
   const [color, setColor] = useState(node.color || 'bg-white');
@@ -51,6 +51,7 @@ const TwoDNode = ({
 
   const handleNodeClick = (e) => {
     e.stopPropagation();
+    setShowTooltip(true);
     onFocus?.(node.id);
   };
 
@@ -86,9 +87,8 @@ const TwoDNode = ({
         topLeft: true
       }}
     >
-      {(showTooltip || isFocused) && (
+      {showTooltip && isFocused && (
         <NodeStyleTooltip
-          node={node}
           position={position}
           onStyleChange={(style) => {
             const newDimensions = dimensions;
@@ -109,7 +109,6 @@ const TwoDNode = ({
           onTypeChange={(type) => onNodeUpdate(node.id, { nodeType: type })}
           onColorChange={handleColorChange}
           onAIChat={() => onAIConversation?.(node)}
-          onDelete={() => onDelete?.(node.id)}
         />
       )}
 
