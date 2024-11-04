@@ -21,7 +21,7 @@ const NodeContent = ({
   const baseClasses = cn(
     textSizeClasses[textSize],
     `text-${textAlign}`,
-    color, // Apply the color class directly
+    color,
     "p-2 w-full h-full transition-all duration-200 rounded-lg shadow-sm"
   );
 
@@ -30,6 +30,25 @@ const NodeContent = ({
     return (
       <div className={cn(baseClasses, "flex items-center justify-center p-2")}>
         <NodeAvatar src={node.avatar} alt={node.title} size="large" nodeType={node.nodeType} />
+      </div>
+    );
+  }
+
+  // Render post-it style (aligned to top)
+  if (style === 'postit') {
+    return (
+      <div className={baseClasses}>
+        <div className="flex flex-col h-full">
+          <div className="flex items-start gap-3 mb-2">
+            <NodeAvatar src={node.avatar} alt={node.title} nodeType={node.nodeType} />
+            <div className="flex-1 min-w-0">
+              <div className="font-medium truncate">{node.title}</div>
+              {node.description && (
+                <div className="text-sm text-gray-600 mt-1">{node.description}</div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
