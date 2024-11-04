@@ -5,9 +5,9 @@ const ConnectionDot = ({
   isHovered, 
   onHover, 
   onLeaveHover,
-  onStartConnection,
-  onEndConnection,
-  nodeId
+  onDotClick,
+  nodeId,
+  isActive
 }) => {
   const getPosition = () => {
     switch (position) {
@@ -26,24 +26,17 @@ const ConnectionDot = ({
 
   return (
     <div
-      className={`absolute w-2 h-2 rounded-full cursor-crosshair
+      className={`absolute w-2 h-2 rounded-full cursor-pointer
         ${getPosition()} 
-        ${isHovered ? 'border-2 border-black' : 'border border-gray-400'} 
-        transition-all duration-200`}
+        ${isActive ? 'bg-blue-500' : isHovered ? 'bg-blue-300' : 'bg-gray-300'} 
+        transition-all duration-200 hover:scale-150`}
       onMouseEnter={onHover}
       onMouseLeave={onLeaveHover}
-      onMouseDown={(e) => {
+      onClick={(e) => {
         e.stopPropagation();
-        onStartConnection?.(nodeId, position);
+        onDotClick(nodeId, position);
       }}
-      onMouseUp={(e) => {
-        e.stopPropagation();
-        onEndConnection?.(nodeId, position);
-      }}
-      draggable={false}
-    >
-      {/* Removed the inner dot */}
-    </div>
+    />
   );
 };
 

@@ -13,8 +13,7 @@ const TwoDNode = ({
   onDelete,
   isDraggable = true,
   position = { x: 0, y: 0 },
-  onStartConnection,
-  onEndConnection,
+  onDotClick,
   dimensions,
   onDragStart,
   onAIConversation
@@ -40,17 +39,6 @@ const TwoDNode = ({
     }
   };
 
-  const handleResize = (e, direction, ref, delta, position) => {
-    if (node.visualStyle !== 'compact' && node.visualStyle !== 'default') {
-      onNodeUpdate(node.id, {
-        width: ref.style.width,
-        height: ref.style.height,
-        x: position.x,
-        y: position.y
-      });
-    }
-  };
-
   const handleNodeClick = (e) => {
     e.stopPropagation();
     setShowTooltip(true);
@@ -64,58 +52,21 @@ const TwoDNode = ({
 
   const connectionPoints = ['left', 'right', 'top', 'bottom'];
 
-  const enableResizing = node.visualStyle !== 'compact' && node.visualStyle !== 'default' ? {
-    top: true,
-    right: true,
-    bottom: true,
-    left: true,
-    topRight: true,
-    bottomRight: true,
-    bottomLeft: true,
-    topLeft: true
-  } : false;
-
   return (
     <Rnd
       size={{ width: dimensions.width, height: dimensions.height }}
       position={position}
       onDragStart={handleDragStart}
       onDragStop={handleDragStop}
-      onResize={handleResize}
-      disableDragging={!isDraggable}
       scale={zoom}
       className={`group relative transition-all duration-200 bg-white ${
         isFocused ? 'ring-2 ring-blue-500 ring-offset-2 shadow-lg' : ''
       }`}
       onClick={handleNodeClick}
       bounds="parent"
-      enableResizing={enableResizing}
+      enableResizing={false}
+      disableDragging={!isDraggable}
     >
-      {showTooltip && isFocused && (
-        <NodeStyleTooltip
-          position={position}
-          onStyleChange={(style) => {
-            const newDimensions = dimensions;
-            onNodeUpdate(node.id, { 
-              visualStyle: style,
-              width: newDimensions.width,
-              height: newDimensions.height
-            });
-          }}
-          onTextSizeChange={(size) => {
-            setTextSize(size);
-            onNodeUpdate(node.id, { textSize: size });
-          }}
-          onAlignmentChange={(align) => {
-            setTextAlign(align);
-            onNodeUpdate(node.id, { textAlign: align });
-          }}
-          onTypeChange={(type) => onNodeUpdate(node.id, { nodeType: type })}
-          onColorChange={handleColorChange}
-          onAIChat={() => onAIConversation?.(node)}
-        />
-      )}
-
       <div className="relative w-full h-full bg-white rounded-lg">
         <NodeContent
           style={node.visualStyle}
@@ -134,12 +85,42 @@ const TwoDNode = ({
             isHovered={hoveredDot === position}
             onHover={() => setHoveredDot(position)}
             onLeaveHover={() => setHoveredDot(null)}
-            onStartConnection={onStartConnection}
-            onEndConnection={onEndConnection}
+            onDotClick={(nodeId, pos) => {
+              const rect = document.querySelector(`[data-node-id="${nodeId}"]`)?.getBoundingClientRect();
+              if (rect) {
+                onDotClick(nodeId, pos, {
+                  x: rect.left + rect.width/2,
+                  y: rect.top + rect.height/2
+                });
+              }
+            }}
             nodeId={node.id}
           />
         ))}
       </div>
+
+      {showTooltip && isFocused && (
+        <NodeStyleTooltip
+          position={position}
+          onStyleChange={(style) => {
+            onNodeUpdate(node.id, { 
+              visualStyle: style,
+              width: dimensions.width,
+              height: dimensions.height
+            });
+          }}
+          onTextSizeChange={(size) => {
+            setTextSize(size);
+            onNodeUpdate(node.id, { textSize: size });
+          }}
+          onAlignmentChange={(align) => {
+            setTextAlign(align);
+            onNodeUpdate(node.id, { textAlign: align });
+          }}
+          onColorChange={handleColorChange}
+          onAIChat={() => onAIConversation?.(node)}
+        />
+      )}
     </Rnd>
   );
 };
