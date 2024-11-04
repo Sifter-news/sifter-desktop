@@ -13,8 +13,9 @@ import {
   MapPin,
   Calendar,
   MessageCircle,
-  Palette,
   ChevronDown,
+  Square,
+  StickyNote,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -40,6 +41,12 @@ const colors = {
   orange: { label: 'Orange', value: 'bg-orange-100', textColor: 'text-black' },
 };
 
+const styles = {
+  default: { label: 'Default', icon: Layout, dimensions: '200×100' },
+  compact: { label: 'Compact', icon: Square, dimensions: '48×48' },
+  postit: { label: 'Post-it', icon: StickyNote, dimensions: '256×256' }
+};
+
 const NodeStyleTooltip = ({ 
   onStyleChange, 
   onTextSizeChange, 
@@ -50,7 +57,8 @@ const NodeStyleTooltip = ({
   position = { x: 0, y: 0 },
   selectedTextSize = 'medium',
   selectedColor = 'bg-white',
-  selectedAlignment = 'left'
+  selectedAlignment = 'left',
+  selectedStyle = 'default'
 }) => {
   return (
     <div 
@@ -123,6 +131,29 @@ const NodeStyleTooltip = ({
             <AlignCenter className="h-6 w-6 mr-2" />
             Center
           </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-10 w-10 text-white hover:bg-white/10 flex items-center gap-1">
+            {React.createElement(styles[selectedStyle].icon, { className: "h-6 w-6" })}
+            <ChevronDown className="h-3 w-3 text-white/70" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="bg-black/90 text-white border-white/10">
+          {Object.entries(styles).map(([value, { label, icon: Icon, dimensions }]) => (
+            <DropdownMenuItem 
+              key={value} 
+              onClick={() => onStyleChange(value)}
+              className="flex items-center gap-2"
+            >
+              <Icon className="h-6 w-6 mr-2" />
+              <span className={value === selectedStyle ? 'font-bold' : ''}>
+                {label} ({dimensions})
+              </span>
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuContent>
       </DropdownMenu>
 
