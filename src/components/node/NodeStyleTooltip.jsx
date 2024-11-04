@@ -77,6 +77,13 @@ const NodeStyleTooltip = ({
     onColorChange(colorClass);
     setColorMenuOpen(false);
   };
+
+  const handleAIChat = (e) => {
+    e.stopPropagation();
+    if (onAIChat) {
+      onAIChat();
+    }
+  };
   
   return (
     <>
@@ -178,7 +185,7 @@ const NodeStyleTooltip = ({
           variant="ghost"
           size="sm"
           className="text-white hover:bg-purple-700 bg-purple-600 h-7 px-2"
-          onClick={onAIChat}
+          onClick={handleAIChat}
         >
           <MessageCircle className="h-4 w-4" />
         </Button>
