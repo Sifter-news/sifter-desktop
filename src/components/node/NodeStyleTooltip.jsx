@@ -11,6 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Separator } from "@/components/ui/separator"; // Importing Separator
 
 const NodeStyleTooltip = ({
   position,
@@ -64,6 +65,8 @@ const NodeStyleTooltip = ({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
+
+        <Separator orientation="vertical" className="bg-white/20 h-4" /> {/* Divider line */}
 
         <ColorMenu
           currentColor={currentColor}
