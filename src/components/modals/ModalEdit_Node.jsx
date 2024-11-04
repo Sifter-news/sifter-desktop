@@ -43,11 +43,6 @@ const ModalEdit_Node = ({
   }, [node]);
 
   const handleSubmit = async () => {
-    if (!node?.id) {
-      toast.error("Invalid node ID");
-      return;
-    }
-
     if (!formData.title.trim()) {
       toast.error("Title is required");
       return;
@@ -90,34 +85,12 @@ const ModalEdit_Node = ({
     }
   };
 
-  const handleDelete = async () => {
-    setIsLoading(true);
-    try {
-      const { error } = await supabase
-        .from('node')
-        .delete()
-        .eq('id', node.id);
-
-      if (error) throw error;
-
-      await onDelete(node.id);
-      toast.success("Node deleted successfully");
-      onClose();
-    } catch (error) {
-      console.error('Error deleting node:', error);
-      toast.error("Failed to delete node");
-    } finally {
-      setIsLoading(false);
-      setShowDeleteDialog(false);
-    }
-  };
-
   if (!node) return null;
 
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[425px] overflow-hidden">
+        <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
           <NodeAvatarSection 
             avatar={formData.avatar} 
             onImageUpload={(file) => {
@@ -134,8 +107,9 @@ const ModalEdit_Node = ({
             <input 
               type="text" 
               value={formData.title} 
-              readOnly 
-              className="bg-transparent border-none font-bold text-lg w-full" 
+              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              className="bg-transparent border-none font-bold text-lg w-full focus:outline-none" 
+              placeholder="Enter title"
             />
           </DialogHeader>
           
@@ -189,7 +163,16 @@ const ModalEdit_Node = ({
       <DeleteConfirmationDialog
         isOpen={showDeleteDialog}
         onClose={() => setShowDeleteDialog(false)}
-        onConfirm={handleDelete}
+        onConfirm={async () => {
+          try {
+            await onDelete(node.id);
+            onClose();
+          } catch (error) {
+            console.error('Error deleting node:', error);
+            toast.error("Failed to delete node");
+          }
+          setShowDeleteDialog(false);
+        }}
       />
     </>
   );
