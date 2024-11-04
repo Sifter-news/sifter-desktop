@@ -12,8 +12,13 @@ const ConnectorLine = ({
   strokeWidth = 2,
   strokeOpacity = 0.6
 }) => {
-  // Create a curved path between points
-  const path = `M ${startX},${startY} C ${startX + (endX - startX) / 2},${startY} ${startX + (endX - startX) / 2},${endY} ${endX},${endY}`;
+  // Create a curved path between points with proper offset handling
+  const controlPoint1X = startX + (endX - startX) / 2;
+  const controlPoint1Y = startY;
+  const controlPoint2X = startX + (endX - startX) / 2;
+  const controlPoint2Y = endY;
+  
+  const path = `M ${startX},${startY} C ${controlPoint1X},${controlPoint1Y} ${controlPoint2X},${controlPoint2Y} ${endX},${endY}`;
 
   return (
     <svg
@@ -24,7 +29,8 @@ const ConnectorLine = ({
         width: '100%',
         height: '100%',
         pointerEvents: 'all',
-        zIndex: 10
+        zIndex: 10,
+        overflow: 'visible'
       }}
       onClick={onClick}
     >
