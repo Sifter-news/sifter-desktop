@@ -10,11 +10,10 @@ const ConnectionDot = ({
 }) => {
   const baseStyles = "absolute w-3 h-3 rounded-full bg-blue-500 hover:bg-blue-600 transition-all duration-200 transform cursor-crosshair opacity-0 group-hover:opacity-100 border-2 border-white";
   
-  // Calculate position styles with 4px offset from edges
   const getPositionStyles = () => {
     const positions = {
-      'left': 'top-1/2 -left-5 -translate-y-1/2', // 4px + dot radius
-      'right': 'top-1/2 -right-5 -translate-y-1/2',
+      'left': 'top-1/2 -left-5 -translate-y-1/2',
+      'right': 'top-1/2 -right-5 -translate-x-1/2',
       'top': '-top-5 left-1/2 -translate-x-1/2',
       'bottom': '-bottom-5 left-1/2 -translate-x-1/2'
     };
@@ -22,6 +21,7 @@ const ConnectionDot = ({
   };
 
   const handleMouseDown = (e) => {
+    e.preventDefault();
     e.stopPropagation();
     const rect = e.target.getBoundingClientRect();
     const startX = rect.left + rect.width / 2;

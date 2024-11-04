@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { toast } from 'sonner';
 
 export const useConnectionHandling = () => {
   const [connections, setConnections] = useState([]);
@@ -15,19 +16,19 @@ export const useConnectionHandling = () => {
     });
   }, []);
 
-  const handleConnectionMove = useCallback((e) => {
+  const handleConnectionMove = useCallback((point) => {
     if (activeConnection) {
       setActiveConnection(prev => ({
         ...prev,
-        endX: e.clientX,
-        endY: e.clientY
+        endX: point.clientX,
+        endY: point.clientY
       }));
     }
   }, [activeConnection]);
 
   const handleConnectionEnd = useCallback((targetNodeId, targetPosition) => {
     if (activeConnection && targetNodeId !== activeConnection.sourceNodeId) {
-      setConnections(prev => [...prev, {
+      const newConnection = {
         id: `${activeConnection.sourceNodeId}-${targetNodeId}`,
         sourceNodeId: activeConnection.sourceNodeId,
         targetNodeId,
@@ -37,13 +38,20 @@ export const useConnectionHandling = () => {
         startY: activeConnection.startY,
         endX: activeConnection.endX,
         endY: activeConnection.endY
-      }]);
+      };
+      
+      setConnections(prev => [...prev, newConnection]);
       setActiveConnection(null);
+      toast.success('Connection created');
+    } else if (activeConnection) {
+      setActiveConnection(null);
+      toast.error('Cannot connect a node to itself');
     }
   }, [activeConnection]);
 
   const removeConnection = useCallback((connectionId) => {
     setConnections(prev => prev.filter(conn => conn.id !== connectionId));
+    toast.success('Connection removed');
   }, []);
 
   return {
