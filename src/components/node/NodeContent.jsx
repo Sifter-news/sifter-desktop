@@ -16,13 +16,13 @@ const NodeContent = ({
   dimensions,
   textSize = "medium",
   textAlign = "left",
-  color = "bg-white" // Keep default color but don't force white background
+  color = "bg-white"
 }) => {
   const baseClasses = cn(
     textSizeClasses[textSize],
     `text-${textAlign}`,
     color,
-    "p-2 w-full h-full transition-all duration-200 rounded-lg shadow-sm border-[0.5px] border-gray-200/50 shadow-md" // Added border and mild drop shadow
+    "p-2 w-full h-full transition-all duration-200 rounded-lg shadow-sm border-[0.5px] border-gray-200/50 shadow-md"
   );
 
   // Render compact style (avatar only)
@@ -34,15 +34,29 @@ const NodeContent = ({
     );
   }
 
-  // Render post-it style (aligned to top)
+  // Render post-it style with conditional content
   if (style === 'postit') {
+    const isEmpty = !node.description && !node.title;
+    const isSimplified = isEmpty && !isFocused;
+
+    if (isSimplified) {
+      return (
+        <div className={baseClasses}>
+          <div className="flex items-center gap-2">
+            <NodeAvatar src={node.avatar} alt={node.title} nodeType={node.nodeType} />
+            <div className="text-sm text-gray-400 italic">Empty note</div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className={baseClasses}>
         <div className="flex flex-col h-full">
           <div className="flex items-start gap-3 mb-2">
             <NodeAvatar src={node.avatar} alt={node.title} nodeType={node.nodeType} />
             <div className="flex-1 min-w-0">
-              <div className="font-medium truncate">{node.title}</div>
+              <div className="font-medium truncate">{node.title || 'Untitled'}</div>
               {node.description && (
                 <div className="text-sm text-gray-600 mt-1">{node.description}</div>
               )}
