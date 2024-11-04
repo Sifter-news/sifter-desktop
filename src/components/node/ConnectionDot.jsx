@@ -8,7 +8,7 @@ const ConnectionDot = ({
   onStartConnection,
   nodeId
 }) => {
-  const baseStyles = "absolute w-1 h-1 rounded-full bg-black/30 hover:bg-black transition-all duration-200 transform cursor-crosshair opacity-0 group-hover:opacity-100";
+  const baseStyles = "absolute w-1 h-1 rounded-full bg-black/30 hover:bg-black hover:w-2 hover:h-2 hover:border hover:border-white transition-all duration-200 transform cursor-crosshair opacity-0 group-hover:opacity-100";
   
   const getPositionStyles = () => {
     const positions = {
