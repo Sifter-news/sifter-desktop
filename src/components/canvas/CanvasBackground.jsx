@@ -2,18 +2,18 @@ import React, { useMemo } from 'react';
 
 const CanvasBackground = ({ zoom, position }) => {
   const gridConfig = useMemo(() => {
-    // Base sizes in pixels
-    const smallGrid = 32;  // Quadrupled from 8 to reduce density
-    const mediumGrid = 64; // Quadrupled from 16 to reduce density
-    const largeGrid = 96;  // Quadrupled from 24 to reduce density
+    // Base sizes in pixels - adjusted for zoom levels
+    const smallGrid = 32;   // Base grid size
+    const mediumGrid = 64;  // Medium density
+    const largeGrid = 96;   // Lowest density
     
     // Determine which grid size to use based on zoom level
     let primarySize;
-    if (zoom < 0.5) {
+    if (zoom < 0.1) {          // At 10% zoom or less - lowest density
       primarySize = largeGrid;
-    } else if (zoom < 1) {
+    } else if (zoom < 0.5) {   // At 50% zoom or less - medium density
       primarySize = mediumGrid;
-    } else {
+    } else {                   // At >50% zoom - highest density
       primarySize = smallGrid;
     }
     
