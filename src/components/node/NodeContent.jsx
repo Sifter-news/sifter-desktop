@@ -34,16 +34,13 @@ const NodeContent = ({
     );
   }
 
-  // Render default style (avatar + title + optional description)
+  // Render default style (avatar + title only)
   return (
     <div className={baseClasses}>
       <div className="flex items-start gap-3">
         <NodeAvatar src={node.avatar} alt={node.title} />
         <div className="flex-1 min-w-0">
-          <div className="font-medium mb-1 truncate">{node.title}</div>
-          {node.description && (
-            <div className="text-gray-600 text-sm line-clamp-2">{node.description}</div>
-          )}
+          <div className="font-medium truncate">{node.title}</div>
         </div>
       </div>
     </div>

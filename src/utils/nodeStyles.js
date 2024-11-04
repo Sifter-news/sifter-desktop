@@ -6,7 +6,7 @@ export const NODE_STYLES = {
     description: "A minimal note style showing only the avatar"
   },
   default: {
-    width: 128,
+    width: 256,
     height: 48,
     title: "Default Note",
     description: "A standard note style with avatar and title"
@@ -33,6 +33,6 @@ export const getNodeDimensions = (visualStyle) => {
       return { width: 256, height: 256 };
     case 'default':
     default:
-      return { width: 200, height: 100 };
+      return { width: 256, height: 48 };
   }
 };
