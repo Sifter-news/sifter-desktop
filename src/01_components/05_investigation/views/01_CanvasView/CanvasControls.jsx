@@ -44,6 +44,17 @@ const CanvasControls = ({
     e.dataTransfer.effectAllowed = 'copy';
   };
 
+  const handleAddNode = (visualStyle) => {
+    onAddNode({
+      title: 'New Node',
+      description: '',
+      visualStyle,
+      color: 'bg-white',
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2
+    });
+  };
+
   return (
     <div className={`fixed bottom-4 transition-all duration-300 ${isAIChatOpen ? 'right-[376px]' : 'right-4'} bg-black/90 backdrop-blur-sm rounded-xl shadow-lg p-0.75 border border-white/20`}>
       <div className="bg-black/90 rounded-xl px-1.5 py-2 flex flex-col items-center space-y-2">
@@ -96,13 +107,14 @@ const CanvasControls = ({
                   </Button>
                 </DropdownMenuTrigger>
               </TooltipTrigger>
-              <TooltipContent side="left">Drag to add Node (N)</TooltipContent>
+              <TooltipContent side="left">Add Node (N)</TooltipContent>
             </Tooltip>
           </TooltipProvider>
           <DropdownMenuContent className="bg-black/90 text-white border border-white/20">
             {Object.entries(nodeStyles).map(([style, { label, icon: Icon }]) => (
               <DropdownMenuItem
                 key={style}
+                onClick={() => handleAddNode(style)}
                 draggable
                 onDragStart={(e) => handleDragStart(e, style)}
                 className="cursor-grab"
