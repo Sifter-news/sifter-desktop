@@ -1,165 +1,87 @@
 import React, { useRef, useState } from 'react';
-import { Text, Billboard, Html } from '@react-three/drei'; // drei provides helpful 3D components
-import * as THREE from 'three'; // THREE.js is the main 3D library
-import { Button } from "@/components/ui/button";
-import { Trash2, Layout, Square, StickyNote } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { useThree, useFrame } from '@react-three/fiber';
+import { useDebug } from '@/contexts/DebugContext';
+import * as THREE from 'three';
 
-// Node3DFlat: A flat card-like 3D node that always faces the camera
-// This is good for displaying information that should always be readable
 const Node3DFlat = ({ 
-  node,
-  position = [0, 0, 0], // [x, y, z] position in 3D space
-  title = "Title",
-  subline = "Subline",
-  avatarUrl = "/default-image.png",
-  onDelete,
-  onStyleChange,
-  activeTool,
-  isSelected,
-  onSelect,
-  onHover,
-  onHoverEnd
+  node, 
+  activeTool, 
+  onUpdate, 
+  onStartConnection,
+  onEndConnection,
+  isHighlighted 
 }) => {
-  // Reference to the 3D group element for potential animations
-  const groupRef = useRef();
-  // Track if the mouse is hovering over this node
+  const meshRef = useRef();
+  const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  
-  // Load the avatar image as a texture for the 3D mesh
-  const textureLoader = new THREE.TextureLoader();
-  const avatarTexture = textureLoader.load(avatarUrl);
+  const [hoveredConnectionPoint, setHoveredConnectionPoint] = useState(null);
+  const { camera, gl } = useThree();
 
-  // Create a circular geometry for the avatar
-  const avatarGeometry = new THREE.CircleGeometry(0.3, 32); // Consistent 0.3 radius with other dots
-  const avatarMaterial = new THREE.MeshBasicMaterial({
-    map: avatarTexture,
-    transparent: true,
-    side: THREE.DoubleSide
+  const dimensions = { width: 128, height: 128 }; // Adjust as needed
+  
+  const position = [
+    node.position[0],
+    node.position[1],
+    node.position[2] || 0,
+  ];
+
+  useFrame(() => {
+    if (meshRef.current) {
+      meshRef.current.quaternion.copy(camera.quaternion);
+    }
   });
 
-  // Handle mouse interactions
-  const handlePointerOver = () => {
-    if (activeTool === 'select') {
-      setIsHovered(true);
-      onHover?.();
+  const handleInteractionStart = (e) => {
+    if (activeTool !== 'select') return;
+    e.stopPropagation();
+    setIsDragging(true);
+    gl.domElement.style.cursor = 'grabbing';
+  };
+
+  const handleInteractionEnd = () => {
+    if (activeTool !== 'select') return;
+    setIsDragging(false);
+    gl.domElement.style.cursor = 'grab';
+    if (hoveredConnectionPoint) {
+      onEndConnection?.(node.id, hoveredConnectionPoint);
     }
   };
 
-  const handlePointerOut = () => {
-    setIsHovered(false);
-    onHoverEnd?.();
-  };
-
-  const handleClick = (e) => {
-    if (activeTool === 'select') {
-      e.stopPropagation();
-      onSelect?.();
-    }
-  };
+  const ConnectionPoint = ({ position, type }) => (
+    <mesh
+      position={position}
+      onPointerEnter={() => setHoveredConnectionPoint(type)}
+      onPointerLeave={() => setHoveredConnectionPoint(null)}
+      onPointerDown={() => onStartConnection?.(node.id, node.position, type)}
+    >
+      <sphereGeometry args={[0.2, 16, 16]} />
+      <meshBasicMaterial color={hoveredConnectionPoint === type ? '#00ff00' : '#ffffff'} />
+    </mesh>
+  );
 
   return (
-    // Billboard makes the node always face the camera
-    <Billboard
-      follow={true}
-      lockX={false}
-      lockY={false}
-      lockZ={false}
-      onPointerOver={handlePointerOver}
-      onPointerOut={handlePointerOut}
-      onClick={handleClick}
-    >
-      <group ref={groupRef} position={position}>
-        {/* Selection outline - shows when hovered or selected */}
-        {(isHovered || isSelected) && (
-          <mesh position={[0, 0, -0.02]}>
-            <planeGeometry args={[4.2, 2.2]} />
-            <meshBasicMaterial 
-              color={isSelected ? "#3b82f6" : "#60a5fa"} 
-              transparent 
-              opacity={0.3} 
-            />
-          </mesh>
-        )}
+    <group position={position}>
+      <mesh
+        ref={meshRef}
+        onPointerDown={handleInteractionStart}
+        onPointerUp={handleInteractionEnd}
+        onPointerEnter={() => {
+          setIsHovered(true);
+          gl.domElement.style.cursor = activeTool === 'select' ? 'pointer' : 'default';
+        }}
+        onPointerLeave={() => {
+          setIsHovered(false);
+          setHoveredConnectionPoint(null);
+          gl.domElement.style.cursor = 'default';
+        }}
+      >
+        <planeGeometry args={[dimensions.width, dimensions.height]} />
+        <meshBasicMaterial color={isHighlighted ? 'yellow' : 'gray'} />
+      </mesh>
 
-        {/* White background plane */}
-        <mesh position={[0, 0, -0.01]}>
-          <planeGeometry args={[6, 1.5]} />
-          <meshBasicMaterial color="white" transparent opacity={0.9} />
-        </mesh>
-
-        {/* Circular avatar display */}
-        <mesh position={[-0.75, 0, 0]}>
-          <primitive object={avatarGeometry} />
-          <primitive object={avatarMaterial} />
-        </mesh>
-
-        {/* Title text - positioned above the center */}
-        <Text
-          position={[-0.5, 0.3, 0]}
-          fontSize={0.5}
-          color="black"
-          anchorX="left"
-          anchorY="middle"
-        >
-          {title}
-        </Text>
-
-        {/* Subline text - positioned below the center */}
-        <Text
-          position={[-0.5, -0.1, 0]}
-          fontSize={0.15}
-          color="gray"
-          anchorX="left"
-          anchorY="middle"
-        >
-          {subline}
-        </Text>
-
-        {/* Hover Tooltip - shows style options and delete button */}
-        {isHovered && (
-          <Html position={[0, 1.2, 0]} center>
-            <div className="bg-black/80 text-white p-2 rounded-lg shadow-lg flex gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-                    <Layout className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-black text-white">
-                  <DropdownMenuItem onClick={() => onStyleChange('compact')}>
-                    <Square className="h-4 w-4 mr-2" />
-                    Compact (48x48)
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onStyleChange('default')}>
-                    <Layout className="h-4 w-4 mr-2" />
-                    Default (128x48)
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onStyleChange('postit')}>
-                    <StickyNote className="h-4 w-4 mr-2" />
-                    Post-it (256x256)
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-white hover:bg-red-500/50"
-                onClick={onDelete}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          </Html>
-        )}
-      </group>
-    </Billboard>
+      <ConnectionPoint position={[0, dimensions.height / 2, 0]} type="top" />
+      <ConnectionPoint position={[0, -dimensions.height / 2, 0]} type="bottom" />
+    </group>
   );
 };
 
