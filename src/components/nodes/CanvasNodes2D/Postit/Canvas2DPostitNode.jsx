@@ -35,7 +35,7 @@ const Canvas2DPostitNode = ({
         willChange: 'transform, left, top'
       }}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2">
           <NodeAvatar 
             src={baseProps.avatar} 
@@ -56,7 +56,7 @@ const Canvas2DPostitNode = ({
           />
         )}
       </div>
-      <p className="text-sm text-gray-600 flex-grow">
+      <p className="text-sm text-gray-600 mt-0">
         {baseProps.description}
       </p>
     </div>
