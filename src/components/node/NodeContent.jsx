@@ -16,19 +16,19 @@ const NodeContent = ({
   dimensions,
   textSize = "medium",
   textAlign = "left",
-  color = "bg-white" // Set white as default color
+  color = "bg-white" // Keep default color but don't force white background
 }) => {
   const baseClasses = cn(
     textSizeClasses[textSize],
     `text-${textAlign}`,
     color,
-    "p-2 w-full h-full transition-all duration-200 rounded-lg shadow-sm bg-white"
+    "p-2 w-full h-full transition-all duration-200 rounded-lg shadow-sm"
   );
 
   // Render compact style (avatar only)
   if (style === 'compact') {
     return (
-      <div className={cn(baseClasses, "flex items-center justify-center p-2 bg-white")}>
+      <div className={cn(baseClasses, "flex items-center justify-center p-2")}>
         <NodeAvatar src={node.avatar} alt={node.title} size="large" nodeType={node.nodeType} />
       </div>
     );
