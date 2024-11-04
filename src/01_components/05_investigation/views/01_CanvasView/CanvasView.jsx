@@ -101,6 +101,13 @@ const CanvasView = ({
     }
   };
 
+  const handleCanvasClick = (e) => {
+    // Only defocus if clicking directly on the canvas background
+    if (e.target === e.currentTarget || e.target === contentRef.current) {
+      onNodeFocus(null);
+    }
+  };
+
   const handleDragOver = (e) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
@@ -160,6 +167,7 @@ const CanvasView = ({
       onDrop={handleDrop}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      onClick={handleCanvasClick}
     >
       <CanvasBackground zoom={zoom} position={position} />
       
@@ -168,6 +176,7 @@ const CanvasView = ({
         className="absolute inset-0 will-change-transform scrollbar-hide" 
         style={transformStyle}
         onWheel={handleWheel}
+        onClick={handleCanvasClick}
       >
         {connections.map((connection, index) => (
           <ConnectorLine
