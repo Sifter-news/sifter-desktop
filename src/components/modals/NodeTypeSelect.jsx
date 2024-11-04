@@ -13,10 +13,10 @@ import { NODE_TYPES } from '@/utils/nodeConstants';
 const NodeTypeSelect = ({ value, onChange }) => {
   return (
     <div className="grid w-full items-center gap-1.5">
-      <Label htmlFor="type">Node Type</Label>
+      <Label htmlFor="type">Type</Label>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger>
-          <SelectValue placeholder="Select node type" />
+          <SelectValue placeholder="Select type" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
