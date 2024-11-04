@@ -1,11 +1,21 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Layout, Type, MessageCircle, Pencil } from 'lucide-react';
+import { Layout, Type, MessageCircle, Pencil, Palette } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+
+const colors = {
+  white: { label: 'White', class: 'bg-white' },
+  yellow: { label: 'Yellow', class: 'bg-yellow-100' },
+  blue: { label: 'Blue', class: 'bg-blue-100' },
+  green: { label: 'Green', class: 'bg-green-100' },
+  pink: { label: 'Pink', class: 'bg-pink-100' },
+  purple: { label: 'Purple', class: 'bg-purple-100' },
+  orange: { label: 'Orange', class: 'bg-orange-100' },
+};
 
 const NodeStyleTooltip = ({
   position,
@@ -20,7 +30,7 @@ const NodeStyleTooltip = ({
   return (
     <div 
       className="absolute -top-12 left-1/2 transform -translate-x-1/2 flex items-center gap-2 p-2 bg-black/50 backdrop-blur-sm rounded-lg shadow-lg"
-      style={{ zIndex: 'auto' }} // Remove any explicit z-index to match node layering
+      style={{ zIndex: 'auto' }}
     >
       <Button
         variant="ghost"
@@ -31,6 +41,31 @@ const NodeStyleTooltip = ({
         <Pencil className="h-4 w-4 mr-2" />
         Edit
       </Button>
+
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+            <Palette className="h-4 w-4 mr-2" />
+            Color
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-32">
+          <div className="flex flex-col space-y-1">
+            {Object.entries(colors).map(([key, { label, class: bgClass }]) => (
+              <Button
+                key={key}
+                variant="ghost"
+                size="sm"
+                onClick={() => onColorChange(bgClass)}
+                className="justify-start"
+              >
+                <div className={`w-4 h-4 rounded mr-2 ${bgClass}`} />
+                {label}
+              </Button>
+            ))}
+          </div>
+        </PopoverContent>
+      </Popover>
 
       <Popover>
         <PopoverTrigger asChild>
