@@ -74,7 +74,6 @@ const ModalEdit_Node = ({
 
       if (error) throw error;
 
-      // Transform the data back to the frontend format
       const updatedNode = {
         ...node,
         ...data,
@@ -144,6 +143,7 @@ const ModalEdit_Node = ({
               onFieldChange={(field, value) => 
                 setFormData(prev => ({ ...prev, [field]: value }))
               }
+              onAIConversation={onAIConversation ? () => onAIConversation(node) : undefined}
             />
 
             <div className="grid grid-cols-2 gap-4">
@@ -176,11 +176,9 @@ const ModalEdit_Node = ({
 
           <NodeFooterActions
             onDelete={() => setShowDeleteDialog(true)}
-            onAIConversation={onAIConversation ? () => onAIConversation(node) : undefined}
             onClose={onClose}
             onSave={handleSubmit}
             isLoading={isLoading}
-            showAIButton={!!onAIConversation}
           />
         </DialogContent>
       </Dialog>
