@@ -1,28 +1,24 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useDebug } from '@/contexts/DebugContext';
-import TwoDNode from '@/components/node/TwoDNode';
 import CanvasBackground from '@/components/canvas/CanvasBackground';
 import CanvasControls from './CanvasControls';
 import ConnectorLine from '@/components/node/ConnectorLine';
 import AIChatPanel from '@/01_components/05_investigation/viewsControls/AIChatPanel';
 import { useZoomPan } from '@/hooks/useZoomPan';
-import { handleNodeDrag } from './handlers/nodeHandlers';
-import { handleCanvasInteraction } from './handlers/canvasHandlers';
 import { useConnectionHandling } from './hooks/useConnectionHandling';
-import { NODE_STYLES } from '@/utils/nodeStyles';
 import { useNodeRendering } from './hooks/useNodeRendering.jsx';
 import { useNodeDeletion } from './hooks/useNodeDeletion';
 import { useKeyboardModifiers } from './hooks/useKeyboardModifiers';
 
 const CanvasView = ({ 
   nodes, 
-  onUpdateNode,
+  setNodes, 
+  onAddNode, 
+  onUpdateNode, 
   onDeleteNode,
-  onAddNode,
   focusedNodeId,
-  onNodeFocus,
-  defaultView = 'canvas'
+  onNodeFocus 
 }) => {
   const canvasRef = useRef(null);
   const contentRef = useRef(null);
@@ -36,22 +32,21 @@ const CanvasView = ({
   const { handleDeleteNode } = useNodeDeletion(focusedNodeId, onDeleteNode);
   
   const { 
-    isConnecting,
-    startNodeId,
-    handleConnectionStart,
+    connections, 
+    activeConnection, 
+    handleConnectionStart, 
     handleConnectionMove,
-    handleConnectionEnd,
-    temporaryConnection
+    handleConnectionEnd, 
+    setActiveConnection 
   } = useConnectionHandling();
 
-  const { renderedNodes } = useNodeRendering({
+  const { renderNodes } = useNodeRendering({
     nodes,
-    zoom,
-    position,
     focusedNodeId,
     onNodeFocus,
     onUpdateNode,
-    isConnecting,
+    onDeleteNode: handleDeleteNode,
+    zoom,
     handleConnectionStart,
     handleConnectionEnd,
     NODE_STYLES
@@ -63,22 +58,25 @@ const CanvasView = ({
       if ((e.metaKey || e.ctrlKey) && e.key === 'c' && focusedNodeId) {
         const nodeToCopy = nodes.find(node => node.id === focusedNodeId);
         if (nodeToCopy) {
-          localStorage.setItem('copiedNode', JSON.stringify(nodeToCopy));
+          const { id, x, y, ...nodeData } = nodeToCopy;
+          localStorage.setItem('clipboard-node', JSON.stringify(nodeData));
           toast.success('Node copied to clipboard');
         }
       }
-      
+
       if ((e.metaKey || e.ctrlKey) && e.key === 'v') {
-        const copiedNode = localStorage.getItem('copiedNode');
-        if (copiedNode) {
-          const node = JSON.parse(copiedNode);
-          const newNode = {
-            ...node,
-            id: crypto.randomUUID(),
-            x: node.x + 20,
-            y: node.y + 20
-          };
-          onAddNode(newNode);
+        const clipboardData = localStorage.getItem('clipboard-node');
+        if (clipboardData) {
+          const nodeData = JSON.parse(clipboardData);
+          const rect = canvasRef.current.getBoundingClientRect();
+          const x = (window.innerWidth / 2 - rect.left - position.x) / zoom;
+          const y = (window.innerHeight / 2 - rect.top - position.y) / zoom;
+          
+          onAddNode({
+            ...nodeData,
+            x,
+            y
+          });
           toast.success('Node pasted from clipboard');
         }
       }
@@ -86,19 +84,16 @@ const CanvasView = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [focusedNodeId, nodes, onAddNode]);
+  }, [nodes, focusedNodeId, zoom, position, onAddNode]);
 
   const handleMouseMove = (e) => {
-    if (!canvasRef.current) return;
-    
-    const rect = canvasRef.current.getBoundingClientRect();
-    
-    if (isConnecting) {
+    if (activeConnection) {
+      const rect = canvasRef.current.getBoundingClientRect();
       const x = (e.clientX - rect.left - position.x) / zoom;
       const y = (e.clientY - rect.top - position.y) / zoom;
       handleConnectionMove({ clientX: x, clientY: y });
     } else if (isSpacePressed && e.buttons === 1) {
-      setIsPanning(true);
+      // Update position when space is pressed and mouse is dragged
       setPosition(prev => ({
         x: prev.x + e.movementX,
         y: prev.y + e.movementY
@@ -107,7 +102,9 @@ const CanvasView = ({
   };
 
   const handleMouseUp = () => {
-    setIsPanning(false);
+    if (activeConnection) {
+      setActiveConnection(null);
+    }
   };
 
   const handleCanvasClick = (e) => {
@@ -123,39 +120,48 @@ const CanvasView = ({
 
   const handleDrop = (e) => {
     e.preventDefault();
-    const rect = canvasRef.current.getBoundingClientRect();
-    const data = e.dataTransfer.getData('application/json');
+    const nodeType = e.dataTransfer.getData('nodeType');
     
-    if (data) {
-      try {
-        const nodeData = JSON.parse(data);
-        const dropX = (e.clientX - rect.left - position.x) / zoom;
-        const dropY = (e.clientY - rect.top - position.y) / zoom;
-        
-        const newNode = {
-          ...nodeData,
-          id: crypto.randomUUID(),
-          x: dropX,
-          y: dropY,
-          width: nodeData.width || 200,
-          height: nodeData.height || 100
-        };
-        
-        onAddNode(newNode);
-      } catch (error) {
-        console.error('Error parsing dropped data:', error);
-      }
+    if (nodeType === 'postit') {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left - position.x) / zoom;
+      const y = (e.clientY - rect.top - position.y) / zoom;
+      
+      onAddNode({
+        title: 'New Note',
+        description: '',
+        visualStyle: 'postit',
+        color: 'bg-white',
+        x,
+        y,
+        nodeType: 'generic'
+      });
     }
   };
 
-  const contentStyle = {
-    position: 'absolute',
-    top: position.y,
-    left: position.x,
+  const handleAddNode = () => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = (window.innerWidth / 2 - rect.left - position.x) / zoom;
+    const y = (window.innerHeight / 2 - rect.top - position.y) / zoom;
+    
+    onAddNode({
+      title: 'New Node',
+      description: '',
+      visualStyle: 'default',
+      color: 'bg-white',
+      x,
+      y,
+      nodeType: 'generic'
+    });
+    toast.success('New node added');
+  };
+
+  const transformStyle = {
     transform: `scale(${zoom})`,
     transformOrigin: '0 0',
     willChange: 'transform',
-    touchAction: 'none'
+    touchAction: 'none',
+    cursor: isSpacePressed ? 'grab' : 'auto'
   };
 
   return (
@@ -168,40 +174,55 @@ const CanvasView = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onClick={handleCanvasClick}
-      onWheel={handleWheel}
-      style={{ cursor: isSpacePressed ? (isPanning ? 'grabbing' : 'grab') : 'default' }}
+      style={{ cursor: isSpacePressed ? (isPanning ? 'grabbing' : 'grab') : 'auto' }}
     >
       <CanvasBackground zoom={zoom} position={position} />
       
-      <div ref={contentRef} style={contentStyle}>
-        {renderedNodes}
-        
-        {isConnecting && temporaryConnection && (
+      <div 
+        ref={contentRef}
+        className="absolute inset-0 will-change-transform scrollbar-hide" 
+        style={transformStyle}
+        onWheel={handleWheel}
+        onClick={handleCanvasClick}
+      >
+        {connections.map((connection, index) => (
           <ConnectorLine
-            startX={temporaryConnection.startX}
-            startY={temporaryConnection.startY}
-            endX={temporaryConnection.endX}
-            endY={temporaryConnection.endY}
-            isTemporary={true}
+            key={`connection-${index}`}
+            startX={connection.startX}
+            startY={connection.startY}
+            endX={connection.endX}
+            endY={connection.endY}
+          />
+        ))}
+
+        {activeConnection && (
+          <ConnectorLine
+            startX={activeConnection.startX}
+            startY={activeConnection.startY}
+            endX={activeConnection.endX}
+            endY={activeConnection.endY}
+            isDashed
           />
         )}
+
+        {renderNodes()}
       </div>
 
-      <CanvasControls
-        zoom={zoom}
-        onZoomChange={handleZoom}
+      <CanvasControls 
         activeTool={activeTool}
         setActiveTool={setActiveTool}
+        zoom={zoom}
+        handleZoom={handleZoom}
+        onAIChatToggle={() => setIsAIChatOpen(!isAIChatOpen)}
         isAIChatOpen={isAIChatOpen}
-        setIsAIChatOpen={setIsAIChatOpen}
+        onAddNode={handleAddNode}
       />
 
-      {isAIChatOpen && (
-        <AIChatPanel
-          isOpen={isAIChatOpen}
-          onClose={() => setIsAIChatOpen(false)}
-        />
-      )}
+      <AIChatPanel
+        isOpen={isAIChatOpen}
+        onClose={() => setIsAIChatOpen(false)}
+        initialContext={`Viewing canvas with ${nodes.length} nodes`}
+      />
     </div>
   );
 };
