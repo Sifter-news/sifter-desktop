@@ -5,7 +5,7 @@ const ConnectorLine = ({ startX, startY, endX, endY, isDashed = false }) => {
   const midX = (startX + endX) / 2;
   const midY = (startY + endY) / 2;
   
-  // Create curved path
+  // Create curved path starting from exact click position
   const path = `M ${startX} ${startY} Q ${midX} ${startY}, ${midX} ${midY} T ${endX} ${endY}`;
 
   return (
@@ -37,7 +37,6 @@ const ConnectorLine = ({ startX, startY, endX, endY, isDashed = false }) => {
         stroke="#000"
         strokeWidth="2"
         fill="none"
-        strokeDasharray={isDashed ? "5,5" : "none"}
         markerEnd="url(#arrowhead)"
       />
     </svg>
