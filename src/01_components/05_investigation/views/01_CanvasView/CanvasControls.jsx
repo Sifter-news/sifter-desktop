@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { MousePointer2, ZoomIn, ZoomOut, RotateCcw, MessageCircle, GitBranch, FileText, User, Building2, Package, Brain, MapPin, Calendar } from 'lucide-react';
+import { MousePointer2, ZoomIn, ZoomOut, RotateCcw, MessageCircle, GitBranch, FileText, Layout, StickyNote } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -15,14 +15,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const nodeTypes = {
-  generic: { label: "Note", icon: FileText },
-  node_person: { label: "Person", icon: User },
-  node_organization: { label: "Organization", icon: Building2 },
-  node_object: { label: "Object", icon: Package },
-  node_concept: { label: "Concept", icon: Brain },
-  node_location: { label: "Location", icon: MapPin },
-  node_event: { label: "Event", icon: Calendar }
+const nodeStyles = {
+  default: { label: "Default", icon: FileText },
+  compact: { label: "Compact", icon: Layout },
+  postit: { label: "Post-it", icon: StickyNote }
 };
 
 const CanvasControls = ({ 
@@ -38,8 +34,8 @@ const CanvasControls = ({
   const zoomOut = () => handleZoom(-0.1);
   const resetZoom = () => handleZoom(1 - zoom);
 
-  const handleDragStart = (e, nodeType) => {
-    e.dataTransfer.setData('nodeType', nodeType);
+  const handleDragStart = (e, visualStyle) => {
+    e.dataTransfer.setData('visualStyle', visualStyle);
     e.dataTransfer.effectAllowed = 'copy';
   };
 
@@ -104,11 +100,11 @@ const CanvasControls = ({
             </Tooltip>
           </TooltipProvider>
           <DropdownMenuContent className="bg-black/90 text-white border border-white/20">
-            {Object.entries(nodeTypes).map(([type, { label, icon: Icon }]) => (
+            {Object.entries(nodeStyles).map(([style, { label, icon: Icon }]) => (
               <DropdownMenuItem
-                key={type}
+                key={style}
                 draggable
-                onDragStart={(e) => handleDragStart(e, type)}
+                onDragStart={(e) => handleDragStart(e, style)}
                 className="cursor-grab"
               >
                 <Icon className="h-4 w-4 mr-2" />
