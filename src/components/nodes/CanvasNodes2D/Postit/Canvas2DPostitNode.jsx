@@ -24,7 +24,7 @@ const Canvas2DPostitNode = ({
 
   return (
     <div 
-      className={`w-64 h-64 p-4 bg-yellow-100 rounded-lg flex flex-col ${style}`}
+      className={`w-64 h-64 p-4 bg-yellow-100 rounded-lg flex flex-col items-center justify-center ${style}`}
       onClick={onSelect}
       style={{
         position: 'absolute',
@@ -35,12 +35,12 @@ const Canvas2DPostitNode = ({
         willChange: 'transform, left, top'
       }}
     >
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <NodeAvatar 
-            src={baseProps.avatar} 
-            alt={baseProps.title}
-          />
+      <div className="flex flex-col items-center gap-2 w-full">
+        <NodeAvatar 
+          src={baseProps.avatar} 
+          alt={baseProps.title}
+        />
+        <div className="text-center w-full">
           <NodeTitle 
             title={baseProps.title}
             isEditing={isEditing}
@@ -48,15 +48,15 @@ const Canvas2DPostitNode = ({
             onBlur={onTitleBlur}
           />
         </div>
-        {isHovered && (
-          <NodeEditMenu
-            onEdit={onEdit}
-            onDelete={onDelete}
-            onAIConversation={onAIConversation}
-          />
-        )}
       </div>
-      <p className="text-sm text-gray-600 mt-0">
+      {isHovered && (
+        <NodeEditMenu
+          onEdit={onEdit}
+          onDelete={onDelete}
+          onAIConversation={onAIConversation}
+        />
+      )}
+      <p className="text-sm text-gray-600 mt-2 text-center">
         {baseProps.description}
       </p>
     </div>
