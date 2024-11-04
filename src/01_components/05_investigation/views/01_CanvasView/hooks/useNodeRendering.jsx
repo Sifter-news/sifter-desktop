@@ -1,5 +1,6 @@
 import React from 'react';
 import TwoDNode from '@/components/node/TwoDNode';
+import { NODE_STYLES } from '@/utils/nodeStyles';
 
 export const useNodeRendering = ({
   nodes,
@@ -9,8 +10,7 @@ export const useNodeRendering = ({
   onDeleteNode,
   zoom,
   handleConnectionStart,
-  handleConnectionEnd,
-  NODE_STYLES
+  handleConnectionEnd
 }) => {
   const renderNodes = () => {
     return nodes.map(node => {

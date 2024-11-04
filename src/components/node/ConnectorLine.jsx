@@ -17,6 +17,7 @@ const ConnectorLine = ({ startX, startY, endX, endY, isDashed = false }) => {
         width: '100%',
         height: '100%',
         pointerEvents: 'none',
+        zIndex: 10
       }}
     >
       <defs>
