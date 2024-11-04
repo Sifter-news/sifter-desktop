@@ -86,6 +86,7 @@ const CanvasView = ({
         title: 'New Note',
         description: '',
         visualStyle: 'postit',
+        color: 'bg-white',
         x,
         y,
         nodeType: 'generic'
@@ -102,7 +103,7 @@ const CanvasView = ({
       title: 'New Node',
       description: '',
       visualStyle: 'default',
-      color: 'bg-white', // Set default color to white for new nodes
+      color: 'bg-white',
       x,
       y,
       nodeType: 'generic'
