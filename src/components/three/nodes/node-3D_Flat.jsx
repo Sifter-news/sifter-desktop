@@ -54,7 +54,7 @@ const Node3DFlat = ({
       onPointerLeave={() => setHoveredConnectionPoint(null)}
       onPointerDown={() => onStartConnection?.(node.id, node.position, type)}
     >
-      <sphereGeometry args={[0.2, 16, 16]} />
+      <sphereGeometry args={[0.05, 16, 16]} />
       <meshBasicMaterial color={hoveredConnectionPoint === type ? '#00ff00' : '#ffffff'} />
     </mesh>
   );

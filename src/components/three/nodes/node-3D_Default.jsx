@@ -55,6 +55,7 @@ const Node3DDefault = ({
   };
 
   // Connection points for linking nodes together
+
   const ConnectionPoint = ({ position, type }) => (
     <mesh
       position={position}
@@ -62,7 +63,7 @@ const Node3DDefault = ({
       onPointerLeave={() => setHoveredConnectionPoint(null)}
       onPointerDown={() => onStartConnection?.(node.id, node.position, type)}
     >
-      <sphereGeometry args={[0.2, 16, 16]} />
+      <sphereGeometry args={[0.05, 16, 16]} />
       <meshBasicMaterial color={hoveredConnectionPoint === type ? '#00ff00' : '#ffffff'} />
     </mesh>
   );
@@ -111,3 +112,4 @@ const Node3DDefault = ({
 };
 
 export default Node3DDefault;
+
