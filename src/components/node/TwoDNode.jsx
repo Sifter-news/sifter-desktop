@@ -18,7 +18,7 @@ const TwoDNode = ({
   dimensions,
   onDragStart,
   onAIConversation,
-  showTooltip = false // Add this prop
+  showTooltip = false
 }) => {
   const [textSize, setTextSize] = useState(node.textSize || 'medium');
   const [textAlign, setTextAlign] = useState(node.textAlign || 'left');
@@ -86,7 +86,7 @@ const TwoDNode = ({
         topLeft: true
       }}
     >
-      {showTooltip && (
+      {(showTooltip || isFocused) && (
         <NodeStyleTooltip
           node={node}
           position={position}
