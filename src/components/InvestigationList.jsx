@@ -4,12 +4,24 @@ import ReportCard from './ReportCard';
 import ReportEditModal from './modals/ModalEdit_Report';
 import { MoreVertical, Pencil, Trash } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { supabase } from '@/config/supabase';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const InvestigationList = ({ 
   investigations, 
@@ -19,6 +31,7 @@ const InvestigationList = ({
   onUpdateInvestigation 
 }) => {
   const [editingReport, setEditingReport] = useState(null);
+  const [deletingProject, setDeletingProject] = useState(null);
 
   const sortedInvestigations = [...(investigations || [])].sort((a, b) => {
     const dateA = new Date(a.updated_at || a.created_at);
@@ -44,6 +57,41 @@ const InvestigationList = ({
       reports: updatedReports
     });
     setEditingReport(null);
+  };
+
+  const handleDeleteProject = async (projectId) => {
+    try {
+      // First delete all reports associated with this investigation
+      const { error: reportsError } = await supabase
+        .from('reports')
+        .delete()
+        .eq('investigation_id', projectId);
+
+      if (reportsError) throw reportsError;
+
+      // Then delete all nodes associated with this investigation
+      const { error: nodesError } = await supabase
+        .from('node')
+        .delete()
+        .eq('investigation_id', projectId);
+
+      if (nodesError) throw nodesError;
+
+      // Finally delete the investigation itself
+      const { error: investigationError } = await supabase
+        .from('investigations')
+        .delete()
+        .eq('id', projectId);
+
+      if (investigationError) throw investigationError;
+
+      onDeleteProject(projectId);
+      toast.success('Project deleted successfully');
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      toast.error('Failed to delete project');
+    }
+    setDeletingProject(null);
   };
 
   return (
@@ -72,7 +120,7 @@ const InvestigationList = ({
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       className="text-red-600"
-                      onClick={() => onDeleteProject(investigation.id)}
+                      onClick={() => setDeletingProject(investigation)}
                     >
                       <Trash className="mr-2 h-4 w-4" />
                       <span>Delete</span>
@@ -114,6 +162,27 @@ const InvestigationList = ({
           onDelete={(reportId) => handleReportDelete(editingReport.investigation, reportId)}
         />
       )}
+
+      <AlertDialog open={!!deletingProject} onOpenChange={() => setDeletingProject(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to delete this project?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the project
+              and all associated data including reports and nodes.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => handleDeleteProject(deletingProject?.id)}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
