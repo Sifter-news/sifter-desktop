@@ -5,7 +5,8 @@ const ConnectionLines = ({
   connections, 
   activeConnection, 
   onSelectConnection,
-  selectedConnectionId 
+  selectedConnectionId,
+  activeTool
 }) => {
   return (
     <>
@@ -34,7 +35,7 @@ const ConnectionLines = ({
           startY={activeConnection.startY}
           endX={activeConnection.endX}
           endY={activeConnection.endY}
-          isDashed
+          isDashed={activeTool === 'connect'}
           className="stroke-blue-400"
           strokeOpacity={0.5}
         />

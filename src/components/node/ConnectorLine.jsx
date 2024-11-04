@@ -16,8 +16,15 @@ const ConnectorLine = ({
   const midX = startX;
   const midY = endY;
 
-  // Create elbowed path with right angles for better visual hierarchy
-  const path = `M ${startX} ${startY} L ${midX} ${midY} L ${endX} ${endY}`;
+  // Create elbowed path with right angles and rounded corners
+  const radius = 5; // Radius for rounded corners
+  const pathData = `
+    M ${startX},${startY}
+    L ${midX},${startY}
+    A ${radius},${radius} 0 0,1 ${midX},${midY}
+    L ${endX},${midY}
+    L ${endX},${endY}
+  `;
 
   return (
     <svg
@@ -52,14 +59,14 @@ const ConnectorLine = ({
 
       {/* Draw the connection path */}
       <path
-        d={path}
+        d={pathData}
         stroke={isSelected ? "#3b82f6" : "#6B7280"}
         strokeWidth={strokeWidth}
         strokeDasharray={isDashed ? "5,5" : "none"}
         strokeOpacity={strokeOpacity}
         fill="none"
         markerEnd="url(#arrowhead)"
-        className={className}
+        className={`transition-all duration-200 ${className}`}
       />
     </svg>
   );
