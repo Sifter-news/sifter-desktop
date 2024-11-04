@@ -11,12 +11,19 @@ const textSizeClasses = {
 
 const NodeContent = ({ 
   style, 
-  node, 
+  node,
+  isEditing,
   isFocused,
   dimensions,
   textSize = "medium",
   textAlign = "left",
-  color = "bg-white"
+  color = "bg-white",
+  onEditStart,
+  localTitle,
+  localDescription,
+  setLocalTitle,
+  setLocalDescription,
+  handleBlur
 }) => {
   const baseClasses = cn(
     textSizeClasses[textSize],
@@ -51,14 +58,44 @@ const NodeContent = ({
     }
 
     return (
-      <div className={baseClasses}>
+      <div 
+        className={baseClasses}
+        onClick={(e) => {
+          if (isFocused && e.target === e.currentTarget) {
+            onEditStart?.();
+          }
+        }}
+      >
         <div className="flex flex-col h-full">
           <div className="flex items-start gap-3 mb-2">
             <NodeAvatar src={node.avatar} alt={node.title} nodeType={node.nodeType} />
             <div className="flex-1 min-w-0">
-              <div className="font-medium truncate">{node.title || 'Untitled'}</div>
-              {node.description && (
-                <div className="text-sm text-gray-600 mt-1">{node.description}</div>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={localTitle}
+                  onChange={(e) => setLocalTitle?.(e.target.value)}
+                  onBlur={handleBlur}
+                  className="w-full bg-transparent border-none focus:outline-none font-medium"
+                  placeholder="Title"
+                  autoFocus
+                />
+              ) : (
+                <div className="font-medium truncate">{node.title || 'Untitled'}</div>
+              )}
+              {isEditing ? (
+                <textarea
+                  value={localDescription}
+                  onChange={(e) => setLocalDescription?.(e.target.value)}
+                  onBlur={handleBlur}
+                  className="w-full bg-transparent border-none focus:outline-none text-sm text-gray-600 mt-1 resize-none"
+                  placeholder="Description"
+                  rows={3}
+                />
+              ) : (
+                node.description && (
+                  <div className="text-sm text-gray-600 mt-1">{node.description}</div>
+                )
               )}
             </div>
           </div>
