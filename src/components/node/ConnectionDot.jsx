@@ -26,7 +26,7 @@ const ConnectionDot = ({
 
   return (
     <div
-      className={`absolute w-2 h-2 rounded-full cursor-crosshair m-1
+      className={`absolute w-2 h-2 rounded-full cursor-crosshair
         ${getPosition()} 
         ${isHovered ? 'border-2 border-black' : 'border border-gray-400'} 
         transition-all duration-200`}
@@ -41,7 +41,9 @@ const ConnectionDot = ({
         onEndConnection?.(nodeId, position);
       }}
       draggable={false}
-    />
+    >
+      <div className="absolute top-1/2 left-1/2 w-[1px] h-[1px] bg-black -translate-x-1/2 -translate-y-1/2" />
+    </div>
   );
 };
 
