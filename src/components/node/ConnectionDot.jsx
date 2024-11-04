@@ -28,8 +28,8 @@ const ConnectionDot = ({
     <div
       className={`absolute w-2 h-2 rounded-full cursor-crosshair
         ${getPosition()} 
-        ${isHovered ? 'border-2 border-black' : 'border border-gray-400'} 
-        transition-all duration-200`}
+        ${isHovered ? 'scale-[2] border-2 border-black' : 'scale-100 border border-gray-400'} 
+        transition-all duration-200 origin-center`}
       onMouseEnter={onHover}
       onMouseLeave={onLeaveHover}
       onMouseDown={(e) => {
