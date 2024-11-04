@@ -38,7 +38,7 @@ const NodeListItem = ({
   return (
     <div
       className={`
-        group flex items-center justify-between p-2 rounded-lg cursor-pointer
+        group flex items-center justify-between p-2 rounded-lg cursor-pointer relative
         ${isSelected ? 'bg-blue-50' : 'hover:bg-gray-50'}
       `}
       onClick={() => onSelect(node.id)}
@@ -46,11 +46,11 @@ const NodeListItem = ({
       onMouseLeave={handleMouseLeave}
     >
       <div className="flex items-center flex-1 min-w-0">
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity cursor-grab">
+        <div className="absolute left-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab">
           <GripVertical className="h-4 w-4 text-gray-400" />
         </div>
 
-        <div className="ml-2 flex items-center space-x-3 flex-1 min-w-0">
+        <div className="flex items-center space-x-3 flex-1 min-w-0 group-hover:ml-6 transition-all">
           <Avatar className="h-5 w-5">
             <AvatarImage src={node.avatar || "/default-image.png"} alt={node.title} />
             <AvatarFallback><Icon className="h-4 w-4" /></AvatarFallback>
