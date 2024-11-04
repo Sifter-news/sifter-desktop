@@ -57,7 +57,7 @@ const NodeStyleTooltip = ({
                 className="text-white hover:bg-white/20 h-7 px-2"
                 onClick={() => setShowEditModal(true)}
               >
-                <Pencil className="h-4 w-4" />
+                <Pencil className="h-2 w-2 opacity-50" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="top" className="bg-black text-white">
@@ -98,7 +98,7 @@ const NodeStyleTooltip = ({
                 className="text-white hover:bg-purple-700 bg-purple-600 h-7 px-2"
                 onClick={handleAIChat}
               >
-                <MessageCircle className="h-4 w-4" />
+                <MessageCircle className="h-2 w-2 opacity-50" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="top" className="bg-black text-white">
