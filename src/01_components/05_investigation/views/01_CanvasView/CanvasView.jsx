@@ -23,7 +23,7 @@ const CanvasView = ({
 }) => {
   const canvasRef = useRef(null);
   const contentRef = useRef(null);
-  const { setDebugData } = useDebug();
+  const { setDebugData, showGuides } = useDebug();
   
   // Custom hooks
   const { zoom, position, handleZoom, handleWheel } = useZoomPan();
@@ -44,7 +44,8 @@ const CanvasView = ({
     handleConnectionEnd,
     selectConnection,
     setActiveConnection,
-    setSelectedConnection
+    setSelectedConnection,
+    setConnections
   } = useConnectionHandling();
 
   const { renderNodes } = useNodeRendering({
@@ -105,6 +106,22 @@ const CanvasView = ({
       const x = (e.clientX - rect.left - position.x) / zoom;
       const y = (e.clientY - rect.top - position.y) / zoom;
       handleConnectionMove({ clientX: x, clientY: y });
+
+      // Update debug data
+      setDebugData(prev => ({
+        ...prev,
+        canvas: {
+          ...prev?.canvas,
+          mousePosition: { x, y },
+          activeConnection: activeConnection ? {
+            start: { x: activeConnection.startX, y: activeConnection.startY },
+            end: { x: activeConnection.endX, y: activeConnection.endY },
+            offset: 48
+          } : null,
+          zoom,
+          position
+        }
+      }));
     }
   };
 
@@ -129,6 +146,21 @@ const CanvasView = ({
     transformOrigin: '0 0',
     willChange: 'transform',
     touchAction: 'none'
+  };
+
+  // Debug overlay
+  const DebugOverlay = () => {
+    if (!showGuides) return null;
+    
+    return (
+      <div className="fixed top-4 right-4 bg-black/80 text-white p-4 rounded-lg text-xs font-mono z-50">
+        <div>Zoom: {zoom.toFixed(2)}x</div>
+        <div>Position: ({position.x.toFixed(0)}, {position.y.toFixed(0)})</div>
+        <div>Connections: {connections.length}</div>
+        <div>Active Connection: {activeConnection ? '✓' : '×'}</div>
+        <div>Connection Offset: 48px</div>
+      </div>
+    );
   };
 
   return (
@@ -179,6 +211,8 @@ const CanvasView = ({
           toast.success('New node added');
         }}
       />
+
+      <DebugOverlay />
 
       <AIChatPanel
         isOpen={isAIChatOpen}
