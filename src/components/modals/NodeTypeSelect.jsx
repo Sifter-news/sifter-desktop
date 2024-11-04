@@ -19,7 +19,7 @@ const NodeTypeSelect = ({ value, onChange }) => {
       <Select value={value || 'note'} onValueChange={onChange}>
         <SelectTrigger>
           <SelectValue>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1"> {/* Reduced gap from gap-2 to gap-1 */}
               <CurrentIcon className="h-4 w-4" />
               {NODE_TYPES[value]?.label || 'Note'}
             </div>
@@ -29,7 +29,7 @@ const NodeTypeSelect = ({ value, onChange }) => {
           <SelectGroup>
             {Object.entries(NODE_TYPES).map(([key, { label, icon: Icon }]) => (
               <SelectItem key={key} value={key}>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1"> {/* Reduced gap from gap-2 to gap-1 */}
                   <Icon className="h-4 w-4" />
                   {label}
                 </div>
