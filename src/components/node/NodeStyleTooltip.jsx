@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Layout, Type, MessageCircle, Pencil, ChevronDown, Square, StickyNote } from 'lucide-react';
 import {
@@ -6,6 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import UnifiedNodeEditModal from '../modals/ModalEdit_Node';
 
 const colors = {
   white: { label: 'White', class: 'bg-white' },
@@ -42,8 +43,11 @@ const NodeStyleTooltip = ({
   onColorChange,
   onEdit,
   onAIChat,
-  node
+  node,
+  onUpdateNode,
+  onDelete
 }) => {
+  const [showEditModal, setShowEditModal] = useState(false);
   const currentColor = node?.color || 'bg-white';
   const currentStyle = node?.visualStyle || 'default';
   const currentType = node?.nodeType || 'generic';
@@ -52,107 +56,117 @@ const NodeStyleTooltip = ({
   const CurrentTypeIcon = nodeTypes[currentType]?.icon || Type;
   
   return (
-    <div 
-      className="absolute -top-12 left-1/2 transform -translate-x-1/2 flex items-center gap-2 p-2 bg-black/50 backdrop-blur-sm rounded-lg shadow-lg"
-      style={{ zIndex: 'auto' }}
-    >
-      <Button
-        variant="ghost"
-        size="sm"
-        className="text-white hover:bg-white/20"
-        onClick={onEdit}
+    <>
+      <div 
+        className="absolute -top-12 left-1/2 transform -translate-x-1/2 flex items-center gap-2 p-2 bg-black/50 backdrop-blur-sm rounded-lg shadow-lg"
+        style={{ zIndex: 'auto' }}
       >
-        <Pencil className="h-4 w-4 mr-2" />
-        Edit
-      </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-white hover:bg-white/20"
+          onClick={() => setShowEditModal(true)}
+        >
+          <Pencil className="h-4 w-4 mr-2" />
+          Edit
+        </Button>
 
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-            <div className={`w-4 h-4 rounded-full mr-2 ${currentColor}`} />
-            <ChevronDown className="h-4 w-4" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-32">
-          <div className="flex flex-col space-y-1">
-            {Object.entries(colors).map(([key, { label, class: bgClass }]) => (
-              <Button
-                key={key}
-                variant="ghost"
-                size="sm"
-                onClick={() => onColorChange(bgClass)}
-                className="justify-start"
-              >
-                <div className={`w-4 h-4 rounded-full mr-2 ${bgClass}`} />
-                {label}
-              </Button>
-            ))}
-          </div>
-        </PopoverContent>
-      </Popover>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+              <div className={`w-4 h-4 rounded-full mr-2 ${currentColor}`} />
+              <ChevronDown className="h-4 w-4 ml-1" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-32">
+            <div className="flex flex-col space-y-1">
+              {Object.entries(colors).map(([key, { label, class: bgClass }]) => (
+                <Button
+                  key={key}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onColorChange(bgClass)}
+                  className="justify-start"
+                >
+                  <div className={`w-4 h-4 rounded-full mr-2 ${bgClass}`} />
+                  {label}
+                </Button>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
 
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-            <CurrentStyleIcon className="h-4 w-4 mr-2" />
-            {styles[currentStyle]?.label}
-            <ChevronDown className="h-4 w-4 ml-1" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-32">
-          <div className="flex flex-col space-y-1">
-            {Object.entries(styles).map(([key, { label, icon: Icon }]) => (
-              <Button
-                key={key}
-                variant="ghost"
-                size="sm"
-                onClick={() => onStyleChange(key)}
-                className="justify-start"
-              >
-                <Icon className="h-4 w-4 mr-2" />
-                {label}
-              </Button>
-            ))}
-          </div>
-        </PopoverContent>
-      </Popover>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+              <CurrentStyleIcon className="h-4 w-4 mr-2" />
+              {styles[currentStyle]?.label}
+              <ChevronDown className="h-4 w-4 ml-1" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-32">
+            <div className="flex flex-col space-y-1">
+              {Object.entries(styles).map(([key, { label, icon: Icon }]) => (
+                <Button
+                  key={key}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onStyleChange(key)}
+                  className="justify-start"
+                >
+                  <Icon className="h-4 w-4 mr-2" />
+                  {label}
+                </Button>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
 
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-            <CurrentTypeIcon className="h-4 w-4 mr-2" />
-            {nodeTypes[currentType]?.label}
-            <ChevronDown className="h-4 w-4 ml-1" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-40">
-          <div className="flex flex-col space-y-1">
-            {Object.entries(nodeTypes).map(([key, { label, icon: Icon }]) => (
-              <Button
-                key={key}
-                variant="ghost"
-                size="sm"
-                onClick={() => onTypeChange(key)}
-                className="justify-start"
-              >
-                <Icon className="h-4 w-4 mr-2" />
-                {label}
-              </Button>
-            ))}
-          </div>
-        </PopoverContent>
-      </Popover>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+              <CurrentTypeIcon className="h-4 w-4 mr-2" />
+              {nodeTypes[currentType]?.label}
+              <ChevronDown className="h-4 w-4 ml-1" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-40">
+            <div className="flex flex-col space-y-1">
+              {Object.entries(nodeTypes).map(([key, { label, icon: Icon }]) => (
+                <Button
+                  key={key}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onTypeChange(key)}
+                  className="justify-start"
+                >
+                  <Icon className="h-4 w-4 mr-2" />
+                  {label}
+                </Button>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        className="text-white hover:bg-purple-700 bg-purple-600"
-        onClick={onAIChat}
-      >
-        <MessageCircle className="h-4 w-4 mr-2" />
-        AI
-      </Button>
-    </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-white hover:bg-purple-700 bg-purple-600"
+          onClick={onAIChat}
+        >
+          <MessageCircle className="h-4 w-4 mr-2" />
+          AI
+        </Button>
+      </div>
+
+      <UnifiedNodeEditModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        node={node}
+        onUpdate={onUpdateNode}
+        onDelete={onDelete}
+      />
+    </>
   );
 };
 
