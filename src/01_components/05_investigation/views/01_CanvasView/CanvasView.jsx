@@ -1,15 +1,18 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useDebug } from '@/contexts/DebugContext';
+import TwoDNode from '@/components/node/TwoDNode';
 import CanvasBackground from '@/components/canvas/CanvasBackground';
 import CanvasControls from './CanvasControls';
+import ConnectorLine from '@/components/node/ConnectorLine';
 import AIChatPanel from '@/01_components/05_investigation/viewsControls/AIChatPanel';
-import SelectionBox from '@/components/canvas/SelectionBox';
 import { useZoomPan } from '@/hooks/useZoomPan';
+import { handleNodeDrag } from './handlers/nodeHandlers';
+import { handleCanvasInteraction } from './handlers/canvasHandlers';
 import { useConnectionHandling } from './hooks/useConnectionHandling';
+import { NODE_STYLES } from '@/utils/nodeStyles';
+import { useNodeRendering } from './hooks/useNodeRendering.jsx';
 import { useNodeDeletion } from './hooks/useNodeDeletion';
-import { useNodeSelection } from '@/hooks/useNodeSelection';
-import CanvasContent from './CanvasContent';
 
 const CanvasView = ({ 
   nodes, 
@@ -38,16 +41,17 @@ const CanvasView = ({
     setActiveConnection 
   } = useConnectionHandling();
 
-  const {
-    selectionStart,
-    selectionEnd,
-    selectedNodes,
-    isDragging,
-    startSelection,
-    updateSelection,
-    endSelection,
-    setSelectedNodes
-  } = useNodeSelection(zoom);
+  const { renderNodes } = useNodeRendering({
+    nodes,
+    focusedNodeId,
+    onNodeFocus,
+    onUpdateNode,
+    onDeleteNode: handleDeleteNode,
+    zoom,
+    handleConnectionStart,
+    handleConnectionEnd,
+    NODE_STYLES
+  });
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -89,30 +93,18 @@ const CanvasView = ({
       const y = (e.clientY - rect.top - position.y) / zoom;
       handleConnectionMove({ clientX: x, clientY: y });
     }
-    if (isDragging) {
-      updateSelection(e, nodes, position);
-    }
   };
 
   const handleMouseUp = () => {
     if (activeConnection) {
       setActiveConnection(null);
     }
-    if (isDragging) {
-      endSelection();
-    }
   };
 
   const handleCanvasClick = (e) => {
+    // Only defocus if clicking directly on the canvas background
     if (e.target === e.currentTarget || e.target === contentRef.current) {
       onNodeFocus(null);
-      setSelectedNodes([]);
-    }
-  };
-
-  const handleMouseDown = (e) => {
-    if (e.target === e.currentTarget || e.target === contentRef.current) {
-      startSelection(e);
     }
   };
 
@@ -175,35 +167,39 @@ const CanvasView = ({
       onDrop={handleDrop}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
-      onMouseDown={handleMouseDown}
       onClick={handleCanvasClick}
     >
       <CanvasBackground zoom={zoom} position={position} />
       
-      <CanvasContent
-        contentRef={contentRef}
-        transformStyle={transformStyle}
-        handleWheel={handleWheel}
-        handleCanvasClick={handleCanvasClick}
-        connections={connections}
-        activeConnection={activeConnection}
-        nodes={nodes}
-        focusedNodeId={focusedNodeId}
-        onNodeFocus={onNodeFocus}
-        onUpdateNode={onUpdateNode}
-        onDeleteNode={handleDeleteNode}
-        zoom={zoom}
-        handleConnectionStart={handleConnectionStart}
-        handleConnectionEnd={handleConnectionEnd}
-        selectedNodes={selectedNodes}
-      />
+      <div 
+        ref={contentRef}
+        className="absolute inset-0 will-change-transform scrollbar-hide" 
+        style={transformStyle}
+        onWheel={handleWheel}
+        onClick={handleCanvasClick}
+      >
+        {connections.map((connection, index) => (
+          <ConnectorLine
+            key={`connection-${index}`}
+            startX={connection.startX}
+            startY={connection.startY}
+            endX={connection.endX}
+            endY={connection.endY}
+          />
+        ))}
 
-      {isDragging && (
-        <SelectionBox
-          startPoint={selectionStart}
-          currentPoint={selectionEnd}
-        />
-      )}
+        {activeConnection && (
+          <ConnectorLine
+            startX={activeConnection.startX}
+            startY={activeConnection.startY}
+            endX={activeConnection.endX}
+            endY={activeConnection.endY}
+            isDashed
+          />
+        )}
+
+        {renderNodes()}
+      </div>
 
       <CanvasControls 
         activeTool={activeTool}
