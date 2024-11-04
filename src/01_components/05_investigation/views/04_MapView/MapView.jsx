@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Map as MapGL } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import NodeTooltip from '@/components/node/NodeTooltip';
+import NodeTooltip from '@/01_components/06_nodes/tooltips/NodeTooltip';
 import UnifiedNodeEditModal from '@/components/modals/ModalEdit_Node';
 
 const MapView = ({ nodes, onUpdateNode, focusedNodeId, onNodeFocus, onDelete, zoom = 1 }) => {
