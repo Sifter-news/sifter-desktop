@@ -36,11 +36,11 @@ const Node3DFlat = ({
   const avatarTexture = textureLoader.load(avatarUrl);
 
   // Create a circular geometry for the avatar
-  const avatarGeometry = new THREE.CircleGeometry(0.5, 32); // radius: 0.5, segments: 32
+  const avatarGeometry = new THREE.CircleGeometry(0.3, 32); // Consistent 0.3 radius with other dots
   const avatarMaterial = new THREE.MeshBasicMaterial({
     map: avatarTexture,
     transparent: true,
-    side: THREE.DoubleSide // Make the avatar visible from both sides
+    side: THREE.DoubleSide
   });
 
   // Handle mouse interactions
