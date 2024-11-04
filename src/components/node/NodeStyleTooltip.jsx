@@ -156,7 +156,7 @@ const NodeStyleTooltip = ({
         className="h-8 w-8 bg-purple-600 hover:bg-purple-700 text-white"
         onClick={onAIChat}
       >
-        <MessageCircle className="h-5 w-5" />
+        <MessageCircle className="h-6 w-6" />
       </Button>
     </div>
   );

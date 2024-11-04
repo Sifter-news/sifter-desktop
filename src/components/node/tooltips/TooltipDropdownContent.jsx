@@ -10,7 +10,7 @@ const TooltipDropdownContent = ({ items, onSelect, currentValue }) => {
           onClick={() => onSelect(value)}
           className={`${currentValue === value ? 'bg-white/10' : ''} hover:bg-white/20`}
         >
-          {Icon && <Icon className="h-5 w-5 mr-2" />}
+          {Icon && <Icon className="h-6 w-6 mr-2" />}
           {label}
         </DropdownMenuItem>
       ))}
