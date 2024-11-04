@@ -8,7 +8,7 @@ const ConnectionDot = ({
   onStartConnection,
   nodeId
 }) => {
-  const baseStyles = "absolute w-3 h-3 rounded-full bg-blue-500 hover:bg-blue-600 transition-all duration-200 transform cursor-crosshair opacity-0 group-hover:opacity-100 border-2 border-white";
+  const baseStyles = "absolute w-1 h-1 rounded-full bg-black/30 hover:bg-black transition-all duration-200 transform cursor-crosshair opacity-0 group-hover:opacity-100";
   
   const getPositionStyles = () => {
     const positions = {
@@ -23,9 +23,13 @@ const ConnectionDot = ({
   const handleMouseDown = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    // Get the dot element's bounding rectangle
     const rect = e.target.getBoundingClientRect();
-    const startX = rect.left + rect.width / 2;
-    const startY = rect.top + rect.height / 2;
+    // Calculate the center point of the dot
+    const startX = rect.left + (rect.width / 2);
+    const startY = rect.top + (rect.height / 2);
+    
     onStartConnection(nodeId, position, { x: startX, y: startY });
   };
 
