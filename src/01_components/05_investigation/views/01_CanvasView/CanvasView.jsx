@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { toast } from 'sonner';
 import { useDebug } from '@/contexts/DebugContext';
 import CanvasBackground from '@/components/canvas/CanvasBackground';
@@ -8,8 +8,9 @@ import { useZoomPan } from '@/hooks/useZoomPan';
 import { useConnectionHandling } from './hooks/useConnectionHandling';
 import { useNodeRendering } from './hooks/useNodeRendering.jsx';
 import { useNodeDeletion } from './hooks/useNodeDeletion';
-import ConnectionLines from './components/ConnectionLines';
 import { useClipboard } from './hooks/useClipboard';
+import { useCanvasState } from './hooks/useCanvasState';
+import CanvasContent from './components/CanvasContent';
 
 const CanvasView = ({ 
   nodes, 
@@ -22,11 +23,17 @@ const CanvasView = ({
 }) => {
   const canvasRef = useRef(null);
   const contentRef = useRef(null);
-  const [activeTool, setActiveTool] = useState('select');
-  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const { setDebugData } = useDebug();
+  
+  // Custom hooks
   const { zoom, position, handleZoom, handleWheel } = useZoomPan();
   const { handleDeleteNode } = useNodeDeletion(focusedNodeId, onDeleteNode);
+  const {
+    activeTool,
+    isAIChatOpen,
+    handleToolChange,
+    handleAIChatToggle
+  } = useCanvasState();
 
   const { 
     connections, 
@@ -49,7 +56,7 @@ const CanvasView = ({
     zoom,
     handleConnectionStart,
     handleConnectionEnd,
-    onAddNode // Pass onAddNode to useNodeRendering
+    onAddNode
   });
 
   useClipboard({
@@ -137,27 +144,23 @@ const CanvasView = ({
     >
       <CanvasBackground zoom={zoom} position={position} />
       
-      <div 
-        ref={contentRef}
-        className="absolute inset-0 will-change-transform scrollbar-hide" 
-        style={transformStyle}
+      <CanvasContent 
+        contentRef={contentRef}
+        transformStyle={transformStyle}
+        connections={connections}
+        activeConnection={activeConnection}
+        selectedConnection={selectedConnection}
+        selectConnection={selectConnection}
+        renderNodes={renderNodes}
         onWheel={handleWheel}
-      >
-        <ConnectionLines 
-          connections={connections}
-          activeConnection={activeConnection}
-          selectedConnectionId={selectedConnection?.id}
-          onSelectConnection={selectConnection}
-        />
-        {renderNodes()}
-      </div>
+      />
 
       <CanvasControls 
         activeTool={activeTool}
-        setActiveTool={setActiveTool}
+        setActiveTool={handleToolChange}
         zoom={zoom}
         handleZoom={handleZoom}
-        onAIChatToggle={() => setIsAIChatOpen(!isAIChatOpen)}
+        onAIChatToggle={handleAIChatToggle}
         isAIChatOpen={isAIChatOpen}
         onAddNode={() => {
           const rect = canvasRef.current.getBoundingClientRect();
@@ -179,7 +182,7 @@ const CanvasView = ({
 
       <AIChatPanel
         isOpen={isAIChatOpen}
-        onClose={() => setIsAIChatOpen(false)}
+        onClose={() => handleAIChatToggle()}
         initialContext={`Viewing canvas with ${nodes.length} nodes`}
       />
     </div>
