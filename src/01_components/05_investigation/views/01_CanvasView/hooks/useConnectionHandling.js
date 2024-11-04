@@ -32,7 +32,9 @@ export const useConnectionHandling = () => {
   }, [activeConnection, isDragging]);
 
   const handleConnectionEnd = useCallback((targetNodeId, point, position) => {
-    if (activeConnection && targetNodeId !== activeConnection.sourceNodeId) {
+    if (!activeConnection) return;
+    
+    if (targetNodeId && targetNodeId !== activeConnection.sourceNodeId) {
       const newConnection = {
         id: `connection-${Date.now()}`,
         sourceNodeId: activeConnection.sourceNodeId,
@@ -49,6 +51,7 @@ export const useConnectionHandling = () => {
       setConnections(prev => [...prev, newConnection]);
       toast.success('Connection created');
     }
+    
     setActiveConnection(null);
     setIsDragging(false);
   }, [activeConnection]);
