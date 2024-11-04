@@ -1,13 +1,29 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { MousePointer2, ZoomIn, ZoomOut, RotateCcw, MessageCircle, Plus, GitBranch } from 'lucide-react';
+import { MousePointer2, ZoomIn, ZoomOut, RotateCcw, MessageCircle, GitBranch, FileText, User, Building2, Package, Brain, MapPin, Calendar } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const nodeTypes = {
+  generic: { label: "Note", icon: FileText },
+  node_person: { label: "Person", icon: User },
+  node_organization: { label: "Organization", icon: Building2 },
+  node_object: { label: "Object", icon: Package },
+  node_concept: { label: "Concept", icon: Brain },
+  node_location: { label: "Location", icon: MapPin },
+  node_event: { label: "Event", icon: Calendar }
+};
 
 const CanvasControls = ({ 
   activeTool, 
@@ -22,7 +38,12 @@ const CanvasControls = ({
   const zoomOut = () => handleZoom(-0.1);
   const resetZoom = () => handleZoom(1 - zoom);
 
-  const handleDragStart = (e) => {
+  const handleDragStart = (e, nodeType) => {
+    e.dataTransfer.setData('nodeType', nodeType);
+    e.dataTransfer.effectAllowed = 'copy';
+  };
+
+  const handleConnectionDragStart = (e) => {
     e.dataTransfer.setData('connectionType', 'default');
     e.dataTransfer.effectAllowed = 'copy';
   };
@@ -56,7 +77,7 @@ const CanvasControls = ({
                 size="icon"
                 className="h-8 w-8 rounded-lg text-white hover:bg-white/10"
                 draggable
-                onDragStart={handleDragStart}
+                onDragStart={handleConnectionDragStart}
               >
                 <GitBranch className="h-4 w-4" />
               </Button>
@@ -65,21 +86,37 @@ const CanvasControls = ({
           </Tooltip>
         </TooltipProvider>
 
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-lg text-white hover:bg-white/10"
-                onClick={onAddNode}
+        <DropdownMenu>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-lg text-white hover:bg-white/10"
+                  >
+                    <FileText className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="left">Drag to add Node (N)</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <DropdownMenuContent className="bg-black/90 text-white border border-white/20">
+            {Object.entries(nodeTypes).map(([type, { label, icon: Icon }]) => (
+              <DropdownMenuItem
+                key={type}
+                draggable
+                onDragStart={(e) => handleDragStart(e, type)}
+                className="cursor-grab"
               >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="left">Add Node (N)</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+                <Icon className="h-4 w-4 mr-2" />
+                {label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <Separator className="w-6 bg-white/20" />
 
