@@ -27,7 +27,7 @@ const CanvasView = ({
   const { setDebugData } = useDebug();
   const { zoom, position, handleZoom, handleWheel } = useZoomPan();
   const { handleDeleteNode } = useNodeDeletion(focusedNodeId, onDeleteNode);
-  
+
   const { 
     connections, 
     activeConnection,
@@ -48,7 +48,8 @@ const CanvasView = ({
     onDeleteNode: handleDeleteNode,
     zoom,
     handleConnectionStart,
-    handleConnectionEnd
+    handleConnectionEnd,
+    onAddNode // Pass onAddNode to useNodeRendering
   });
 
   useClipboard({
@@ -75,14 +76,13 @@ const CanvasView = ({
       const x = (e.clientX - rect.left - position.x) / zoom;
       const y = (e.clientY - rect.top - position.y) / zoom;
       
-      // Create a new connection with both ends at the drop point
       const newConnection = {
         id: `connection-${Date.now()}`,
         startX: x,
         startY: y,
         endX: x,
         endY: y,
-        isAnchored: true, // New flag to indicate this is an anchored connection
+        isAnchored: true,
         sourceNodeId: null,
         targetNodeId: null
       };

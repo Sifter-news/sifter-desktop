@@ -3,6 +3,7 @@ import { Rnd } from 'react-rnd';
 import NodeContent from './NodeContent';
 import ConnectionDot from './ConnectionDot';
 import NodeStyleTooltip from './NodeStyleTooltip';
+import { toast } from 'sonner';
 
 const TwoDNode = ({ 
   node, 
@@ -16,7 +17,8 @@ const TwoDNode = ({
   onDotClick,
   dimensions,
   onDragStart,
-  onAIConversation
+  onAIConversation,
+  onAddNode
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [textSize, setTextSize] = useState(node.textSize || 'medium');
@@ -48,6 +50,42 @@ const TwoDNode = ({
   const handleColorChange = (newColor) => {
     setColor(newColor);
     onNodeUpdate(node.id, { color: newColor });
+  };
+
+  const handleDotClick = (nodeId, position, point, sourceNode) => {
+    // Calculate offset based on position
+    const offset = 200; // Distance for the new node
+    let newX = point.x;
+    let newY = point.y;
+
+    switch (position) {
+      case 'right':
+        newX += offset;
+        break;
+      case 'left':
+        newX -= offset;
+        break;
+      case 'bottom':
+        newY += offset;
+        break;
+      case 'top':
+        newY -= offset;
+        break;
+    }
+
+    // Create a new node with the same style
+    const newNode = {
+      title: 'New Node',
+      description: '',
+      visualStyle: node.visualStyle,
+      color: node.color,
+      x: newX,
+      y: newY,
+      nodeType: node.nodeType
+    };
+
+    onAddNode(newNode);
+    toast.success('New connected node created');
   };
 
   const connectionPoints = ['left', 'right', 'top', 'bottom'];
@@ -85,16 +123,9 @@ const TwoDNode = ({
             isHovered={hoveredDot === position}
             onHover={() => setHoveredDot(position)}
             onLeaveHover={() => setHoveredDot(null)}
-            onDotClick={(nodeId, pos) => {
-              const rect = document.querySelector(`[data-node-id="${nodeId}"]`)?.getBoundingClientRect();
-              if (rect) {
-                onDotClick(nodeId, pos, {
-                  x: rect.left + rect.width/2,
-                  y: rect.top + rect.height/2
-                });
-              }
-            }}
+            onDotClick={handleDotClick}
             nodeId={node.id}
+            node={node}
           />
         ))}
       </div>
