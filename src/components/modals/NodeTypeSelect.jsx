@@ -14,10 +14,10 @@ const NodeTypeSelect = ({ value, onChange }) => {
   return (
     <div className="grid w-full items-center gap-1.5">
       <Label htmlFor="type">Type</Label>
-      <Select value={value || 'generic'} onValueChange={onChange}>
+      <Select value={value || 'note'} onValueChange={onChange}>
         <SelectTrigger>
           <SelectValue>
-            {NODE_TYPES[value]?.label || 'Generic Note'}
+            {NODE_TYPES[value]?.label || 'Note'}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
