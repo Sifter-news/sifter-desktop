@@ -1,12 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   AlignCenter,
   AlignLeft,
   Type,
@@ -20,23 +14,30 @@ import {
   Calendar,
   MessageCircle,
   Palette,
+  ChevronDown,
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const textSizes = {
-  small: "text-sm",
-  medium: "text-base",
-  large: "text-lg",
-  huge: "text-xl"
+  small: { label: "Small", class: "text-sm" },
+  medium: { label: "Medium", class: "text-base" },
+  large: { label: "Large", class: "text-lg" },
+  huge: { label: "Huge", class: "text-xl" }
 };
 
 const colors = {
-  white: { label: 'White', value: 'bg-white' },
-  yellow: { label: 'Yellow', value: 'bg-yellow-100' },
-  blue: { label: 'Blue', value: 'bg-blue-100' },
-  green: { label: 'Green', value: 'bg-green-100' },
-  pink: { label: 'Pink', value: 'bg-pink-100' },
-  purple: { label: 'Purple', value: 'bg-purple-100' },
-  orange: { label: 'Orange', value: 'bg-orange-100' },
+  white: { label: 'White', value: 'bg-white', textColor: 'text-black' },
+  yellow: { label: 'Yellow', value: 'bg-yellow-100', textColor: 'text-black' },
+  blue: { label: 'Blue', value: 'bg-blue-100', textColor: 'text-black' },
+  green: { label: 'Green', value: 'bg-green-100', textColor: 'text-black' },
+  pink: { label: 'Pink', value: 'bg-pink-100', textColor: 'text-black' },
+  purple: { label: 'Purple', value: 'bg-purple-100', textColor: 'text-black' },
+  orange: { label: 'Orange', value: 'bg-orange-100', textColor: 'text-black' },
 };
 
 const NodeStyleTooltip = ({ 
@@ -46,11 +47,14 @@ const NodeStyleTooltip = ({
   onTypeChange,
   onAIChat,
   onColorChange,
-  position = { x: 0, y: 0 } 
+  position = { x: 0, y: 0 },
+  selectedTextSize = 'medium',
+  selectedColor = 'bg-white',
+  selectedAlignment = 'left'
 }) => {
   return (
     <div 
-      className="absolute bg-white rounded-lg shadow-lg p-2 flex gap-1 z-50"
+      className="absolute bg-black/90 rounded-lg shadow-lg p-2 flex gap-1 z-50"
       style={{ 
         left: '50%',
         bottom: '100%',
@@ -60,112 +64,107 @@ const NodeStyleTooltip = ({
     >
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-8 w-8">
-            <Type className="h-5 w-5" />
+          <Button variant="ghost" size="sm" className="h-10 w-10 text-white hover:bg-white/10 flex items-center gap-1">
+            <div className={`w-6 h-6 rounded ${selectedColor}`} />
+            <ChevronDown className="h-3 w-3 text-white/70" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          {Object.entries(textSizes).map(([size, className]) => (
-            <DropdownMenuItem key={size} onClick={() => onTextSizeChange(size)}>
-              <span className={className}>Text {size}</span>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-8 w-8">
-            <AlignLeft className="h-5 w-5" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem onClick={() => onAlignmentChange('left')}>
-            <AlignLeft className="h-5 w-5 mr-2" /> Left
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onAlignmentChange('center')}>
-            <AlignCenter className="h-5 w-5 mr-2" /> Center
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-8 w-8">
-            <Layout className="h-5 w-5" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem onClick={() => onStyleChange('default')}>
-            <Layout className="h-5 w-5 mr-2" /> Default
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onStyleChange('compact')}>
-            <Layout className="h-5 w-5 mr-2" /> Compact
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onStyleChange('postit')}>
-            <Layout className="h-5 w-5 mr-2" /> Post-it
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-8 w-8">
-            <FileText className="h-5 w-5" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem onClick={() => onTypeChange('generic')}>
-            <FileText className="h-5 w-5 mr-2" /> Generic
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onTypeChange('node_person')}>
-            <User className="h-5 w-5 mr-2" /> Person
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onTypeChange('node_organization')}>
-            <Building2 className="h-5 w-5 mr-2" /> Organization
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onTypeChange('node_object')}>
-            <Package className="h-5 w-5 mr-2" /> Object
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onTypeChange('node_concept')}>
-            <Brain className="h-5 w-5 mr-2" /> Concept
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onTypeChange('node_location')}>
-            <MapPin className="h-5 w-5 mr-2" /> Location
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onTypeChange('node_event')}>
-            <Calendar className="h-5 w-5 mr-2" /> Event
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-8 w-8">
-            <Palette className="h-5 w-5" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          {Object.entries(colors).map(([key, { label, value }]) => (
+        <DropdownMenuContent className="bg-black/90 text-white border-white/10">
+          {Object.entries(colors).map(([key, { label, value, textColor }]) => (
             <DropdownMenuItem 
               key={key} 
               onClick={() => onColorChange(value)}
               className="flex items-center gap-2"
             >
               <div className={`w-4 h-4 rounded ${value}`} />
+              <span className={value === selectedColor ? 'font-bold' : ''}>{label}</span>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-10 w-10 text-white hover:bg-white/10 flex items-center gap-1">
+            <Type className="h-6 w-6" />
+            <ChevronDown className="h-3 w-3 text-white/70" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="bg-black/90 text-white border-white/10">
+          {Object.entries(textSizes).map(([size, { label, class: sizeClass }]) => (
+            <DropdownMenuItem 
+              key={size} 
+              onClick={() => onTextSizeChange(size)}
+              className={`${sizeClass} ${size === selectedTextSize ? 'font-bold' : ''}`}
+            >
               {label}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
 
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-10 w-10 text-white hover:bg-white/10 flex items-center gap-1">
+            {selectedAlignment === 'left' ? (
+              <AlignLeft className="h-6 w-6" />
+            ) : (
+              <AlignCenter className="h-6 w-6" />
+            )}
+            <ChevronDown className="h-3 w-3 text-white/70" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="bg-black/90 text-white border-white/10">
+          <DropdownMenuItem onClick={() => onAlignmentChange('left')}>
+            <AlignLeft className="h-6 w-6 mr-2" />
+            Left
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onAlignmentChange('center')}>
+            <AlignCenter className="h-6 w-6 mr-2" />
+            Center
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-10 w-10 text-white hover:bg-white/10 flex items-center gap-1">
+            <FileText className="h-6 w-6" />
+            <ChevronDown className="h-3 w-3 text-white/70" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="bg-black/90 text-white border-white/10">
+          <DropdownMenuItem onClick={() => onTypeChange('generic')}>
+            <FileText className="h-6 w-6 mr-2" /> Generic Note
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onTypeChange('node_person')}>
+            <User className="h-6 w-6 mr-2" /> Person
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onTypeChange('node_organization')}>
+            <Building2 className="h-6 w-6 mr-2" /> Organization
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onTypeChange('node_object')}>
+            <Package className="h-6 w-6 mr-2" /> Object
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onTypeChange('node_concept')}>
+            <Brain className="h-6 w-6 mr-2" /> Concept
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onTypeChange('node_location')}>
+            <MapPin className="h-6 w-6 mr-2" /> Location
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onTypeChange('node_event')}>
+            <Calendar className="h-6 w-6 mr-2" /> Event
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       <Button 
         variant="ghost" 
         size="sm" 
-        className="h-8 w-8 bg-purple-100 hover:bg-purple-200" 
+        className="h-10 w-10 text-white hover:bg-purple-500/50 bg-purple-500/25"
         onClick={onAIChat}
       >
-        <MessageCircle className="h-5 w-5 text-purple-600" />
+        <MessageCircle className="h-6 w-6" />
       </Button>
     </div>
   );

@@ -21,7 +21,7 @@ const NodeContent = ({
     textSizeClasses[textSize],
     `text-${textAlign}`,
     color,
-    "p-4 w-full h-full transition-all duration-200 rounded-lg shadow-sm"
+    "p-4 w-full h-full transition-all duration-200 rounded-lg shadow-sm bg-white"
   );
 
   return (
