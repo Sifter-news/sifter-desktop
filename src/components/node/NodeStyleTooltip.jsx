@@ -33,8 +33,8 @@ const colors = {
 };
 
 const styles = {
-  default: { label: 'Default', icon: Square },
   compact: { label: 'Compact', icon: Layout },
+  default: { label: 'Default', icon: Square },
   postit: { label: 'Post-it', icon: StickyNote }
 };
 
