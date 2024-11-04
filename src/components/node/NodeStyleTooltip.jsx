@@ -53,7 +53,7 @@ const NodeStyleTooltip = ({
     <>
       <div 
         className="absolute -top-16 left-1/2 transform -translate-x-1/2 flex items-center gap-1 p-1.5 bg-black rounded-lg shadow-lg"
-        style={{ zIndex: 'auto' }}
+        style={{ zIndex: 9999 }} // Ensure tooltip is above all other elements
       >
         <TooltipProvider>
           <Tooltip>
