@@ -8,7 +8,7 @@ const ConnectionDot = ({
   onDotClick,
   nodeId,
   isActive = false,
-  node // Add node prop to access node properties
+  node
 }) => {
   const getPosition = () => {
     switch (position) {
@@ -25,10 +25,6 @@ const ConnectionDot = ({
     }
   };
 
-  const handleMouseDown = (e) => {
-    e.stopPropagation();
-  };
-
   const handleClick = (e) => {
     e.stopPropagation();
     const rect = e.currentTarget.getBoundingClientRect();
@@ -36,25 +32,20 @@ const ConnectionDot = ({
       x: rect.left + rect.width / 2,
       y: rect.top + rect.height / 2
     };
-    onDotClick(nodeId, position, point, node);
+    onDotClick(nodeId, point);
   };
 
   return (
     <div
-      className={`absolute w-1 h-1 rounded-full cursor-pointer ring-1 ring-white shadow-[0_0_4px_rgba(0,0,0,0.4)]
+      className={`absolute w-2 h-2 rounded-full cursor-crosshair ring-1 ring-white shadow-md
         ${getPosition()}
-        ${isActive ? 'bg-blue-600' : isHovered ? 'bg-blue-400' : 'bg-gray-400'} 
-        transition-all duration-200 hover:scale-150`}
+        ${isActive ? 'bg-blue-600 scale-125' : isHovered ? 'bg-blue-400' : 'bg-gray-400'} 
+        transition-all duration-200 hover:scale-150 z-50`}
       onMouseEnter={onHover}
       onMouseLeave={onLeaveHover}
-      onMouseDown={handleMouseDown}
       onClick={handleClick}
       style={{
         aspectRatio: '1 / 1',
-        minWidth: '4px',
-        minHeight: '4px',
-        maxWidth: '4px',
-        maxHeight: '4px'
       }}
     />
   );

@@ -14,7 +14,8 @@ const TwoDNode = ({
   onDelete,
   isDraggable = true,
   position = { x: 0, y: 0 },
-  onDotClick,
+  onStartConnection,
+  onEndConnection,
   dimensions,
   onDragStart,
   onAIConversation,
@@ -47,45 +48,15 @@ const TwoDNode = ({
     onFocus?.(node.id);
   };
 
+  const handleDotClick = (nodeId, point) => {
+    if (onStartConnection) {
+      onStartConnection(nodeId, point);
+    }
+  };
+
   const handleColorChange = (newColor) => {
     setColor(newColor);
     onNodeUpdate(node.id, { color: newColor });
-  };
-
-  const handleDotClick = (nodeId, position, point, sourceNode) => {
-    // Calculate offset based on position
-    const offset = 200; // Distance for the new node
-    let newX = point.x;
-    let newY = point.y;
-
-    switch (position) {
-      case 'right':
-        newX += offset;
-        break;
-      case 'left':
-        newX -= offset;
-        break;
-      case 'bottom':
-        newY += offset;
-        break;
-      case 'top':
-        newY -= offset;
-        break;
-    }
-
-    // Create a new node with the same style
-    const newNode = {
-      title: 'New Node',
-      description: '',
-      visualStyle: node.visualStyle,
-      color: node.color,
-      x: newX,
-      y: newY,
-      nodeType: node.nodeType
-    };
-
-    onAddNode(newNode);
-    toast.success('New connected node created');
   };
 
   const connectionPoints = ['left', 'right', 'top', 'bottom'];
