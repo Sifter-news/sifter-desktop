@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import Header from '../components/Header';
 import ProjectTabs from '../components/ProjectTabs';
 import ProjectModals from '../components/ProjectModals';
@@ -7,9 +8,12 @@ import ContentModal from '../components/ContentModal';
 import { useProjectData } from '../hooks/useProjectData';
 import { useNodeOperations } from '../components/NodeOperations';
 import { useDebug } from '@/contexts/DebugContext';
+import { useAuth } from '@/components/AuthProvider';
 
 const ProjectView = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [selectedContent, setSelectedContent] = useState(null);
   const [isContentModalOpen, setIsContentModalOpen] = useState(false);
   const [focusedNodeId, setFocusedNodeId] = useState(null);
@@ -18,36 +22,50 @@ const ProjectView = () => {
   const { project, setProject, nodes, setNodes, loading } = useProjectData(id);
   const { handleAddNode, handleUpdateNode, handleDeleteNode } = useNodeOperations(setNodes);
 
-  // Set initial view to mindmap and update debug data
   useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
     setDebugData(prev => ({
       ...prev,
       currentView: 'mindmap'
     }));
-  }, [setDebugData]);
+  }, [user, navigate, setDebugData]);
 
-  const user = {
-    name: 'User-Name',
-    avatar: '/default-image.png',
-    email: 'user@example.com',
-  };
-
-  const handleProjectUpdate = (updatedProject) => {
-    setProject(updatedProject);
-  };
+  if (!user) {
+    return null;
+  }
 
   if (loading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen bg-white">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
   }
 
   if (!project) {
-    return <div className="flex items-center justify-center h-screen">Project not found</div>;
+    return (
+      <div className="flex items-center justify-center h-screen bg-white">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-900">Project not found</h2>
+          <p className="mt-2 text-gray-600">The project you're looking for doesn't exist or you don't have access to it.</p>
+        </div>
+      </div>
+    );
   }
+
+  const handleProjectUpdate = (updatedProject) => {
+    setProject(updatedProject);
+    toast.success('Project updated successfully');
+  };
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header 
-        user={user} 
+        user={user}
         projectName={project.title} 
         onProjectClick={() => {}}
       />
