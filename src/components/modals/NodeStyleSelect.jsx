@@ -7,16 +7,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { Layout, Square, StickyNote } from 'lucide-react';
 
 const NodeStyleSelect = ({ value, onChange }) => {
   return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger>
-        <SelectValue placeholder="Select style" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
+    <div className="grid w-full items-center gap-1.5">
+      <Label htmlFor="style">Style</Label>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger>
+          <SelectValue placeholder="Select style" />
+        </SelectTrigger>
+        <SelectContent>
           <SelectItem value="default">
             <div className="flex items-center">
               <Square className="h-4 w-4 mr-2" />
@@ -29,21 +31,15 @@ const NodeStyleSelect = ({ value, onChange }) => {
               Compact
             </div>
           </SelectItem>
-          <SelectItem value="expanded">
-            <div className="flex items-center">
-              <Layout className="h-4 w-4 mr-2" />
-              Expanded
-            </div>
-          </SelectItem>
           <SelectItem value="postit">
             <div className="flex items-center">
               <StickyNote className="h-4 w-4 mr-2" />
               Post-it
             </div>
           </SelectItem>
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+        </SelectContent>
+      </Select>
+    </div>
   );
 };
 

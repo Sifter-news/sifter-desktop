@@ -21,7 +21,7 @@ const ModalEdit_Node = ({
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    nodeType: 'generic',
+    nodeType: 'note',
     visualStyle: 'default',
     metadata: {},
     avatar: '/default-image.png'
@@ -34,7 +34,7 @@ const ModalEdit_Node = ({
       setFormData({
         title: node.title || '',
         description: node.description || '',
-        nodeType: node.nodeType || 'generic',
+        nodeType: node.nodeType || 'note',
         visualStyle: node.visualStyle || 'default',
         metadata: node.metadata || {},
         avatar: node.avatar || '/default-image.png'
@@ -146,19 +146,21 @@ const ModalEdit_Node = ({
               }
             />
 
-            <NodeTypeSelect
-              value={formData.nodeType}
-              onChange={(nodeType) => 
-                setFormData(prev => ({ ...prev, nodeType }))
-              }
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <NodeTypeSelect
+                value={formData.nodeType}
+                onChange={(nodeType) => 
+                  setFormData(prev => ({ ...prev, nodeType }))
+                }
+              />
 
-            <NodeStyleSelect
-              value={formData.visualStyle}
-              onChange={(visualStyle) => 
-                setFormData(prev => ({ ...prev, visualStyle }))
-              }
-            />
+              <NodeStyleSelect
+                value={formData.visualStyle}
+                onChange={(visualStyle) => 
+                  setFormData(prev => ({ ...prev, visualStyle }))
+                }
+              />
+            </div>
 
             <NodeMetadataFields
               nodeType={formData.nodeType}
