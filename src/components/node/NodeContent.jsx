@@ -22,7 +22,7 @@ const NodeContent = ({
     textSizeClasses[textSize],
     `text-${textAlign}`,
     color,
-    "p-2 w-full h-full transition-all duration-200 rounded-lg shadow-sm border-[0.5px] border-gray-200/50" // Added border
+    "p-2 w-full h-full transition-all duration-200 rounded-lg shadow-sm border-[0.5px] border-gray-200/50 shadow-md" // Added border and mild drop shadow
   );
 
   // Render compact style (avatar only)
