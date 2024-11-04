@@ -56,7 +56,7 @@ const ColorMenu = ({ currentColor, onColorChange, isOpen, setIsOpen }) => {
             </div>
           </PopoverContent>
         </Popover>
-        <TooltipContent side="top">
+        <TooltipContent side="top" className="bg-black text-white">
           <p>Change Color</p>
         </TooltipContent>
       </Tooltip>

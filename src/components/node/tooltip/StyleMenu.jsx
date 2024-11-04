@@ -54,7 +54,7 @@ const StyleMenu = ({ currentStyle, onStyleChange, isOpen, setIsOpen }) => {
             </div>
           </PopoverContent>
         </Popover>
-        <TooltipContent side="top">
+        <TooltipContent side="top" className="bg-black text-white">
           <p>Change Style</p>
         </TooltipContent>
       </Tooltip>

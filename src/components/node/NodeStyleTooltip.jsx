@@ -59,7 +59,7 @@ const NodeStyleTooltip = ({
                 <Pencil className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="top">
+            <TooltipContent side="top" className="bg-black text-white">
               <p>Edit Node</p>
             </TooltipContent>
           </Tooltip>
@@ -98,7 +98,7 @@ const NodeStyleTooltip = ({
                 <MessageCircle className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="top">
+            <TooltipContent side="top" className="bg-black text-white">
               <p>AI Chat</p>
             </TooltipContent>
           </Tooltip>

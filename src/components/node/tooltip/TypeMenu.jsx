@@ -67,7 +67,7 @@ const TypeMenu = ({ currentType, onTypeChange, isOpen, setIsOpen }) => {
             </div>
           </PopoverContent>
         </Popover>
-        <TooltipContent side="top">
+        <TooltipContent side="top" className="bg-black text-white">
           <p>Change Type</p>
         </TooltipContent>
       </Tooltip>
