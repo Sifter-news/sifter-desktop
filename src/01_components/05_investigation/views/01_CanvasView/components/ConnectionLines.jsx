@@ -9,6 +9,7 @@ const ConnectionLines = ({
 }) => {
   return (
     <>
+      {/* Render existing connections */}
       {connections.map((connection) => (
         <ConnectorLine
           key={connection.id}
@@ -26,6 +27,7 @@ const ConnectionLines = ({
         />
       ))}
 
+      {/* Render active connection being drawn */}
       {activeConnection && (
         <ConnectorLine
           startX={activeConnection.startX}

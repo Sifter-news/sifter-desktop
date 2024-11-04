@@ -12,11 +12,11 @@ const ConnectorLine = ({
   strokeWidth = 2,
   strokeOpacity = 0.6
 }) => {
-  // Calculate the midpoint for the elbow
+  // Calculate the midpoint for creating an elbow connection
   const midX = startX;
   const midY = endY;
 
-  // Create elbowed path with right angles
+  // Create elbowed path with right angles for better visual hierarchy
   const path = `M ${startX} ${startY} L ${midX} ${midY} L ${endX} ${endY}`;
 
   return (
@@ -32,6 +32,7 @@ const ConnectorLine = ({
       }}
       onClick={onClick}
     >
+      {/* Define arrowhead marker for connection endpoints */}
       <defs>
         <marker
           id="arrowhead"
@@ -48,6 +49,8 @@ const ConnectorLine = ({
           />
         </marker>
       </defs>
+
+      {/* Draw the connection path */}
       <path
         d={path}
         stroke={isSelected ? "#3b82f6" : "#6B7280"}
