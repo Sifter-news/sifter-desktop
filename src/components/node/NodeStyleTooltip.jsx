@@ -11,7 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Separator } from "@/components/ui/separator"; // Importing Separator
+import { Separator } from "@/components/ui/separator";
 
 const NodeStyleTooltip = ({
   position,
@@ -48,26 +48,6 @@ const NodeStyleTooltip = ({
         className="absolute -top-10 left-1/2 transform -translate-x-1/2 flex items-center gap-1 p-1.5 bg-black rounded-lg shadow-lg"
         style={{ zIndex: 'auto' }}
       >
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-white hover:bg-white/20 h-7 px-2"
-                onClick={() => setShowEditModal(true)}
-              >
-                <Pencil className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="bg-black text-white">
-              <p>Edit Node</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-
-        <Separator orientation="vertical" className="bg-white/20 h-4" /> {/* Divider line */}
-
         <ColorMenu
           currentColor={currentColor}
           onColorChange={onColorChange}
@@ -88,6 +68,26 @@ const NodeStyleTooltip = ({
           isOpen={typeMenuOpen}
           setIsOpen={setTypeMenuOpen}
         />
+
+        <Separator orientation="vertical" className="bg-white/20 h-4" />
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/20 h-7 px-2"
+                onClick={() => setShowEditModal(true)}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="bg-black text-white">
+              <p>Edit Node</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
         <TooltipProvider>
           <Tooltip>
