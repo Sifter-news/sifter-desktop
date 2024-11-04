@@ -111,7 +111,11 @@ const DebugPanel = () => {
       minHeight={200}
       bounds="window"
       enableResizing={!isCollapsed}
-      style={{ zIndex: 99999 }}
+      style={{ 
+        position: 'fixed',
+        top: 0,
+        zIndex: 999999999 // Increased z-index to ensure it's above the canvas
+      }}
     >
       <div className="w-full h-full bg-black/90 text-white rounded-lg shadow-xl backdrop-blur-sm border border-white/20">
         {panelContent}
