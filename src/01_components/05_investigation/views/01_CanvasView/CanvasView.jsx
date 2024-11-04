@@ -1,18 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useDebug } from '@/contexts/DebugContext';
-import TwoDNode from '@/components/node/TwoDNode';
 import CanvasBackground from '@/components/canvas/CanvasBackground';
 import CanvasControls from './CanvasControls';
 import ConnectorLine from '@/components/node/ConnectorLine';
 import AIChatPanel from '@/01_components/05_investigation/viewsControls/AIChatPanel';
 import { useZoomPan } from '@/hooks/useZoomPan';
-import { handleNodeDrag } from './handlers/nodeHandlers';
-import { handleCanvasInteraction } from './handlers/canvasHandlers';
 import { useConnectionHandling } from './hooks/useConnectionHandling';
-import { NODE_STYLES } from '@/utils/nodeStyles';
 import { useNodeRendering } from './hooks/useNodeRendering.jsx';
 import { useNodeDeletion } from './hooks/useNodeDeletion';
+import { useKeyboardModifiers } from './hooks/useKeyboardModifiers';
 
 const CanvasView = ({ 
   nodes, 
@@ -27,8 +24,10 @@ const CanvasView = ({
   const contentRef = useRef(null);
   const [activeTool, setActiveTool] = useState('select');
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
+  const [isPanning, setIsPanning] = useState(false);
   const { setDebugData } = useDebug();
-  const { zoom, position, handleZoom, handleWheel } = useZoomPan();
+  const { zoom, position, handleZoom, handleWheel, setPosition } = useZoomPan();
+  const { isSpacePressed } = useKeyboardModifiers();
   
   const { handleDeleteNode } = useNodeDeletion(focusedNodeId, onDeleteNode);
   
@@ -53,6 +52,7 @@ const CanvasView = ({
     NODE_STYLES
   });
 
+  // Handle clipboard operations
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'c' && focusedNodeId) {
@@ -92,6 +92,12 @@ const CanvasView = ({
       const x = (e.clientX - rect.left - position.x) / zoom;
       const y = (e.clientY - rect.top - position.y) / zoom;
       handleConnectionMove({ clientX: x, clientY: y });
+    } else if (isSpacePressed && e.buttons === 1) {
+      // Update position when space is pressed and mouse is dragged
+      setPosition(prev => ({
+        x: prev.x + e.movementX,
+        y: prev.y + e.movementY
+      }));
     }
   };
 
@@ -102,7 +108,6 @@ const CanvasView = ({
   };
 
   const handleCanvasClick = (e) => {
-    // Only defocus if clicking directly on the canvas background
     if (e.target === e.currentTarget || e.target === contentRef.current) {
       onNodeFocus(null);
     }
@@ -155,12 +160,13 @@ const CanvasView = ({
     transform: `scale(${zoom})`,
     transformOrigin: '0 0',
     willChange: 'transform',
-    touchAction: 'none'
+    touchAction: 'none',
+    cursor: isSpacePressed ? 'grab' : 'auto'
   };
 
   return (
     <div 
-      className="w-full h-screen overflow-hidden cursor-auto relative bg-gray-900 scrollbar-hide"
+      className="w-full h-screen overflow-hidden relative bg-gray-900 scrollbar-hide"
       ref={canvasRef}
       tabIndex={0}
       onDragOver={handleDragOver}
@@ -168,6 +174,7 @@ const CanvasView = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onClick={handleCanvasClick}
+      style={{ cursor: isSpacePressed ? (isPanning ? 'grabbing' : 'grab') : 'auto' }}
     >
       <CanvasBackground zoom={zoom} position={position} />
       
