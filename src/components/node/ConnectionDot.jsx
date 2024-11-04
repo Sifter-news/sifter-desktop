@@ -25,7 +25,7 @@ const ConnectionDot = ({
     }
   };
 
-  const handleMouseDown = (e) => {
+  const handleClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     const rect = e.currentTarget.getBoundingClientRect();
@@ -36,19 +36,6 @@ const ConnectionDot = ({
     onDotClick(nodeId, point, position);
   };
 
-  const handleMouseUp = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (onDotClick) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const point = {
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2
-      };
-      onDotClick(nodeId, point, position);
-    }
-  };
-
   return (
     <div
       className={`absolute w-3 h-3 rounded-full cursor-crosshair ring-1 ring-white shadow-md
@@ -57,8 +44,8 @@ const ConnectionDot = ({
         transition-all duration-200 hover:scale-150 z-50`}
       onMouseEnter={onHover}
       onMouseLeave={onLeaveHover}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
+      onMouseDown={handleClick}
+      onMouseUp={handleClick}
       style={{
         aspectRatio: '1 / 1',
       }}

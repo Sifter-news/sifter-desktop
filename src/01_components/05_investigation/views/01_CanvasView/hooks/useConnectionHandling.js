@@ -77,6 +77,7 @@ export const useConnectionHandling = () => {
     removeConnection,
     selectConnection,
     setActiveConnection,
-    setSelectedConnection
+    setSelectedConnection,
+    setConnections
   };
 };
