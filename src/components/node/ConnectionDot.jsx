@@ -7,7 +7,7 @@ const ConnectionDot = ({
   onLeaveHover,
   onDotClick,
   nodeId,
-  isActive
+  isActive = false
 }) => {
   const getPosition = () => {
     switch (position) {
@@ -27,11 +27,11 @@ const ConnectionDot = ({
   return (
     <div
       className={`absolute w-2 h-2 rounded-full cursor-pointer
-        ${getPosition()} 
+        ${getPosition()}
         ${isActive ? 'bg-blue-500' : isHovered ? 'bg-blue-300' : 'bg-gray-300'} 
         transition-all duration-200 hover:scale-150`}
       onMouseEnter={onHover}
-      onMouseLeave={onHoverLeave}
+      onMouseLeave={onLeaveHover}
       onClick={(e) => {
         e.stopPropagation();
         onDotClick(nodeId, position);
