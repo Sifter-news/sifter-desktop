@@ -26,7 +26,7 @@ const ConnectionDot = ({
 
   return (
     <div
-      className={`absolute w-2 h-2 rounded-full cursor-crosshair 
+      className={`absolute w-2 h-2 rounded-full cursor-crosshair m-1
         ${getPosition()} 
         ${isHovered ? 'border-2 border-black' : 'border border-gray-400'} 
         transition-all duration-200`}
