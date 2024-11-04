@@ -30,7 +30,7 @@ const ConnectionDot = ({
 
   return (
     <div
-      className={`absolute w-2 h-2 rounded-full cursor-pointer
+      className={`absolute w-2 h-2 rounded-full cursor-pointer ring-2 ring-white shadow-[0_0_4px_rgba(0,0,0,0.2)]
         ${getPosition()}
         ${isActive ? 'bg-blue-500' : isHovered ? 'bg-blue-300' : 'bg-gray-300'} 
         transition-all duration-200 hover:scale-150`}
