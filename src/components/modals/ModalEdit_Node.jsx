@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { toast } from 'sonner';
 import { supabase } from '@/config/supabase';
 import NodeTypeSelect from './NodeTypeSelect';
@@ -133,7 +133,12 @@ const ModalEdit_Node = ({
           />
           
           <DialogHeader className="mt-4">
-            <DialogTitle>Edit Node</DialogTitle>
+            <input 
+              type="text" 
+              value={formData.title} 
+              readOnly 
+              className="bg-transparent border-none font-bold text-lg w-full" 
+            />
           </DialogHeader>
           
           <div className="grid grid-cols-2 gap-4 py-4">
