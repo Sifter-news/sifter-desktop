@@ -81,13 +81,13 @@ const NodeStyleTooltip = ({
   return (
     <>
       <div 
-        className="absolute -top-12 left-1/2 transform -translate-x-1/2 flex items-center gap-2 p-2 bg-black/50 backdrop-blur-sm rounded-lg shadow-lg"
+        className="absolute -top-10 left-1/2 transform -translate-x-1/2 flex items-center gap-1 p-1.5 bg-black rounded-lg shadow-lg"
         style={{ zIndex: 'auto' }}
       >
         <Button
           variant="ghost"
           size="sm"
-          className="text-white hover:bg-white/20"
+          className="text-white hover:bg-white/20 h-7 px-2"
           onClick={() => setShowEditModal(true)}
         >
           <Pencil className="h-4 w-4" />
@@ -95,20 +95,20 @@ const NodeStyleTooltip = ({
 
         <Popover open={colorMenuOpen} onOpenChange={setColorMenuOpen}>
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+            <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 h-7 px-2">
               <div className={`w-4 h-4 rounded-full ${currentColor}`} />
               <ChevronDown className="h-4 w-4 ml-1" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-32">
-            <div className="flex flex-col space-y-1">
+            <div className="flex flex-col space-y-0.5">
               {Object.entries(colors).map(([key, { label, class: bgClass }]) => (
                 <Button
                   key={key}
                   variant="ghost"
                   size="sm"
                   onClick={() => handleColorChange(bgClass)}
-                  className="justify-start"
+                  className="justify-start h-7"
                 >
                   <div className={`w-4 h-4 rounded-full mr-2 ${bgClass}`} />
                   {label}
@@ -120,13 +120,13 @@ const NodeStyleTooltip = ({
 
         <Popover open={styleMenuOpen} onOpenChange={setStyleMenuOpen}>
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+            <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 h-7 px-2">
               <CurrentStyleIcon className="h-4 w-4" />
               <ChevronDown className="h-4 w-4 ml-1" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-32">
-            <div className="flex flex-col space-y-1">
+            <div className="flex flex-col space-y-0.5">
               {Object.entries(styles).map(([key, { label, icon: Icon }]) => (
                 <Button
                   key={key}
@@ -136,7 +136,7 @@ const NodeStyleTooltip = ({
                     onStyleChange(key);
                     setStyleMenuOpen(false);
                   }}
-                  className="justify-start"
+                  className="justify-start h-7"
                 >
                   <Icon className="h-4 w-4 mr-2" />
                   {label}
@@ -148,13 +148,13 @@ const NodeStyleTooltip = ({
 
         <Popover open={typeMenuOpen} onOpenChange={setTypeMenuOpen}>
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+            <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 h-7 px-2">
               <CurrentTypeIcon className="h-4 w-4" />
               <ChevronDown className="h-4 w-4 ml-1" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-40">
-            <div className="flex flex-col space-y-1">
+            <div className="flex flex-col space-y-0.5">
               {Object.entries(nodeTypes).map(([key, { label, icon: Icon }]) => (
                 <Button
                   key={key}
@@ -164,7 +164,7 @@ const NodeStyleTooltip = ({
                     onTypeChange(key);
                     setTypeMenuOpen(false);
                   }}
-                  className="justify-start"
+                  className="justify-start h-7"
                 >
                   <Icon className="h-4 w-4 mr-2" />
                   {label}
@@ -177,11 +177,10 @@ const NodeStyleTooltip = ({
         <Button
           variant="ghost"
           size="sm"
-          className="text-white hover:bg-purple-700 bg-purple-600"
+          className="text-white hover:bg-purple-700 bg-purple-600 h-7 px-2"
           onClick={onAIChat}
         >
-          <MessageCircle className="h-4 w-4 mr-2" />
-          AI
+          <MessageCircle className="h-4 w-4" />
         </Button>
       </div>
 
