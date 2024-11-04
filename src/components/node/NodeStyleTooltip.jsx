@@ -48,6 +48,10 @@ const NodeStyleTooltip = ({
   onDelete
 }) => {
   const [showEditModal, setShowEditModal] = useState(false);
+  const [colorMenuOpen, setColorMenuOpen] = useState(false);
+  const [styleMenuOpen, setStyleMenuOpen] = useState(false);
+  const [typeMenuOpen, setTypeMenuOpen] = useState(false);
+  
   const currentColor = node?.color || 'bg-white';
   const currentStyle = node?.visualStyle || 'default';
   const currentType = node?.nodeType || 'generic';
@@ -71,7 +75,7 @@ const NodeStyleTooltip = ({
           Edit
         </Button>
 
-        <Popover>
+        <Popover open={colorMenuOpen} onOpenChange={setColorMenuOpen}>
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
               <div className={`w-4 h-4 rounded-full mr-2 ${currentColor}`} />
@@ -85,7 +89,10 @@ const NodeStyleTooltip = ({
                   key={key}
                   variant="ghost"
                   size="sm"
-                  onClick={() => onColorChange(bgClass)}
+                  onClick={() => {
+                    onColorChange(bgClass);
+                    setColorMenuOpen(false);
+                  }}
                   className="justify-start"
                 >
                   <div className={`w-4 h-4 rounded-full mr-2 ${bgClass}`} />
@@ -96,7 +103,7 @@ const NodeStyleTooltip = ({
           </PopoverContent>
         </Popover>
 
-        <Popover>
+        <Popover open={styleMenuOpen} onOpenChange={setStyleMenuOpen}>
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
               <CurrentStyleIcon className="h-4 w-4 mr-2" />
@@ -111,7 +118,10 @@ const NodeStyleTooltip = ({
                   key={key}
                   variant="ghost"
                   size="sm"
-                  onClick={() => onStyleChange(key)}
+                  onClick={() => {
+                    onStyleChange(key);
+                    setStyleMenuOpen(false);
+                  }}
                   className="justify-start"
                 >
                   <Icon className="h-4 w-4 mr-2" />
@@ -122,7 +132,7 @@ const NodeStyleTooltip = ({
           </PopoverContent>
         </Popover>
 
-        <Popover>
+        <Popover open={typeMenuOpen} onOpenChange={setTypeMenuOpen}>
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
               <CurrentTypeIcon className="h-4 w-4 mr-2" />
@@ -137,7 +147,10 @@ const NodeStyleTooltip = ({
                   key={key}
                   variant="ghost"
                   size="sm"
-                  onClick={() => onTypeChange(key)}
+                  onClick={() => {
+                    onTypeChange(key);
+                    setTypeMenuOpen(false);
+                  }}
                   className="justify-start"
                 >
                   <Icon className="h-4 w-4 mr-2" />
