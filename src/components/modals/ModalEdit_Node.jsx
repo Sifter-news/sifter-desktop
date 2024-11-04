@@ -124,6 +124,22 @@ const ModalEdit_Node = ({
             <DialogTitle>Edit Node</DialogTitle>
           </DialogHeader>
           
+          <div className="grid grid-cols-2 gap-4 py-4">
+            <NodeStyleSelect
+              value={formData.visualStyle}
+              onChange={(visualStyle) => 
+                setFormData(prev => ({ ...prev, visualStyle }))
+              }
+            />
+
+            <NodeTypeSelect
+              value={formData.nodeType}
+              onChange={(nodeType) => 
+                setFormData(prev => ({ ...prev, nodeType }))
+              }
+            />
+          </div>
+
           <NodeAvatarSection 
             avatar={formData.avatar} 
             onImageUpload={(file) => {
@@ -145,22 +161,6 @@ const ModalEdit_Node = ({
               }
               onAIConversation={onAIConversation}
             />
-
-            <div className="grid grid-cols-2 gap-4">
-              <NodeStyleSelect
-                value={formData.visualStyle}
-                onChange={(visualStyle) => 
-                  setFormData(prev => ({ ...prev, visualStyle }))
-                }
-              />
-
-              <NodeTypeSelect
-                value={formData.nodeType}
-                onChange={(nodeType) => 
-                  setFormData(prev => ({ ...prev, nodeType }))
-                }
-              />
-            </div>
 
             <NodeMetadataFields
               nodeType={formData.nodeType}
