@@ -119,7 +119,7 @@ const CanvasView = ({
 
   return (
     <div 
-      className="w-full h-screen overflow-hidden cursor-auto relative bg-gray-900"
+      className="w-full h-screen overflow-hidden cursor-auto relative bg-gray-900 scrollbar-hide"
       ref={canvasRef}
       tabIndex={0}
       onDragOver={handleDragOver}
@@ -131,7 +131,7 @@ const CanvasView = ({
       
       <div 
         ref={contentRef}
-        className="absolute inset-0 will-change-transform" 
+        className="absolute inset-0 will-change-transform scrollbar-hide" 
         style={transformStyle}
         onWheel={handleWheel}
       >
