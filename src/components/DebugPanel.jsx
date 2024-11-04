@@ -88,20 +88,18 @@ const DebugPanel = () => {
   return (
     <Rnd
       default={{
-        x: window.innerWidth / 2 - 192, // Center horizontally
-        y: 16, // Top of screen with small margin
-        width: isCollapsed ? 40 : 384,
-        height: isCollapsed ? 40 : 'auto',
+        x: window.innerWidth - 400,
+        y: 16,
+        width: 384,
+        height: window.innerHeight - 32,
       }}
-      minWidth={isCollapsed ? 40 : 384}
-      minHeight={isCollapsed ? 40 : 200}
+      minWidth={384}
+      minHeight={200}
       bounds="window"
       enableResizing={!isCollapsed}
-      style={{ zIndex: 99999 }}
+      style={{ zIndex: 999999 }}
     >
-      <div className={`bg-black/90 text-white rounded-lg shadow-xl backdrop-blur-sm border border-white/20 ${
-        isCollapsed ? 'w-10 h-10' : 'w-full h-full'
-      }`}>
+      <div className="w-full h-full bg-black/90 text-white rounded-lg shadow-xl backdrop-blur-sm border border-white/20">
         {panelContent}
       </div>
     </Rnd>
