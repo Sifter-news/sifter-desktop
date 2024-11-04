@@ -13,13 +13,13 @@ const ConnectionDot = ({
   const getPosition = () => {
     switch (position) {
       case 'left':
-        return 'left-[-4px] top-1/2 -translate-x-1/2 -translate-y-1/2';
+        return 'left-[-3px] top-1/2 -translate-x-1/2 -translate-y-1/2';
       case 'right':
-        return 'right-[-4px] top-1/2 translate-x-1/2 -translate-y-1/2';
+        return 'right-[-3px] top-1/2 translate-x-1/2 -translate-y-1/2';
       case 'top':
-        return 'top-[-4px] left-1/2 -translate-x-1/2 -translate-y-1/2';
+        return 'top-[-3px] left-1/2 -translate-x-1/2 -translate-y-1/2';
       case 'bottom':
-        return 'bottom-[-4px] left-1/2 -translate-x-1/2 translate-y-1/2';
+        return 'bottom-[-3px] left-1/2 -translate-x-1/2 translate-y-1/2';
       default:
         return '';
     }
@@ -38,7 +38,7 @@ const ConnectionDot = ({
 
   return (
     <div
-      className={`absolute w-3 h-3 rounded-full cursor-crosshair ring-1 ring-white shadow-md
+      className={`absolute w-2 h-2 rounded-full cursor-crosshair ring-1 ring-white shadow-sm
         ${getPosition()}
         ${isActive ? 'bg-blue-600 scale-125' : isHovered ? 'bg-blue-400' : 'bg-gray-400'} 
         transition-all duration-200 hover:scale-150 z-50`}
