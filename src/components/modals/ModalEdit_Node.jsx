@@ -143,7 +143,7 @@ const ModalEdit_Node = ({
               onFieldChange={(field, value) => 
                 setFormData(prev => ({ ...prev, [field]: value }))
               }
-              onAIConversation={onAIConversation ? () => onAIConversation(node) : undefined}
+              onAIConversation={onAIConversation}
             />
 
             <div className="grid grid-cols-2 gap-4">
