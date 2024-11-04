@@ -3,13 +3,13 @@ import { toast } from 'sonner';
 import { useDebug } from '@/contexts/DebugContext';
 import CanvasBackground from '@/components/canvas/CanvasBackground';
 import CanvasControls from './CanvasControls';
-import ConnectorLine from '@/components/node/ConnectorLine';
 import AIChatPanel from '@/01_components/05_investigation/viewsControls/AIChatPanel';
+import SelectionBox from '@/components/canvas/SelectionBox';
 import { useZoomPan } from '@/hooks/useZoomPan';
 import { useConnectionHandling } from './hooks/useConnectionHandling';
-import { useNodeRendering } from './hooks/useNodeRendering.jsx';
 import { useNodeDeletion } from './hooks/useNodeDeletion';
-import { useKeyboardModifiers } from './hooks/useKeyboardModifiers';
+import { useNodeSelection } from '@/hooks/useNodeSelection';
+import CanvasContent from './CanvasContent';
 
 const CanvasView = ({ 
   nodes, 
@@ -24,10 +24,8 @@ const CanvasView = ({
   const contentRef = useRef(null);
   const [activeTool, setActiveTool] = useState('select');
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
-  const [isPanning, setIsPanning] = useState(false);
   const { setDebugData } = useDebug();
-  const { zoom, position, handleZoom, handleWheel, setPosition } = useZoomPan();
-  const { isSpacePressed } = useKeyboardModifiers();
+  const { zoom, position, handleZoom, handleWheel } = useZoomPan();
   
   const { handleDeleteNode } = useNodeDeletion(focusedNodeId, onDeleteNode);
   
@@ -40,19 +38,17 @@ const CanvasView = ({
     setActiveConnection 
   } = useConnectionHandling();
 
-  const { renderNodes } = useNodeRendering({
-    nodes,
-    focusedNodeId,
-    onNodeFocus,
-    onUpdateNode,
-    onDeleteNode: handleDeleteNode,
-    zoom,
-    handleConnectionStart,
-    handleConnectionEnd,
-    NODE_STYLES
-  });
+  const {
+    selectionStart,
+    selectionEnd,
+    selectedNodes,
+    isDragging,
+    startSelection,
+    updateSelection,
+    endSelection,
+    setSelectedNodes
+  } = useNodeSelection(zoom);
 
-  // Handle clipboard operations
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'c' && focusedNodeId) {
@@ -92,12 +88,9 @@ const CanvasView = ({
       const x = (e.clientX - rect.left - position.x) / zoom;
       const y = (e.clientY - rect.top - position.y) / zoom;
       handleConnectionMove({ clientX: x, clientY: y });
-    } else if (isSpacePressed && e.buttons === 1) {
-      // Update position when space is pressed and mouse is dragged
-      setPosition(prev => ({
-        x: prev.x + e.movementX,
-        y: prev.y + e.movementY
-      }));
+    }
+    if (isDragging) {
+      updateSelection(e, nodes, position);
     }
   };
 
@@ -105,11 +98,21 @@ const CanvasView = ({
     if (activeConnection) {
       setActiveConnection(null);
     }
+    if (isDragging) {
+      endSelection();
+    }
   };
 
   const handleCanvasClick = (e) => {
     if (e.target === e.currentTarget || e.target === contentRef.current) {
       onNodeFocus(null);
+      setSelectedNodes([]);
+    }
+  };
+
+  const handleMouseDown = (e) => {
+    if (e.target === e.currentTarget || e.target === contentRef.current) {
+      startSelection(e);
     }
   };
 
@@ -160,53 +163,47 @@ const CanvasView = ({
     transform: `scale(${zoom})`,
     transformOrigin: '0 0',
     willChange: 'transform',
-    touchAction: 'none',
-    cursor: isSpacePressed ? 'grab' : 'auto'
+    touchAction: 'none'
   };
 
   return (
     <div 
-      className="w-full h-screen overflow-hidden relative bg-gray-900 scrollbar-hide"
+      className="w-full h-screen overflow-hidden cursor-auto relative bg-gray-900 scrollbar-hide"
       ref={canvasRef}
       tabIndex={0}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      onMouseDown={handleMouseDown}
       onClick={handleCanvasClick}
-      style={{ cursor: isSpacePressed ? (isPanning ? 'grabbing' : 'grab') : 'auto' }}
     >
       <CanvasBackground zoom={zoom} position={position} />
       
-      <div 
-        ref={contentRef}
-        className="absolute inset-0 will-change-transform scrollbar-hide" 
-        style={transformStyle}
-        onWheel={handleWheel}
-        onClick={handleCanvasClick}
-      >
-        {connections.map((connection, index) => (
-          <ConnectorLine
-            key={`connection-${index}`}
-            startX={connection.startX}
-            startY={connection.startY}
-            endX={connection.endX}
-            endY={connection.endY}
-          />
-        ))}
+      <CanvasContent
+        contentRef={contentRef}
+        transformStyle={transformStyle}
+        handleWheel={handleWheel}
+        handleCanvasClick={handleCanvasClick}
+        connections={connections}
+        activeConnection={activeConnection}
+        nodes={nodes}
+        focusedNodeId={focusedNodeId}
+        onNodeFocus={onNodeFocus}
+        onUpdateNode={onUpdateNode}
+        onDeleteNode={handleDeleteNode}
+        zoom={zoom}
+        handleConnectionStart={handleConnectionStart}
+        handleConnectionEnd={handleConnectionEnd}
+        selectedNodes={selectedNodes}
+      />
 
-        {activeConnection && (
-          <ConnectorLine
-            startX={activeConnection.startX}
-            startY={activeConnection.startY}
-            endX={activeConnection.endX}
-            endY={activeConnection.endY}
-            isDashed
-          />
-        )}
-
-        {renderNodes()}
-      </div>
+      {isDragging && (
+        <SelectionBox
+          startPoint={selectionStart}
+          currentPoint={selectionEnd}
+        />
+      )}
 
       <CanvasControls 
         activeTool={activeTool}

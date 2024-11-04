@@ -10,28 +10,25 @@ export const useNodeRendering = ({
   zoom,
   handleConnectionStart,
   handleConnectionEnd,
-  NODE_STYLES
+  selectedNodes
 }) => {
   const renderNodes = () => {
-    return nodes.map(node => {
-      const style = NODE_STYLES[node.visualStyle || 'default'];
+    return nodes.map((node) => {
+      const isSelected = selectedNodes?.some(selectedNode => selectedNode.id === node.id);
+      const isFocused = focusedNodeId === node.id;
+
       return (
         <TwoDNode
           key={node.id}
-          node={{
-            ...node,
-            color: node.color || 'bg-white' // Set default color to white
-          }}
-          zoom={zoom}
-          onNodeUpdate={onUpdateNode}
+          node={node}
           onFocus={onNodeFocus}
-          isFocused={focusedNodeId === node.id}
-          onDelete={() => onDeleteNode(node.id)}
-          isDraggable={true}
-          position={{ x: node.x, y: node.y }}
+          onUpdate={onUpdateNode}
+          onDelete={onDeleteNode}
+          isFocused={isFocused}
+          isSelected={isSelected}
+          zoom={zoom}
           onStartConnection={handleConnectionStart}
           onEndConnection={handleConnectionEnd}
-          dimensions={style}
         />
       );
     });
