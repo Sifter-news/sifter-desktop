@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
+import { MessageCircle } from 'lucide-react';
 
 const NodeFooterActions = ({ 
   onDelete, 
@@ -21,11 +22,13 @@ const NodeFooterActions = ({
         </Button>
         {showAIButton && onAIConversation && (
           <Button
-            variant="secondary"
+            variant="ghost"
+            className="text-white hover:bg-purple-700 bg-purple-600"
             onClick={onAIConversation}
             disabled={isLoading}
           >
-            AI Conversation
+            <MessageCircle className="h-4 w-4 mr-2" />
+            AI Chat
           </Button>
         )}
       </div>
