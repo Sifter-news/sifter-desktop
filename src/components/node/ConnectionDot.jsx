@@ -30,7 +30,7 @@ const ConnectionDot = ({
 
   return (
     <div
-      className={`absolute w-1 h-1 rounded-full cursor-pointer ring-1 ring-white shadow-[0_0_4px_rgba(0,0,0,0.4)]
+      className={`absolute w-2 h-2 rounded-full cursor-pointer ring-1 ring-white shadow-[0_0_4px_rgba(0,0,0,0.4)]
         ${getPosition()}
         ${isActive ? 'bg-blue-600' : isHovered ? 'bg-blue-400' : 'bg-gray-400'} 
         transition-all duration-200 hover:scale-150`}
@@ -40,6 +40,13 @@ const ConnectionDot = ({
       onClick={(e) => {
         e.stopPropagation();
         onDotClick(nodeId, position);
+      }}
+      style={{
+        aspectRatio: '1 / 1',
+        minWidth: '8px',
+        minHeight: '8px',
+        maxWidth: '8px',
+        maxHeight: '8px'
       }}
     />
   );
