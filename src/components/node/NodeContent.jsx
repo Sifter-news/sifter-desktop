@@ -29,7 +29,7 @@ const NodeContent = ({
   if (style === 'compact') {
     return (
       <div className={cn(baseClasses, "flex items-center justify-center p-2")}>
-        <NodeAvatar src={node.avatar} alt={node.title} size="large" />
+        <NodeAvatar src={node.avatar} alt={node.title} size="large" nodeType={node.nodeType} />
       </div>
     );
   }
@@ -38,7 +38,7 @@ const NodeContent = ({
   return (
     <div className={baseClasses}>
       <div className="flex items-center h-full gap-3">
-        <NodeAvatar src={node.avatar} alt={node.title} />
+        <NodeAvatar src={node.avatar} alt={node.title} nodeType={node.nodeType} />
         <div className="flex-1 min-w-0">
           <div className="font-medium truncate">{node.title}</div>
         </div>
