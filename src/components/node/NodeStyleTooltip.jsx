@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Layout, Type, MessageCircle, Pencil, Palette } from 'lucide-react';
+import { Layout, Type, MessageCircle, Pencil, ChevronDown } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -25,8 +25,11 @@ const NodeStyleTooltip = ({
   onTypeChange,
   onColorChange,
   onEdit,
-  onAIChat
+  onAIChat,
+  node
 }) => {
+  const currentColor = node?.color || 'bg-white';
+  
   return (
     <div 
       className="absolute -top-12 left-1/2 transform -translate-x-1/2 flex items-center gap-2 p-2 bg-black/50 backdrop-blur-sm rounded-lg shadow-lg"
@@ -45,8 +48,8 @@ const NodeStyleTooltip = ({
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-            <Palette className="h-4 w-4 mr-2" />
-            Color
+            <div className={`w-4 h-4 rounded-full mr-2 ${currentColor}`} />
+            <ChevronDown className="h-4 w-4" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-32">
@@ -59,7 +62,7 @@ const NodeStyleTooltip = ({
                 onClick={() => onColorChange(bgClass)}
                 className="justify-start"
               >
-                <div className={`w-4 h-4 rounded mr-2 ${bgClass}`} />
+                <div className={`w-4 h-4 rounded-full mr-2 ${bgClass}`} />
                 {label}
               </Button>
             ))}
@@ -72,6 +75,7 @@ const NodeStyleTooltip = ({
           <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
             <Layout className="h-4 w-4 mr-2" />
             Style
+            <ChevronDown className="h-4 w-4 ml-1" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-32">
@@ -106,6 +110,7 @@ const NodeStyleTooltip = ({
           <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
             <Type className="h-4 w-4 mr-2" />
             Type
+            <ChevronDown className="h-4 w-4 ml-1" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-40">
