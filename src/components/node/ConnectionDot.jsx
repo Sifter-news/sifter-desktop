@@ -26,29 +26,10 @@ const ConnectionDot = ({
     
     // Get the dot element's bounding rectangle
     const rect = e.target.getBoundingClientRect();
-    const dotCenter = {
+    const startPoint = {
       x: rect.left + (rect.width / 2),
       y: rect.top + (rect.height / 2)
     };
-
-    // Calculate the start point based on the position (edge of the node)
-    let startPoint;
-    switch (position) {
-      case 'left':
-        startPoint = { x: rect.right, y: dotCenter.y };
-        break;
-      case 'right':
-        startPoint = { x: rect.left, y: dotCenter.y };
-        break;
-      case 'top':
-        startPoint = { x: dotCenter.x, y: rect.bottom };
-        break;
-      case 'bottom':
-        startPoint = { x: dotCenter.x, y: rect.top };
-        break;
-      default:
-        startPoint = dotCenter;
-    }
     
     onStartConnection(nodeId, position, startPoint);
   };
