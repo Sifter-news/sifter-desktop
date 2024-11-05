@@ -44,6 +44,8 @@ const NodeContent = ({
     "p-2 w-full h-full transition-all duration-200 rounded-lg shadow-sm border-[0.5px] border-gray-200/50 shadow-md"
   );
 
+  const descriptionClasses = "w-full h-full bg-transparent focus:outline-none focus:ring-0 text-sm text-gray-600 resize-none text-center p-0 border-none outline-none";
+
   // Render compact style (avatar only)
   if (style === 'compact') {
     return (
@@ -107,19 +109,19 @@ const NodeContent = ({
                   handleBlur?.();
                   setIsDescriptionEditing(false);
                 }}
-                className="w-full h-full bg-transparent focus:outline-none focus:ring-0 text-sm text-gray-600 resize-none text-center p-0 border-none"
+                className={descriptionClasses}
                 placeholder="Add a description..."
                 autoFocus
               />
             ) : showEditText && !node.description ? (
               <div 
-                className="w-full h-full bg-transparent text-sm text-gray-600 resize-none text-center p-0 cursor-text"
+                className={descriptionClasses}
                 onClick={() => setIsDescriptionEditing(true)}
               >
                 Click to edit description
               </div>
             ) : node.description && (
-              <div className="w-full h-full bg-transparent text-sm text-gray-600">{node.description}</div>
+              <div className={descriptionClasses}>{node.description}</div>
             )}
           </div>
         </div>
