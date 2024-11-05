@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { useAuth } from '@/components/auth';
+import InvestigationModal from '@/01_components/01_global/Modals/InvestigationModal';
 
 const Header = () => {
   const { user, signOut } = useAuth();
