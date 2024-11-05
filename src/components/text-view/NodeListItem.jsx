@@ -4,7 +4,7 @@ import { GripVertical } from 'lucide-react';
 import { useDebug } from '@/contexts/DebugContext';
 import UnifiedNodeEditModal from '../modals/ModalEdit_Node';
 import { getNodeTypeIcon, getNodeTypeLabel } from '@/utils/nodeConstants';
-import NodeListItemActions from '../nodes/shared/NodeListItemActions';
+import NodeListItemActions from '@/01_components/06_nodes/shared/NodeListItemActions';
 
 const NodeListItem = ({ 
   node, 
