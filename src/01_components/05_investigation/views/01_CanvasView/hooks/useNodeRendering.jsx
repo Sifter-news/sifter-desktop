@@ -1,5 +1,5 @@
 import React from 'react';
-import TwoDNode from '@/01_components/06_nodes/nodes2d/TwoDNode';
+import TwoDNode from '@/components/node/TwoDNode';
 import { NODE_STYLES } from '@/utils/nodeStyles';
 
 export const useNodeRendering = ({
