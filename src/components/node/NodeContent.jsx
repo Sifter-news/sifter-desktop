@@ -74,7 +74,7 @@ const NodeContent = ({
       );
     }
 
-    const descriptionClasses = "w-full h-full bg-transparent focus:outline-none focus:ring-white text-sm text-gray-600 resize-none text-center";
+    const descriptionClasses = "w-full h-full bg-transparent focus:outline-none focus:ring-0 text-sm text-gray-600 resize-none text-center p-0 border-none";
 
     return (
       <div 
@@ -90,7 +90,7 @@ const NodeContent = ({
                 value={localTitle}
                 onChange={(e) => setLocalTitle?.(e.target.value)}
                 onBlur={handleBlur}
-                className="w-full bg-transparent focus:outline-none focus:ring-white font-medium text-center"
+                className="w-full bg-transparent focus:outline-none focus:ring-0 font-medium text-center p-0 border-none"
                 placeholder="Title"
                 autoFocus
               />
