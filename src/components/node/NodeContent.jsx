@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { cn } from "@/lib/utils";
+import { toast } from 'sonner';
+import { supabase } from '@/config/supabase';
 import NodeAvatar from './NodeAvatar';
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -30,6 +32,39 @@ const NodeContent = ({
   const [showEditText, setShowEditText] = useState(false);
   const [isDescriptionEditing, setIsDescriptionEditing] = useState(false);
   const [isTitleEditing, setIsTitleEditing] = useState(false);
+
+  const saveToDatabase = async (updates) => {
+    try {
+      const { error } = await supabase
+        .from('node')
+        .update(updates)
+        .eq('id', node.id);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error saving node:', error);
+      toast.error('Failed to save changes');
+      throw error;
+    }
+  };
+
+  const handleTitleSave = async (newTitle) => {
+    try {
+      await saveToDatabase({ title: newTitle });
+      toast.success('Title saved');
+    } catch (error) {
+      // Error already handled in saveToDatabase
+    }
+  };
+
+  const handleDescriptionSave = async (newDescription) => {
+    try {
+      await saveToDatabase({ description: newDescription });
+      toast.success('Description saved');
+    } catch (error) {
+      // Error already handled in saveToDatabase
+    }
+  };
 
   const handleNodeClick = () => {
     if (!node.description && !showEditText) {
@@ -110,9 +145,10 @@ const NodeContent = ({
                   type="text"
                   value={localTitle}
                   onChange={(e) => setLocalTitle?.(e.target.value)}
-                  onBlur={() => {
-                    handleBlur?.();
+                  onBlur={async () => {
+                    if (handleBlur) handleBlur();
                     setIsTitleEditing(false);
+                    await handleTitleSave(localTitle);
                   }}
                   className={titleClasses}
                   placeholder="Title"
@@ -136,9 +172,10 @@ const NodeContent = ({
               <Textarea
                 value={localDescription}
                 onChange={(e) => setLocalDescription?.(e.target.value)}
-                onBlur={() => {
-                  handleBlur?.();
+                onBlur={async () => {
+                  if (handleBlur) handleBlur();
                   setIsDescriptionEditing(false);
+                  await handleDescriptionSave(localDescription);
                 }}
                 className={descriptionClasses}
                 placeholder="Add a description..."
