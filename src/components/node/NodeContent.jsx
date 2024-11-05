@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { cn } from "@/lib/utils";
 import NodeAvatar from './NodeAvatar';
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
 const textSizeClasses = {
   small: "text-sm",
@@ -28,6 +29,7 @@ const NodeContent = ({
 }) => {
   const [showEditText, setShowEditText] = useState(false);
   const [isDescriptionEditing, setIsDescriptionEditing] = useState(false);
+  const [isTitleEditing, setIsTitleEditing] = useState(false);
 
   const handleNodeClick = () => {
     if (!node.description && !showEditText) {
@@ -49,6 +51,15 @@ const NodeContent = ({
     "bg-transparent",
     "text-sm text-gray-600",
     "resize-none text-center p-0",
+    "border-none outline-none ring-0",
+    "focus:outline-none focus:ring-0 focus:border-none",
+    "hover:outline-none hover:ring-0 hover:border-none",
+    "active:outline-none active:ring-0 active:border-none"
+  );
+
+  const titleClasses = cn(
+    "w-full bg-transparent",
+    "font-medium",
     "border-none outline-none ring-0",
     "focus:outline-none focus:ring-0 focus:border-none",
     "hover:outline-none hover:ring-0 hover:border-none",
@@ -94,18 +105,29 @@ const NodeContent = ({
           <div className="flex items-center gap-3 mb-3">
             <NodeAvatar src={node.avatar} alt={node.title} nodeType={node.nodeType} />
             <div className="flex-1 min-w-0">
-              {isEditing ? (
-                <input
+              {isTitleEditing || isEditing ? (
+                <Input
                   type="text"
                   value={localTitle}
                   onChange={(e) => setLocalTitle?.(e.target.value)}
-                  onBlur={handleBlur}
-                  className="w-full bg-transparent focus:outline-none focus:ring-0 font-medium p-0 border-none"
+                  onBlur={() => {
+                    handleBlur?.();
+                    setIsTitleEditing(false);
+                  }}
+                  className={titleClasses}
                   placeholder="Title"
                   autoFocus
                 />
               ) : (
-                <div className="font-medium truncate">{node.title || 'Untitled'}</div>
+                <div 
+                  className="font-medium truncate cursor-text"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsTitleEditing(true);
+                  }}
+                >
+                  {node.title || 'Untitled'}
+                </div>
               )}
             </div>
           </div>
