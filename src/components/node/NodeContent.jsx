@@ -81,24 +81,26 @@ const NodeContent = ({
         className={baseClasses}
         onClick={handleNodeClick}
       >
-        <div className="flex flex-col h-full items-center">
-          <NodeAvatar src={node.avatar} alt={node.title} nodeType={node.nodeType} className="mb-2" />
-          <div className="w-full text-center mb-3">
-            {isEditing ? (
-              <input
-                type="text"
-                value={localTitle}
-                onChange={(e) => setLocalTitle?.(e.target.value)}
-                onBlur={handleBlur}
-                className="w-full bg-transparent focus:outline-none focus:ring-0 font-medium text-center p-0 border-none"
-                placeholder="Title"
-                autoFocus
-              />
-            ) : (
-              <div className="font-medium">{node.title || 'Untitled'}</div>
-            )}
+        <div className="flex flex-col h-full">
+          <div className="flex items-center gap-3 mb-3">
+            <NodeAvatar src={node.avatar} alt={node.title} nodeType={node.nodeType} />
+            <div className="flex-1 min-w-0">
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={localTitle}
+                  onChange={(e) => setLocalTitle?.(e.target.value)}
+                  onBlur={handleBlur}
+                  className="w-full bg-transparent focus:outline-none focus:ring-0 font-medium p-0 border-none"
+                  placeholder="Title"
+                  autoFocus
+                />
+              ) : (
+                <div className="font-medium truncate">{node.title || 'Untitled'}</div>
+              )}
+            </div>
           </div>
-          <div className="w-full flex-1 min-h-0">
+          <div className="flex-1 min-h-0">
             {isDescriptionEditing ? (
               <Textarea
                 value={localDescription}
