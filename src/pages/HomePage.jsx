@@ -6,7 +6,7 @@ import InvestigationList from '../components/InvestigationList';
 import { Button } from "@/components/ui/button";
 import { PlusIcon, FileSearchIcon } from 'lucide-react';
 import ContentModal from '@/01_components/01_global/Modals/ContentModal';
-import ModalEdit_Investigation from '../components/modals/ModalEdit_Investigation';
+import ModalEdit_Investigation from '@/01_components/01_global/Modals/ModalEdit_Investigation'; // Updated import path
 import { useInvestigations, useAddInvestigation, useUpdateInvestigation, useDeleteInvestigation } from '@/integrations/supabase/index';
 import { supabase } from '@/config/supabase';
 
