@@ -88,7 +88,7 @@ const NodeContent = ({
                 value={localTitle}
                 onChange={(e) => setLocalTitle?.(e.target.value)}
                 onBlur={handleBlur}
-                className="w-full bg-transparent focus:outline-none font-medium text-center"
+                className="w-full bg-transparent focus:outline-none focus:ring-white font-medium text-center"
                 placeholder="Title"
                 autoFocus
               />
@@ -96,7 +96,7 @@ const NodeContent = ({
               <div className="font-medium">{node.title || 'Untitled'}</div>
             )}
           </div>
-          <div className="w-full">
+          <div className="w-full flex-1 min-h-0">
             {isDescriptionEditing ? (
               <Textarea
                 value={localDescription}
@@ -105,7 +105,7 @@ const NodeContent = ({
                   handleBlur?.();
                   setIsDescriptionEditing(false);
                 }}
-                className="w-full bg-transparent focus:outline-none text-sm text-gray-600 resize-none"
+                className="w-full h-full bg-transparent focus:outline-none focus:ring-white text-sm text-gray-600 resize-none"
                 placeholder="Add a description..."
                 autoFocus
               />
