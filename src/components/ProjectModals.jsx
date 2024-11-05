@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import InvestigationModal from './modals/ModalEdit_Investigation';
-import ContentModal from './ContentModal';
+import InvestigationModal from '@/01_components/01_global/Modals/InvestigationModal';
+import ContentModal from '@/01_components/01_global/Modals/ContentModal';
 
 const ProjectModals = ({ project, onProjectUpdate }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);

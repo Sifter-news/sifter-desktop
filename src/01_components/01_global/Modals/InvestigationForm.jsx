@@ -1,3 +1,4 @@
+// Moving from src/components/modals/InvestigationForm.jsx
 import React, { useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

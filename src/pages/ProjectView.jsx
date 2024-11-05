@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import ProjectTabs from '../components/ProjectTabs';
 import ProjectModals from '../components/ProjectModals';
-import ContentModal from '../components/ContentModal';
+import ContentModal from '@/01_components/01_global/Modals/ContentModal';
 import { useProjectData } from '../hooks/useProjectData';
 import { useNodeOperations } from '../components/NodeOperations';
 import { useDebug } from '@/contexts/DebugContext';

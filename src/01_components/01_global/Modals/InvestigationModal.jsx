@@ -1,3 +1,4 @@
+// Moving from src/components/modals/ModalEdit_Investigation.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -73,7 +74,6 @@ const InvestigationModal = ({ isOpen, onClose, investigation, onUpdate }) => {
 
     setIsLoading(true);
     try {
-      // First, delete all reports associated with this investigation
       const { error: reportsError } = await supabase
         .from('reports')
         .delete()
@@ -81,7 +81,6 @@ const InvestigationModal = ({ isOpen, onClose, investigation, onUpdate }) => {
 
       if (reportsError) throw reportsError;
 
-      // Then, delete all nodes associated with this investigation
       const { error: nodesError } = await supabase
         .from('node')
         .delete()
@@ -89,7 +88,6 @@ const InvestigationModal = ({ isOpen, onClose, investigation, onUpdate }) => {
 
       if (nodesError) throw nodesError;
 
-      // Finally, delete the investigation itself
       const { error: investigationError } = await supabase
         .from('investigations')
         .delete()
