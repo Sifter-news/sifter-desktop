@@ -64,7 +64,7 @@ const NodeContent = ({
           className={baseClasses}
           onClick={handleNodeClick}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col items-center gap-2">
             <NodeAvatar src={node.avatar} alt={node.title} nodeType={node.nodeType} />
             <div className="text-sm text-gray-400 italic cursor-text">
               Click to add description
@@ -79,46 +79,46 @@ const NodeContent = ({
         className={baseClasses}
         onClick={handleNodeClick}
       >
-        <div className="flex flex-col h-full">
-          <div className="flex items-start gap-3 mb-2">
-            <NodeAvatar src={node.avatar} alt={node.title} nodeType={node.nodeType} />
-            <div className="flex-1 min-w-0">
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={localTitle}
-                  onChange={(e) => setLocalTitle?.(e.target.value)}
-                  onBlur={handleBlur}
-                  className="w-full bg-transparent border-none focus:outline-none font-medium"
-                  placeholder="Title"
-                  autoFocus
-                />
-              ) : (
-                <div className="font-medium truncate">{node.title || 'Untitled'}</div>
-              )}
-              {isDescriptionEditing ? (
-                <Textarea
-                  value={localDescription}
-                  onChange={(e) => setLocalDescription?.(e.target.value)}
-                  onBlur={() => {
-                    handleBlur?.();
-                    setIsDescriptionEditing(false);
-                  }}
-                  className="w-full bg-transparent border-none focus:outline-none text-sm text-gray-600 mt-1 resize-none"
-                  placeholder="Add a description..."
-                  autoFocus
-                />
-              ) : showEditText && !node.description ? (
-                <div 
-                  className="text-sm text-gray-400 italic mt-1 cursor-text"
-                  onClick={() => setIsDescriptionEditing(true)}
-                >
-                  Click to edit description
-                </div>
-              ) : node.description && (
-                <div className="text-sm text-gray-600 mt-1">{node.description}</div>
-              )}
-            </div>
+        <div className="flex flex-col h-full items-center">
+          <NodeAvatar src={node.avatar} alt={node.title} nodeType={node.nodeType} className="mb-2" />
+          <div className="w-full text-center mb-3">
+            {isEditing ? (
+              <input
+                type="text"
+                value={localTitle}
+                onChange={(e) => setLocalTitle?.(e.target.value)}
+                onBlur={handleBlur}
+                className="w-full bg-transparent focus:outline-none font-medium text-center"
+                placeholder="Title"
+                autoFocus
+              />
+            ) : (
+              <div className="font-medium">{node.title || 'Untitled'}</div>
+            )}
+          </div>
+          <div className="w-full">
+            {isDescriptionEditing ? (
+              <Textarea
+                value={localDescription}
+                onChange={(e) => setLocalDescription?.(e.target.value)}
+                onBlur={() => {
+                  handleBlur?.();
+                  setIsDescriptionEditing(false);
+                }}
+                className="w-full bg-transparent focus:outline-none text-sm text-gray-600 resize-none"
+                placeholder="Add a description..."
+                autoFocus
+              />
+            ) : showEditText && !node.description ? (
+              <div 
+                className="text-sm text-gray-400 italic cursor-text text-center"
+                onClick={() => setIsDescriptionEditing(true)}
+              >
+                Click to edit description
+              </div>
+            ) : node.description && (
+              <div className="text-sm text-gray-600 text-center">{node.description}</div>
+            )}
           </div>
         </div>
       </div>
