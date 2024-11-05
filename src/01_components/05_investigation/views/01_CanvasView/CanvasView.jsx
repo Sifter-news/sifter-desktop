@@ -71,7 +71,7 @@ const CanvasView = ({
 
   const handleDragOver = (e) => {
     e.preventDefault();
-    if (e.dataTransfer.types.includes('connectionType')) {
+    if (e.dataTransfer.types.includes('connectionType') || e.dataTransfer.types.includes('visualStyle')) {
       e.dataTransfer.dropEffect = 'copy';
     }
   };
@@ -79,11 +79,13 @@ const CanvasView = ({
   const handleDrop = (e) => {
     e.preventDefault();
     const connectionType = e.dataTransfer.getData('connectionType');
+    const visualStyle = e.dataTransfer.getData('visualStyle');
+
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left - position.x) / zoom;
+    const y = (e.clientY - rect.top - position.y) / zoom;
+
     if (connectionType) {
-      const rect = canvasRef.current.getBoundingClientRect();
-      const x = (e.clientX - rect.left - position.x) / zoom;
-      const y = (e.clientY - rect.top - position.y) / zoom;
-      
       const newConnection = {
         id: `connection-${Date.now()}`,
         startX: x,
@@ -97,6 +99,17 @@ const CanvasView = ({
       
       setConnections(prev => [...prev, newConnection]);
       toast.success('Connection added to canvas');
+    } else if (visualStyle === 'postit') {
+      onAddNode({
+        title: 'New Post-it',
+        description: '',
+        visualStyle: 'postit',
+        color: 'bg-yellow-100',
+        x,
+        y,
+        nodeType: 'generic'
+      });
+      toast.success('Post-it note added');
     }
   };
 
@@ -148,7 +161,6 @@ const CanvasView = ({
     touchAction: 'none'
   };
 
-  // Debug overlay
   const DebugOverlay = () => {
     if (!showGuides) return null;
     
@@ -194,21 +206,16 @@ const CanvasView = ({
         handleZoom={handleZoom}
         onAIChatToggle={handleAIChatToggle}
         isAIChatOpen={isAIChatOpen}
-        onAddNode={() => {
+        onAddNode={(nodeData) => {
           const rect = canvasRef.current.getBoundingClientRect();
           const x = (window.innerWidth / 2 - rect.left - position.x) / zoom;
           const y = (window.innerHeight / 2 - rect.top - position.y) / zoom;
           
           onAddNode({
-            title: 'New Node',
-            description: '',
-            visualStyle: 'default',
-            color: 'bg-white',
+            ...nodeData,
             x,
-            y,
-            nodeType: 'generic'
+            y
           });
-          toast.success('New node added');
         }}
       />
 
