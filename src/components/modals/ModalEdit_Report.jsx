@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/config/supabase';
-import BaseModal from './BaseModal';
+import BaseModal from '@/01_components/01_global/Modals/BaseModal'; // Updated import path
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
