@@ -1,32 +1,65 @@
 import React from 'react';
-import { cn } from "@/lib/utils";
 
-const ConnectorLine = ({
-  startX,
-  startY,
-  endX,
-  endY,
-  className,
-  strokeWidth = 2,
-  strokeOpacity = 0.6,
+const ConnectorLine = ({ 
+  startX, 
+  startY, 
+  endX, 
+  endY, 
   isDashed = false,
-  onClick
+  isSelected = false,
+  onClick,
+  className = "",
+  strokeWidth = 2,
+  strokeOpacity = 0.6
 }) => {
-  const pathData = `M ${startX} ${startY} L ${endX} ${endY}`;
+  // Create a curved path between points with proper offset handling
+  const controlPoint1X = (startX + 48) + ((endX + 48) - (startX + 48)) / 2;
+  const controlPoint1Y = startY;
+  const controlPoint2X = (startX + 48) + ((endX + 48) - (startX + 48)) / 2;
+  const controlPoint2Y = endY;
+  
+  const path = `M ${startX + 48},${startY} C ${controlPoint1X},${controlPoint1Y} ${controlPoint2X},${controlPoint2Y} ${endX + 48},${endY}`;
 
   return (
     <svg
-      className="absolute top-0 left-0 w-full h-full pointer-events-none"
-      style={{ overflow: 'visible' }}
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'all',
+        zIndex: 10,
+        overflow: 'visible'
+      }}
+      onClick={onClick}
     >
+      <defs>
+        <marker
+          id="arrowhead"
+          markerWidth="10"
+          markerHeight="7"
+          refX="9"
+          refY="3.5"
+          orient="auto"
+        >
+          <polygon 
+            points="0 0, 10 3.5, 0 7" 
+            fill={isSelected ? "#3b82f6" : "#6B7280"} 
+            opacity={strokeOpacity}
+          />
+        </marker>
+      </defs>
+
       <path
-        d={pathData}
-        className={cn("stroke-current fill-none transition-colors", className)}
+        d={path}
+        stroke={isSelected ? "#3b82f6" : "#6B7280"}
         strokeWidth={strokeWidth}
-        strokeOpacity={strokeOpacity}
         strokeDasharray={isDashed ? "5,5" : "none"}
-        onClick={onClick}
-        style={{ pointerEvents: onClick ? 'all' : 'none' }}
+        strokeOpacity={strokeOpacity}
+        fill="none"
+        markerEnd="url(#arrowhead)"
+        className={`transition-all duration-200 ${className}`}
       />
     </svg>
   );
