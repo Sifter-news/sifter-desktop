@@ -5,7 +5,6 @@ import { supabase } from '@/config/supabase';
 import NodeAvatar from './NodeAvatar';
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { getNodeTypeIcon } from '@/utils/nodeConstants';
 
 const textSizeClasses = {
   small: "text-sm",
@@ -33,7 +32,6 @@ const NodeContent = ({
   const [showEditText, setShowEditText] = useState(false);
   const [isDescriptionEditing, setIsDescriptionEditing] = useState(false);
   const [isTitleEditing, setIsTitleEditing] = useState(false);
-  const Icon = getNodeTypeIcon(node.nodeType);
 
   const saveToDatabase = async (updates) => {
     try {
@@ -107,7 +105,7 @@ const NodeContent = ({
   if (style === 'compact') {
     return (
       <div className={cn(baseClasses, "flex items-center justify-center p-2")}>
-        <Icon className="h-6 w-6 text-gray-600" />
+        <NodeAvatar src={node.avatar} alt={node.title} size="large" nodeType={node.nodeType} />
       </div>
     );
   }
@@ -124,7 +122,7 @@ const NodeContent = ({
           onClick={handleNodeClick}
         >
           <div className="flex flex-col items-center gap-2">
-            <Icon className="h-8 w-8 text-gray-600" />
+            <NodeAvatar src={node.avatar} alt={node.title} nodeType={node.nodeType} />
             <div className="text-sm text-gray-400 italic cursor-text">
               Click to add description
             </div>
@@ -140,7 +138,7 @@ const NodeContent = ({
       >
         <div className="flex flex-col h-full">
           <div className="flex items-center gap-3 mb-3">
-            <Icon className="h-6 w-6 text-gray-600" />
+            <NodeAvatar src={node.avatar} alt={node.title} nodeType={node.nodeType} />
             <div className="flex-1 min-w-0">
               {isTitleEditing || isEditing ? (
                 <Input
@@ -199,11 +197,11 @@ const NodeContent = ({
     );
   }
 
-  // Render default style (icon + title only)
+  // Render default style (avatar + title only)
   return (
     <div className={baseClasses}>
       <div className="flex items-center h-full gap-3">
-        <Icon className="h-5 w-5 text-gray-600" />
+        <NodeAvatar src={node.avatar} alt={node.title} nodeType={node.nodeType} />
         <div className="flex-1 min-w-0">
           <div className="font-medium truncate">{node.title}</div>
         </div>
