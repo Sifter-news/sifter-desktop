@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import UserProfile from './UserProfile';
 import { Separator } from "@/components/ui/separator";
-import ModalEdit_Investigation from './modals/ModalEdit_Investigation';
+import InvestigationModal from '@/01_components/01_global/Modals/InvestigationModal';
 import { supabase } from '@/config/supabase';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -80,7 +80,7 @@ const Header = ({ user, projectName, onProjectClick, onUpdateUser, onProjectUpda
         </div>
       </div>
 
-      <ModalEdit_Investigation 
+      <InvestigationModal 
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         investigation={projectName}
