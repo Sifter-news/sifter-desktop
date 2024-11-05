@@ -44,7 +44,16 @@ const NodeContent = ({
     "p-2 w-full h-full transition-all duration-200 rounded-lg shadow-sm border-[0.5px] border-gray-200/50 shadow-md"
   );
 
-  const descriptionClasses = "w-full h-full bg-transparent focus:outline-none focus:ring-0 text-sm text-gray-600 resize-none text-center p-0 border-none outline-none";
+  const descriptionClasses = cn(
+    "w-full h-full",
+    "bg-transparent",
+    "text-sm text-gray-600",
+    "resize-none text-center p-0",
+    "border-none outline-none ring-0",
+    "focus:outline-none focus:ring-0 focus:border-none",
+    "hover:outline-none hover:ring-0 hover:border-none",
+    "active:outline-none active:ring-0 active:border-none"
+  );
 
   // Render compact style (avatar only)
   if (style === 'compact') {
