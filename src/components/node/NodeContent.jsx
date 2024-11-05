@@ -74,8 +74,6 @@ const NodeContent = ({
       );
     }
 
-    const descriptionClasses = "w-full h-full bg-transparent focus:outline-none focus:ring-0 text-sm text-gray-600 resize-none text-center p-0 border-none";
-
     return (
       <div 
         className={baseClasses}
@@ -109,19 +107,19 @@ const NodeContent = ({
                   handleBlur?.();
                   setIsDescriptionEditing(false);
                 }}
-                className={descriptionClasses}
+                className="w-full h-full bg-transparent focus:outline-none focus:ring-0 text-sm text-gray-600 resize-none text-center p-0 border-none"
                 placeholder="Add a description..."
                 autoFocus
               />
             ) : showEditText && !node.description ? (
               <div 
-                className={cn(descriptionClasses, "cursor-text")}
+                className="w-full h-full bg-transparent text-sm text-gray-600 resize-none text-center p-0 cursor-text"
                 onClick={() => setIsDescriptionEditing(true)}
               >
                 Click to edit description
               </div>
             ) : node.description && (
-              <div className={descriptionClasses}>{node.description}</div>
+              <div className="w-full h-full bg-transparent text-sm text-gray-600">{node.description}</div>
             )}
           </div>
         </div>
