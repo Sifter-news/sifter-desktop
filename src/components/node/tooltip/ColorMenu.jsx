@@ -14,13 +14,13 @@ import {
 } from "@/components/ui/tooltip";
 
 const colors = {
-  white: { label: 'White', class: 'bg-white text-black border border-gray-200' },
-  yellow: { label: 'Yellow', class: 'bg-yellow-100 text-black border border-yellow-200' },
-  blue: { label: 'Blue', class: 'bg-blue-100 text-black border border-blue-200' },
-  green: { label: 'Green', class: 'bg-green-100 text-black border border-green-200' },
-  pink: { label: 'Pink', class: 'bg-pink-100 text-black border border-pink-200' },
-  purple: { label: 'Purple', class: 'bg-purple-100 text-black border border-purple-200' },
-  orange: { label: 'Orange', class: 'bg-orange-100 text-black border border-orange-200' },
+  white: { label: 'White', class: 'bg-white border border-gray-200' },
+  yellow: { label: 'Yellow', class: 'bg-yellow-100 border border-yellow-200' },
+  blue: { label: 'Blue', class: 'bg-blue-100 border border-blue-200' },
+  green: { label: 'Green', class: 'bg-green-100 border border-green-200' },
+  pink: { label: 'Pink', class: 'bg-pink-100 border border-pink-200' },
+  purple: { label: 'Purple', class: 'bg-purple-100 border border-purple-200' },
+  orange: { label: 'Orange', class: 'bg-orange-100 border border-orange-200' },
 };
 
 const ColorMenu = ({ currentColor, onColorChange, isOpen, setIsOpen }) => {
@@ -47,10 +47,10 @@ const ColorMenu = ({ currentColor, onColorChange, isOpen, setIsOpen }) => {
                     onColorChange(bgClass);
                     setIsOpen(false);
                   }}
-                  className={`justify-start h-7 hover:bg-gray-100 ${bgClass}`}
+                  className="justify-start h-7 hover:bg-gray-100"
                 >
                   <div className={`w-4 h-4 rounded-full mr-2 ${bgClass}`} />
-                  <span>{label}</span>
+                  <span className="text-gray-700">{label}</span>
                 </Button>
               ))}
             </div>
