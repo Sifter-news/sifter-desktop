@@ -1,8 +1,7 @@
 import React from 'react';
 import { Separator } from "@/components/ui/separator";
-import { MousePointer2, ZoomIn, ZoomOut, RotateCcw, MessageCircle, GitBranch } from 'lucide-react';
+import { MousePointer2, ZoomIn, ZoomOut, RotateCcw, MessageCircle, StickyNote } from 'lucide-react';
 import ToolbarButton from './components/toolbar/ToolbarButton';
-import NodeDropdown from './components/toolbar/NodeDropdown';
 
 const CanvasControls = ({ 
   activeTool, 
@@ -17,22 +16,17 @@ const CanvasControls = ({
   const zoomOut = () => handleZoom(-0.1);
   const resetZoom = () => handleZoom(1 - zoom);
 
-  const handleDragStart = (e, visualStyle) => {
-    e.dataTransfer.setData('visualStyle', visualStyle);
+  const handleDragStart = (e) => {
+    e.dataTransfer.setData('visualStyle', 'postit');
     e.dataTransfer.effectAllowed = 'copy';
   };
 
-  const handleConnectionDragStart = (e) => {
-    e.dataTransfer.setData('connectionType', 'default');
-    e.dataTransfer.effectAllowed = 'copy';
-  };
-
-  const handleAddNode = (visualStyle) => {
+  const handleAddPostit = () => {
     onAddNode({
-      title: 'New Node',
+      title: 'New Post-it',
       description: '',
-      visualStyle,
-      color: 'bg-white',
+      visualStyle: 'postit',
+      color: 'bg-yellow-100',
       x: window.innerWidth / 2,
       y: window.innerHeight / 2
     });
@@ -50,15 +44,11 @@ const CanvasControls = ({
         />
 
         <ToolbarButton
-          icon={GitBranch}
-          label="Drag to add Connection"
+          icon={StickyNote}
+          label="Add Post-it (click or drag)"
           draggable
-          onDragStart={handleConnectionDragStart}
-        />
-
-        <NodeDropdown 
-          onAddNode={handleAddNode}
-          handleDragStart={handleDragStart}
+          onDragStart={handleDragStart}
+          onClick={handleAddPostit}
         />
 
         <Separator className="w-6 bg-white/20" />
