@@ -18,13 +18,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-const textSizes = {
-  small: 'Small',
-  medium: 'Medium',
-  large: 'Large',
-  huge: 'Huge'
-};
-
 const NodeStyleTooltip = ({
   position,
   onStyleChange,
@@ -49,11 +42,18 @@ const NodeStyleTooltip = ({
   const currentType = node?.nodeType || 'generic';
   const currentTextSize = node?.textSize || 'medium';
 
+  const handleTypeChange = (newType) => {
+    if (onTypeChange) {
+      onTypeChange(newType);
+      onUpdateNode(node.id, { nodeType: newType });
+    }
+  };
+
   return (
     <>
       <div 
         className="absolute -top-16 left-1/2 transform -translate-x-1/2 flex items-center gap-1 p-1.5 bg-black rounded-lg shadow-lg"
-        style={{ zIndex: 9999 }} // Ensure tooltip is above all other elements
+        style={{ zIndex: 9999 }}
       >
         <TooltipProvider>
           <Tooltip>
@@ -68,7 +68,12 @@ const NodeStyleTooltip = ({
               </TooltipTrigger>
               <PopoverContent className="w-32">
                 <div className="flex flex-col space-y-0.5">
-                  {Object.entries(textSizes).map(([size, label]) => (
+                  {Object.entries({
+                    small: 'Small',
+                    medium: 'Medium',
+                    large: 'Large',
+                    huge: 'Huge'
+                  }).map(([size, label]) => (
                     <Button
                       key={size}
                       variant="ghost"
@@ -109,7 +114,7 @@ const NodeStyleTooltip = ({
 
         <TypeMenu
           currentType={currentType}
-          onTypeChange={onTypeChange}
+          onTypeChange={handleTypeChange}
           isOpen={typeMenuOpen}
           setIsOpen={setTypeMenuOpen}
         />
