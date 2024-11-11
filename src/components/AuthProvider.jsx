@@ -5,55 +5,76 @@ import { toast } from 'sonner';
 
 const AuthContext = createContext({});
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sessionExpired, setSessionExpired] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleAuthError = async () => {
-    try {
-      // Clear all auth data
-      await supabase.auth.signOut();
-      setUser(null);
-      localStorage.removeItem('supabase.auth.token');
-      localStorage.removeItem('sb-refresh-token');
-      localStorage.removeItem('sb-access-token');
-      
-      if (location.pathname !== '/login') {
-        navigate('/login');
-        toast.error('Session expired. Please sign in again.');
-      }
-    } catch (error) {
-      console.error('Error during auth cleanup:', error);
+  // Helper to clean up auth state
+  const cleanupAuth = async () => {
+    setUser(null);
+    localStorage.removeItem('supabase.auth.token');
+    localStorage.removeItem('sb-refresh-token');
+    localStorage.removeItem('sb-access-token');
+  };
+
+  // Handle auth errors consistently
+  const handleAuthError = async (error, customMessage) => {
+    console.error('Auth error:', error);
+    await cleanupAuth();
+    
+    if (error?.message?.includes('JWT')) {
+      setSessionExpired(true);
+      toast.error('Your session has expired. Please sign in again.');
+    } else {
+      toast.error(customMessage || error?.message || 'An authentication error occurred');
+    }
+    
+    if (location.pathname !== '/login') {
+      navigate('/login');
     }
   };
 
+  // Initialize auth state
   useEffect(() => {
     const initializeAuth = async () => {
       try {
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
-          console.error('Session error:', sessionError);
-          await handleAuthError();
-          return;
+          throw sessionError;
         }
 
         if (!session) {
+          await cleanupAuth();
           setLoading(false);
-          if (location.pathname !== '/login') {
+          if (!location.pathname.startsWith('/auth/') && location.pathname !== '/login' && location.pathname !== '/signup') {
             navigate('/login');
           }
           return;
         }
 
-        setUser(session.user);
+        // Verify the session is still valid
+        const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError || !currentUser) {
+          throw userError || new Error('User session invalid');
+        }
+
+        setUser(currentUser);
+        setSessionExpired(false);
       } catch (error) {
-        console.error('Auth initialization error:', error);
-        await handleAuthError();
+        await handleAuthError(error);
       } finally {
         setLoading(false);
       }
@@ -61,29 +82,41 @@ export const AuthProvider = ({ children }) => {
 
     initializeAuth();
 
+    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       switch (event) {
         case 'SIGNED_IN':
-          setUser(session?.user ?? null);
-          toast.success('Successfully signed in!');
+          if (session?.user) {
+            setUser(session.user);
+            setSessionExpired(false);
+            toast.success('Successfully signed in!');
+            navigate('/');
+          }
           break;
           
         case 'SIGNED_OUT':
-          setUser(null);
+          await cleanupAuth();
           navigate('/login');
           toast.success('Signed out successfully');
           break;
           
         case 'TOKEN_REFRESHED':
-          setUser(session?.user ?? null);
+          if (session?.user) {
+            setUser(session.user);
+            setSessionExpired(false);
+          }
           break;
           
         case 'USER_UPDATED':
-          setUser(session?.user ?? null);
+          if (session?.user) {
+            setUser(session.user);
+          }
           break;
           
         case 'USER_DELETED':
-          await handleAuthError();
+          await cleanupAuth();
+          navigate('/login');
+          toast.info('Account deleted');
           break;
       }
       
@@ -95,42 +128,94 @@ export const AuthProvider = ({ children }) => {
     };
   }, [navigate, location.pathname]);
 
+  // Auth methods with proper error handling
+  const signUp = async ({ email, password, ...metadata }) => {
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: metadata
+        }
+      });
+      
+      if (error) throw error;
+      
+      toast.success('Please check your email to confirm your account');
+      navigate('/login');
+    } catch (error) {
+      handleAuthError(error, 'Failed to create account');
+      throw error;
+    }
+  };
+
+  const signIn = async ({ email, password }) => {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      
+      if (error) throw error;
+      
+    } catch (error) {
+      handleAuthError(error, 'Invalid login credentials');
+      throw error;
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      await cleanupAuth();
+    } catch (error) {
+      handleAuthError(error, 'Error signing out');
+      throw error;
+    }
+  };
+
+  const resetPassword = async (email) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      });
+      
+      if (error) throw error;
+      
+      toast.success('Password reset instructions sent to your email');
+    } catch (error) {
+      handleAuthError(error, 'Failed to send reset instructions');
+      throw error;
+    }
+  };
+
+  const updatePassword = async (newPassword) => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      
+      if (error) throw error;
+      
+      toast.success('Password updated successfully');
+      navigate('/');
+    } catch (error) {
+      handleAuthError(error, 'Failed to update password');
+      throw error;
+    }
+  };
+
   const value = {
-    signUp: async (data) => {
-      try {
-        const { error } = await supabase.auth.signUp({
-          ...data,
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`
-          }
-        });
-        if (error) throw error;
-        toast.success('Check your email to confirm your account');
-      } catch (error) {
-        toast.error(error.message);
-        throw error;
-      }
-    },
-    
-    signIn: async (data) => {
-      try {
-        const { error } = await supabase.auth.signInWithPassword(data);
-        if (error) throw error;
-      } catch (error) {
-        toast.error(error.message);
-        throw error;
-      }
-    },
-    
-    signOut: async () => {
-      try {
-        await handleAuthError();
-      } catch (error) {
-        toast.error(error.message);
-        throw error;
-      }
-    },
     user,
+    loading,
+    sessionExpired,
+    signUp,
+    signIn,
+    signOut,
+    resetPassword,
+    updatePassword
   };
 
   return (

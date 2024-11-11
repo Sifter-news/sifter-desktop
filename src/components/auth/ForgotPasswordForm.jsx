@@ -6,30 +6,49 @@ import { Label } from "@/components/ui/label";
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
-const LoginForm = () => {
-  const { signIn } = useAuth();
+const ForgotPasswordForm = () => {
+  const { resetPassword } = useAuth();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!email || !password) {
-      toast.error('Please enter both email and password');
+    if (!email) {
+      toast.error('Please enter your email address');
       return;
     }
 
     setLoading(true);
     
     try {
-      await signIn({ email, password });
+      await resetPassword(email);
+      setSubmitted(true);
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Reset password error:', error);
     } finally {
       setLoading(false);
     }
   };
+
+  if (submitted) {
+    return (
+      <div className="text-center space-y-4">
+        <h3 className="text-lg font-medium">Check Your Email</h3>
+        <p className="text-gray-600">
+          We've sent password reset instructions to your email address.
+          Please check your inbox and follow the link to reset your password.
+        </p>
+        <Link 
+          to="/login"
+          className="text-blue-600 hover:text-blue-800 block mt-4"
+        >
+          Return to login
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -41,48 +60,30 @@ const LoginForm = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          placeholder="Enter your email"
+          placeholder="Enter your email address"
           disabled={loading}
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          placeholder="Enter your password"
-          disabled={loading}
-        />
-      </div>
-
-      <div className="flex justify-between items-center text-sm">
+      <div className="text-sm text-center">
+        Remember your password?{' '}
         <Link 
-          to="/auth/forgot-password" 
+          to="/login"
           className="text-blue-600 hover:text-blue-800"
         >
-          Forgot password?
-        </Link>
-        <Link 
-          to="/signup" 
-          className="text-blue-600 hover:text-blue-800"
-        >
-          Create account
+          Sign in
         </Link>
       </div>
 
       <Button 
         type="submit" 
-        className="w-full" 
+        className="w-full"
         disabled={loading}
       >
-        {loading ? 'Signing in...' : 'Sign In'}
+        {loading ? 'Sending...' : 'Send Reset Instructions'}
       </Button>
     </form>
   );
 };
 
-export default LoginForm;
+export default ForgotPasswordForm;
